@@ -43,10 +43,10 @@ type wrapper struct {
 	Signatories []Signatory     `json:"signatories,omitempty"`
 }
 
-func NewEnvelop(chainId string, tx tx.Tx) (*Envelope){
+func NewEnvelop(chainId string, tx tx.Tx) *Envelope {
 	return &Envelope{
-		ChainID:chainId,
-		Tx:tx,
+		ChainID: chainId,
+		Tx:      tx,
 	}
 }
 

@@ -1,8 +1,8 @@
 package crypto
 
 import (
-	"fmt"
 	"encoding/hex"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

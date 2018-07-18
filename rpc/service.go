@@ -162,7 +162,7 @@ func (s *Service) Genesis() *ResultGenesis {
 }
 
 func (s *Service) GetAccount(address crypto.Address) (*ResultGetAccount, error) {
-	acc := s.state.AccountPool.GetAccount(address)
+	acc := s.state.GetAccount(address)
 	if acc == nil {
 		return nil, nil //TODO we should return a proper error!
 	}
@@ -171,7 +171,7 @@ func (s *Service) GetAccount(address crypto.Address) (*ResultGetAccount, error) 
 
 func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*ResultListAccounts, error) {
 	accounts := make([]*account.Account, 0)
-	s.state.AccountPool.Iterate(func(acc *account.Account) (stop bool) {
+	s.state.IterateAccounts(func(acc *account.Account) (stop bool) {
 		if predicate(acc) {
 			accounts = append(accounts, acc)
 		}
@@ -233,7 +233,7 @@ func (s *Service) ListBlocks(minHeight, maxHeight uint64) (*ResultListBlocks, er
 
 func (s *Service) ListValidators() (*ResultListValidators, error) {
 	validators := make([]*validator.Validator, 0)
-	s.blockchain.State().ValidatorPool.Iterate(func(val *validator.Validator) (stop bool) {
+	s.blockchain.State().IterateValidators(func(val *validator.Validator) (stop bool) {
 		validators = append(validators, val)
 		return
 	})
