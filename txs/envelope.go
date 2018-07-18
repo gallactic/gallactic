@@ -43,6 +43,13 @@ type wrapper struct {
 	Signatories []Signatory     `json:"signatories,omitempty"`
 }
 
+func NewEnvelop(chainId string, tx tx.Tx) *Envelope {
+	return &Envelope{
+		ChainID: chainId,
+		Tx:      tx,
+	}
+}
+
 func (env *Envelope) MarshalJSON() ([]byte, error) {
 	bs, err := json.Marshal(env.Tx)
 	if err != nil {

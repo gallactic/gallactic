@@ -58,6 +58,26 @@
   revision = "95f809107225be108efcf10a3509e4ea6ceef3c4"
 
 [[projects]]
+  branch = "master"
+  digest = "1:36fe9527deed01d2a317617e59304eb2c4ce9f8a24115bcc5c2e37b3aee5bae4"
+  name = "github.com/gin-contrib/sse"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
+
+[[projects]]
+  digest = "1:76052d394539fa449628bc0a7d19d12051e350d3598d28d2263798c2976e9cf5"
+  name = "github.com/gin-gonic/gin"
+  packages = [
+    ".",
+    "binding",
+    "render",
+  ]
+  pruneopts = "UT"
+  revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
+  version = "v1.2"
+
+[[projects]]
   digest = "1:fa30c0652956e159cdb97dcb2ef8b8db63ed668c02a5c3a40961c8f0641252fe"
   name = "github.com/go-kit/kit"
   packages = [
@@ -182,6 +202,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
+
+[[projects]]
+  digest = "1:d4d17353dbd05cb52a2a52b7fe1771883b682806f68db442b436294926bbfafb"
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
+  version = "v0.0.3"
 
 [[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
@@ -394,6 +422,22 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:01206f9a3a723d899b4ba7c3f98f1d2ac98ea25319c54313ccd7e8d31b6602d5"
+  name = "github.com/tommy351/gin-cors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "dc91dec6313ae4db53481bf3b29cf6b94bf80357"
+
+[[projects]]
+  digest = "1:03aa6e485e528acb119fb32901cf99582c380225fc7d5a02758e08b180cb56c3"
+  name = "github.com/ugorji/go"
+  packages = ["codec"]
+  pruneopts = "UT"
+  revision = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab"
+  version = "v1.1.1"
+
+[[projects]]
+  branch = "master"
   digest = "1:d9c6420dc496e41c5f49bc6649c0b4811b1b3732017e5a75dd59dcfff35ff0e9"
   name = "golang.org/x/crypto"
   packages = [
@@ -431,9 +475,12 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8392490b249a3602a13813be12324d3b16eca044ae185ff32cdd9e267706e208"
+  digest = "1:0470500d9a2c5c653f89fc369cdf2fece01996432d42ef87e03ebc3e5b5f8717"
   name = "golang.org/x/sys"
-  packages = ["cpu"]
+  packages = [
+    "cpu",
+    "unix",
+  ]
   pruneopts = "UT"
   revision = "1b2967e3c290b7c545b3db0deeda16e9be4f98a2"
 
@@ -499,11 +546,36 @@
   revision = "d11072e7ca9811b1100b80ca0269ac831f06d024"
   version = "v1.11.3"
 
+[[projects]]
+  digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
+  name = "gopkg.in/go-playground/validator.v8"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
+  version = "v8.18.2"
+
+[[projects]]
+  digest = "1:43b8a34f6390d8fbdcfd300ed52103064e9eaaecc7e50b7e3518fe246ebe8403"
+  name = "gopkg.in/tylerb/graceful.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4654dfbb6ad53cb5e27f37d99b02e16c1872fbbb"
+  version = "v1.2.15"
+
+[[projects]]
+  digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/BurntSushi/toml",
+    "github.com/gin-gonic/gin",
     "github.com/go-kit/kit/log",
     "github.com/hyperledger/burrow/logging",
     "github.com/hyperledger/burrow/logging/config",
@@ -518,18 +590,24 @@
     "github.com/tendermint/iavl",
     "github.com/tendermint/tendermint/abci/types",
     "github.com/tendermint/tendermint/config",
+    "github.com/tendermint/tendermint/consensus",
+    "github.com/tendermint/tendermint/consensus/types",
     "github.com/tendermint/tendermint/crypto",
     "github.com/tendermint/tendermint/libs/common",
     "github.com/tendermint/tendermint/libs/db",
     "github.com/tendermint/tendermint/libs/log",
     "github.com/tendermint/tendermint/node",
+    "github.com/tendermint/tendermint/p2p",
     "github.com/tendermint/tendermint/proxy",
     "github.com/tendermint/tendermint/rpc/core",
     "github.com/tendermint/tendermint/rpc/core/types",
+    "github.com/tendermint/tendermint/state",
     "github.com/tendermint/tendermint/types",
     "github.com/tmthrgd/go-hex",
+    "github.com/tommy351/gin-cors",
     "golang.org/x/crypto/ed25519",
     "golang.org/x/crypto/ripemd160",
+    "gopkg.in/tylerb/graceful.v1",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

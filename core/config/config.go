@@ -6,13 +6,14 @@ import (
 	"io/ioutil"
 
 	"github.com/BurntSushi/toml"
+	rpcConfig "github.com/gallactic/gallactic/rpc/config"
 	logging_config "github.com/hyperledger/burrow/logging/config"
 )
 
 type Config struct {
 	Validator  ValidatorConfig              `toml:"validator"`
 	Tendermint TendermintConfig             `toml:"tendermint"`
-	RPC        RPCConfig                    `toml:"rpc"`
+	RPC        rpcConfig.RPCConfig          `toml:"rpc"`
 	Logging    logging_config.LoggingConfig `toml:"logging,omitempty"`
 }
 
@@ -20,7 +21,7 @@ func defaultConfig() *Config {
 	return &Config{
 		Validator:  DefaultValidatorConfig(),
 		Tendermint: DefaultTendermintConfig(),
-		RPC:        DefaultRPCConfig(),
+		RPC:        *rpcConfig.DefaultRPCConfig(),
 		Logging:    *logging_config.DefaultNodeLoggingConfig(),
 	}
 }

@@ -14,11 +14,13 @@ import (
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/consensus/tendermint"
+	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	tmv "github.com/gallactic/gallactic/core/consensus/tendermint/validator" // TODO:::
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/genesis"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
+	"github.com/gallactic/gallactic/rpc"
 	"github.com/gallactic/gallactic/txs"
 
 	"github.com/hyperledger/burrow/logging"
@@ -95,6 +97,10 @@ func NewKernel(ctx context.Context, gen *genesis.Genesis, conf *config.Config, p
 		return nil, err
 	}
 
+	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, txCodec, logger)
+
+	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode, txCodec), logger)
+
 	launchers := []process.Launcher{
 		{
 			Name:    "Database",
@@ -134,6 +140,23 @@ func NewKernel(ctx context.Context, gen *genesis.Genesis, conf *config.Config, p
 					}
 					return err
 				}), nil
+			},
+		},
+		{
+			Name:    "RPC",
+			Enabled: conf.RPC.Enabled,
+			Launch: func() (process.Process, error) {
+				codec := rpc.NewTCodec()
+				jsonServer := rpc.NewJSONServer(rpc.NewJSONService(codec, service, logger))
+				serveProcess, err := rpc.NewServeProcess(conf.RPC.Server, logger, jsonServer)
+				if err != nil {
+					return nil, err
+				}
+				err = serveProcess.Start()
+				if err != nil {
+					return nil, err
+				}
+				return serveProcess, nil
 			},
 		},
 	}
