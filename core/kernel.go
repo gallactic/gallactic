@@ -86,11 +86,11 @@ func NewKernel(ctx context.Context, gen *genesis.Genesis, conf *config.Config, p
 	}
 	privValidator := tmv.NewPrivValidatorMemory(signer)
 
-	txCodec := txs.NewJSONCodec()
-	checker := execution.NewChecker(bc.State(), logger)
-	deliverer := execution.NewDeliverer(bc.State(), logger)
+	txCodec := txs.NewAminoCodec()
+	checker := execution.NewBatchChecker(bc.State(), logger)
+	committer := execution.NewBatchCommitter(bc.State(), logger)
 
-	tmNode, err := tendermint.NewNode(tmConfig, privValidator, tmGenesisDoc, bc, checker, deliverer, txCodec,
+	tmNode, err := tendermint.NewNode(tmConfig, privValidator, tmGenesisDoc, bc, checker, committer, txCodec,
 		tmLogger)
 
 	if err != nil {

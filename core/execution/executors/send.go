@@ -11,9 +11,9 @@ import (
 )
 
 type SendContext struct {
-	Deliver bool
-	State   *state.State
-	Logger  *logging.Logger
+	Committer bool
+	State     *state.State
+	Logger    *logging.Logger
 }
 
 func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {

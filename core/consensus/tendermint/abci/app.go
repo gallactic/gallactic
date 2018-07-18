@@ -22,9 +22,9 @@ const responseInfoName = "Burrow"
 
 type App struct {
 	// State
-	blockchain    *blockchain.Blockchain
-	checker       execution.Executor
-	deliverer     execution.Executor
+	bc            *blockchain.Blockchain
+	checker       execution.BatchExecutor
+	committer     execution.BatchCommitter
 	mempoolLocker sync.Locker
 	// We need to cache these from BeginBlock for when we need actually need it in Commit
 	block *abciTypes.RequestBeginBlock
@@ -36,14 +36,14 @@ type App struct {
 
 var _ abciTypes.Application = &App{}
 
-func NewApp(bc *blockchain.Blockchain, checker, deliverer execution.Executor,
+func NewApp(bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter,
 	txDecoder txs.Decoder, logger *logging.Logger) *App {
 	return &App{
-		blockchain: bc,
-		checker:    checker,
-		deliverer:  deliverer,
-		txDecoder:  txDecoder,
-		logger:     logger.WithScope("abci.NewApp").With(structure.ComponentKey, "ABCI_App"),
+		bc:        bc,
+		checker:   checker,
+		committer: committer,
+		txDecoder: txDecoder,
+		logger:    logger.WithScope("abci.NewApp").With(structure.ComponentKey, "ABCI_App"),
 	}
 }
 
@@ -58,8 +58,8 @@ func (app *App) Info(info abciTypes.RequestInfo) abciTypes.ResponseInfo {
 	return abciTypes.ResponseInfo{
 		Data:             responseInfoName,
 		Version:          "0.0.0", /// TODO
-		LastBlockHeight:  int64(app.blockchain.LastBlockHeight()),
-		LastBlockAppHash: app.blockchain.LastAppHash(),
+		LastBlockHeight:  int64(app.bc.LastBlockHeight()),
+		LastBlockAppHash: app.bc.LastAppHash(),
 	}
 }
 
@@ -123,9 +123,6 @@ func (app *App) InitChain(chain abciTypes.RequestInitChain) (respInitChain abciT
 }
 
 func (app *App) BeginBlock(block abciTypes.RequestBeginBlock) (respBeginBlock abciTypes.ResponseBeginBlock) {
-	//app.mempoolLocker.Lock()
-
-	app.blockchain.State().ClearChanges()
 	app.block = &block
 
 	return
@@ -146,13 +143,12 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 	}
 
 	receipt := txEnv.GenerateReceipt()
-	err = app.deliverer.Execute(txEnv)
+	err = app.committer.Execute(txEnv)
 	if err != nil {
 		app.logger.TraceMsg("DeliverTx execution error",
 			structure.ErrorKey, err,
 			"tag", "DeliverTx",
 			"tx_hash", receipt.TxHash)
-		app.mempoolLocker.Unlock()
 		return abciTypes.ResponseDeliverTx{
 			Code: codes.TxExecutionErrorCode,
 			Log:  fmt.Sprintf("DeliverTx could not execute transaction: %s, error: %s", txEnv, err),
@@ -164,7 +160,6 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 		"tx_hash", receipt.TxHash)
 	receiptBytes, err := json.Marshal(receipt)
 	if err != nil {
-		app.mempoolLocker.Unlock()
 		return abciTypes.ResponseDeliverTx{
 			Code: codes.TxExecutionErrorCode,
 			Log:  fmt.Sprintf("DeliverTx could not serialize receipt: %s", err),
@@ -179,8 +174,6 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 }
 
 func (app *App) EndBlock(reqEndBlock abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
-	//defer app.mempoolLocker.Unlock()
-
 	return abciTypes.ResponseEndBlock{}
 }
 
@@ -192,26 +185,63 @@ func (app *App) Commit() abciTypes.ResponseCommit {
 		"hash", app.block.Hash,
 		"txs", app.block.Header.NumTxs,
 		"block_time", app.block.Header.Time, // [CSK] this sends a fairly non-sensical number; should be human readable
-		"last_block_time", app.blockchain.LastBlockTime(),
-		"last_block_hash", app.blockchain.LastBlockHash())
+		"last_block_time", app.bc.LastBlockTime(),
+		"last_block_hash", app.bc.LastBlockHash())
+
+	// Lock the checker while we reset it and possibly while recheckTxs replays transactions
+	app.checker.Lock()
+	defer func() {
+		// Tendermint may replay transactions to the check cache during a recheck, which happens after we have returned
+		// from Commit(). The mempool is locked by Tendermint for the duration of the commit phase; during Commit() and
+		// the subsequent mempool.Update() so we schedule an acquisition of the mempool lock in a goroutine in order to
+		// 'observe' the mempool unlock event that happens later on. By keeping the checker read locked during that
+		// period we can ensure that anything querying the checker (such as service.MempoolAccounts()) will block until
+		// the full Tendermint commit phase has completed.
+		if app.mempoolLocker != nil {
+			go func() {
+				// we won't get this until after the commit and we will acquire strictly after this commit phase has
+				// ended (i.e. when Tendermint's BlockExecutor.Commit() returns
+				app.mempoolLocker.Lock()
+				// Prevent any mempool getting relocked while we unlock - we could just unlock immediately but if a new
+				// commit starts gives goroutines blocked on checker a chance to progress before the next commit phase
+				defer app.mempoolLocker.Unlock()
+				app.checker.Unlock()
+			}()
+		} else {
+			// If we have not be provided with access to the mempool lock
+			app.checker.Unlock()
+		}
+	}()
+
+	// First commit the app start, this app hash will not get checkpointed until the next block when we are sure
+	// that nothing in the downstream commit process could have failed. At worst we go back one block.
+	err := app.committer.Commit()
+	if err != nil {
+		panic(errors.Wrap(err, "Could not commit transactions in block to execution state"))
+	}
 
 	// Commit to our blockchain state which will checkpoint the previous app hash by saving it to the database
 	// (we know the previous app hash is safely committed because we are about to commit the next)
-	appHash, err := app.blockchain.CommitBlock(time.Unix(int64(app.block.Header.Time), 0), app.block.Hash)
+	appHash, err := app.bc.CommitBlock(time.Unix(int64(app.block.Header.Time), 0), app.block.Hash)
 	if err != nil {
 		panic(errors.Wrap(err, "could not commit block to blockchain state"))
 	}
 
+	err = app.checker.Reset()
+	if err != nil {
+		panic(errors.Wrap(err, "could not reset check cache during commit"))
+	}
+
 	// Perform a sanity check our block height
-	if app.blockchain.LastBlockHeight() != uint64(app.block.Header.Height) {
+	if app.bc.LastBlockHeight() != uint64(app.block.Header.Height) {
 		app.logger.InfoMsg("Burrow block height disagrees with Tendermint block height",
 			structure.ScopeKey, "Commit()",
-			"burrow_height", app.blockchain.LastBlockHeight(),
+			"burrow_height", app.bc.LastBlockHeight(),
 			"tendermint_height", app.block.Header.Height)
 
 		panic(fmt.Errorf("burrow has recorded a block height of %v, "+
 			"but Tendermint reports a block height of %v, and the two should agree",
-			app.blockchain.LastBlockHeight(), app.block.Header.Height))
+			app.bc.LastBlockHeight(), app.block.Header.Height))
 	}
 	return abciTypes.ResponseCommit{
 		Data: appHash,

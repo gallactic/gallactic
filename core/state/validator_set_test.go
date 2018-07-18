@@ -3,26 +3,29 @@ package state
 import (
 	"testing"
 
-	"github.com/gallactic/gallactic/core/types"
+	"github.com/gallactic/gallactic/core/validator"
+	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
-	tm_crypto "github.com/tendermint/tendermint/crypto"
-	tm_rpc_types "github.com/tendermint/tendermint/rpc/core/types"
-	tm_types "github.com/tendermint/tendermint/types"
+	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmRPCTypes "github.com/tendermint/tendermint/rpc/core/types"
+	tmTypes "github.com/tendermint/tendermint/types"
 )
+
+// TODO: add test for json marshaling
 
 func TestValidatorSet(t *testing.T) {
 	publicKeys := generatePublickKeys()
-	validators := make([]*types.Validator, 6)
-	validators[0] = types.NewValidator(publicKeys[0], 100, 1)
-	validators[1] = types.NewValidator(publicKeys[1], 200, 1)
-	validators[2] = types.NewValidator(publicKeys[2], 300, 1)
-	validators[3] = types.NewValidator(publicKeys[3], 400, 1)
-	validators[4] = types.NewValidator(publicKeys[4], 500, 1)
-	validators[5] = types.NewValidator(publicKeys[5], 600, 1)
+	validators := make([]*validator.Validator, 6)
+	validators[0] = validator.NewValidator(publicKeys[0], 100, 1)
+	validators[1] = validator.NewValidator(publicKeys[1], 200, 1)
+	validators[2] = validator.NewValidator(publicKeys[2], 300, 1)
+	validators[3] = validator.NewValidator(publicKeys[3], 400, 1)
+	validators[4] = validator.NewValidator(publicKeys[4], 500, 1)
+	validators[5] = validator.NewValidator(publicKeys[5], 600, 1)
 
 	vs := NewValidatorSet(validators)
 
-	val := types.NewValidator(publickKeyFromSecret("z"), 100, 1)
+	val := validator.NewValidator(publickKeyFromSecret("z"), 100, 1)
 
 	err := vs.ForceLeave(val)
 	assert.Error(t, err)
@@ -41,20 +44,20 @@ func TestValidatorSet(t *testing.T) {
 
 type _validatorListProxyMock struct {
 	height        int64
-	validatorSets [][]*tm_types.Validator
+	validatorSets [][]*tmTypes.Validator
 }
 
 func newValidatorListProxyMock() *_validatorListProxyMock {
 
 	proxy := &_validatorListProxyMock{}
 	publicKeys := generatePublickKeys()
-	validators := make([]*tm_types.Validator, len(publicKeys))
+	validators := make([]*tmTypes.Validator, len(publicKeys))
 
 	for i, p := range publicKeys {
-		tmPubKey := tm_crypto.PubKeyEd25519{}
-		copy(tmPubKey[:], p.Bytes())
+		tmPubKey := tmCrypto.PubKeyEd25519{}
+		copy(tmPubKey[:], p.RawBytes())
 
-		validators[i] = tm_types.NewValidator(tmPubKey, 1)
+		validators[i] = tmTypes.NewValidator(tmPubKey, 1)
 	}
 
 	/// round:1, power:4
@@ -117,22 +120,22 @@ func newValidatorListProxyMock() *_validatorListProxyMock {
 	return proxy
 }
 
-func (proxy _validatorListProxyMock) validators(height int64) (*tm_rpc_types.ResultValidators, error) {
-	var result tm_rpc_types.ResultValidators
+func (proxy _validatorListProxyMock) validators(height int64) (*tmRPCTypes.ResultValidators, error) {
+	var result tmRPCTypes.ResultValidators
 	result.Validators = proxy.validatorSets[height-1]
 	result.BlockHeight = height
 
 	return &result, nil
 }
 
-func (proxy _validatorListProxyMock) tmValidators(height int64) []*tm_types.Validator {
+func (proxy _validatorListProxyMock) tmValidators(height int64) []*tmTypes.Validator {
 	result, _ := proxy.validators(height)
 
 	return result.Validators
 }
 
-func (proxy *_validatorListProxyMock) nextRound(validators []*tm_types.Validator) {
-	tmValidators := make([]*tm_types.Validator, len(validators))
+func (proxy *_validatorListProxyMock) nextRound(validators []*tmTypes.Validator) {
+	tmValidators := make([]*tmTypes.Validator, len(validators))
 	copy(tmValidators, validators)
 
 	proxy.height++
@@ -143,11 +146,11 @@ func TestAdjusting(t *testing.T) {
 
 	proxy := newValidatorListProxyMock()
 	publicKeys := generatePublickKeys()
-	validators := make([]*types.Validator, len(publicKeys))
+	validators := make([]*validator.Validator, len(publicKeys))
 	var err error
 
 	for i, p := range publicKeys {
-		validators[i] = types.NewValidator(p, 1, 100)
+		validators[i] = validator.NewValidator(p, 1, 100)
 	}
 
 	vs := ValidatorSet{
@@ -268,7 +271,7 @@ func TestAdjusting(t *testing.T) {
 
 }
 
-func compareValidators(validators1 []*types.Validator, tmValidators []*tm_types.Validator) bool {
+func compareValidators(validators1 []*validator.Validator, tmValidators []*tmTypes.Validator) bool {
 
 	if len(validators1) != len(tmValidators) {
 		return false
@@ -277,7 +280,7 @@ func compareValidators(validators1 []*types.Validator, tmValidators []*tm_types.
 	for _, v1 := range validators1 {
 		found := false
 		for _, v2 := range validators1 {
-			if v1.Address().IsEqual(v2.Address()) {
+			if v1.Address().EqualsTo(v2.Address()) {
 				found = true
 				break
 			}
@@ -290,12 +293,12 @@ func compareValidators(validators1 []*types.Validator, tmValidators []*tm_types.
 	return true
 }
 
-func publickKeyFromSecret(secret string) types.PublicKey {
-	return types.PrivateKeyFromSecret(secret).PublicKey()
+func publickKeyFromSecret(secret string) crypto.PublicKey {
+	return crypto.PrivateKeyFromSecret(secret).PublicKey()
 }
 
-func generatePublickKeys() []types.PublicKey {
-	publicKey := make([]types.PublicKey, 26)
+func generatePublickKeys() []crypto.PublicKey {
+	publicKey := make([]crypto.PublicKey, 26)
 
 	/// sorted by address
 	publicKey[0] = publickKeyFromSecret("m")  //  18A71D0D81CEEBF548019C4BC24BB6F5B4E1361F

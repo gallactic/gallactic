@@ -18,10 +18,10 @@ func EmptySendTx() (*SendTx, error) {
 	return &SendTx{}, nil
 }
 
-func NewSendTx(from, to crypto.Address, sequence, amount, fee uint64) (*SendTx, error) {
+func NewSendTx(from, to crypto.Address, seq, amt, fee uint64) (*SendTx, error) {
 	tx := &SendTx{}
-	tx.AddSender(from, sequence, amount+fee)
-	tx.AddReceiver(to, amount)
+	tx.AddSender(from, seq, amt+fee)
+	tx.AddReceiver(to, amt)
 
 	return tx, nil
 }
@@ -30,18 +30,18 @@ func (tx *SendTx) Type() Type          { return TypeSend }
 func (tx *SendTx) Inputs() []TxInput   { return tx.data.Senders }
 func (tx *SendTx) Outputs() []TxOutput { return tx.data.Receivers }
 
-func (tx *SendTx) AddSender(address crypto.Address, sequence, amount uint64) {
+func (tx *SendTx) AddSender(addr crypto.Address, seq, amt uint64) {
 	tx.data.Senders = append(tx.data.Senders, TxInput{
-		Address:  address,
-		Amount:   amount,
-		Sequence: sequence,
+		Address:  addr,
+		Amount:   amt,
+		Sequence: seq,
 	})
 }
 
-func (tx *SendTx) AddReceiver(address crypto.Address, amount uint64) {
+func (tx *SendTx) AddReceiver(addr crypto.Address, amt uint64) {
 	tx.data.Receivers = append(tx.data.Receivers, TxOutput{
-		Address: address,
-		Amount:  amount,
+		Address: addr,
+		Amount:  amt,
 	})
 }
 

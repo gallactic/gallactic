@@ -91,7 +91,7 @@ func (s *sortition) Address() crypto.Address {
 	return s.Address()
 }
 
-func (s *sortition) getTotalStake(address crypto.Address) (totalStake uint64, validatorStake uint64) {
+func (s *sortition) getTotalStake(addr crypto.Address) (totalStake uint64, validatorStake uint64) {
 	totalStake = 0
 	validatorStake = 0
 

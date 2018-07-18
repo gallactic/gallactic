@@ -183,23 +183,23 @@ func (set *ValidatorSet) Leavers() []*validator.Validator {
 	return set.leavers
 }
 
-func (set *ValidatorSet) Join(validator *validator.Validator) error {
-	if true == set.Contains(validator.Address()) {
-		return fmt.Errorf("This validator currently is in the set: %v", validator.Address())
+func (set *ValidatorSet) Join(val *validator.Validator) error {
+	if true == set.Contains(val.Address()) {
+		return fmt.Errorf("This validator currently is in the set: %v", val.Address())
 	}
 
 	/// Welcome to the party!
-	set.data.Validators = append(set.data.Validators, validator)
+	set.data.Validators = append(set.data.Validators, val)
 	return nil
 }
 
-func (set *ValidatorSet) ForceLeave(validator *validator.Validator) error {
-	if false == set.Contains(validator.Address()) {
-		return fmt.Errorf("This validator currently is not in the set: %v", validator.Address())
+func (set *ValidatorSet) ForceLeave(val *validator.Validator) error {
+	if false == set.Contains(val.Address()) {
+		return fmt.Errorf("This validator currently is not in the set: %v", val.Address())
 	}
 
 	for i, val := range set.data.Validators {
-		if val.Address().EqualsTo(validator.Address()) {
+		if val.Address().EqualsTo(val.Address()) {
 			set.data.Validators = append(set.data.Validators[:i], set.data.Validators[i+1:]...)
 			break
 		}
@@ -208,9 +208,9 @@ func (set *ValidatorSet) ForceLeave(validator *validator.Validator) error {
 	return nil
 }
 
-func (set *ValidatorSet) Contains(address crypto.Address) bool {
+func (set *ValidatorSet) Contains(addr crypto.Address) bool {
 	for _, v := range set.data.Validators {
-		if v.Address().EqualsTo(address) {
+		if v.Address().EqualsTo(addr) {
 			return true
 		}
 	}

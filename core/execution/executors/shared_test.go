@@ -12,7 +12,7 @@ import (
 
 type fakeAccountGetter struct{}
 
-func (fakeAccountGetter) GetAccount(address crypto.Address) (*acm.Account, error) {
+func (fakeAccountGetter) GetAccount(addr crypto.Address) (*acm.Account, error) {
 	if address == acm.GlobalAddress {
 		globalAccount := acm.NewAccount(acm.GlobalAddress)
 		globalAccount.SetPermissions(permission.Send | permission.Bond)

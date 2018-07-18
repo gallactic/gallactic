@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gallactic/gallactic/core/types"
+	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -28,12 +28,12 @@ func saveState(t *testing.T, state *State) []byte {
 	return hash
 }
 
-func updateAccount(t *testing.T, state *State, account *types.Account) {
+func updateAccount(t *testing.T, state *State, account *account.Account) {
 	err := state.AccountPool.UpdateAccount(account)
 	require.NoError(t, err)
 }
 
-func getAccount(t *testing.T, state *State, address crypto.Address) *types.Account {
+func getAccount(t *testing.T, state *State, addr crypto.Address) *account.Account {
 	account := state.AccountPool.GetAccount(address)
 	return account
 }
@@ -49,8 +49,8 @@ func TestState_Loading(t *testing.T) {
 	db := dbm.NewMemDB()
 	state := NewState(db)
 
-	foo := types.NewAccountFromSecret("Foo")
-	bar := types.NewAccountFromSecret("Bar")
+	foo := account.NewAccountFromSecret("Foo")
+	bar := account.NewAccountFromSecret("Bar")
 
 	foo.AddToBalance(1)
 	bar.AddToBalance(1)
@@ -89,8 +89,8 @@ func TestState_Loading2(t *testing.T) {
 	db := dbm.NewMemDB()
 	state := NewState(db)
 
-	foo := types.NewAccountFromSecret("Foo")
-	bar := types.NewAccountFromSecret("Bar")
+	foo := account.NewAccountFromSecret("Foo")
+	bar := account.NewAccountFromSecret("Bar")
 
 	foo.AddToBalance(1)
 	bar.AddToBalance(1)
@@ -120,7 +120,7 @@ func TestState_Loading2(t *testing.T) {
 
 func TestState_UpdateAccount(t *testing.T) {
 	state := NewState(dbm.NewMemDB())
-	foo1 := types.NewAccountFromSecret("Foo")
+	foo1 := account.NewAccountFromSecret("Foo")
 
 	foo1.AddToBalance(1)
 	foo1.SetCode([]byte{0x60})

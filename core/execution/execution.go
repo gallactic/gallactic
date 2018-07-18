@@ -17,32 +17,58 @@ type Executor interface {
 	Execute(txEnv *txs.Envelope) error
 }
 
+type BatchExecutor interface {
+	// Provides access to write lock for a BatchExecutor so reads can be prevented for the duration of a commit
+	sync.Locker
+
+	// Execute transaction against block cache (i.e. block buffer)
+	Executor
+
+	// Reset executor to underlying State
+	Reset() error
+}
+
+// Executes transactions
+type BatchCommitter interface {
+	BatchExecutor
+
+	// Commit execution results to underlying State and provide opportunity
+	// to mutate state before it is saved
+	Commit() (err error)
+}
+
 type executor struct {
 	sync.RWMutex
 	logger      *logging.Logger
+	state       *state.State
+	cache       *state.Cache
 	txExecutors map[tx.Type]Executor
 }
 
+var _ BatchExecutor = (*executor)(nil)
+
 // Wraps a cache of what is variously known as the 'check cache' and 'mempool'
-func NewChecker(st *state.State, logger *logging.Logger) Executor {
-	return newExecutor(false, st, logger.WithScope("NewExecutor"))
+func NewBatchChecker(st *state.State, logger *logging.Logger) BatchExecutor {
+	return newExecutor("CheckCache", false, st, logger.WithScope("NewBatchExecutor"))
 }
 
-func NewDeliverer(st *state.State, logger *logging.Logger) Executor {
-	return newExecutor(true, st, logger.WithScope("Deliverer"))
+func NewBatchCommitter(st *state.State, logger *logging.Logger) BatchCommitter {
+	return newExecutor("CommitCache", true, st, logger.WithScope("NewBatchCommitter"))
 }
 
-func newExecutor(deliver bool, st *state.State, logger *logging.Logger) *executor {
+func newExecutor(name string, committer bool, st *state.State, logger *logging.Logger) *executor {
 
 	exe := &executor{
+		state:  st,
+		cache:  state.NewCache(st, state.Name(name)),
 		logger: logger.With(structure.ComponentKey, "Executor"),
 	}
 
 	exe.txExecutors = map[tx.Type]Executor{
 		tx.TypeSend: &executors.SendContext{
-			Deliver: deliver,
-			State:   st,
-			Logger:  exe.logger,
+			Committer: committer,
+			State:     st,
+			Logger:    exe.logger,
 		}, /*
 			tx.TypeCall: &executors.CallContext{
 				Blockchain:     blockchain,
@@ -86,4 +112,22 @@ func (exe *executor) Execute(txEnv *txs.Envelope) (err error) {
 		return txExecutor.Execute(txEnv)
 	}
 	return fmt.Errorf("unknown transaction type: %v", txEnv.Tx.Type())
+}
+
+func (exe *executor) Commit() (err error) {
+	// The write lock to the executor is controlled by the caller (e.g. abci.App) so we do not acquire it here to avoid
+	// deadlock
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("recovered from panic in executor.Commit(): %v\n%v", r, debug.Stack())
+		}
+	}()
+
+	return exe.cache.Flush()
+}
+
+func (exe *executor) Reset() error {
+	// As with Commit() we do not take the write lock here
+	exe.cache.Reset()
+	return nil
 }

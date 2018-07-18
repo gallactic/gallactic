@@ -128,19 +128,19 @@ func (gen *Genesis) UnmarshalJSON(bs []byte) error {
 	return nil
 }
 
-func makeGenesisAccount(account *account.Account) genAccount {
+func makeGenesisAccount(acc *account.Account) genAccount {
 	return genAccount{
-		Address:     account.Address(),
-		Balance:     account.Balance(),
-		Permissions: account.Permissions(),
+		Address:     acc.Address(),
+		Balance:     acc.Balance(),
+		Permissions: acc.Permissions(),
 	}
 }
 
-func makeGenesisValidator(validator *validator.Validator) genValidator {
+func makeGenesisValidator(val *validator.Validator) genValidator {
 	return genValidator{
-		PublicKey: validator.PublicKey(),
-		Address:   validator.Address(),
-		Stake:     validator.Balance(),
+		PublicKey: val.PublicKey(),
+		Address:   val.Address(),
+		Stake:     val.Balance(),
 	}
 }
 

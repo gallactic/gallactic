@@ -7,7 +7,7 @@ func TestJSONEncodeTxDecodeTx(t *testing.T) {
 	outputAddress := crypto.Address{5, 4, 3, 2, 1}
 	amount := uint64(2)
 	sequence := uint64(3)
-	tx, _ := payload.NewSendTx(inputAddress, outputAddress, sequence, amount, 0)
+	tx, _ := payload.NewSendTx(inputAddress, outputAddress, seq, amt, 0)
 	txEnv := Enclose(chainID, tx)
 	txBytes, err := codec.EncodeTx(txEnv)
 	if err != nil {
@@ -60,7 +60,7 @@ func TestAminoEncodeTxDecodeTx(t *testing.T) {
 	outputAddress := crypto.Address{5, 4, 3, 2, 1}
 	amount := uint64(2)
 	sequence := uint64(3)
-	tx, err := payload.NewSendTx(inputAddress, outputAddress, sequence, amount, 0)
+	tx, err := payload.NewSendTx(inputAddress, outputAddress, seq, amt, 0)
 	require.NoError(t, err)
 	txEnv := Enclose(chainID, tx)
 	txBytes, err := codec.EncodeTx(txEnv)

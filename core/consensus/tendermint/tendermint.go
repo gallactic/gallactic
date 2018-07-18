@@ -46,7 +46,7 @@ func (n *Node) Close() {
 }
 
 func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tmTypes.GenesisDoc,
-	bc *blockchain.Blockchain, checker, deliverer execution.Executor,
+	bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter,
 	txDecoder txs.Decoder, logger *logging.Logger) (*Node, error) {
 
 	var err error
@@ -58,7 +58,7 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 
 	tmLogger := NewLogger(logger.WithPrefix(structure.ComponentKey, "Tendermint").With(structure.ScopeKey, "tendermint.NewNode"))
 	n := &Node{}
-	app := abci.NewApp(bc, checker, deliverer, txDecoder, logger)
+	app := abci.NewApp(bc, checker, committer, txDecoder, logger)
 	client := proxy.NewLocalClientCreator(app)
 	conf.NodeKeyFile()
 	n.Node, err = node.NewNode(conf, privValidator, client,

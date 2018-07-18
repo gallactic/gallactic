@@ -30,7 +30,7 @@ func NewPrivateValidator(file, passphrase string) (crypto.Signer, error) {
 	pv, _ := crypto.PrivateKeyFromRawBytes(bs)
 
 	return &privateValidator{
-		address:    pv.PublicKey().AccountAddress(),
+		address:    pv.PublicKey().ValidatorAddress(),
 		publicKey:  pv.PublicKey(),
 		privateKey: pv,
 	}, nil

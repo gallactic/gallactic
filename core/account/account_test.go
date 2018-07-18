@@ -17,16 +17,20 @@ func TestAccountDecode(t *testing.T) {
 	acc1.SetStorageRoot([]byte{1, 2, 3, 4, 5})
 	acc1.SetCode([]byte{60, 23, 45})
 	fmt.Println(acc1.Address().String())
-	bytes, err := acc1.Encode()
+	bs, err := acc1.Encode()
 	require.NoError(t, err)
-	var acc2 Account
-	err = acc2.Decode(bytes)
+	acc2 := new(Account)
+	err = acc2.Decode(bs)
 	require.NoError(t, err)
-	assert.Equal(t, *acc1, acc2)
+	assert.Equal(t, acc1, acc2)
 
-	acc3, err := AccountFromBytes([]byte("asdfghjkl"))
+	acc3, err := AccountFromBytes(bs)
+	require.NoError(t, err)
+	assert.Equal(t, acc2, acc3)
+
+	acc4, err := AccountFromBytes([]byte("asdfghjkl"))
 	require.Error(t, err)
-	assert.Nil(t, acc3)
+	assert.Nil(t, acc4)
 }
 
 func TestAccountMarshal(t *testing.T) {

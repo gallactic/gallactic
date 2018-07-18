@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/genesis"
 	"github.com/gallactic/gallactic/core/state"
+	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/hyperledger/burrow/logging"
 	dbm "github.com/tendermint/tendermint/libs/db"
@@ -68,23 +70,22 @@ func newBlockchain(db dbm.DB, gen *genesis.Genesis, logger *logging.Logger) (*Bl
 
 	// Make accounts state tree
 	for _, acc := range gen.Accounts() {
-		err := st.AccountPool.UpdateAccount(acc)
+		err := st.UpdateAccount(acc)
 		if err != nil {
 			return nil, err
 		}
 	}
-	/*
 
-		gAcc, _ := account.NewAccount(crypto.GlobalAddress)
-		gAcc.SetPermissions(gen.GlobalPermissions())
+	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
+	gAcc.SetPermissions(gen.GlobalPermissions())
 
-		err := st.AccountPool.UpdateAccount(gAcc)
-		if err != nil {
-			return nil, err
-		}
-	*/
+	err := st.UpdateAccount(gAcc)
+	if err != nil {
+		return nil, err
+	}
+
 	// We need to save at least once so that readTree points at a non-working-state tree
-	_, err := st.SaveState()
+	_, err = st.SaveState()
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +110,7 @@ func loadBlockchain(db dbm.DB, logger *logging.Logger) (*Blockchain, error) {
 		return nil, nil
 	}
 	data := new(blockchainData)
-	fmt.Println(string(buf))
+
 	err := json.Unmarshal(buf, data)
 	if err != nil {
 		return nil, err

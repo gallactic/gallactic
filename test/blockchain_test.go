@@ -14,7 +14,7 @@ func setupBlockchain(m *testing.M) {
 }
 
 /*
-func updateAccount(t *testing.T, account *account.Account) {
+func updateAccount(t *testing.T, acc *account.Account) {
 	_, err := bc1State.Update(func(ws execution.Updatable) error {
 		return ws.UpdateAccount(account)
 	})

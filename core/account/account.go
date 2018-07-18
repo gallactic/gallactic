@@ -24,12 +24,12 @@ type accountData struct {
 }
 
 ///---- Constructors
-func NewAccount(address crypto.Address) (*Account, error) {
+func NewAccount(addr crypto.Address) (*Account, error) {
 	/// TODO: check address is valid
 	//e.Errorf(e.ErrInvalidAddress, "%s is not an account address", out.Address)
 	return &Account{
 		data: accountData{
-			Address: address,
+			Address: addr,
 		},
 	}, nil
 }
@@ -42,7 +42,6 @@ func NewAccountFromSecret(secret string) *Account {
 
 func AccountFromBytes(bs []byte) (*Account, error) {
 	var acc Account
-	fmt.Println(string(bs))
 	if err := acc.UnmarshalJSON(bs); err != nil {
 		return nil, err
 	}

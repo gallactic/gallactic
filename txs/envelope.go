@@ -68,8 +68,6 @@ func (env *Envelope) MarshalJSON() ([]byte, error) {
 func (env *Envelope) UnmarshalJSON(data []byte) error {
 	w := new(wrapper)
 	err := json.Unmarshal(data, w)
-	fmt.Println(string(data))
-//	fmt.Println(string(w))
 	if err != nil {
 		return err
 	}
