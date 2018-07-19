@@ -32,6 +32,26 @@ func TestAddress(t *testing.T) {
 	assert.Equal(t, address1, address2)
 }
 
+func TestMarshalingEmptyAddress(t *testing.T) {
+	addr1 := Address{}
+
+	js, err := json.Marshal(addr1)
+	assert.NoError(t, err)
+	assert.Equal(t, js, []byte("\"\""))
+	var addr2 Address
+	err = json.Unmarshal(js, &addr2)
+	assert.Error(t, err)
+	assert.Equal(t, addr1, addr2)
+
+	bs, err := addr1.MarshalAmino()
+	assert.NoError(t, err)
+	assert.Equal(t, bs, []byte(nil))
+	var addr3 Address
+	err = json.Unmarshal(bs, &addr3)
+	assert.Error(t, err)
+	assert.Equal(t, addr1, addr3)
+}
+
 func TestMarshalingAddress(t *testing.T) {
 	addrs := []string{
 		"0123456789ABCDEF0123456789ABCDEF01234567",
@@ -106,9 +126,9 @@ func TestValidity(t *testing.T) {
 	_, err = AddressFromString("invalid_addres")
 	assert.Error(t, err)
 
-	_, err = AddressFromRawByes([]byte{0, 1, 2, 3, 4, 5, 6})
+	_, err = AddressFromRawBytes([]byte{0, 1, 2, 3, 4, 5, 6})
 	assert.Error(t, err)
 
-	_, err = AddressFromRawByes([]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5})
+	_, err = AddressFromRawBytes([]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5})
 	assert.Error(t, err)
 }

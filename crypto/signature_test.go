@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -8,8 +9,28 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestMarshalingEmptySignature(t *testing.T) {
+	sig1 := Signature{}
+
+	js, err := json.Marshal(sig1)
+	assert.NoError(t, err)
+	assert.Equal(t, js, []byte("\"\""))
+	var sig2 Signature
+	err = json.Unmarshal(js, &sig2)
+	assert.Error(t, err)
+	assert.Equal(t, sig1, sig2)
+
+	bs, err := sig1.MarshalAmino()
+	assert.NoError(t, err)
+	assert.Equal(t, bs, []byte(nil))
+	var sig3 Signature
+	err = json.Unmarshal(bs, &sig3)
+	assert.Error(t, err)
+	assert.Equal(t, sig1, sig3)
+}
+
 func TestMarshalingSignature(t *testing.T) {
-	privKey, _ := GeneratePrivateKey(nil)
+	privKey := GeneratePrivateKey(nil)
 	sig1, err := privKey.Sign([]byte("Test message"))
 	require.NoError(t, err)
 

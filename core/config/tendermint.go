@@ -10,8 +10,8 @@ type TendermintConfig struct {
 	TendermintRoot  string `toml:"tendermintRoot"`
 }
 
-func DefaultTendermintConfig() TendermintConfig {
-	return TendermintConfig{
+func DefaultTendermintConfig() *TendermintConfig {
+	return &TendermintConfig{
 		ListenAddress:  "tcp://0.0.0.0:46656",
 		TendermintRoot: "./data",
 	}

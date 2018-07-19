@@ -37,17 +37,22 @@ func checksum(input []byte) (chksum [4]byte) {
 /// CONSTRUCTORS
 
 func AddressFromString(text string) (Address, error) {
-	var addr Address
-	if err := addr.UnmarshalText([]byte(text)); err != nil {
-		return Address{}, err
+	bs, err := base58.Decode(text)
+	if err != nil {
+		return Address{}, e.Errorf(e.ErrInvalidAddress, "%v", err.Error())
 	}
 
-	return addr, nil
+	return AddressFromRawBytes(bs)
 }
 
-func AddressFromRawByes(bs []byte) (Address, error) {
+func AddressFromRawBytes(bs []byte) (Address, error) {
+	if len(bs) != 26 {
+		return Address{}, e.Errorf(e.ErrInvalidAddress, "Address raw bytes should be 26 bytes, but it is %v bytes", len(bs))
+	}
+
 	var addr Address
-	if err := addr.UnmarshalAmino(bs); err != nil {
+	copy(addr.data.Address[:], bs[:])
+	if err := addr.EnsureValid(); err != nil {
 		return Address{}, err
 	}
 
@@ -56,14 +61,13 @@ func AddressFromRawByes(bs []byte) (Address, error) {
 
 func AddressFromWord256(w binary.Word256) (Address, error) {
 	bs := w.Bytes()[6:]
-	return AddressFromRawByes(bs)
+	return AddressFromRawBytes(bs)
 }
 
 /// this is a private constructor
 func addressFromHash(hash []byte, ver uint16) (Address, error) {
-	var addr Address
 	if len(hash) != 20 {
-		return addr, e.Errorf(e.ErrInvalidAddress, "Address hash should be 20 bytes but it is %v bytes", len(hash))
+		return Address{}, e.Errorf(e.ErrInvalidAddress, "Address hash should be 20 bytes but it is %v bytes", len(hash))
 	}
 
 	bs := make([]byte, 0, 2+20+4)
@@ -72,6 +76,7 @@ func addressFromHash(hash []byte, ver uint16) (Address, error) {
 	chksum := checksum(bs)
 	bs = append(bs, chksum[:]...)
 
+	var addr Address
 	copy(addr.data.Address[:], bs[:])
 	if err := addr.EnsureValid(); err != nil {
 		return Address{}, err
@@ -84,34 +89,35 @@ func addressFromHash(hash []byte, ver uint16) (Address, error) {
 /// CASTING
 
 func (addr Address) RawBytes() []byte {
+	if addr.data.Address == [26]byte{} {
+		return nil
+	}
+
 	return addr.data.Address[:]
 }
 
 func (addr Address) String() string {
-	return base58.Encode(addr.data.Address[:])
+	return base58.Encode(addr.RawBytes())
 }
 
 func (addr Address) Word256() binary.Word256 {
-	return binary.LeftPadWord256(addr.data.Address[:])
+	return binary.LeftPadWord256(addr.RawBytes())
 }
 
 /// ----------
 /// MARSHALING
 
 func (addr Address) MarshalAmino() ([]byte, error) {
-	return addr.data.Address[:], nil
+	return addr.RawBytes(), nil
 }
 
 func (addr *Address) UnmarshalAmino(bs []byte) error {
-	if len(bs) != 26 {
-		return e.Errorf(e.ErrInvalidAddress, "Address raw bytes should be 26 bytes, but it is %v bytes", len(bs))
-	}
-
-	copy(addr.data.Address[:], bs[:])
-	if err := addr.EnsureValid(); err != nil {
+	a, err := AddressFromRawBytes(bs)
+	if err != nil {
 		return err
 	}
 
+	*addr = a
 	return nil
 }
 
@@ -120,12 +126,13 @@ func (addr Address) MarshalText() ([]byte, error) {
 }
 
 func (addr *Address) UnmarshalText(text []byte) error {
-	bs, err := base58.Decode(string(text))
+	a, err := AddressFromString(string(text))
 	if err != nil {
 		return err
 	}
 
-	return addr.UnmarshalAmino(bs)
+	*addr = a
+	return nil
 }
 
 /// -------

@@ -6,6 +6,6 @@ type ValidatorConfig struct {
 	Address crypto.Address `toml:"address"`
 }
 
-func DefaultValidatorConfig() ValidatorConfig {
-	return ValidatorConfig{}
+func DefaultValidatorConfig() *ValidatorConfig {
+	return nil
 }

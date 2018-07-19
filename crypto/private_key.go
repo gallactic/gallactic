@@ -23,17 +23,22 @@ type privateKeyData struct {
 /// CONSTRUCTORS
 
 func PrivateKeyFromString(text string) (PrivateKey, error) {
-	var pv PrivateKey
-	if err := pv.UnmarshalText([]byte(text)); err != nil {
-		return PrivateKey{}, err
+	bs, err := hex.DecodeString(text)
+	if err != nil {
+		return PrivateKey{}, e.Errorf(e.ErrInvalidPrivateKey, "%v", err.Error())
 	}
 
-	return pv, nil
+	return PrivateKeyFromRawBytes(bs)
 }
 
 func PrivateKeyFromRawBytes(bs []byte) (PrivateKey, error) {
-	var pv PrivateKey
-	if err := pv.UnmarshalAmino(bs); err != nil {
+	pv := PrivateKey{
+		data: privateKeyData{
+			PrivateKey: bs,
+		},
+	}
+
+	if err := pv.EnsureValid(); err != nil {
 		return PrivateKey{}, err
 	}
 
@@ -72,15 +77,16 @@ func (pv PrivateKey) String() string {
 /// MARSHALING
 
 func (pv PrivateKey) MarshalAmino() ([]byte, error) {
-	return pv.data.PrivateKey, nil
+	return pv.RawBytes(), nil
 }
 
 func (pv *PrivateKey) UnmarshalAmino(bs []byte) error {
-	pv.data.PrivateKey = bs
-	if err := pv.EnsureValid(); err != nil {
+	p, err := PrivateKeyFromRawBytes(bs)
+	if err != nil {
 		return err
 	}
 
+	*pv = p
 	return nil
 }
 
@@ -89,12 +95,13 @@ func (pv PrivateKey) MarshalText() ([]byte, error) {
 }
 
 func (pv *PrivateKey) UnmarshalText(text []byte) error {
-	bs, err := hex.DecodeString(string(text))
+	p, err := PrivateKeyFromString(string(text))
 	if err != nil {
 		return err
 	}
 
-	return pv.UnmarshalAmino(bs)
+	*pv = p
+	return nil
 }
 
 /// -------
@@ -103,7 +110,7 @@ func (pv *PrivateKey) UnmarshalText(text []byte) error {
 func (pv *PrivateKey) EnsureValid() error {
 	bs := pv.RawBytes()
 	if len(bs) != ed25519.PrivateKeySize {
-		return e.Errorf(e.ErrInvalidPrivateKey, "PrivateKey should be %v bytes but it is %v bytes", ed25519.PrivateKeySize, len(bs))
+		return e.Errorf(e.ErrInvalidPrivateKey, "Private key should be %v bytes but it is %v bytes", ed25519.PrivateKeySize, len(bs))
 	}
 	_, derivedPrivateKey, err := ed25519.GenerateKey(bytes.NewBuffer(bs))
 	if err != nil {
@@ -116,7 +123,7 @@ func (pv *PrivateKey) EnsureValid() error {
 }
 
 func (pv PrivateKey) Sign(msg []byte) (Signature, error) {
-	privKey := ed25519.PrivateKey(pv.data.PrivateKey)
+	privKey := ed25519.PrivateKey(pv.RawBytes())
 	return SignatureFromRawBytes(ed25519.Sign(privKey, msg))
 
 }

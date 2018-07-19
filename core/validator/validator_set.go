@@ -195,8 +195,8 @@ func (set *ValidatorSet) ForceLeave(val *Validator) error {
 		return fmt.Errorf("This validator currently is not in the set: %v", val.Address())
 	}
 
-	for i, val := range set.data.Validators {
-		if val.Address().EqualsTo(val.Address()) {
+	for i, v := range set.data.Validators {
+		if v.Address().EqualsTo(val.Address()) {
 			set.data.Validators = append(set.data.Validators[:i], set.data.Validators[i+1:]...)
 			break
 		}

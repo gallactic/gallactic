@@ -26,7 +26,7 @@ func setupGenesis(m *testing.M) {
 
 	for i := 0; i < numValidators; i++ {
 		stake := rand.New(rand.NewSource(int64(i))).Uint64()
-		privateKey, _ := crypto.GeneratePrivateKey(nil)
+		privateKey := crypto.GeneratePrivateKey(nil)
 		publicKey := privateKey.PublicKey()
 
 		validator := validator.NewValidator(publicKey, stake, 0)
