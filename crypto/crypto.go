@@ -1,6 +1,6 @@
 package crypto
 
-var GlobalAddress, _ = addressFromHash([]byte{0}, globalAddress)
+var GlobalAddress, _ = AddressFromString("gbnDyGpPVijzB74qUhiEAvgdZYMdK2Uvdkh")
 
 func DeriveContractAddress(addr *Address, sequence uint64) Address {
 	/*

@@ -1,9 +1,8 @@
-package state
+package validator
 
 import (
 	"testing"
 
-	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
 	tmCrypto "github.com/tendermint/tendermint/crypto"
@@ -15,17 +14,17 @@ import (
 
 func TestValidatorSet(t *testing.T) {
 	publicKeys := generatePublickKeys()
-	validators := make([]*validator.Validator, 6)
-	validators[0] = validator.NewValidator(publicKeys[0], 100, 1)
-	validators[1] = validator.NewValidator(publicKeys[1], 200, 1)
-	validators[2] = validator.NewValidator(publicKeys[2], 300, 1)
-	validators[3] = validator.NewValidator(publicKeys[3], 400, 1)
-	validators[4] = validator.NewValidator(publicKeys[4], 500, 1)
-	validators[5] = validator.NewValidator(publicKeys[5], 600, 1)
+	validators := make([]*Validator, 6)
+	validators[0] = NewValidator(publicKeys[0], 100, 1)
+	validators[1] = NewValidator(publicKeys[1], 200, 1)
+	validators[2] = NewValidator(publicKeys[2], 300, 1)
+	validators[3] = NewValidator(publicKeys[3], 400, 1)
+	validators[4] = NewValidator(publicKeys[4], 500, 1)
+	validators[5] = NewValidator(publicKeys[5], 600, 1)
 
 	vs := NewValidatorSet(validators)
 
-	val := validator.NewValidator(publickKeyFromSecret("z"), 100, 1)
+	val := NewValidator(publickKeyFromSecret("z"), 100, 1)
 
 	err := vs.ForceLeave(val)
 	assert.Error(t, err)
@@ -146,11 +145,11 @@ func TestAdjusting(t *testing.T) {
 
 	proxy := newValidatorListProxyMock()
 	publicKeys := generatePublickKeys()
-	validators := make([]*validator.Validator, len(publicKeys))
+	validators := make([]*Validator, len(publicKeys))
 	var err error
 
 	for i, p := range publicKeys {
-		validators[i] = validator.NewValidator(p, 1, 100)
+		validators[i] = NewValidator(p, 1, 100)
 	}
 
 	vs := ValidatorSet{
@@ -271,7 +270,7 @@ func TestAdjusting(t *testing.T) {
 
 }
 
-func compareValidators(validators1 []*validator.Validator, tmValidators []*tmTypes.Validator) bool {
+func compareValidators(validators1 []*Validator, tmValidators []*tmTypes.Validator) bool {
 
 	if len(validators1) != len(tmValidators) {
 		return false

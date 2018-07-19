@@ -17,18 +17,19 @@ type signatureData struct {
 
 /// ------------
 /// CONSTRUCTORS
-
-// Currently this is a stub that reads the raw bytes returned by key_client and returns
-// an ed25519 signature.
-func SignatureFromRawBytes(bs []byte) (Signature, error) {
-	sig := Signature{
-		data: signatureData{
-			Signature: bs,
-		},
+func SignatureFromString(text string) (Signature, error) {
+	var sig Signature
+	if err := sig.UnmarshalText([]byte(text)); err != nil {
+		return Signature{}, err
 	}
 
-	if !sig.IsValid() {
-		return Signature{}, e.Error(e.ErrInvalidSignature)
+	return sig, nil
+}
+
+func SignatureFromRawBytes(bs []byte) (Signature, error) {
+	var sig Signature
+	if err := sig.UnmarshalAmino(bs); err != nil {
+		return Signature{}, err
 	}
 
 	return sig, nil
@@ -48,34 +49,40 @@ func (sig Signature) String() string {
 /// ----------
 /// MARSHALING
 
-func (sig Signature) MarshalText() ([]byte, error) {
-	str := sig.String()
-	return []byte(str), nil
+func (sig Signature) MarshalAmino() ([]byte, error) {
+	return sig.data.Signature, nil
 }
 
-func (sig *Signature) UnmarshalText(bs []byte) error {
-	str := string(bs)
-	bs, err := hex.DecodeString(str)
-	if err != nil {
+func (sig *Signature) UnmarshalAmino(bs []byte) error {
+	sig.data.Signature = bs
+	if err := sig.EnsureValid(); err != nil {
 		return err
 	}
 
-	s, err := SignatureFromRawBytes(bs)
-	if err != nil {
-		return err
-	}
-
-	*sig = s
 	return nil
+}
+
+func (sig Signature) MarshalText() ([]byte, error) {
+	return []byte(sig.String()), nil
+}
+
+func (sig *Signature) UnmarshalText(text []byte) error {
+	bs, err := hex.DecodeString(string(text))
+	if err != nil {
+		return err
+	}
+
+	return sig.UnmarshalAmino(bs)
 }
 
 /// ----------
 /// ATTRIBUTES
 
-func (sig Signature) IsValid() bool {
+func (sig *Signature) EnsureValid() error {
+	bs := sig.RawBytes()
 	if len(sig.data.Signature) != ed25519.SignatureSize {
-		return false
+		return e.Errorf(e.ErrInvalidSignature, "Signature should be %v bytes but it is %v bytes", ed25519.SignatureSize, len(bs))
 	}
 
-	return true
+	return nil
 }

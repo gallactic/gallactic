@@ -5,6 +5,8 @@ import (
 	"sync"
 
 	"github.com/gallactic/gallactic/common/binary"
+	"github.com/gallactic/gallactic/core/account"
+	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/hyperledger/burrow/logging"
@@ -155,4 +157,115 @@ func (st *State) GetObj(addr crypto.Address) StateObj {
 	}
 
 	return nil
+}
+
+// -------
+// ACCOUNT
+
+func (st *State) GlobalAccount() *account.Account {
+	st.Lock()
+	defer st.Unlock()
+
+	return st.GetAccount(crypto.GlobalAddress)
+}
+
+func (st *State) GetAccount(addr crypto.Address) *account.Account {
+	st.Lock()
+	defer st.Unlock()
+
+	_, bs := st.tree.Get(accountKey(addr))
+	if bs == nil {
+		return nil
+	}
+	acc, err := account.AccountFromBytes(bs)
+	if err != nil {
+		panic("Unable to decode encoded Account")
+	}
+
+	return acc
+}
+
+func (st *State) UpdateAccount(acc *account.Account) error {
+	st.Lock()
+	defer st.Unlock()
+
+	bs, err := acc.Encode()
+	if err != nil {
+		return err
+	}
+
+	st.tree.Set(accountKey(acc.Address()), bs)
+	return nil
+}
+
+func (st *State) Count() int {
+	count := 0
+	st.IterateAccounts(func(validator *account.Account) (stop bool) {
+		count++
+		return false
+	})
+	return count
+}
+
+func (st *State) IterateAccounts(consumer func(*account.Account) (stop bool)) (stopped bool, err error) {
+	stopped = st.tree.IterateRange(accountsStart, accountsEnd, true, func(key, bs []byte) bool {
+		acc, err := account.AccountFromBytes(bs)
+		if err != nil {
+			return true
+		}
+		return consumer(acc)
+	})
+	return
+}
+
+// ---------
+// VALIDATOR
+
+func (st *State) GetValidator(addr crypto.Address) *validator.Validator {
+	st.Lock()
+	defer st.Unlock()
+
+	_, bytes := st.tree.Get(validatorKey(addr))
+	if bytes == nil {
+		return nil
+	}
+	val, err := validator.ValidatorFromBytes(bytes)
+	if err != nil {
+		panic("Unable to decode encoded validator")
+	}
+
+	return val
+}
+
+func (st *State) UpdateValidator(val *validator.Validator) error {
+	st.Lock()
+	defer st.Unlock()
+
+	bs, err := val.Encode()
+	if err != nil {
+		return err
+	}
+
+	st.tree.Set(accountKey(val.Address()), bs)
+
+	return nil
+}
+
+func (st *State) ValidatorCount() int {
+	count := 0
+	st.IterateValidators(func(val *validator.Validator) (stop bool) {
+		count++
+		return false
+	})
+	return count
+}
+
+func (st *State) IterateValidators(consumer func(*validator.Validator) (stop bool)) (stopped bool, err error) {
+	return st.tree.IterateRange(validatorStart, validatorEnd, true, func(key []byte, bs []byte) (stop bool) {
+		validator, err := validator.ValidatorFromBytes(bs)
+		if err != nil {
+			return true
+		}
+		return consumer(validator)
+	}), nil
 }

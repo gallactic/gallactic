@@ -51,7 +51,7 @@ var nameFromType = map[Type]string{
 }
 
 var typeFromName = make(map[string]Type)
-var vc = amino.NewCodec()
+var cdc = amino.NewCodec()
 
 func init() {
 	for t, n := range nameFromType {

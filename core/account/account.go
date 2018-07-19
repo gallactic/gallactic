@@ -42,16 +42,11 @@ func NewAccountFromSecret(secret string) *Account {
 
 func AccountFromBytes(bs []byte) (*Account, error) {
 	var acc Account
-	if err := acc.UnmarshalJSON(bs); err != nil {
+	if err := acc.Decode(bs); err != nil {
 		return nil, err
 	}
-	/*
-		if err := acc.Decode(bs); err != nil {
-			return nil, err
-		}
-	*/
-	return &acc, nil
 
+	return &acc, nil
 }
 
 func (acc Account) Address() crypto.Address  { return acc.data.Address }
@@ -99,7 +94,6 @@ func (acc *Account) SetPermissions(perm Permissions) (error, Permissions) {
 }
 
 func (acc *Account) UnsetPermissions(perm Permissions) (error, Permissions) {
-
 	acc.data.Permissions.Unset(perm)
 	return nil, acc.Permissions()
 }
@@ -108,19 +102,16 @@ func (acc *Account) UnsetPermissions(perm Permissions) (error, Permissions) {
 var ac = amino.NewCodec()
 
 func (acc Account) Encode() ([]byte, error) {
-	//return ac.MarshalBinary(acc.data)
-	return acc.MarshalJSON()
+	return ac.MarshalBinary(&acc.data)
 }
 
 func (acc *Account) Decode(bs []byte) error {
-	/*
-		err := ac.UnmarshalBinary(bs, &acc.data)
-		if err != nil {
-			return err
-		}
-		return nil
-	*/
-	return acc.UnmarshalJSON(bs)
+	err := ac.UnmarshalBinary(bs, &acc.data)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
 
 func (acc Account) MarshalJSON() ([]byte, error) {

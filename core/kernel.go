@@ -40,10 +40,10 @@ const (
 // Kernel is the root structure of Gallactic
 type Kernel struct {
 	// Expose these public-facing interfaces to allow programmatic extension of the Kernel by other projects
-	State          *state.State
-	Blockchain     *blockchain.Blockchain
-	Logger         *logging.Logger
-	Launchers      []process.Launcher
+	st             *state.State
+	bc             *blockchain.Blockchain
+	logger         *logging.Logger
+	launchers      []process.Launcher
 	processes      map[string]process.Process
 	shutdownNotify chan struct{}
 	shutdownOnce   sync.Once
@@ -57,8 +57,8 @@ func NewKernel(ctx context.Context, gen *genesis.Genesis, conf *config.Config, p
 	if conf == nil {
 		return nil, fmt.Errorf("no Config defined, cannot make Kernel")
 	}
-	if !conf.Validator.Address.IsValid() {
-		return nil, fmt.Errorf("Not a valid address provided for validator, cannot make Kernel")
+	if err := conf.Validator.Address.EnsureValid(); err != nil {
+		return nil, fmt.Errorf("Not a valid address provided for validator, cannot make Kernel: %v", err)
 	}
 	logger, err := lifecycle.NewLoggerFromLoggingConfig(&conf.Logging)
 	if err != nil {
@@ -87,8 +87,8 @@ func NewKernel(ctx context.Context, gen *genesis.Genesis, conf *config.Config, p
 	privValidator := tmv.NewPrivValidatorMemory(signer)
 
 	txCodec := txs.NewAminoCodec()
-	checker := execution.NewBatchChecker(bc.State(), logger)
-	committer := execution.NewBatchCommitter(bc.State(), logger)
+	checker := execution.NewBatchChecker(bc, logger)
+	committer := execution.NewBatchCommitter(bc, logger)
 
 	tmNode, err := tendermint.NewNode(tmConfig, privValidator, tmGenesisDoc, bc, checker, committer, txCodec,
 		tmLogger)
@@ -162,9 +162,9 @@ func NewKernel(ctx context.Context, gen *genesis.Genesis, conf *config.Config, p
 	}
 
 	return &Kernel{
-		Launchers:      launchers,
-		Blockchain:     bc,
-		Logger:         logger,
+		launchers:      launchers,
+		bc:             bc,
+		logger:         logger,
 		processes:      make(map[string]process.Process),
 		shutdownNotify: make(chan struct{}),
 	}, nil
@@ -172,7 +172,7 @@ func NewKernel(ctx context.Context, gen *genesis.Genesis, conf *config.Config, p
 
 // Boot the kernel starting Tendermint and RPC layers
 func (kern *Kernel) Boot() error {
-	for _, launcher := range kern.Launchers {
+	for _, launcher := range kern.launchers {
 		if launcher.Enabled {
 			srvr, err := launcher.Launch()
 			if err != nil {
@@ -199,7 +199,7 @@ func (kern *Kernel) supervise() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	sig := <-signals
-	kern.Logger.InfoMsg(fmt.Sprintf("Caught %v signal so shutting down", sig),
+	kern.logger.InfoMsg(fmt.Sprintf("Caught %v signal so shutting down", sig),
 		"signal", sig.String())
 	kern.Shutdown(context.Background())
 }
@@ -207,14 +207,14 @@ func (kern *Kernel) supervise() {
 // Stop the kernel allowing for a graceful shutdown of components in order
 func (kern *Kernel) Shutdown(ctx context.Context) (err error) {
 	kern.shutdownOnce.Do(func() {
-		logger := kern.Logger.WithScope("Shutdown")
+		logger := kern.logger.WithScope("Shutdown")
 		logger.InfoMsg("Attempting graceful shutdown...")
 		logger.InfoMsg("Shutting down servers")
 		ctx, cancel := context.WithTimeout(ctx, serverShutdownTimeoutMilliseconds*time.Millisecond)
 		defer cancel()
 		// Shutdown servers in reverse order to boot
-		for i := len(kern.Launchers) - 1; i >= 0; i-- {
-			name := kern.Launchers[i].Name
+		for i := len(kern.launchers) - 1; i >= 0; i-- {
+			name := kern.launchers[i].Name
 			srvr, ok := kern.processes[name]
 			if ok {
 				logger.InfoMsg("Shutting down server", "server_name", name)
@@ -230,8 +230,8 @@ func (kern *Kernel) Shutdown(ctx context.Context) (err error) {
 			}
 		}
 		logger.InfoMsg("Shutdown complete")
-		structure.Sync(kern.Logger.Info)
-		structure.Sync(kern.Logger.Trace)
+		structure.Sync(kern.logger.Info)
+		structure.Sync(kern.logger.Trace)
 		// We don't want to wait for them, but yielding for a cooldown Let other goroutines flush
 		// potentially interesting final output (e.g. log messages)
 		time.Sleep(time.Millisecond * cooldownMilliseconds)

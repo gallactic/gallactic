@@ -44,10 +44,6 @@ func (pv *privateValidator) PublicKey() crypto.PublicKey {
 	return pv.privateKey.PublicKey()
 }
 
-func (pv *privateValidator) PrivateKey() crypto.PrivateKey {
-	return pv.privateKey
-}
-
 func (pv *privateValidator) Sign(msg []byte) (crypto.Signature, error) {
 	return pv.privateKey.Sign(msg)
 }

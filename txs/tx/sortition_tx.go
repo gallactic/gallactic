@@ -42,17 +42,15 @@ func (tx *SortitionTx) Outputs() []TxOutput {
 	return nil
 }
 
-// serialization methods
-func (tx *SortitionTx) Encode() ([]byte, error) {
-	return vc.MarshalBinary(tx.data)
+/// ----------
+/// MARSHALING
+
+func (tx *SortitionTx) MarshalAmino() ([]byte, error) {
+	return cdc.MarshalBinary(tx.data)
 }
 
-func (tx *SortitionTx) Decode(bs []byte) error {
-	err := vc.UnmarshalBinary(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+func (tx *SortitionTx) UnmarshalAmino(bs []byte) error {
+	return cdc.UnmarshalBinary(bs, &tx.data)
 }
 
 func (tx SortitionTx) MarshalJSON() ([]byte, error) {

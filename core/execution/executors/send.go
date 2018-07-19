@@ -70,11 +70,11 @@ func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {
 		return err
 	}
 
-	/*
-		for _, obj := range objs {
-			ctx.State.UpdateObj(obj)
-		}
-	*/
+	/// Update account
+	for _, obj := range objs {
+		acc, _ := obj.(*account.Account)
+		ctx.State.UpdateAccount(acc)
+	}
 
 	return nil
 }

@@ -88,9 +88,9 @@ func adjustInputs(objs map[crypto.Address]state.StateObj, ins []tx.TxInput) erro
 	return nil
 }
 
-func adjustOutputs(bojs map[crypto.Address]state.StateObj, outs []tx.TxOutput) error {
+func adjustOutputs(objs map[crypto.Address]state.StateObj, outs []tx.TxOutput) error {
 	for _, out := range outs {
-		obj := bojs[out.Address]
+		obj := objs[out.Address]
 		if obj == nil {
 			return e.Error(e.ErrTxInvalidAddress)
 		}
@@ -103,6 +103,15 @@ func adjustOutputs(bojs map[crypto.Address]state.StateObj, outs []tx.TxOutput) e
 	return nil
 }
 
+/*
+func updateCache(c *state.Cache, objs map[crypto.Address]state.StateObj, outs []tx.TxOutput) error {
+	for _, out := range outs {
+		obj := objs[out.Address]
+		c.UpdateObj(obj)
+	}
+	return nil
+}
+*/
 // HasPermissions ensures that an account has required permissions
 func HasPermissions(st *state.State, acc *account.Account, perm account.Permissions) bool {
 	if !permission.EnsureValid(perm) {

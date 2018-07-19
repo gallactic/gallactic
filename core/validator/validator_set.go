@@ -1,4 +1,4 @@
-package state
+package validator
 
 import (
 	"bytes"
@@ -6,14 +6,11 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 	tmRPCTypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
-
-var stateKey = []byte("ValidatorSet")
 
 const maximumTendermintNode = 90
 const minimumTendermintNode = 6
@@ -35,15 +32,15 @@ func (vlp _validatorListProxy) validators(height int64) (*tmRPCTypes.ResultValid
 type ValidatorSet struct {
 	data    validatorSetData
 	proxy   validatorListProxy
-	leavers []*validator.Validator /// TODO: change to map
+	leavers []*Validator /// TODO: change to map
 }
 
 type validatorSetData struct {
-	MaximumPower int                    `json:"maximumPower"`
-	Validators   []*validator.Validator `json:"validators"`
+	MaximumPower int          `json:"maximumPower"`
+	Validators   []*Validator `json:"validators"`
 }
 
-func NewValidatorSet(validators []*validator.Validator) *ValidatorSet {
+func NewValidatorSet(validators []*Validator) *ValidatorSet {
 	set := &ValidatorSet{
 		data: validatorSetData{
 			Validators:   validators,
@@ -90,10 +87,10 @@ func (set *ValidatorSet) AdjustPower(height int64) error {
 	}
 
 	/// copy of validator set in round m
-	var vals1 []*validator.Validator
+	var vals1 []*Validator
 	var vals2 []*tmTypes.Validator
 
-	vals1 = make([]*validator.Validator, len(set.data.Validators))
+	vals1 = make([]*Validator, len(set.data.Validators))
 	copy(vals1, set.data.Validators)
 	sort.SliceStable(vals1, func(i, j int) bool {
 		return bytes.Compare(vals1[i].Address().RawBytes(), vals1[j].Address().RawBytes()) < 0
@@ -175,15 +172,15 @@ func (set *ValidatorSet) AdjustPower(height int64) error {
 	return nil
 }
 
-func (set *ValidatorSet) Validators() []*validator.Validator {
+func (set *ValidatorSet) Validators() []*Validator {
 	return set.data.Validators
 }
 
-func (set *ValidatorSet) Leavers() []*validator.Validator {
+func (set *ValidatorSet) Leavers() []*Validator {
 	return set.leavers
 }
 
-func (set *ValidatorSet) Join(val *validator.Validator) error {
+func (set *ValidatorSet) Join(val *Validator) error {
 	if true == set.Contains(val.Address()) {
 		return fmt.Errorf("This validator currently is in the set: %v", val.Address())
 	}
@@ -193,7 +190,7 @@ func (set *ValidatorSet) Join(val *validator.Validator) error {
 	return nil
 }
 
-func (set *ValidatorSet) ForceLeave(val *validator.Validator) error {
+func (set *ValidatorSet) ForceLeave(val *Validator) error {
 	if false == set.Contains(val.Address()) {
 		return fmt.Errorf("This validator currently is not in the set: %v", val.Address())
 	}

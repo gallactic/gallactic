@@ -14,7 +14,7 @@ const (
 	accountAddress   uint16 = 0xEC12 // ac...
 	validatorAddress uint16 = 0x2A1E //
 	contractAddress  uint16 = 0x3414
-	globalAddress    uint16 = 0x4A16
+	globalAddress    uint16 = 0x4C16
 )
 
 type Address struct {
@@ -26,38 +26,40 @@ type addressData struct {
 }
 
 // checksum: first four bytes of sha256^2
-func checksum(input []byte) (cksum [4]byte) {
+func checksum(input []byte) (chksum [4]byte) {
 	h := sha256.Sum256(input)
 	h2 := sha256.Sum256(h[:])
-	copy(cksum[:], h2[:4])
+	copy(chksum[:], h2[:4])
 	return
 }
 
 /// ------------
 /// CONSTRUCTORS
 
-func AddressFromString(s string) (Address, error) {
+func AddressFromString(text string) (Address, error) {
 	var addr Address
-	bs, err := base58.Decode(s)
-	if err != nil {
-		return addr, err
-	}
-
-	return AddressFromRawByes(bs)
-}
-
-func AddressFromRawByes(bs []byte) (Address, error) {
-	var addr Address
-
-	copy(addr.data.Address[:], bs[:])
-	if err := addr.check(); err != nil {
+	if err := addr.UnmarshalText([]byte(text)); err != nil {
 		return Address{}, err
 	}
 
 	return addr, nil
 }
 
-/// this is private constructor
+func AddressFromRawByes(bs []byte) (Address, error) {
+	var addr Address
+	if err := addr.UnmarshalAmino(bs); err != nil {
+		return Address{}, err
+	}
+
+	return addr, nil
+}
+
+func AddressFromWord256(w binary.Word256) (Address, error) {
+	bs := w.Bytes()[6:]
+	return AddressFromRawByes(bs)
+}
+
+/// this is a private constructor
 func addressFromHash(hash []byte, ver uint16) (Address, error) {
 	var addr Address
 	if len(hash) != 20 {
@@ -71,23 +73,69 @@ func addressFromHash(hash []byte, ver uint16) (Address, error) {
 	bs = append(bs, chksum[:]...)
 
 	copy(addr.data.Address[:], bs[:])
-	if err := addr.check(); err != nil {
+	if err := addr.EnsureValid(); err != nil {
 		return Address{}, err
 	}
 
 	return addr, nil
 }
 
-func AddressFromWord256(w binary.Word256) (Address, error) {
-	bs := w.Bytes()[6:]
-	return AddressFromRawByes(bs)
+/// -------
+/// CASTING
+
+func (addr Address) RawBytes() []byte {
+	return addr.data.Address[:]
 }
 
-func (addr *Address) check() error {
+func (addr Address) String() string {
+	return base58.Encode(addr.data.Address[:])
+}
+
+func (addr Address) Word256() binary.Word256 {
+	return binary.LeftPadWord256(addr.data.Address[:])
+}
+
+/// ----------
+/// MARSHALING
+
+func (addr Address) MarshalAmino() ([]byte, error) {
+	return addr.data.Address[:], nil
+}
+
+func (addr *Address) UnmarshalAmino(bs []byte) error {
+	if len(bs) != 26 {
+		return e.Errorf(e.ErrInvalidAddress, "Address raw bytes should be 26 bytes, but it is %v bytes", len(bs))
+	}
+
+	copy(addr.data.Address[:], bs[:])
+	if err := addr.EnsureValid(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (addr Address) MarshalText() ([]byte, error) {
+	return []byte(addr.String()), nil
+}
+
+func (addr *Address) UnmarshalText(text []byte) error {
+	bs, err := base58.Decode(string(text))
+	if err != nil {
+		return err
+	}
+
+	return addr.UnmarshalAmino(bs)
+}
+
+/// -------
+/// METHODS
+
+func (addr *Address) EnsureValid() error {
 	bs := addr.RawBytes()
-	chksum1 := bs[22:26]
+	chksum1 := addr.checksum()
 	chksum2 := checksum(bs[0:22])
-	if !bytes.Equal(chksum1, chksum2[:]) {
+	if chksum1 != chksum2 {
 		return e.Errorf(e.ErrInvalidAddress, "Checksum doesn't match. It should be %v but it is %v", chksum1, chksum2)
 	}
 
@@ -100,52 +148,33 @@ func (addr *Address) check() error {
 	return nil
 }
 
-/// -------
-/// CASTING
-
-func (addr Address) Word256() binary.Word256 {
-	return binary.LeftPadWord256(addr.data.Address[:])
-}
-
-func (addr Address) RawBytes() []byte {
-	return addr.data.Address[:]
-}
-
-func (addr Address) String() string {
-	return base58.Encode(addr.data.Address[:])
-}
-
-/// ----------
-/// MARSHALING
-
-func (addr Address) MarshalText() ([]byte, error) {
-	return []byte(addr.String()), nil
-}
-
-func (addr *Address) UnmarshalText(bs []byte) error {
-	str := string(bs)
-	a, err := AddressFromString(str)
-	if err != nil {
-		return err
+func (addr Address) Verify(pb PublicKey) bool {
+	if addr.IsAccountAddress() {
+		return pb.AccountAddress().EqualsTo(addr)
+	} else if addr.IsValidatorAddress() {
+		return pb.ValidatorAddress().EqualsTo(addr)
 	}
 
-	*addr = a
-	return nil
+	return false
 }
 
-/// ----------
-/// ATTRIBUTES
+func (addr Address) version() uint16 {
+	bs := addr.RawBytes()
+	return (uint16(bs[1])<<8 | uint16(bs[0]))
+}
 
-func (addr *Address) IsValid() bool {
-	return addr.check() == nil
+func (addr Address) checksum() (chksum [4]byte) {
+	bs := addr.RawBytes()
+	copy(chksum[:], bs[22:26])
+	return
 }
 
 func (addr *Address) IsValidatorAddress() bool {
-	return false
+	return addr.version() == validatorAddress
 }
 
 func (addr *Address) IsAccountAddress() bool {
-	return false
+	return addr.version() == accountAddress
 }
 
 func (addr Address) EqualsTo(right Address) bool {

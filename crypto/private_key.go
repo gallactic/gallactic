@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"io"
 
 	"github.com/gallactic/gallactic/errors"
@@ -23,14 +22,18 @@ type privateKeyData struct {
 /// ------------
 /// CONSTRUCTORS
 
-func PrivateKeyFromRawBytes(bs []byte) (PrivateKey, error) {
-	pv := PrivateKey{
-		data: privateKeyData{
-			PrivateKey: bs,
-		},
+func PrivateKeyFromString(text string) (PrivateKey, error) {
+	var pv PrivateKey
+	if err := pv.UnmarshalText([]byte(text)); err != nil {
+		return PrivateKey{}, err
 	}
 
-	if err := pv.check(); err != nil {
+	return pv, nil
+}
+
+func PrivateKeyFromRawBytes(bs []byte) (PrivateKey, error) {
+	var pv PrivateKey
+	if err := pv.UnmarshalAmino(bs); err != nil {
 		return PrivateKey{}, err
 	}
 
@@ -40,24 +43,64 @@ func PrivateKeyFromRawBytes(bs []byte) (PrivateKey, error) {
 func PrivateKeyFromSecret(secret string) PrivateKey {
 	hasher := sha256.New()
 	hasher.Write(([]byte)(secret))
-	// No error from a buffer
-	privateKey, _ := GeneratePrivateKey(bytes.NewBuffer(hasher.Sum(nil)))
-	return privateKey
+
+	return GeneratePrivateKey(bytes.NewBuffer(hasher.Sum(nil)))
 }
 
-func GeneratePrivateKey(random io.Reader) (PrivateKey, error) {
+func GeneratePrivateKey(random io.Reader) PrivateKey {
 	if random == nil {
 		random = rand.Reader
 	}
-	_, privKey, err := ed25519.GenerateKey(random)
-	if err != nil {
-		return PrivateKey{}, err
-	}
-
-	return PrivateKeyFromRawBytes(privKey)
+	// No error from a buffer
+	_, privKey, _ := ed25519.GenerateKey(random)
+	pv, _ := PrivateKeyFromRawBytes(privKey)
+	return pv
 }
 
-func (pv PrivateKey) check() error {
+/// -------
+/// CASTING
+
+func (pv PrivateKey) RawBytes() []byte {
+	return pv.data.PrivateKey
+}
+
+func (pv PrivateKey) String() string {
+	return hex.EncodeToString(pv.RawBytes())
+}
+
+/// ----------
+/// MARSHALING
+
+func (pv PrivateKey) MarshalAmino() ([]byte, error) {
+	return pv.data.PrivateKey, nil
+}
+
+func (pv *PrivateKey) UnmarshalAmino(bs []byte) error {
+	pv.data.PrivateKey = bs
+	if err := pv.EnsureValid(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (pv PrivateKey) MarshalText() ([]byte, error) {
+	return []byte(pv.String()), nil
+}
+
+func (pv *PrivateKey) UnmarshalText(text []byte) error {
+	bs, err := hex.DecodeString(string(text))
+	if err != nil {
+		return err
+	}
+
+	return pv.UnmarshalAmino(bs)
+}
+
+/// -------
+/// METHODS
+
+func (pv *PrivateKey) EnsureValid() error {
 	bs := pv.RawBytes()
 	if len(bs) != ed25519.PrivateKeySize {
 		return e.Errorf(e.ErrInvalidPrivateKey, "PrivateKey should be %v bytes but it is %v bytes", ed25519.PrivateKeySize, len(bs))
@@ -71,47 +114,6 @@ func (pv PrivateKey) check() error {
 	}
 	return nil
 }
-
-/// -------
-/// CASTING
-
-func (pv *PrivateKey) IsValid() bool {
-	return pv.check() == nil
-}
-
-func (pv PrivateKey) RawBytes() []byte {
-	return pv.data.PrivateKey
-}
-
-func (pv PrivateKey) String() string {
-	return hex.EncodeToString(pv.RawBytes())
-}
-
-/// ----------
-/// MARSHALING
-
-func (pv PrivateKey) MarshalText() ([]byte, error) {
-	return json.Marshal(pv.data)
-}
-
-func (pv *PrivateKey) UnmarshalText(bs []byte) error {
-	str := string(bs)
-	bs, err := hex.DecodeString(str)
-	if err != nil {
-		return err
-	}
-
-	p, err := PrivateKeyFromRawBytes(bs)
-	if err != nil {
-		return err
-	}
-
-	*pv = p
-	return nil
-}
-
-/// ----------
-/// ATTRIBUTES
 
 func (pv PrivateKey) Sign(msg []byte) (Signature, error) {
 	privKey := ed25519.PrivateKey(pv.data.PrivateKey)

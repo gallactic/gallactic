@@ -45,17 +45,15 @@ func (tx *UnbondTx) Outputs() []TxOutput {
 	return []TxOutput{tx.data.To}
 }
 
-// serialization methods
-func (tx *UnbondTx) Encode() ([]byte, error) {
-	return vc.MarshalBinary(tx.data)
+/// ----------
+/// MARSHALING
+
+func (tx *UnbondTx) MarshalAmino() ([]byte, error) {
+	return cdc.MarshalBinary(tx.data)
 }
 
-func (tx *UnbondTx) Decode(bs []byte) error {
-	err := vc.UnmarshalBinary(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+func (tx *UnbondTx) UnmarshalAmino(bs []byte) error {
+	return cdc.UnmarshalBinary(bs, &tx.data)
 }
 
 func (tx UnbondTx) MarshalJSON() ([]byte, error) {

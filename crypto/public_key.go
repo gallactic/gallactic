@@ -3,7 +3,7 @@ package crypto
 import (
 	"encoding/hex"
 
-	"github.com/mr-tron/base58/base58"
+	"github.com/gallactic/gallactic/errors"
 	tmCrypto "github.com/tendermint/tendermint/crypto"
 	"golang.org/x/crypto/ed25519"
 )
@@ -20,33 +20,23 @@ type publicKeyData struct {
 /// ------------
 /// CONSTRUCTORS
 
-func PublicKeyFromString(s string) (PublicKey, error) {
+func PublicKeyFromString(text string) (PublicKey, error) {
 	var pb PublicKey
-	bs, err := base58.Decode(s)
-	if err != nil {
-		return pb, err
-	}
-
-	return PublicKeyFromRawBytes(bs)
-}
-
-// PublicKeyFromRawBytes reads the raw bytes and returns an ed25519 public key.
-func PublicKeyFromRawBytes(bs []byte) (PublicKey, error) {
-	pb := PublicKey{
-		data: publicKeyData{
-			PublicKey: bs,
-		},
-	}
-
-	if err := pb.check(); err != nil {
+	if err := pb.UnmarshalText([]byte(text)); err != nil {
 		return PublicKey{}, err
 	}
 
 	return pb, nil
 }
 
-func (pb *PublicKey) check() error {
-	return nil
+// PublicKeyFromRawBytes reads the raw bytes and returns an ed25519 public key.
+func PublicKeyFromRawBytes(bs []byte) (PublicKey, error) {
+	var pb PublicKey
+	if err := pb.UnmarshalAmino(bs); err != nil {
+		return PublicKey{}, err
+	}
+
+	return pb, nil
 }
 
 /// -------
@@ -56,6 +46,10 @@ func (pb PublicKey) RawBytes() []byte {
 	return pb.data.PublicKey[:]
 }
 
+func (pb PublicKey) String() string {
+	return hex.EncodeToString(pb.RawBytes())
+}
+
 // TMPubKey returns the tendermint PubKey.
 func (pb PublicKey) TMPubKey() tmCrypto.PubKey {
 	pk := tmCrypto.PubKeyEd25519{}
@@ -63,40 +57,44 @@ func (pb PublicKey) TMPubKey() tmCrypto.PubKey {
 	return pk
 }
 
-func (pb PublicKey) String() string {
-	return hex.EncodeToString(pb.RawBytes())
-}
-
 /// ----------
 /// MARSHALING
 
-func (pb PublicKey) MarshalText() ([]byte, error) {
-	str := pb.String()
-	return []byte(str), nil
+func (pb PublicKey) MarshalAmino() ([]byte, error) {
+	return pb.data.PublicKey, nil
 }
 
-func (pb *PublicKey) UnmarshalText(bs []byte) error {
-	str := string(bs)
-
-	bs, err := hex.DecodeString(str)
-	if err != nil {
+func (pb *PublicKey) UnmarshalAmino(bs []byte) error {
+	pb.data.PublicKey = bs
+	if err := pb.EnsureValid(); err != nil {
 		return err
 	}
 
-	p, err := PublicKeyFromRawBytes(bs)
-	if err != nil {
-		return err
-	}
-
-	*pb = p
 	return nil
+}
+
+func (pb PublicKey) MarshalText() ([]byte, error) {
+	return []byte(pb.String()), nil
+}
+
+func (pb *PublicKey) UnmarshalText(text []byte) error {
+	bs, err := hex.DecodeString(string(text))
+	if err != nil {
+		return err
+	}
+
+	return pb.UnmarshalAmino(bs)
 }
 
 /// ----------
 /// ATTRIBUTES
 
-func (pb *PublicKey) IsValid() bool {
-	return pb.check() == nil
+func (pb *PublicKey) EnsureValid() error {
+	bs := pb.RawBytes()
+	if len(bs) != ed25519.PublicKeySize {
+		return e.Errorf(e.ErrInvalidPublicKey, "PublicKey should be %v bytes but it is %v bytes", ed25519.PublicKeySize, len(bs))
+	}
+	return nil
 }
 
 func (pb PublicKey) Verify(msg []byte, signature Signature) bool {
