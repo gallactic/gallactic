@@ -60,17 +60,15 @@ func (tx *CallTx) CreatesContract() bool {
 	return false
 }
 
-// serialization methods
-func (tx *CallTx) Encode() ([]byte, error) {
-	return vc.MarshalBinary(tx.data)
+/// ----------
+/// MARSHALING
+
+func (tx CallTx) MarshalAmino() ([]byte, error) {
+	return cdc.MarshalBinary(tx.data)
 }
 
-func (tx *CallTx) Decode(bs []byte) error {
-	err := vc.UnmarshalBinary(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+func (tx *CallTx) UnmarshalAmino(bs []byte) error {
+	return cdc.UnmarshalBinary(bs, &tx.data)
 }
 
 func (tx CallTx) MarshalJSON() ([]byte, error) {

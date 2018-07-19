@@ -43,7 +43,7 @@ type wrapper struct {
 	Signatories []Signatory     `json:"signatories,omitempty"`
 }
 
-func NewEnvelop(chainId string, tx tx.Tx) *Envelope {
+func Enclose(chainId string, tx tx.Tx) *Envelope {
 	return &Envelope{
 		ChainID: chainId,
 		Tx:      tx,
@@ -79,7 +79,8 @@ func (env *Envelope) UnmarshalJSON(data []byte) error {
 }
 
 // SignBytes produces the canonical SignBytes for a Tx
-func (env *Envelope) SignBytes() ([]byte, error) {
+func (env Envelope) SignBytes() ([]byte, error) {
+	env.Signatories = nil
 	bs, err := json.Marshal(env)
 	if err != nil {
 		return nil, fmt.Errorf("could not generate canonical SignBytes for tx %v: %v", env, err)
@@ -128,14 +129,13 @@ func (env *Envelope) Verify() error {
 	}
 	// Expect order to match (we could build lookup but we want Verify to be quicker than Sign which does order sigs)
 	for i, s := range env.Signatories {
-		/// TODO
-		if inputs[i].Address != s.PublicKey.AccountAddress() {
-			return e.Errorf(e.ErrInvalidSignature, "signatory %v has address %v but input %v has address %v",
-				i, s.PublicKey.AccountAddress(), i, inputs[i].Address)
+		if !inputs[i].Address.Verify(s.PublicKey) {
+			return e.Errorf(e.ErrInvalidSignature, "%s: address %v can not be verified",
+				errPrefix, inputs[i].Address)
 		}
 
 		if !s.PublicKey.Verify(signBytes, s.Signature) {
-			return e.Errorf(e.ErrInvalidSignature, "invalid signature in signatory %v ", s.PublicKey.AccountAddress())
+			return e.Errorf(e.ErrInvalidSignature, "%s: invalid signature in signatory %v ", errPrefix, inputs[i].Address)
 		}
 	}
 
@@ -151,6 +151,7 @@ func (env *Envelope) Sign(signers ...crypto.Signer) error {
 	if err != nil {
 		return e.ErrorE(e.ErrInvalidSignature, err)
 	}
+
 	signerMap := make(map[crypto.Address]crypto.Signer)
 	for _, signer := range signers {
 		signerMap[signer.Address()] = signer

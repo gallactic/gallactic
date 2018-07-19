@@ -14,18 +14,18 @@ var (
 )
 
 const (
-	addToPool       = iota /// Bonding transaction
-	removeFromPool         /// Unbonding transaction
-	addToSet               /// Sortition transaction
-	updateValidator        /// No transaction for this state change, but it is deterministic and enforce by the protocol
+	addToPool       = 0 /// Bonding transaction
+	removeFromPool  = 1 /// Unbonding transaction
+	addToSet        = 2 /// Sortition transaction
+	updateValidator = 3 /// No transaction for this state change, but it is deterministic and enforce by the protocol
 )
 
 type Cache struct {
 	sync.Mutex
-	name             string
-	state            *State
-	validatorChanges map[crypto.Address]*validatorInfo
-	accountChanges   map[crypto.Address]*accountInfo
+	name       string
+	st         *State
+	valChanges map[crypto.Address]*validatorInfo
+	accChanges map[crypto.Address]*accountInfo
 }
 
 type validatorInfo struct {
@@ -34,17 +34,16 @@ type validatorInfo struct {
 }
 
 type accountInfo struct {
-	status int
-	acc    *account.Account
+	acc *account.Account
 }
 
 type CacheOption func(*Cache)
 
-func NewCache(state *State, options ...CacheOption) *Cache {
+func NewCache(st *State, options ...CacheOption) *Cache {
 	cache := &Cache{
-		state:            state,
-		validatorChanges: make(map[crypto.Address]*validatorInfo),
-		accountChanges:   make(map[crypto.Address]*accountInfo),
+		st:         st,
+		valChanges: make(map[crypto.Address]*validatorInfo),
+		accChanges: make(map[crypto.Address]*accountInfo),
 	}
 	for _, option := range options {
 		option(cache)
@@ -60,12 +59,12 @@ func Name(name string) CacheOption {
 }
 
 func (c *Cache) Reset() {
-	for a := range c.accountChanges {
-		delete(c.accountChanges, a)
+	for a := range c.accChanges {
+		delete(c.accChanges, a)
 	}
 
-	for v := range c.validatorChanges {
-		delete(c.validatorChanges, v)
+	for v := range c.valChanges {
+		delete(c.valChanges, v)
 	}
 }
 
@@ -73,8 +72,13 @@ func (c *Cache) Reset() {
 func (c *Cache) Flush() error {
 	c.Lock()
 	defer c.Unlock()
+	for _, i := range c.accChanges {
+		if err := c.st.UpdateAccount(i.acc); err != nil {
+			return err
+		}
+	}
 	/*
-		for _, valInfo := range c.validatorChanges {
+		for _, valInfo := range c.valChanges {
 			switch valInfo.status {
 			case addToSet:
 				if err := pool.set.Join(valInfo.validator); err != nil {
@@ -106,6 +110,27 @@ func (c *Cache) Flush() error {
 		pool.clear()
 	*/
 	return nil
+}
+
+func (c *Cache) GetAccount(addr crypto.Address) *account.Account {
+	c.Lock()
+	defer c.Unlock()
+
+	i, ok := c.accChanges[addr]
+	if ok {
+		return i.acc
+	}
+
+	return c.st.GetAccount(addr)
+}
+
+func (c *Cache) UpdateAccount(acc *account.Account) error {
+	c.Lock()
+	defer c.Unlock()
+
+	c.accChanges[acc.Address()] = &accountInfo{acc: acc}
+	return nil
+
 }
 
 func (c *Cache) GetValidator(addr crypto.Address) *validator.Validator {

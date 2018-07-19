@@ -45,17 +45,15 @@ func (tx *SendTx) AddReceiver(addr crypto.Address, amt uint64) {
 	})
 }
 
-// serialization methods
-func (tx *SendTx) Encode() ([]byte, error) {
-	return vc.MarshalBinary(tx.data)
+/// ----------
+/// MARSHALING
+
+func (tx SendTx) MarshalAmino() ([]byte, error) {
+	return cdc.MarshalBinary(tx.data)
 }
 
-func (tx *SendTx) Decode(bs []byte) error {
-	err := vc.UnmarshalBinary(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+func (tx *SendTx) UnmarshalAmino(bs []byte) error {
+	return cdc.UnmarshalBinary(bs, &tx.data)
 }
 
 func (tx SendTx) MarshalJSON() ([]byte, error) {

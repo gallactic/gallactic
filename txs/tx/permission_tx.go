@@ -51,17 +51,15 @@ func (tx *PermissionsTx) Outputs() []TxOutput {
 	return []TxOutput{tx.data.Modified}
 }
 
-// serialization methods
-func (tx *PermissionsTx) Encode() ([]byte, error) {
-	return vc.MarshalBinary(tx.data)
+/// ----------
+/// MARSHALING
+
+func (tx *PermissionsTx) MarshalAmino() ([]byte, error) {
+	return cdc.MarshalBinary(tx.data)
 }
 
-func (tx *PermissionsTx) Decode(bs []byte) error {
-	err := vc.UnmarshalBinary(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+func (tx *PermissionsTx) UnmarshalAmino(bs []byte) error {
+	return cdc.UnmarshalBinary(bs, &tx.data)
 }
 
 func (tx PermissionsTx) MarshalJSON() ([]byte, error) {
