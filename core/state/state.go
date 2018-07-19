@@ -77,6 +77,7 @@ func NewState(db dbm.DB, logger *logging.Logger) *State {
 	st := &State{
 		db:     db,
 		vTree:  vTree,
+		tree:   vTree.Tree(),
 		logger: logger,
 	}
 
