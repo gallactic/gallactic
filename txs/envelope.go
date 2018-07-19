@@ -25,9 +25,10 @@ type Decoder interface {
 
 // Envelope contains both the signable Tx and the signatures for each input (in signatories)
 type Envelope struct {
-	ChainID     string
-	Tx          tx.Tx
-	Signatories []Signatory
+	ChainID     string      `json:"chainId"`
+	Type        tx.Type     `json:"type"`
+	Tx          tx.Tx       `json:"tx"`
+	Signatories []Signatory `json:"signatories,omitempty"`
 }
 
 // Signatory contains signature and PublicKey to identify the signer
@@ -46,6 +47,7 @@ type wrapper struct {
 func Enclose(chainId string, tx tx.Tx) *Envelope {
 	return &Envelope{
 		ChainID: chainId,
+		Type:    tx.Type(),
 		Tx:      tx,
 	}
 }
@@ -59,7 +61,7 @@ func (env *Envelope) MarshalJSON() ([]byte, error) {
 	w := wrapper{
 		ChainID:     env.ChainID,
 		Signatories: env.Signatories,
-		Type:        env.Tx.Type(),
+		Type:        env.Type,
 		Tx:          bs,
 	}
 	return json.Marshal(w)
@@ -72,6 +74,7 @@ func (env *Envelope) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	env.ChainID = w.ChainID
+	env.Type = w.Type
 	env.Signatories = w.Signatories
 	// Now we know the Type we can deserialise tx
 	env.Tx = tx.New(w.Type)
@@ -97,13 +100,6 @@ func (env *Envelope) Hash() []byte {
 	hasher.Write(bytes)
 	hash := hasher.Sum(nil)
 	return hash
-}
-
-func (env *Envelope) Type() tx.Type {
-	if env == nil {
-		return tx.TypeUnknown
-	}
-	return env.Tx.Type()
 }
 
 func (env *Envelope) String() string {
