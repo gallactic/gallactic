@@ -37,7 +37,7 @@ func TestListUnconfirmedTxs(t *testing.T) {
 	callTx, err := tx.NewCallTx(caller, callee, 1, nil, 1, 100, 12)
 	fmt.Println("CallTx :\n", callTx)
 
-	result := &GetUnconfirmedTxsOutput{
+	result := &UnconfirmedTxsOutput{
 		Count: 1,
 		Txs: []*txs.Envelope{
 			txs.Enclose("testChain", callTx),
@@ -52,14 +52,14 @@ func TestListUnconfirmedTxs(t *testing.T) {
 
 func TestResultListAccounts(t *testing.T) {
 	acc := account.NewAccountFromSecret("This is sercret!")
-	result := GetAccountsOutput{
+	result := AccountsOutput{
 		Accounts:    []*account.Account{acc},
 		BlockHeight: 2,
 	}
 
 	jsonResult, err := json.Marshal(result)
 	require.NoError(t, err)
-	resultOut := new(GetAccountsOutput)
+	resultOut := new(AccountsOutput)
 	json.Unmarshal(jsonResult, resultOut)
 	jsonResultOut, err := json.Marshal(resultOut)
 	require.NoError(t, err)
