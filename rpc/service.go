@@ -19,6 +19,7 @@ import (
 
 	"encoding/json"
 	"fmt"
+	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
@@ -29,7 +30,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
-	tm_types "github.com/tendermint/tendermint/types"
+	tmTypes "github.com/tendermint/tendermint/types"
 	"time"
 )
 
@@ -73,7 +74,7 @@ func (s *Service) BlockchainInfo() *blockchain.Blockchain {
 	return s.blockchain
 }
 
-func (s *Service) ListUnconfirmedTxs(maxTxs int) (*ResultListUnconfirmedTxs, error) {
+func (s *Service) ListUnconfirmedTxs(maxTxs int) (*UnconfirmedTxsOutput, error) {
 	// Get all transactions for now
 	transactions, err := s.nodeView.MempoolTransactions(maxTxs)
 	if err != nil {
@@ -83,16 +84,34 @@ func (s *Service) ListUnconfirmedTxs(maxTxs int) (*ResultListUnconfirmedTxs, err
 	for i, tx := range transactions {
 		wrappedTxs[i] = tx
 	}
-	return &ResultListUnconfirmedTxs{
-		NumTxs: len(transactions),
-		Txs:    wrappedTxs,
+	return &UnconfirmedTxsOutput{
+		Count: len(transactions),
+		Txs:   wrappedTxs,
 	}, nil
 }
-
-func (s *Service) Status() (*ResultStatus, error) {
+func (s *Service) ListBlockTxs(height uint64) (*BlockTxsOutput, error) {
+	result, err := s.GetBlock(height)
+	if err != nil {
+		return nil, err
+	}
+	txsBuff := result.Block.Txs
+	txList := make([]txs.Envelope, len(txsBuff))
+	for i, txBuff := range txsBuff {
+		tx, err := txs.NewAminoCodec().DecodeTx(txBuff)
+		if err != nil {
+			return nil, err
+		}
+		txList[i] = *tx
+	}
+	return &BlockTxsOutput{
+		Count: len(txsBuff),
+		Txs:   txList,
+	}, nil
+}
+func (s *Service) Status() (*StatusOutput, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
 	var (
-		latestBlockMeta *tm_types.BlockMeta
+		latestBlockMeta *tmTypes.BlockMeta
 		latestBlockHash []byte
 		latestBlockTime int64
 	)
@@ -105,7 +124,7 @@ func (s *Service) Status() (*ResultStatus, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ResultStatus{
+	return &StatusOutput{
 		NodeInfo:          s.nodeView.NodeInfo(),
 		GenesisHash:       s.blockchain.GenesisHash(),
 		PubKey:            publicKey,
@@ -117,15 +136,15 @@ func (s *Service) Status() (*ResultStatus, error) {
 	}, nil
 }
 
-func (s *Service) ChainIdentifiers() (*ResultChainId, error) {
-	return &ResultChainId{
+func (s *Service) ChainIdentifiers() (*ChainIdOutput, error) {
+	return &ChainIdOutput{
 		ChainName:   s.blockchain.Genesis().ChainName(),
 		ChainId:     s.blockchain.ChainID(),
 		GenesisHash: s.blockchain.GenesisHash(),
 	}, nil
 }
 
-func (s *Service) Peers() (*ResultPeers, error) {
+func (s *Service) Peers() (*PeersOutput, error) {
 	peers := make([]*Peer, s.nodeView.Peers().Size())
 	for i, peer := range s.nodeView.Peers().List() {
 		peers[i] = &Peer{
@@ -133,12 +152,12 @@ func (s *Service) Peers() (*ResultPeers, error) {
 			IsOutbound: peer.IsOutbound(),
 		}
 	}
-	return &ResultPeers{
+	return &PeersOutput{
 		Peers: peers,
 	}, nil
 }
 
-func (s *Service) NetInfo() (*ResultNetInfo, error) {
+func (s *Service) NetInfo() (*NetInfoOutput, error) {
 	listening := s.nodeView.IsListening()
 	var listeners []string
 	for _, listener := range s.nodeView.Listeners() {
@@ -148,28 +167,28 @@ func (s *Service) NetInfo() (*ResultNetInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ResultNetInfo{
+	return &NetInfoOutput{
 		Listening: listening,
 		Listeners: listeners,
 		Peers:     peers.Peers,
 	}, nil
 }
 
-func (s *Service) Genesis() *ResultGenesis {
-	return &ResultGenesis{
+func (s *Service) Genesis() *GenesisOutput {
+	return &GenesisOutput{
 		Genesis: s.blockchain.Genesis(),
 	}
 }
 
-func (s *Service) GetAccount(address crypto.Address) (*ResultGetAccount, error) {
+func (s *Service) GetAccount(address crypto.Address) (*AccountOutput, error) {
 	acc := s.state.GetAccount(address)
 	if acc == nil {
 		return nil, nil //TODO we should return a proper error!
 	}
-	return &ResultGetAccount{Account: acc}, nil
+	return &AccountOutput{Account: acc}, nil
 }
 
-func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*ResultListAccounts, error) {
+func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*AccountsOutput, error) {
 	accounts := make([]*account.Account, 0)
 	s.state.IterateAccounts(func(acc *account.Account) (stop bool) {
 		if predicate(acc) {
@@ -178,24 +197,47 @@ func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*ResultLi
 		return
 	})
 
-	return &ResultListAccounts{
+	return &AccountsOutput{
 		BlockHeight: s.blockchain.LastBlockHeight(),
 		Accounts:    accounts,
 	}, nil
 }
 
-func (s *Service) GetStorage(address crypto.Address, key []byte) (*ResultGetStorage, error) {
-	//TODO Ahmad
-	return nil, nil
+func (s *Service) GetStorage(address crypto.Address, key []byte) (*StorageOutput, error) {
+	acc := s.state.GetAccount(address)
+	if acc == nil {
+		return nil, fmt.Errorf("UnknownAddress: %s", address)
+	}
+
+	value, err := s.state.GetStorage(address, binary.LeftPadWord256(key))
+	if err != nil {
+		return nil, err
+	}
+	if value == binary.Zero256 {
+		return &StorageOutput{Key: key, Value: nil}, nil
+	}
+	return &StorageOutput{Key: key, Value: value.UnpadLeft()}, nil
 }
 
-func (s *Service) DumpStorage(address crypto.Address) (*ResultDumpStorage, error) {
-	//TODO Ahmad
-	return nil, nil
+func (s *Service) DumpStorage(address crypto.Address) (*DumpstorageOutput, error) {
+	acc := s.state.GetAccount(address)
+	if acc == nil {
+		return nil, fmt.Errorf("UnknownAddress: %X", address)
+	}
+
+	var storageItems []StorageItem
+	s.state.IterateStorage(address, func(key, value binary.Word256) (stop bool) {
+		storageItems = append(storageItems, StorageItem{Key: key.UnpadLeft(), Value: value.UnpadLeft()})
+		return
+	})
+	return &DumpstorageOutput{
+		StorageRoot:  acc.StorageRoot(),
+		StorageItems: storageItems,
+	}, nil
 }
 
-func (s *Service) GetBlock(height uint64) (*ResultGetBlock, error) {
-	return &ResultGetBlock{
+func (s *Service) GetBlock(height uint64) (*BlockOutput, error) {
+	return &BlockOutput{
 		Block:     &Block{s.nodeView.BlockStore().LoadBlock(int64(height))},
 		BlockMeta: &BlockMeta{s.nodeView.BlockStore().LoadBlockMeta(int64(height))},
 	}, nil
@@ -206,7 +248,7 @@ func (s *Service) GetBlock(height uint64) (*ResultGetBlock, error) {
 // from the top of the range of blocks.
 // Passing 0 for maxHeight sets the upper height of the range to the current
 // blockchain height.
-func (s *Service) ListBlocks(minHeight, maxHeight uint64) (*ResultListBlocks, error) {
+func (s *Service) ListBlocks(minHeight, maxHeight uint64) (*BlocksOutput, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
 
 	if minHeight == 0 {
@@ -219,44 +261,44 @@ func (s *Service) ListBlocks(minHeight, maxHeight uint64) (*ResultListBlocks, er
 		minHeight = maxHeight - MaxBlockLookback
 	}
 
-	var blockMetas []*tm_types.BlockMeta
+	var blockMetas []*tmTypes.BlockMeta
 	for height := maxHeight; height >= minHeight; height-- {
 		blockMeta := s.nodeView.BlockStore().LoadBlockMeta(int64(height))
 		blockMetas = append(blockMetas, blockMeta)
 	}
 
-	return &ResultListBlocks{
+	return &BlocksOutput{
 		LastHeight: latestHeight,
 		BlockMetas: blockMetas,
 	}, nil
 }
 
-func (s *Service) ListValidators() (*ResultListValidators, error) {
+func (s *Service) ListValidators() (*ValidatorsOutput, error) {
 	validators := make([]*validator.Validator, 0)
 	s.blockchain.State().IterateValidators(func(val *validator.Validator) (stop bool) {
 		validators = append(validators, val)
 		return
 	})
-	return &ResultListValidators{
+	return &ValidatorsOutput{
 		BlockHeight:         s.blockchain.LastBlockHeight(),
 		BondedValidators:    validators,
 		UnbondingValidators: nil,
 	}, nil
 }
 
-func (s *Service) DumpConsensusState() (*ResultDumpConsensusState, error) {
+func (s *Service) DumpConsensusState() (*DumpConsensusStateOutput, error) {
 	peerRoundState, err := s.nodeView.PeerRoundStates()
 	if err != nil {
 		return nil, err
 	}
-	return &ResultDumpConsensusState{
+	return &DumpConsensusStateOutput{
 		RoundState:      s.nodeView.RoundState().RoundStateSimple(),
 		PeerRoundStates: peerRoundState,
 	}, nil
 }
 
-func (s *Service) LastBlockInfo(blockWithin string) (*ResultLastBlockInfo, error) {
-	res := &ResultLastBlockInfo{
+func (s *Service) LastBlockInfo(blockWithin string) (*LastBlockInfoOutput, error) {
+	res := &LastBlockInfoOutput{
 		LastBlockHeight: s.blockchain.LastBlockHeight(),
 		LastBlockHash:   s.blockchain.LastBlockHash(),
 		LastBlockTime:   s.blockchain.LastBlockTime(),

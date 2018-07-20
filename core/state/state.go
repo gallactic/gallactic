@@ -22,6 +22,7 @@ const (
 
 	// Prefix of keys in state tree
 	accountPrefix   = "a/"
+	storagePrefix   = "s/"
 	validatorPrefix = "i/"
 	eventPrefix     = "e/"
 )
@@ -29,6 +30,7 @@ const (
 var (
 	accountsStart, accountsEnd   []byte = prefixKeyRange(accountPrefix)
 	validatorStart, validatorEnd []byte = prefixKeyRange(validatorPrefix)
+	storageStart, storageEnd     []byte = prefixKeyRange(storagePrefix)
 )
 
 func prefixedKey(prefix string, suffices ...[]byte) []byte {
@@ -264,4 +266,37 @@ func (st *State) IterateValidators(consumer func(*validator.Validator) (stop boo
 		}
 		return consumer(validator)
 	}), nil
+}
+
+func (s *State) IterateStorage(address crypto.Address,
+	consumer func(key, value binary.Word256) (stop bool)) (stopped bool, err error) {
+	stopped = s.tree.IterateRange(storageStart, storageEnd, true, func(key []byte, value []byte) (stop bool) {
+		// Note: no left padding should occur unless there is a bug and non-words have been writte to this storage tree
+		if len(key) != binary.Word256Length {
+			err = fmt.Errorf("key '%X' stored for account %s is not a %v-byte word",
+				key, address, binary.Word256Length)
+			return true
+		}
+		if len(value) != binary.Word256Length {
+			err = fmt.Errorf("value '%X' stored for account %s is not a %v-byte word",
+				key, address, binary.Word256Length)
+			return true
+		}
+		return consumer(binary.LeftPadWord256(key), binary.LeftPadWord256(value))
+	})
+	return
+}
+
+func (s *State) GetStorage(address crypto.Address, key binary.Word256) (binary.Word256, error) {
+	_, value := s.tree.Get(prefixedKey(storagePrefix, address.RawBytes(), key.Bytes()))
+	return binary.LeftPadWord256(value), nil
+}
+
+func (s *State) SetStorage(address crypto.Address, key, value binary.Word256) error {
+	if value == binary.Zero256 {
+		s.tree.Remove(key.Bytes())
+	} else {
+		s.tree.Set(prefixedKey(storagePrefix, address.RawBytes(), key.Bytes()), value.Bytes())
+	}
+	return nil
 }

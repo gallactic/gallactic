@@ -6,13 +6,13 @@ import (
 )
 
 const (
-	GALLACTIC = "burrow."
+	GALLACTIC = "gallactic."
 
 	GET_ACCOUNTS        = GALLACTIC + "getAccounts"
 	GET_ACCOUNT         = GALLACTIC + "getAccount"
 	GET_STORAGE         = GALLACTIC + "getStorage"
 	GET_STORAGE_AT      = GALLACTIC + "getStorageAt"
-	GET_BLOCKCHAIN_INFO = GALLACTIC + "getBlockchainInfo"
+	GET_STATUS          = GALLACTIC + "getState"
 	GET_LATEST_BLOCK    = GALLACTIC + "getLatestBlock"
 	GET_BLOCKS          = GALLACTIC + "getBlocks"
 	GET_BLOCK           = GALLACTIC + "getBlock"
@@ -21,15 +21,17 @@ const (
 	GET_NETWORK_INFO    = GALLACTIC + "getNetworkInfo"
 	GET_CHAIN_ID        = GALLACTIC + "getChainId"
 	GET_PEERS           = GALLACTIC + "getPeers"
+	GET_GENESIS         = GALLACTIC + "getGenesis"
 	BROADCAST_TX        = GALLACTIC + "broadcastTx"
 	GET_UNCONFIRMED_TXS = GALLACTIC + "getUnconfirmedTxs"
+	GET_BLOCK_TXS       = GALLACTIC + "getBlockTxs"
 )
 
-func loadGallacticMethods(codec Codec, service *Service, rpcMethodMap map[string]RequestHandlerFunc) {
+func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[string]RequestHandlerFunc) {
 
 	accountFilterFactory := NewAccountFilterFactory()
 
-	rpcMethodMap[BROADCAST_TX] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+	rpcServiceMap[BROADCAST_TX] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 
 		txEnv := new(txs.Envelope)
 		err := codec.DecodeBytes(txEnv, request.Params)
@@ -43,15 +45,15 @@ func loadGallacticMethods(codec Codec, service *Service, rpcMethodMap map[string
 		return receipt, 0, nil
 	}
 
-	rpcMethodMap[GET_ACCOUNTS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		param := &FilterListParam{}
+	rpcServiceMap[GET_ACCOUNTS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &FilterListInput{}
 		if len(request.Params) > 0 {
-			err := codec.DecodeBytes(param, request.Params)
+			err := codec.DecodeBytes(input, request.Params)
 			if err != nil {
 				return nil, INVALID_PARAMS, err
 			}
 		}
-		filter, err := accountFilterFactory.NewFilter(param.Filters)
+		filter, err := accountFilterFactory.NewFilter(input.Filters)
 		if err != nil {
 			return nil, INVALID_PARAMS, err
 		}
@@ -65,138 +67,156 @@ func loadGallacticMethods(codec Codec, service *Service, rpcMethodMap map[string
 		return list, 0, nil
 	}
 
-	rpcMethodMap[GET_ACCOUNT] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		param := &AddressParam{}
-		err := codec.DecodeBytes(param, request.Params)
+	rpcServiceMap[GET_ACCOUNT] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &AddressInput{}
+		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
 			return nil, INVALID_PARAMS, err
 		}
 
-		acc, err := service.GetAccount(param.Address)
+		acc, err := service.GetAccount(input.Address)
 		if acc == nil || err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
 		return acc, 0, nil
 	}
 
-	rpcMethodMap[GET_STORAGE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		param := &AddressParam{}
-		err := codec.DecodeBytes(param, request.Params)
+	rpcServiceMap[GET_STORAGE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &AddressInput{}
+		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
 			return nil, INVALID_PARAMS, err
 		}
-		storage, err := service.DumpStorage(param.Address)
+		storage, err := service.DumpStorage(input.Address)
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
 		return storage, 0, nil
 	}
 
-	rpcMethodMap[GET_STORAGE_AT] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		param := &StorageAtParam{}
-		err := codec.DecodeBytes(param, request.Params)
+	rpcServiceMap[GET_STORAGE_AT] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &StorageAtInput{}
+		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
 			return nil, INVALID_PARAMS, err
 		}
 
-		storageItem, err := service.GetStorage(param.Address, param.Key)
+		storageItem, err := service.GetStorage(input.Address, input.Key)
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
 		return storageItem, 0, nil
 	}
 
-	rpcMethodMap[GET_BLOCKCHAIN_INFO] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		resultStatus, err := service.Status()
+	rpcServiceMap[GET_STATUS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		status, err := service.Status()
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
-		return resultStatus, 0, nil
+		return status, 0, nil
 	}
 
-	rpcMethodMap[GET_LATEST_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		stat, err := service.Status()
+	rpcServiceMap[GET_LATEST_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		status, err := service.Status()
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
-		resultGetBlock, err := service.GetBlock(stat.LatestBlockHeight)
+		resultGetBlock, err := service.GetBlock(status.LatestBlockHeight)
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
 		return resultGetBlock, 0, nil
 	}
 
-	rpcMethodMap[GET_BLOCKS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		param := &BlocksParam{}
-		err := codec.DecodeBytes(param, request.Params)
+	rpcServiceMap[GET_BLOCKS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &BlocksInput{}
+		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
 			return nil, INVALID_PARAMS, err
 		}
-		blocks, err := service.ListBlocks(param.MinHeight, param.MaxHeight)
+		blocks, err := service.ListBlocks(input.MinHeight, input.MaxHeight)
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
 		return blocks, 0, err
 	}
 
-	rpcMethodMap[GET_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		param := &HeightParam{}
-		err := codec.DecodeBytes(param, request.Params)
+	rpcServiceMap[GET_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &BlockInput{}
+		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
 			return nil, INVALID_PARAMS, err
 		}
-		block, err := service.GetBlock(param.Height)
+		block, err := service.GetBlock(input.Height)
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
 		return block, 0, nil
 	}
 
-	rpcMethodMap[GET_UNCONFIRMED_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		trans, err := service.ListUnconfirmedTxs(-1)
+	rpcServiceMap[GET_UNCONFIRMED_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		transactions, err := service.ListUnconfirmedTxs(-1)
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
-		return trans, 0, nil
+		return transactions, 0, nil
 	}
 
-	rpcMethodMap[GET_CONSENSUS_STATE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		resultDumpConsensusState, err := service.DumpConsensusState()
+	rpcServiceMap[GET_BLOCK_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &BlockInput{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, INVALID_PARAMS, err
+		}
+		transactions, err := service.ListBlockTxs(input.Height)
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
-		return resultDumpConsensusState, 0, nil
+		return transactions, 0, nil
 	}
 
-	rpcMethodMap[GET_VALIDATORS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		resultListValidators, err := service.ListValidators()
+	rpcServiceMap[GET_CONSENSUS_STATE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		consensusState, err := service.DumpConsensusState()
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
-		return resultListValidators, 0, nil
+		return consensusState, 0, nil
 	}
 
-	rpcMethodMap[GET_NETWORK_INFO] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		resultNetInfo, err := service.NetInfo()
+	rpcServiceMap[GET_VALIDATORS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		validators, err := service.ListValidators()
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
-		return resultNetInfo, 0, nil
+		return validators, 0, nil
 	}
 
-	rpcMethodMap[GET_CHAIN_ID] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		resultChainID, err := service.ChainIdentifiers()
+	rpcServiceMap[GET_NETWORK_INFO] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		info, err := service.NetInfo()
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
-		return resultChainID, 0, nil
+		return info, 0, nil
 	}
 
-	rpcMethodMap[GET_PEERS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		resultPeers, err := service.Peers()
+	rpcServiceMap[GET_CHAIN_ID] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		chainId, err := service.ChainIdentifiers()
 		if err != nil {
 			return nil, INTERNAL_ERROR, err
 		}
-		return resultPeers, 0, nil
+		return chainId, 0, nil
+	}
+
+	rpcServiceMap[GET_PEERS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		peers, err := service.Peers()
+		if err != nil {
+			return nil, INTERNAL_ERROR, err
+		}
+		return peers, 0, nil
+	}
+
+	rpcServiceMap[GET_GENESIS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		genesis := service.Genesis()
+		return genesis, 0, nil
 	}
 }

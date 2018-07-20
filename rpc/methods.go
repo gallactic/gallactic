@@ -5,9 +5,9 @@ type RequestHandlerFunc func(request *RPCRequest, requester interface{}) (interf
 
 func GetMethods(codec Codec, service *Service) map[string]RequestHandlerFunc {
 
-	rpcMap := make(map[string]RequestHandlerFunc)
-	loadGallacticMethods(codec, service, rpcMap)
+	rpcServiceMap := make(map[string]RequestHandlerFunc)
+	loadGallacticMethods(codec, service, rpcServiceMap)
 
-	return rpcMap
+	return rpcServiceMap
 
 }

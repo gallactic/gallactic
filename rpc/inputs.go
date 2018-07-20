@@ -1,37 +1,34 @@
 package rpc
 
 import (
-	"github.com/gallactic/gallactic/binary"
+	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/crypto"
 )
 
 type (
-	// Used to send an address. The address should be hex and properly formatted.
-
-	AddressParam struct {
+	AddressInput struct {
 		Address crypto.Address `json:"address"`
 	}
 
-	// Used to send an address
-	FilterListParam struct {
+	FilterListInput struct {
 		Filters []*FilterData `json:"filters"`
 	}
 
-	StorageAtParam struct {
+	StorageAtInput struct {
 		Address crypto.Address  `json:"address"`
 		Key     binary.HexBytes `json:"key"`
 	}
 
-	HeightParam struct {
+	BlockInput struct {
 		Height uint64 `json:"height"`
 	}
 
-	BlocksParam struct {
+	BlocksInput struct {
 		MinHeight uint64 `json:"minHeight"`
 		MaxHeight uint64 `json:"maxHeight"`
 	}
 
-	PeerParam struct {
+	PeersInput struct {
 		Address crypto.Address `json:"address"`
 	}
 )
