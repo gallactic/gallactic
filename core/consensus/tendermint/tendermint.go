@@ -12,12 +12,12 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
+	tmCrypto "github.com/tendermint/go-crypto"
 	tmConfig "github.com/tendermint/tendermint/config"
-	tmCrypto "github.com/tendermint/tendermint/crypto"
-	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/node"
 	"github.com/tendermint/tendermint/proxy"
 	tmTypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tmlibs/db"
 )
 
 // Node serves as a wrapper around the Tendermint node's closeable resources (database connections)
@@ -66,7 +66,6 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 			return gen, nil
 		},
 		n.DBProvider,
-		nil,
 		tmLogger)
 
 	if err != nil {

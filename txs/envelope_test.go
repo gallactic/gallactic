@@ -1,6 +1,7 @@
 package txs
 
 import (
+	"encoding/json"
 	"fmt"
 	"runtime/debug"
 	"testing"
@@ -55,7 +56,7 @@ func testMarshaling(t *testing.T, tx tx.Tx, signer crypto.Signer) {
 	err = env1.Sign(signer)
 	require.NoError(t, err)
 	sb, _ := env1.SignBytes()
-	js, _ := env1.MarshalJSON()
+	js, _ := json.Marshal(env1)
 	fmt.Println("Sign bytes: " + string(sb))
 	fmt.Println("Tx JSON: " + string(js))
 

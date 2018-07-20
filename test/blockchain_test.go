@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gallactic/gallactic/core/blockchain"
-	dbm "github.com/tendermint/tendermint/libs/db"
+	dbm "github.com/tendermint/tmlibs/db"
 )
 
 func setupBlockchain(m *testing.M) {

@@ -64,6 +64,14 @@ func AddressFromWord256(w binary.Word256) (Address, error) {
 	return AddressFromRawBytes(bs)
 }
 
+func ContractAddress(bs []byte) (Address, error) {
+	return addressFromHash(bs, contractAddress)
+}
+
+func AccountAddress(bs []byte) (Address, error) {
+	return addressFromHash(bs, accountAddress)
+}
+
 /// this is a private constructor
 func addressFromHash(hash []byte, ver uint16) (Address, error) {
 	if len(hash) != 20 {

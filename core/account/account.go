@@ -60,6 +60,11 @@ func (acc Account) HasPermissions(perm Permissions) bool {
 	return acc.data.Permissions.IsSet(perm)
 }
 
+func (acc *Account) SetBalance(bal uint64) error {
+	acc.data.Balance = bal
+	return nil
+}
+
 func (acc *Account) SubtractFromBalance(amt uint64) error {
 	if amt > acc.Balance() {
 		return e.Errorf(e.ErrInsufficientFunds, "Attempt to subtract %v from the balance of %s", amt, acc.Address())
@@ -76,6 +81,10 @@ func (acc *Account) AddToBalance(amt uint64) error {
 func (acc *Account) SetCode(code []byte) error {
 	acc.data.Code = code
 	return nil
+}
+
+func (acc *Account) SetSequence(seq uint64) {
+	acc.data.Sequence = seq
 }
 
 func (acc *Account) IncSequence() {

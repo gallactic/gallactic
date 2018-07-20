@@ -8,7 +8,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/tendermint/tendermint/consensus"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
-	tm_crypto "github.com/tendermint/tendermint/crypto"
+	tm_crypto "github.com/tendermint/go-crypto"
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/state"
 	"github.com/tendermint/tendermint/types"

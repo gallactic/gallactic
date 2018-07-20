@@ -3,7 +3,7 @@ package validator
 import (
 	"github.com/gallactic/gallactic/crypto"
 
-	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmCrypto "github.com/tendermint/go-crypto"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 

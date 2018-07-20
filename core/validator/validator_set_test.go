@@ -5,7 +5,7 @@ import (
 
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
-	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmCrypto "github.com/tendermint/go-crypto"
 	tmRPCTypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )

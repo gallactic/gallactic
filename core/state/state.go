@@ -11,7 +11,7 @@ import (
 	"github.com/gallactic/gallactic/errors"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/tendermint/iavl"
-	dbm "github.com/tendermint/tendermint/libs/db"
+	dbm "github.com/tendermint/tmlibs/db"
 )
 
 const (

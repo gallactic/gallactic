@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 
 	"github.com/gallactic/gallactic/errors"
-	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmCrypto "github.com/tendermint/go-crypto"
 	"golang.org/x/crypto/ed25519"
 )
 

@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	tmCrypto "github.com/tendermint/tendermint/crypto"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmCrypto "github.com/tendermint/go-crypto"
 	tmTypes "github.com/tendermint/tendermint/types"
+	cmn "github.com/tendermint/tmlibs/common"
 )
 
 // TODO: type ?

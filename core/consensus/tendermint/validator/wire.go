@@ -2,7 +2,7 @@ package validator
 
 import (
 	"github.com/tendermint/go-amino"
-	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmCrypto "github.com/tendermint/go-crypto"
 )
 
 var cdc = amino.NewCodec()

@@ -28,7 +28,7 @@ import (
 	"github.com/hyperledger/burrow/logging/structure"
 
 	kitlog "github.com/go-kit/kit/log"
-	dbm "github.com/tendermint/tendermint/libs/db"
+	dbm "github.com/tendermint/tmlibs/db"
 )
 
 const (

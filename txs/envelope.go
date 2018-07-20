@@ -37,13 +37,6 @@ type Signatory struct {
 	Signature crypto.Signature `json:"signature"`
 }
 
-type wrapper struct {
-	ChainID     string          `json:"chainId"`
-	Type        tx.Type         `json:"type"`
-	Tx          json.RawMessage `json:"tx"`
-	Signatories []Signatory     `json:"signatories,omitempty"`
-}
-
 func Enclose(chainId string, tx tx.Tx) *Envelope {
 	return &Envelope{
 		ChainID: chainId,
@@ -52,23 +45,15 @@ func Enclose(chainId string, tx tx.Tx) *Envelope {
 	}
 }
 
-func (env *Envelope) MarshalJSON() ([]byte, error) {
-	bs, err := json.Marshal(env.Tx)
-	if err != nil {
-		return nil, err
-	}
-
-	w := wrapper{
-		ChainID:     env.ChainID,
-		Signatories: env.Signatories,
-		Type:        env.Type,
-		Tx:          bs,
-	}
-	return json.Marshal(w)
-}
-
 func (env *Envelope) UnmarshalJSON(data []byte) error {
-	w := new(wrapper)
+	type _envelope struct {
+		ChainID     string          `json:"chainId"`
+		Type        tx.Type         `json:"type"`
+		Tx          json.RawMessage `json:"tx"`
+		Signatories []Signatory     `json:"signatories,omitempty"`
+	}
+
+	w := new(_envelope)
 	err := json.Unmarshal(data, w)
 	if err != nil {
 		return err

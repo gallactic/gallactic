@@ -3,11 +3,12 @@ package execution
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/gallactic/gallactic/core/consensus/tendermint/codes"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	abciTypes "github.com/tendermint/abci/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 

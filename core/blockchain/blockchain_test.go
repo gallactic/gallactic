@@ -12,7 +12,7 @@ import (
 	"github.com/hyperledger/burrow/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tendermint/libs/db"
+	dbm "github.com/tendermint/tmlibs/db"
 )
 
 func TestPersistedState(t *testing.T) {

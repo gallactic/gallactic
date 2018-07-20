@@ -10,7 +10,7 @@ import (
 	"github.com/gallactic/gallactic/core/genesis"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/hyperledger/burrow/logging"
-	dbm "github.com/tendermint/tendermint/libs/db"
+	dbm "github.com/tendermint/tmlibs/db"
 )
 
 var chainID string

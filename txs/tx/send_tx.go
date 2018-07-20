@@ -10,8 +10,8 @@ type SendTx struct {
 	data sendData
 }
 type sendData struct {
-	Senders   []TxInput  `json:"sender"`
-	Receivers []TxOutput `json:"receiver"`
+	Senders   []TxInput  `json:"senders"`
+	Receivers []TxOutput `json:"receivers"`
 }
 
 func EmptySendTx() (*SendTx, error) {
