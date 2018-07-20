@@ -148,8 +148,6 @@ func (st *State) setVersion(hash []byte, version int64) {
 }
 
 func (st *State) GetObj(addr crypto.Address) StateObj {
-	st.Lock()
-	defer st.Unlock()
 
 	if addr.IsAccountAddress() {
 		return st.GetAccount(addr)
@@ -164,9 +162,6 @@ func (st *State) GetObj(addr crypto.Address) StateObj {
 // ACCOUNT
 
 func (st *State) GlobalAccount() *account.Account {
-	st.Lock()
-	defer st.Unlock()
-
 	return st.GetAccount(crypto.GlobalAddress)
 }
 
