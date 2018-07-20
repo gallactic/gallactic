@@ -13,8 +13,8 @@ type Key struct {
 
 type keyData struct {
 	Address    crypto.Address
-	PublicKey  types.PublicKey
-	PrivateKey types.PrivateKey
+	PublicKey  crypto.PublicKey
+	PrivateKey crypto.PrivateKey
 }
 
 // DecryptKeyFile returns an instance of Key object
@@ -28,7 +28,7 @@ func DecryptKeyFile(file, passphrase string) (*Key, error) {
 	if err != nil {
 		return nil, err
 	}
-	privKey, _ := types.PrivateKeyFromBytes(pv)
+	privKey, _ := crypto.PrivateKeyFromRawBytes(pv)
 
 	return &Key{
 		data: keyData{
@@ -43,10 +43,10 @@ func (k *Key) Address() crypto.Address {
 	return k.data.Address
 }
 
-func (k *Key) PublicKey() types.PublicKey {
+func (k *Key) PublicKey() crypto.PublicKey {
 	return k.data.PublicKey
 }
 
-func (k *Key) PrivateKey() types.PrivateKey {
+func (k *Key) PrivateKey() crypto.PrivateKey {
 	return k.data.PrivateKey
 }

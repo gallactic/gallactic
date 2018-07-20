@@ -21,18 +21,23 @@ type publicKeyData struct {
 /// CONSTRUCTORS
 
 func PublicKeyFromString(text string) (PublicKey, error) {
-	var pb PublicKey
-	if err := pb.UnmarshalText([]byte(text)); err != nil {
-		return PublicKey{}, err
+	bs, err := hex.DecodeString(text)
+	if err != nil {
+		return PublicKey{}, e.Errorf(e.ErrInvalidPublicKey, "%v", err.Error())
 	}
 
-	return pb, nil
+	return PublicKeyFromRawBytes(bs)
 }
 
 // PublicKeyFromRawBytes reads the raw bytes and returns an ed25519 public key.
 func PublicKeyFromRawBytes(bs []byte) (PublicKey, error) {
-	var pb PublicKey
-	if err := pb.UnmarshalAmino(bs); err != nil {
+	pb := PublicKey{
+		data: publicKeyData{
+			PublicKey: bs,
+		},
+	}
+
+	if err := pb.EnsureValid(); err != nil {
 		return PublicKey{}, err
 	}
 
@@ -61,15 +66,16 @@ func (pb PublicKey) TMPubKey() tmCrypto.PubKey {
 /// MARSHALING
 
 func (pb PublicKey) MarshalAmino() ([]byte, error) {
-	return pb.data.PublicKey, nil
+	return pb.RawBytes(), nil
 }
 
 func (pb *PublicKey) UnmarshalAmino(bs []byte) error {
-	pb.data.PublicKey = bs
-	if err := pb.EnsureValid(); err != nil {
+	p, err := PublicKeyFromRawBytes(bs)
+	if err != nil {
 		return err
 	}
 
+	*pb = p
 	return nil
 }
 
@@ -78,12 +84,13 @@ func (pb PublicKey) MarshalText() ([]byte, error) {
 }
 
 func (pb *PublicKey) UnmarshalText(text []byte) error {
-	bs, err := hex.DecodeString(string(text))
+	p, err := PublicKeyFromString(string(text))
 	if err != nil {
 		return err
 	}
 
-	return pb.UnmarshalAmino(bs)
+	*pb = p
+	return nil
 }
 
 /// ----------
@@ -92,13 +99,13 @@ func (pb *PublicKey) UnmarshalText(text []byte) error {
 func (pb *PublicKey) EnsureValid() error {
 	bs := pb.RawBytes()
 	if len(bs) != ed25519.PublicKeySize {
-		return e.Errorf(e.ErrInvalidPublicKey, "PublicKey should be %v bytes but it is %v bytes", ed25519.PublicKeySize, len(bs))
+		return e.Errorf(e.ErrInvalidPublicKey, "Public key should be %v bytes but it is %v bytes", ed25519.PublicKeySize, len(bs))
 	}
 	return nil
 }
 
 func (pb PublicKey) Verify(msg []byte, signature Signature) bool {
-	return ed25519.Verify(pb.data.PublicKey, msg, signature.RawBytes())
+	return ed25519.Verify(pb.RawBytes(), msg, signature.RawBytes())
 }
 
 func (pb PublicKey) AccountAddress() Address {

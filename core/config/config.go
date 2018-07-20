@@ -11,18 +11,18 @@ import (
 )
 
 type Config struct {
-	Validator  ValidatorConfig              `toml:"validator"`
-	Tendermint TendermintConfig             `toml:"tendermint"`
-	RPC        rpcConfig.RPCConfig          `toml:"rpc"`
-	Logging    logging_config.LoggingConfig `toml:"logging,omitempty"`
+	Validator  *ValidatorConfig              `toml:"validator"`
+	Tendermint *TendermintConfig             `toml:"tendermint"`
+	RPC        *rpcConfig.RPCConfig          `toml:"rpc"`
+	Logging    *logging_config.LoggingConfig `toml:"logging,omitempty"`
 }
 
 func defaultConfig() *Config {
 	return &Config{
 		Validator:  DefaultValidatorConfig(),
 		Tendermint: DefaultTendermintConfig(),
-		RPC:        *rpcConfig.DefaultRPCConfig(),
-		Logging:    *logging_config.DefaultNodeLoggingConfig(),
+		RPC:        rpcConfig.DefaultRPCConfig(),
+		Logging:    logging_config.DefaultNodeLoggingConfig(),
 	}
 }
 

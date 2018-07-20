@@ -6,13 +6,14 @@ import (
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/hyperledger/burrow/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
 func loadState(t *testing.T, db dbm.DB, hash []byte) *State {
-	s, err := LoadState(db, hash)
+	s, err := LoadState(db, hash, logging.NewNoopLogger())
 	require.NoError(t, err)
 	require.NotNil(t, s)
 
@@ -28,26 +29,26 @@ func saveState(t *testing.T, state *State) []byte {
 	return hash
 }
 
-func updateAccount(t *testing.T, state *State, account *account.Account) {
-	err := state.AccountPool.UpdateAccount(account)
+func updateAccount(t *testing.T, state *State, acc *account.Account) {
+	err := state.UpdateAccount(acc)
 	require.NoError(t, err)
 }
 
 func getAccount(t *testing.T, state *State, addr crypto.Address) *account.Account {
-	account := state.AccountPool.GetAccount(address)
+	account := state.GetAccount(addr)
 	return account
 }
 
 func TestState_LoadingWrongHash(t *testing.T) {
 	db := dbm.NewMemDB()
-	s0, err := LoadState(db, []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0})
+	s0, err := LoadState(db, []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}, logging.NewNoopLogger())
 	require.Error(t, err)
 	require.Nil(t, s0)
 }
 
 func TestState_Loading(t *testing.T) {
 	db := dbm.NewMemDB()
-	state := NewState(db)
+	state := NewState(db, logging.NewNoopLogger())
 
 	foo := account.NewAccountFromSecret("Foo")
 	bar := account.NewAccountFromSecret("Bar")
@@ -87,7 +88,7 @@ func TestState_Loading(t *testing.T) {
 
 func TestState_Loading2(t *testing.T) {
 	db := dbm.NewMemDB()
-	state := NewState(db)
+	state := NewState(db, logging.NewNoopLogger())
 
 	foo := account.NewAccountFromSecret("Foo")
 	bar := account.NewAccountFromSecret("Bar")
@@ -119,7 +120,7 @@ func TestState_Loading2(t *testing.T) {
 }
 
 func TestState_UpdateAccount(t *testing.T) {
-	state := NewState(dbm.NewMemDB())
+	state := NewState(dbm.NewMemDB(), logging.NewNoopLogger())
 	foo1 := account.NewAccountFromSecret("Foo")
 
 	foo1.AddToBalance(1)
@@ -129,74 +130,3 @@ func TestState_UpdateAccount(t *testing.T) {
 	foo2 := getAccount(t, state, foo1.Address())
 	assert.Equal(t, foo1, foo2)
 }
-
-/*
-func TestState_Publish(t *testing.T) {
-	s := NewState(db.NewMemDB())
-	ctx := context.Background()
-	evs := []*events.Event{
-		mkEvent(100, 0),
-		mkEvent(100, 1),
-	}
-	_, err := s.Update(func(ws Updatable) error {
-		for _, ev := range evs {
-			require.NoError(t, ws.Publish(ctx, ev, nil))
-		}
-		return nil
-	})
-	require.NoError(t, err)
-	i := 0
-	_, err = s.GetEvents(events.NewKey(100, 0), events.NewKey(100, 0),
-		func(ev *events.Event) (stop bool) {
-			assert.Equal(t, evs[i], ev)
-			i++
-			return false
-		})
-	require.NoError(t, err)
-	// non-increasing events
-	_, err = s.Update(func(ws Updatable) error {
-		require.Error(t, ws.Publish(ctx, mkEvent(100, 0), nil))
-		require.Error(t, ws.Publish(ctx, mkEvent(100, 1), nil))
-		require.Error(t, ws.Publish(ctx, mkEvent(99, 1324234), nil))
-		require.NoError(t, ws.Publish(ctx, mkEvent(100, 2), nil))
-		require.NoError(t, ws.Publish(ctx, mkEvent(101, 0), nil))
-		return nil
-	})
-	require.NoError(t, err)
-}
-
-func TestProtobufEventSerialisation(t *testing.T) {
-	ev := mkEvent(112, 23)
-	pbEvent := pbevents.GetExecutionEvent(ev)
-	bs, err := proto.Marshal(pbEvent)
-	require.NoError(t, err)
-	pbEventOut := new(pbevents.ExecutionEvent)
-	require.NoError(t, proto.Unmarshal(bs, pbEventOut))
-	fmt.Println(pbEventOut)
-	assert.Equal(t, asJSON(t, pbEvent), asJSON(t, pbEventOut))
-}
-
-func mkEvent(height, index uint64) *events.Event {
-	return &events.Event{
-		Header: &events.Header{
-			Height:  height,
-			Index:   index,
-			TxHash:  sha3.Sha3([]byte(fmt.Sprintf("txhash%v%v", height, index))),
-			EventID: fmt.Sprintf("eventID: %v%v", height, index),
-		},
-		Tx: &events.EventDataTx{
-			Tx: txs.Enclose("foo", &payload.CallTx{}).Tx,
-		},
-		Log: &events.EventDataLog{
-			Address: crypto.Address{byte(height), byte(index)},
-			Topics:  []binary.Word256{{1, 2, 3}},
-		},
-	}
-}
-
-func asJSON(t *testing.T, v interface{}) string {
-	bs, err := json.Marshal(v)
-	require.NoError(t, err)
-	return string(bs)
-}
-*/

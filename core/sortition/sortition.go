@@ -1,10 +1,6 @@
 package sortition
 
-import (
-	"github.com/gallactic/gallactic/core/state"
-	"github.com/gallactic/gallactic/crypto"
-	"github.com/hyperledger/burrow/logging"
-)
+/*
 
 type Sortition interface {
 	Address() crypto.Address
@@ -17,12 +13,12 @@ type ITransactor interface {
 }
 
 type sortition struct {
-	signer        crypto.Signer
-	vrf           VRF
-	transactor    ITransactor
-	chainID       string
-	validatorPool state.ValidatorPool
-	logger        *logging.Logger
+	signer     crypto.Signer
+	vrf        VRF
+	transactor ITransactor
+	chainID    string
+
+	logger *logging.Logger
 }
 
 func NewSortition(signer crypto.Signer, chainID string, logger *logging.Logger) Sortition {
@@ -54,19 +50,19 @@ func (s *sortition) Evaluate(blockHeight uint64, prevBlockHash []byte) {
 	if index < valStake {
 
 		s.logger.InfoMsg("This validator is choosen to be in set at height %v", blockHeight)
-		/*
-				tx := txs.NewSortitionTx(
-					s.PublicKey(),
-					blockHeight,
-					index,
-					proof)
 
-				tx.Signature, _ = acm.ChainSign(s, s.chainID, tx)
+		tx := txs.NewSortitionTx(
+			s.PublicKey(),
+			blockHeight,
+			index,
+			proof)
 
-			if s.transactor != nil {
-				s.transactor.BroadcastTx(tx)
-			}
-		*/
+		tx.Signature, _ = acm.ChainSign(s, s.chainID, tx)
+
+		if s.transactor != nil {
+			s.transactor.BroadcastTx(tx)
+		}
+
 	}
 }
 
@@ -107,3 +103,4 @@ func (s *sortition) getTotalStake(addr crypto.Address) (totalStake uint64, valid
 
 	return
 }
+*/

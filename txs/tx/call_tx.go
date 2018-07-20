@@ -52,14 +52,6 @@ func (tx *CallTx) Outputs() []TxOutput {
 	return []TxOutput{tx.data.Callee}
 }
 
-func (tx *CallTx) CreatesContract() bool {
-	if tx.data.Callee.Address == crypto.GlobalAddress {
-		return true
-	}
-
-	return false
-}
-
 /// ----------
 /// MARSHALING
 

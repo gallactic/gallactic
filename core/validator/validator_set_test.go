@@ -34,6 +34,7 @@ func TestValidatorSet(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 7, vs.TotalPower())
 	assert.Equal(t, true, vs.Contains(val.Address()))
+	/// expecting an error, validator already exist in the set
 	err = vs.Join(val)
 	assert.Error(t, err)
 	vs.ForceLeave(val)

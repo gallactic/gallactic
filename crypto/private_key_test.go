@@ -8,10 +8,28 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMarshalingPrivateKey(t *testing.T) {
-	pv1, err := GeneratePrivateKey(nil)
-	assert.NoError(t, err)
+func TestMarshalingEmptyPrivateKey(t *testing.T) {
+	pv1 := PrivateKey{}
 
+	js, err := json.Marshal(pv1)
+	assert.NoError(t, err)
+	assert.Equal(t, js, []byte("\"\""))
+	var pv2 PrivateKey
+	err = json.Unmarshal(js, &pv2)
+	assert.Error(t, err)
+	assert.Equal(t, pv1, pv2)
+
+	bs, err := pv1.MarshalAmino()
+	assert.NoError(t, err)
+	assert.Equal(t, bs, []byte(nil))
+	var pv3 PrivateKey
+	err = json.Unmarshal(bs, &pv3)
+	assert.Error(t, err)
+	assert.Equal(t, pv1, pv3)
+}
+
+func TestMarshalingPrivateKey(t *testing.T) {
+	pv1 := GeneratePrivateKey(nil)
 	js, err := json.Marshal(&pv1)
 	assert.NoError(t, err)
 

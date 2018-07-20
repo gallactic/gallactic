@@ -17,18 +17,24 @@ type signatureData struct {
 
 /// ------------
 /// CONSTRUCTORS
+
 func SignatureFromString(text string) (Signature, error) {
-	var sig Signature
-	if err := sig.UnmarshalText([]byte(text)); err != nil {
-		return Signature{}, err
+	bs, err := hex.DecodeString(text)
+	if err != nil {
+		return Signature{}, e.Errorf(e.ErrInvalidSignature, "%v", err.Error())
 	}
 
-	return sig, nil
+	return SignatureFromRawBytes(bs)
 }
 
 func SignatureFromRawBytes(bs []byte) (Signature, error) {
-	var sig Signature
-	if err := sig.UnmarshalAmino(bs); err != nil {
+	sig := Signature{
+		data: signatureData{
+			Signature: bs,
+		},
+	}
+
+	if err := sig.EnsureValid(); err != nil {
 		return Signature{}, err
 	}
 
@@ -50,15 +56,16 @@ func (sig Signature) String() string {
 /// MARSHALING
 
 func (sig Signature) MarshalAmino() ([]byte, error) {
-	return sig.data.Signature, nil
+	return sig.RawBytes(), nil
 }
 
 func (sig *Signature) UnmarshalAmino(bs []byte) error {
-	sig.data.Signature = bs
-	if err := sig.EnsureValid(); err != nil {
+	s, err := SignatureFromRawBytes(bs)
+	if err != nil {
 		return err
 	}
 
+	*sig = s
 	return nil
 }
 
@@ -67,12 +74,13 @@ func (sig Signature) MarshalText() ([]byte, error) {
 }
 
 func (sig *Signature) UnmarshalText(text []byte) error {
-	bs, err := hex.DecodeString(string(text))
+	s, err := SignatureFromString(string(text))
 	if err != nil {
 		return err
 	}
 
-	return sig.UnmarshalAmino(bs)
+	*sig = s
+	return nil
 }
 
 /// ----------
@@ -80,7 +88,7 @@ func (sig *Signature) UnmarshalText(text []byte) error {
 
 func (sig *Signature) EnsureValid() error {
 	bs := sig.RawBytes()
-	if len(sig.data.Signature) != ed25519.SignatureSize {
+	if len(bs) != ed25519.SignatureSize {
 		return e.Errorf(e.ErrInvalidSignature, "Signature should be %v bytes but it is %v bytes", ed25519.SignatureSize, len(bs))
 	}
 
