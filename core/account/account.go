@@ -19,7 +19,6 @@ type accountData struct {
 	Sequence    uint64         `json:"sequence"`
 	Balance     uint64         `json:"balance"`
 	Code        []byte         `json:"code"`
-	StorageRoot []byte         `json:"storage"`
 	Permissions Permissions    `json:"permissions"`
 }
 
@@ -53,7 +52,6 @@ func (acc Account) Address() crypto.Address  { return acc.data.Address }
 func (acc Account) Balance() uint64          { return acc.data.Balance }
 func (acc Account) Sequence() uint64         { return acc.data.Sequence }
 func (acc Account) Code() []byte             { return acc.data.Code }
-func (acc Account) StorageRoot() []byte      { return acc.data.StorageRoot }
 func (acc Account) Permissions() Permissions { return acc.data.Permissions }
 
 func (acc Account) HasPermissions(perm Permissions) bool {
@@ -89,11 +87,6 @@ func (acc *Account) SetSequence(seq uint64) {
 
 func (acc *Account) IncSequence() {
 	acc.data.Sequence++
-}
-
-func (acc *Account) SetStorageRoot(storageRoot []byte) error {
-	acc.data.StorageRoot = storageRoot
-	return nil
 }
 
 func (acc *Account) SetPermissions(perm Permissions) (error, Permissions) {

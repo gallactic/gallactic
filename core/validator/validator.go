@@ -32,7 +32,7 @@ func NewValidator(publicKey crypto.PublicKey, stake, bondingHeight uint64) *Vali
 }
 
 func (val *Validator) Address() crypto.Address     { return val.data.PublicKey.ValidatorAddress() }
-func (val *Validator) Balance() uint64             { return val.data.Stake }
+func (val *Validator) Stake() uint64               { return val.data.Stake }
 func (val *Validator) Sequence() uint64            { return val.data.Sequence }
 func (val *Validator) PublicKey() crypto.PublicKey { return val.data.PublicKey }
 func (val *Validator) BondingHeight() uint64       { return val.data.BondingHeight }
@@ -46,15 +46,15 @@ func (val Validator) MinimumStakeToUnbond() uint64 {
 	//TODO:Mostafa
 	return 0
 }
-func (val *Validator) SubtractFromBalance(amt uint64) error {
-	if amt > val.Balance() {
+func (val *Validator) SubtractFromStake(amt uint64) error {
+	if amt > val.Stake() {
 		return e.Errorf(e.ErrInsufficientFunds, "Attempt to subtract %v from the balance of %s", amt, val.Address())
 	}
 	val.data.Stake -= amt
 	return nil
 }
 
-func (val *Validator) AddToBalance(amt uint64) error {
+func (val *Validator) AddToStake(amt uint64) error {
 	val.data.Stake += amt
 	return nil
 }

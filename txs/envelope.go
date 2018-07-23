@@ -99,7 +99,7 @@ func (env *Envelope) Verify() error {
 	}
 
 	errPrefix := fmt.Sprintf("could not verify transaction %X", env.Hash())
-	inputs := env.Tx.Inputs()
+	inputs := env.Tx.Signers()
 	if len(inputs) != len(env.Signatories) {
 		return e.Errorf(e.ErrInvalidSignature, "%s: number of inputs (= %v) should equal number of signatories (= %v)",
 			errPrefix, len(inputs), len(env.Signatories))
@@ -138,7 +138,7 @@ func (env *Envelope) Sign(signers ...crypto.Signer) error {
 		signerMap[signer.Address()] = signer
 	}
 	// Sign in order of inputs
-	for _, input := range env.Tx.Inputs() {
+	for _, input := range env.Tx.Signers() {
 		signer, ok := signerMap[input.Address]
 		if !ok {
 			return e.Errorf(e.ErrInvalidSignature, "Account to sign %v not passed to Sign", input)

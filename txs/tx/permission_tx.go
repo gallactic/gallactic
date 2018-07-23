@@ -37,19 +37,12 @@ func NewPermissionsTx(modifier, modified crypto.Address, perm account.Permission
 }
 
 func (tx *PermissionsTx) Type() Type                       { return TypePermissions }
+func (tx *PermissionsTx) Signers() []TxInput               { return []TxInput{tx.data.Modifier} }
 func (tx *PermissionsTx) Modifier() crypto.Address         { return tx.data.Modifier.Address }
 func (tx *PermissionsTx) Modified() crypto.Address         { return tx.data.Modified.Address }
 func (tx *PermissionsTx) Fee() uint64                      { return tx.data.Modifier.Amount }
 func (tx *PermissionsTx) Permissions() account.Permissions { return tx.data.Permissions }
 func (tx *PermissionsTx) Set() bool                        { return tx.data.Set }
-
-func (tx *PermissionsTx) Inputs() []TxInput {
-	return []TxInput{tx.data.Modifier}
-}
-
-func (tx *PermissionsTx) Outputs() []TxOutput {
-	return []TxOutput{tx.data.Modified}
-}
 
 /// ----------
 /// MARSHALING

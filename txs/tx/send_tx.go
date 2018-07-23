@@ -26,9 +26,10 @@ func NewSendTx(from, to crypto.Address, seq, amt, fee uint64) (*SendTx, error) {
 	return tx, nil
 }
 
-func (tx *SendTx) Type() Type          { return TypeSend }
-func (tx *SendTx) Inputs() []TxInput   { return tx.data.Senders }
-func (tx *SendTx) Outputs() []TxOutput { return tx.data.Receivers }
+func (tx *SendTx) Type() Type            { return TypeSend }
+func (tx *SendTx) Signers() []TxInput    { return tx.data.Senders }
+func (tx *SendTx) Senders() []TxInput    { return tx.data.Senders }
+func (tx *SendTx) Receivers() []TxOutput { return tx.data.Receivers }
 
 func (tx *SendTx) AddSender(addr crypto.Address, seq, amt uint64) {
 	tx.data.Senders = append(tx.data.Senders, TxInput{

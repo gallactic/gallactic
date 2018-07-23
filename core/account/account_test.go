@@ -14,7 +14,6 @@ func TestMarshaling(t *testing.T) {
 	acc1.AddToBalance(999999999999999999)
 	acc1.SetPermissions(0x77)
 	acc1.IncSequence()
-	acc1.SetStorageRoot([]byte{1, 2, 3, 4, 5})
 	acc1.SetCode([]byte{60, 23, 45})
 
 	/// test amino encoding/decoding

@@ -36,7 +36,6 @@ type AccountsOutput struct {
 }
 
 type DumpstorageOutput struct {
-	StorageRoot  binary.HexBytes
 	StorageItems []StorageItem
 }
 

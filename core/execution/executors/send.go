@@ -12,7 +12,7 @@ import (
 
 type SendContext struct {
 	Committer bool
-	State     *state.State
+	Cache     *state.Cache
 	Logger    *logging.Logger
 }
 
@@ -22,58 +22,52 @@ func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {
 		return e.Error(e.ErrTxWrongPayload)
 	}
 
-	objs, err := getStateObjs(ctx.State, tx)
+	accs, err := getInputAccounts(ctx.Cache, tx.Senders(), permission.Send)
 	if err != nil {
 		return err
 	}
 
-	for _, in := range tx.Inputs() {
-		acc, ok := objs[in.Address].(*account.Account)
-		if !ok {
-			return e.Errorf(e.ErrInvalidAddress, "%s is not an account address", in.Address)
-		}
-		if !HasSendPermission(ctx.State, acc) {
-			return e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", in.Address, acc.Permissions(), permission.Send)
-		}
+	accs, err = getOutputAccounts(ctx.Cache, tx.Receivers())
+	if err != nil {
+		return err
 	}
 
-	for _, out := range tx.Outputs() {
-		if objs[out.Address] == nil {
+	for _, r := range tx.Receivers() {
+		if accs[r.Address] == nil {
 			/// check for CreateAccount permission
-			for _, in := range tx.Inputs() {
-				acc, _ := objs[in.Address].(*account.Account)
-				if !HasCreateAccountPermission(ctx.State, acc) {
-					return e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", in.Address, acc.Permissions(), permission.CreateAccount)
+			for _, s := range tx.Senders() {
+				acc := accs[s.Address]
+				if !ctx.Cache.HasPermissions(acc, permission.CreateAccount) {
+					return e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", r.Address, acc.Permissions(), permission.CreateAccount)
 				}
 			}
 		}
 	}
 
 	/// Create accounts
-	for _, out := range tx.Outputs() {
-		if objs[out.Address] == nil {
-			objs[out.Address], err = account.NewAccount(out.Address)
+	for _, r := range tx.Receivers() {
+		if accs[r.Address] == nil {
+			accs[r.Address], err = account.NewAccount(r.Address)
 			if err != nil {
-				return e.Errorf(e.ErrInvalidAddress, "%s is not an account address", out.Address)
+				return e.Errorf(e.ErrInvalidAddress, "%s is not an account address", r.Address)
 			}
 		}
 	}
 
 	// Good! Adjust accounts
-	err = adjustInputs(objs, tx.Inputs())
+	err = adjustInputAccounts(accs, tx.Senders())
 	if err != nil {
 		return err
 	}
 
-	err = adjustOutputs(objs, tx.Outputs())
+	err = adjustOutputAccounts(accs, tx.Receivers())
 	if err != nil {
 		return err
 	}
 
 	/// Update account
-	for _, obj := range objs {
-		acc, _ := obj.(*account.Account)
-		ctx.State.UpdateAccount(acc)
+	for _, acc := range accs {
+		ctx.Cache.UpdateAccount(acc)
 	}
 
 	return nil

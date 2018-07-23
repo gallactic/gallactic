@@ -40,7 +40,7 @@ func (tx *BondTx) PublicKey() crypto.PublicKey { return tx.data.PublicKey }
 func (tx *BondTx) Amount() uint64              { return tx.data.To.Amount }
 func (tx *BondTx) Fee() uint64                 { return tx.data.From.Amount - tx.data.To.Amount }
 
-func (tx *BondTx) Inputs() []TxInput {
+func (tx *BondTx) Signers() []TxInput {
 	return []TxInput{tx.data.From}
 }
 

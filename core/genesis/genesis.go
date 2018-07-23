@@ -140,7 +140,7 @@ func makeGenesisValidator(val *validator.Validator) genValidator {
 	return genValidator{
 		PublicKey: val.PublicKey(),
 		Address:   val.Address(),
-		Stake:     val.Balance(),
+		Stake:     val.Stake(),
 	}
 }
 

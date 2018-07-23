@@ -35,22 +35,16 @@ func NewCallTx(caller, callee crypto.Address, sequence uint64, data []byte, gasL
 	}, nil
 }
 
-func (tx *CallTx) Type() Type             { return TypeCall }
-func (tx *CallTx) Caller() crypto.Address { return tx.data.Caller.Address }
-func (tx *CallTx) Callee() crypto.Address { return tx.data.Callee.Address }
-func (tx *CallTx) Amount() uint64         { return tx.data.Callee.Amount }
-func (tx *CallTx) Sequence() uint64       { return tx.data.Caller.Sequence }
-func (tx *CallTx) GasLimit() uint64       { return tx.data.GasLimit }
-func (tx *CallTx) Fee() uint64            { return tx.data.Caller.Amount - tx.data.Callee.Amount }
-func (tx *CallTx) Data() []byte           { return tx.data.Data }
-
-func (tx *CallTx) Inputs() []TxInput {
-	return []TxInput{tx.data.Caller}
-}
-
-func (tx *CallTx) Outputs() []TxOutput {
-	return []TxOutput{tx.data.Callee}
-}
+func (tx *CallTx) Type() Type           { return TypeCall }
+func (tx *CallTx) Signers() []TxInput   { return []TxInput{tx.data.Caller} }
+func (tx *CallTx) Caller() TxInput      { return tx.data.Caller }
+func (tx *CallTx) Callee() TxOutput     { return tx.data.Callee }
+func (tx *CallTx) Amount() uint64       { return tx.data.Callee.Amount }
+func (tx *CallTx) Sequence() uint64     { return tx.data.Caller.Sequence }
+func (tx *CallTx) GasLimit() uint64     { return tx.data.GasLimit }
+func (tx *CallTx) Fee() uint64          { return tx.data.Caller.Amount - tx.data.Callee.Amount }
+func (tx *CallTx) Data() []byte         { return tx.data.Data }
+func (tx *CallTx) CreateContract() bool { return true }
 
 /// ----------
 /// MARSHALING

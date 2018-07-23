@@ -30,7 +30,7 @@ func TestVM(t *testing.T) {
 	caller, _ := account.NewAccount(callerAddr)
 	callee, _ := account.NewAccount(calleeAddr)
 	callee.SetCode(createContractCode())
-	tx, _ := tx.NewCallTx(caller.Address(), callee.Address(), 1, []byte{0, 1, 2, 3}, 2100, 0, 100)
+	tx, _ := tx.NewCallTx(caller.Address(), callee.Address(), 1, []byte{1}, 2100, 0, 100)
 
 	Call(bc, caller, callee, tx)
 }

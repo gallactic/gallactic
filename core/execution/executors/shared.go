@@ -9,93 +9,107 @@ import (
 	"github.com/gallactic/gallactic/txs/tx"
 )
 
-func getStateObjs(st *state.State, tx tx.Tx) (
-	objs map[crypto.Address]state.StateObj, err error) {
-
-	objs = make(map[crypto.Address]state.StateObj)
-	ins := tx.Inputs()
-	outs := tx.Outputs()
-	inAmt := uint64(0)
-	outAmt := uint64(0)
-	for _, in := range ins {
-		// Check Input basic
-		if err := in.ValidateBasic(); err != nil {
-			return nil, err
-		}
-
-		obj := st.GetObj(in.Address)
-		if obj == nil {
-			return nil, e.Errorf(e.ErrInvalidAddress, "Account %s doesn't exist", in.Address)
-		}
-
-		// Check sequences
-		if obj.Sequence()+1 != uint64(in.Sequence) {
-			return nil, e.Errorf(e.ErrInvalidSequence, "%s has set sequence to %s. It should be %s", in.Address, in.Sequence, obj.Sequence()+uint64(1))
-		}
-
-		// Check amount
-		if obj.Balance() < uint64(in.Amount) {
-			return nil, e.Error(e.ErrInsufficientFunds)
-		}
-
-		// Account shouldn't be duplicated
-		if _, ok := objs[in.Address]; ok {
-			return nil, e.Error(e.ErrTxDuplicateAddress)
-		}
-
-		objs[in.Address] = obj
-		inAmt += in.Amount
+func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*account.Account, error) {
+	// Check Input basic
+	if err := in.ValidateBasic(); err != nil {
+		return nil, err
 	}
 
-	for _, out := range outs {
-		// Check Output basic
-		if err := out.ValidateBasic(); err != nil {
-			return nil, err
-		}
-
-		obj := st.GetObj(out.Address)
-
-		// Account shouldn't be duplicated
-		if _, ok := objs[out.Address]; ok {
-			return nil, e.Error(e.ErrTxDuplicateAddress)
-		}
-
-		objs[out.Address] = obj
-		outAmt += out.Amount
+	acc := ch.GetAccount(in.Address)
+	if acc == nil {
+		return nil, e.Errorf(e.ErrInvalidAddress, "Account %s doesn't exist", in.Address)
 	}
 
-	if inAmt < outAmt {
+	// Check sequences
+	if acc.Sequence()+1 != uint64(in.Sequence) {
+		return nil, e.Errorf(e.ErrInvalidSequence, "%s has set sequence to %s. It should be %s", in.Address, in.Sequence, acc.Sequence()+1)
+	}
+
+	// Check amount
+	if acc.Balance() < uint64(in.Amount) {
 		return nil, e.Error(e.ErrInsufficientFunds)
 	}
 
-	return objs, nil
+	if !ch.HasPermissions(acc, req) {
+		return nil, e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", in.Address, acc.Permissions(), permission.Send)
+	}
+
+	return acc, nil
 }
 
-func adjustInputs(objs map[crypto.Address]state.StateObj, ins []tx.TxInput) error {
+func getOutputAccount(ch *state.Cache, out tx.TxOutput) (*account.Account, error) {
+	// Check Input basic
+	if err := out.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	acc := ch.GetAccount(out.Address)
+
+	return acc, nil
+}
+
+func adjustInputAccount(acc *account.Account, in tx.TxInput) error {
+	return nil
+}
+
+func adjustOutpuAccount(acc *account.Account, in tx.TxOutput) error {
+	return nil
+}
+
+func getInputAccounts(ch *state.Cache, ins []tx.TxInput, req account.Permissions) (
+	accs map[crypto.Address]*account.Account, err error) {
+
 	for _, in := range ins {
-		obj := objs[in.Address]
-		if obj == nil {
+		acc, err := getInputAccount(ch, in, req)
+		if err != nil {
+			return nil, err
+		}
+
+		accs[in.Address] = acc
+	}
+
+	return accs, nil
+}
+
+func getOutputAccounts(ch *state.Cache, outs []tx.TxOutput) (
+	accs map[crypto.Address]*account.Account, err error) {
+
+	for _, out := range outs {
+		acc, err := getOutputAccount(ch, out)
+		if err != nil {
+			return nil, err
+		}
+
+		accs[out.Address] = acc
+	}
+	return accs, nil
+}
+
+func adjustInputAccounts(accs map[crypto.Address]*account.Account, ins []tx.TxInput) error {
+	for _, in := range ins {
+		acc := accs[in.Address]
+		if acc == nil {
 			return e.Error(e.ErrTxInvalidAddress)
 		}
 
-		err := obj.SubtractFromBalance(in.Amount)
+		err := acc.SubtractFromBalance(in.Amount)
 		if err != nil {
 			return err
 		}
 
-		obj.IncSequence()
+		acc.IncSequence()
 	}
 	return nil
 }
 
-func adjustOutputs(objs map[crypto.Address]state.StateObj, outs []tx.TxOutput) error {
+func adjustOutputAccounts(accs map[crypto.Address]*account.Account, outs []tx.TxOutput) error {
 	for _, out := range outs {
-		obj := objs[out.Address]
-		if obj == nil {
+		acc := accs[out.Address]
+		if acc == nil {
 			return e.Error(e.ErrTxInvalidAddress)
 		}
 
-		err := obj.AddToBalance(out.Amount)
+		err := acc.AddToBalance(out.Amount)
 		if err != nil {
 			return err
 		}
@@ -104,52 +118,11 @@ func adjustOutputs(objs map[crypto.Address]state.StateObj, outs []tx.TxOutput) e
 }
 
 /*
-func updateCache(c *state.Cache, objs map[crypto.Address]state.StateObj, outs []tx.TxOutput) error {
+func updateCache(c *state.Cache, accs map[crypto.Address]state.Stateacc, outs []tx.TxOutput) error {
 	for _, out := range outs {
-		obj := objs[out.Address]
-		c.UpdateObj(obj)
+		acc := accs[out.Address]
+		c.Updateacc(acc)
 	}
 	return nil
 }
 */
-// HasPermissions ensures that an account has required permissions
-func HasPermissions(st *state.State, acc *account.Account, perm account.Permissions) bool {
-	if !permission.EnsureValid(perm) {
-		return false
-	}
-
-	gAcc := st.GlobalAccount()
-	if gAcc.HasPermissions(perm) {
-		return true
-	}
-
-	if acc.HasPermissions(perm) {
-		return true
-	}
-
-	return false
-}
-
-func HasSendPermission(st *state.State, acc *account.Account) bool {
-	return HasPermissions(st, acc, permission.Send)
-}
-
-func HasCallPermission(st *state.State, acc *account.Account) bool {
-	return HasPermissions(st, acc, permission.Call)
-}
-
-func HasCreateContractPermission(st *state.State, acc *account.Account) bool {
-	return HasPermissions(st, acc, permission.CreateContract)
-}
-
-func HasCreateAccountPermission(st *state.State, acc *account.Account) bool {
-	return HasPermissions(st, acc, permission.CreateAccount)
-}
-
-func HasBondPermission(st *state.State, acc *account.Account) bool {
-	return HasPermissions(st, acc, permission.Bond)
-}
-
-func HasModifyPermission(st *state.State, acc *account.Account) bool {
-	return HasPermissions(st, acc, permission.ModifyPermission)
-}

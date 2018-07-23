@@ -68,7 +68,7 @@ func newExecutor(name string, committer bool, bc *blockchain.Blockchain, logger 
 	exe.txExecutors = map[tx.Type]Executor{
 		tx.TypeSend: &executors.SendContext{
 			Committer: committer,
-			State:     bc.State(),
+			Cache:     exe.cache,
 			Logger:    exe.logger,
 		}, /*
 			tx.TypeCall: &executors.CallContext{

@@ -32,15 +32,8 @@ func NewSortitionTx(validator crypto.Address, height, index, sequence, fee uint6
 	}
 }
 
-func (tx *SortitionTx) Type() Type { return TypeSortition }
-
-func (tx *SortitionTx) Inputs() []TxInput {
-	return []TxInput{tx.data.Validator}
-}
-
-func (tx *SortitionTx) Outputs() []TxOutput {
-	return nil
-}
+func (tx *SortitionTx) Type() Type         { return TypeSortition }
+func (tx *SortitionTx) Signers() []TxInput { return []TxInput{tx.data.Validator} }
 
 /// ----------
 /// MARSHALING

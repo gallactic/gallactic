@@ -6,6 +6,7 @@ import (
 
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
+	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
@@ -149,17 +150,6 @@ func (st *State) setVersion(hash []byte, version int64) {
 	st.db.SetSync(prefixedKey(versionPrefix, hash), bs)
 }
 
-func (st *State) GetObj(addr crypto.Address) StateObj {
-
-	if addr.IsAccountAddress() {
-		return st.GetAccount(addr)
-	} else if addr.IsValidatorAddress() {
-		return st.GetValidator(addr)
-	}
-
-	return nil
-}
-
 // -------
 // ACCOUNT
 
@@ -196,7 +186,7 @@ func (st *State) UpdateAccount(acc *account.Account) error {
 	return nil
 }
 
-func (st *State) Count() int {
+func (st *State) AccountCount() int {
 	count := 0
 	st.IterateAccounts(func(validator *account.Account) (stop bool) {
 		count++
@@ -214,6 +204,48 @@ func (st *State) IterateAccounts(consumer func(*account.Account) (stop bool)) (s
 		return consumer(acc)
 	})
 	return
+}
+
+// HasPermissions ensures that an account has required permissions
+func (st *State) HasPermissions(acc *account.Account, perm account.Permissions) bool {
+	if !permission.EnsureValid(perm) {
+		return false
+	}
+
+	gAcc := st.GlobalAccount()
+	if gAcc.HasPermissions(perm) {
+		return true
+	}
+
+	if acc.HasPermissions(perm) {
+		return true
+	}
+
+	return false
+}
+
+func (st *State) HasSendPermission(acc *account.Account) bool {
+	return st.HasPermissions(acc, permission.Send)
+}
+
+func (st *State) HasCallPermission(acc *account.Account) bool {
+	return st.HasPermissions(acc, permission.Call)
+}
+
+func (st *State) HasCreateContractPermission(acc *account.Account) bool {
+	return st.HasPermissions(acc, permission.CreateContract)
+}
+
+func (st *State) HasCreateAccountPermission(acc *account.Account) bool {
+	return st.HasPermissions(acc, permission.CreateAccount)
+}
+
+func (st *State) HasBondPermission(acc *account.Account) bool {
+	return st.HasPermissions(acc, permission.Bond)
+}
+
+func (st *State) HasModifyPermission(acc *account.Account) bool {
+	return st.HasPermissions(acc, permission.ModifyPermission)
 }
 
 // ---------
@@ -268,35 +300,35 @@ func (st *State) IterateValidators(consumer func(*validator.Validator) (stop boo
 	}), nil
 }
 
-func (s *State) IterateStorage(address crypto.Address,
+func (st *State) GetStorage(addr crypto.Address, key binary.Word256) (binary.Word256, error) {
+	_, value := st.tree.Get(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()))
+	return binary.LeftPadWord256(value), nil
+}
+
+func (st *State) SetStorage(addr crypto.Address, key, value binary.Word256) error {
+	if value == binary.Zero256 {
+		st.tree.Remove(key.Bytes())
+	} else {
+		st.tree.Set(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()), value.Bytes())
+	}
+	return nil
+}
+
+func (st *State) IterateStorage(addr crypto.Address,
 	consumer func(key, value binary.Word256) (stop bool)) (stopped bool, err error) {
-	stopped = s.tree.IterateRange(storageStart, storageEnd, true, func(key []byte, value []byte) (stop bool) {
+	stopped = st.tree.IterateRange(storageStart, storageEnd, true, func(key []byte, value []byte) (stop bool) {
 		// Note: no left padding should occur unless there is a bug and non-words have been writte to this storage tree
 		if len(key) != binary.Word256Length {
 			err = fmt.Errorf("key '%X' stored for account %s is not a %v-byte word",
-				key, address, binary.Word256Length)
+				key, addr, binary.Word256Length)
 			return true
 		}
 		if len(value) != binary.Word256Length {
 			err = fmt.Errorf("value '%X' stored for account %s is not a %v-byte word",
-				key, address, binary.Word256Length)
+				key, addr, binary.Word256Length)
 			return true
 		}
 		return consumer(binary.LeftPadWord256(key), binary.LeftPadWord256(value))
 	})
 	return
-}
-
-func (s *State) GetStorage(address crypto.Address, key binary.Word256) (binary.Word256, error) {
-	_, value := s.tree.Get(prefixedKey(storagePrefix, address.RawBytes(), key.Bytes()))
-	return binary.LeftPadWord256(value), nil
-}
-
-func (s *State) SetStorage(address crypto.Address, key, value binary.Word256) error {
-	if value == binary.Zero256 {
-		s.tree.Remove(key.Bytes())
-	} else {
-		s.tree.Set(prefixedKey(storagePrefix, address.RawBytes(), key.Bytes()), value.Bytes())
-	}
-	return nil
 }

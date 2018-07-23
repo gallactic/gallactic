@@ -88,7 +88,6 @@ func toBurrowAccount(acc *account.Account) acm.MutableAccount {
 		Balance:     acc.Balance(),
 		Code:        acc.Code(),
 		Sequence:    acc.Sequence(),
-		StorageRoot: acc.StorageRoot(),
 		Permissions: bPerm,
 	}
 

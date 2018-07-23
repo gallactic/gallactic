@@ -19,6 +19,8 @@ import (
 
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -31,7 +33,6 @@ import (
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 	tmTypes "github.com/tendermint/tendermint/types"
-	"time"
 )
 
 // Magic! Should probably be configurable, but not shouldn't be so huge we
@@ -231,7 +232,6 @@ func (s *Service) DumpStorage(address crypto.Address) (*DumpstorageOutput, error
 		return
 	})
 	return &DumpstorageOutput{
-		StorageRoot:  acc.StorageRoot(),
 		StorageItems: storageItems,
 	}, nil
 }

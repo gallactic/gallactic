@@ -81,11 +81,11 @@ func (typ *Type) UnmarshalText(data []byte) error {
 }
 
 type Tx interface {
-	Inputs() []TxInput
-	Outputs() []TxOutput
+	Signers() []TxInput
 	Type() Type
 }
 
+/*
 func InAmount(tx Tx) uint64 {
 	inAmount := uint64(0)
 	for _, input := range tx.Inputs() {
@@ -105,7 +105,7 @@ func OutAmount(tx Tx) uint64 {
 func Fee(tx Tx) uint64 {
 	return InAmount(tx) - OutAmount(tx)
 }
-
+*/
 func String(tx Tx) string {
 	bytes, err := json.Marshal(tx)
 	if err != nil {
