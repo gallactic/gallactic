@@ -1,4 +1,4 @@
-package test
+package tests
 
 import (
 	"math/rand"
@@ -15,12 +15,12 @@ import (
 
 func setupGenesis(m *testing.M) {
 	numValidators := 80
-	accounts := make([]*account.Account, len(accountPool))
+	accounts := make([]*account.Account, len(tAccounts))
 	validators := make([]*validator.Validator, numValidators)
 
 	i := 0
-	for _, account := range accountPool {
-		accounts[i] = account
+	for _, acc := range tAccounts {
+		accounts[i] = acc
 		i++
 	}
 
@@ -32,12 +32,12 @@ func setupGenesis(m *testing.M) {
 		validator := validator.NewValidator(publicKey, stake, 0)
 		validators[i] = validator
 	}
-	genesisDoc = genesis.MakeGenesisDoc("test-chain", time.Now(), permission.ZeroPermissions, accounts, validators)
-	chainID = genesisDoc.ChainID()
+	tGenesis = genesis.MakeGenesisDoc("test-chain", time.Now(), permission.ZeroPermissions, accounts, validators)
+	tChainID = tGenesis.ChainID()
 }
 
 func TestGenesisDocFromJSON(t *testing.T) {
-	bs, err := genesisDoc.MarshalJSON()
+	bs, err := tGenesis.MarshalJSON()
 	assert.NoError(t, err)
 
 	gen2 := new(genesis.Genesis)
@@ -48,5 +48,5 @@ func TestGenesisDocFromJSON(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, bs, bsOut)
-	assert.Equal(t, genesisDoc.Hash(), gen2.Hash())
+	assert.Equal(t, tGenesis.Hash(), gen2.Hash())
 }

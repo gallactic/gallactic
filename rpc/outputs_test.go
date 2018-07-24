@@ -34,7 +34,7 @@ func TestListUnconfirmedTxs(t *testing.T) {
 	callee, err := crypto.AddressFromString("acTqSGVw94xP1myXrnCm3rBWgzcJ5uEbB1f")
 	require.NoError(t, err)
 
-	callTx, err := tx.NewCallTx(caller, callee, 1, nil, 1, 100, 12)
+	callTx, err := tx.NewCallTx(caller, &callee, 1, nil, 1, 100, 12)
 	fmt.Println("CallTx :\n", callTx)
 
 	result := &UnconfirmedTxsOutput{

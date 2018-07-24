@@ -57,7 +57,7 @@ func NewBatchCommitter(bc *blockchain.Blockchain, logger *logging.Logger) BatchC
 	return newExecutor("CommitCache", true, bc, logger.WithScope("NewBatchCommitter"))
 }
 
-func newExecutor(name string, committer bool, bc *blockchain.Blockchain, logger *logging.Logger) *executor {
+func newExecutor(name string, committing bool, bc *blockchain.Blockchain, logger *logging.Logger) *executor {
 
 	exe := &executor{
 		bc:     bc,
@@ -67,25 +67,16 @@ func newExecutor(name string, committer bool, bc *blockchain.Blockchain, logger 
 
 	exe.txExecutors = map[tx.Type]Executor{
 		tx.TypeSend: &executors.SendContext{
-			Committer: committer,
-			Cache:     exe.cache,
-			Logger:    exe.logger,
-		}, /*
-			tx.TypeCall: &executors.CallContext{
-				Blockchain:     blockchain,
-				StateWriter:    exe.stateCache,
-				EventPublisher: publisher,
-				RunCall:        runCall,
-				VMOptions:      exe.vmOptions,
-				Logger:         exe.logger,
-			},
-			tx.TypePermissions: &executors.PermissionsContext{
-				Blockchain:     blockchain,
-				StateWriter:    exe.stateCache,
-				EventPublisher: publisher,
-				Logger:         exe.logger,
-			},
-		*/
+			Committing: committing,
+			Cache:      exe.cache,
+			Logger:     exe.logger,
+		},
+		tx.TypeCall: &executors.CallContext{
+			Committing: committing,
+			BC:         bc,
+			Cache:      exe.cache,
+			Logger:     exe.logger,
+		},
 	}
 	return exe
 }

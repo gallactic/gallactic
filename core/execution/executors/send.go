@@ -4,6 +4,7 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/state"
+	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
@@ -11,7 +12,7 @@ import (
 )
 
 type SendContext struct {
-	Committer bool
+	Committing bool
 	Cache     *state.Cache
 	Logger    *logging.Logger
 }
@@ -22,12 +23,13 @@ func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {
 		return e.Error(e.ErrTxWrongPayload)
 	}
 
-	accs, err := getInputAccounts(ctx.Cache, tx.Senders(), permission.Send)
+	accs := make(map[crypto.Address]*account.Account)
+	err := getInputAccounts(ctx.Cache, tx.Senders(), permission.Send, accs)
 	if err != nil {
 		return err
 	}
 
-	accs, err = getOutputAccounts(ctx.Cache, tx.Receivers())
+	err = getOutputAccounts(ctx.Cache, tx.Receivers(), accs)
 	if err != nil {
 		return err
 	}

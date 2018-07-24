@@ -24,8 +24,10 @@ type accountData struct {
 
 ///---- Constructors
 func NewAccount(addr crypto.Address) (*Account, error) {
-	/// TODO: check address is valid
-	//e.Errorf(e.ErrInvalidAddress, "%s is not an account address", out.Address)
+	if err := addr.EnsureValid(); err != nil {
+		return nil, err
+	}
+
 	return &Account{
 		data: accountData{
 			Address: addr,

@@ -12,7 +12,7 @@ import (
 	burrowPayload "github.com/hyperledger/burrow/txs/payload"
 )
 
-func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.CallTx) {
+func CallCode(bc *blockchain.Blockchain, caller, callee *account.Account, data []byte, value, fee, gasLimit uint64, gas *uint64) (output []byte, err error) {
 
 	params := burrowEVM.Params{
 		BlockHeight: bc.LastBlockHeight(),
@@ -25,12 +25,9 @@ func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.Cal
 	bCallee := toBurrowAccount(callee)
 	bCalleeAddr := bCallee.Address()
 	code := bCallee.Code()
-	data := tx.Data()
-	value := tx.Amount()
-	gas := tx.GasLimit()
 
 	bPayload := burrowPayload.NewCallTxWithSequence(bCaller.PublicKey(), &bCalleeAddr,
-		tx.Data(), tx.Amount(), tx.GasLimit(), tx.Fee(), tx.Sequence())
+		data, value, gasLimit, fee, bCaller.Sequence()+1)
 	bTx := burrowTx.NewTx(bPayload)
 
 	st := bState{st: bc.State()}
@@ -38,6 +35,17 @@ func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.Cal
 	publisher := eventPublisher{}
 	vm := burrowEVM.NewVM(params, bCaller.Address(), bTx, logging.NewNoopLogger())
 	vm.SetPublisher(publisher)
-	/*ret, exception := */ vm.Call(txCache, bCaller, bCallee, code, data, value, &gas)
+	ret, exception := vm.Call(txCache, bCaller, bCallee, code, data, value, gas)
+	txCache.Flush(st, st)
 
+	return ret, exception
+
+}
+
+func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {
+	data := tx.Data()
+	value := tx.Amount()
+	gasLimit := tx.GasLimit()
+
+	return CallCode(bc, caller, callee, data, value, tx.Fee(), gasLimit, gas)
 }

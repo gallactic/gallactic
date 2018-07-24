@@ -157,7 +157,7 @@ func (ch *Cache) GetValidator(addr crypto.Address) *validator.Validator {
 }
 
 func (ch *Cache) HasPermissions(acc *account.Account, perm account.Permissions) bool {
-	return false
+	return ch.st.HasPermissions(acc, perm)
 }
 
 func (ch *Cache) AddToPool(val *validator.Validator) error {

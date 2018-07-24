@@ -56,33 +56,31 @@ func adjustOutpuAccount(acc *account.Account, in tx.TxOutput) error {
 	return nil
 }
 
-func getInputAccounts(ch *state.Cache, ins []tx.TxInput, req account.Permissions) (
-	accs map[crypto.Address]*account.Account, err error) {
+func getInputAccounts(ch *state.Cache, ins []tx.TxInput, req account.Permissions, accs map[crypto.Address]*account.Account) error {
 
 	for _, in := range ins {
 		acc, err := getInputAccount(ch, in, req)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		accs[in.Address] = acc
 	}
 
-	return accs, nil
+	return nil
 }
 
-func getOutputAccounts(ch *state.Cache, outs []tx.TxOutput) (
-	accs map[crypto.Address]*account.Account, err error) {
+func getOutputAccounts(ch *state.Cache, outs []tx.TxOutput, accs map[crypto.Address]*account.Account) error {
 
 	for _, out := range outs {
 		acc, err := getOutputAccount(ch, out)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		accs[out.Address] = acc
 	}
-	return accs, nil
+	return nil
 }
 
 func adjustInputAccounts(accs map[crypto.Address]*account.Account, ins []tx.TxInput) error {

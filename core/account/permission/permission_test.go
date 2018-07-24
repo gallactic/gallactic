@@ -31,12 +31,12 @@ func TestModifying(t *testing.T) {
 }
 
 func TestAccountPermissions(t *testing.T) {
-	account := account.NewAccountFromSecret("Super Semi Secret")
-	account.SetPermissions(Call)
-	assert.Equal(t, account.Permissions(), Call)
-	account.SetPermissions(CreateChain)
-	assert.Equal(t, account.Permissions(), Call|CreateChain)
-	assert.Equal(t, account.HasPermissions(InterChainTx), false)
-	account.UnsetPermissions(CreateChain)
-	assert.Equal(t, account.Permissions(), Call)
+	acc := account.NewAccountFromSecret("Super Semi Secret")
+	acc.SetPermissions(Call)
+	assert.Equal(t, acc.Permissions(), Call)
+	acc.SetPermissions(CreateChain)
+	assert.Equal(t, acc.Permissions(), Call|CreateChain)
+	assert.Equal(t, acc.HasPermissions(InterChainTx), false)
+	acc.UnsetPermissions(CreateChain)
+	assert.Equal(t, acc.Permissions(), Call)
 }
