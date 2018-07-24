@@ -7,16 +7,16 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
-	acm "github.com/hyperledger/burrow/account"
+	acm "github.com/hyperledger/burrow/acm"
 	burrowBinary "github.com/hyperledger/burrow/binary"
 	burrowCrypto "github.com/hyperledger/burrow/crypto"
-	ptypes "github.com/hyperledger/burrow/permission/types"
+	permission "github.com/hyperledger/burrow/permission"
 )
 
 type bState struct {
 	st *state.State
 
-	cache map[burrowCrypto.Address]acm.MutableAccount
+	cache map[burrowCrypto.Address]*acm.MutableAccount
 }
 
 func (s bState) GetAccount(bAddr burrowCrypto.Address) (acm.Account, error) {
@@ -65,13 +65,13 @@ func (s bState) IterateStorage(bAddr burrowCrypto.Address, consumer func(key, va
 	return false, nil
 }
 
-func toBurrowAccount(acc *account.Account) acm.MutableAccount {
+func toBurrowAccount(acc *account.Account) *acm.MutableAccount {
 
 	bAddr := toBurrowAddress(acc.Address())
-	bPerm := ptypes.AccountPermissions{
-		Base: ptypes.BasePermissions{
-			Perms:  ptypes.PermFlag(acc.Permissions()),
-			SetBit: ptypes.PermFlag(acc.Permissions()),
+	bPerm := permission.AccountPermissions{
+		Base: permission.BasePermissions{
+			Perms:  permission.PermFlag(acc.Permissions()),
+			SetBit: permission.PermFlag(acc.Permissions()),
 		},
 	}
 

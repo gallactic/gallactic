@@ -13,7 +13,7 @@ import (
 	"github.com/gallactic/gallactic/txs/tx"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tmlibs/db"
+	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
 func TestVM(t *testing.T) {

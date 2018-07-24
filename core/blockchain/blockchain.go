@@ -12,7 +12,7 @@ import (
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/hyperledger/burrow/logging"
-	dbm "github.com/tendermint/tmlibs/db"
+	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
 var stateKey = []byte("BlockchainState")

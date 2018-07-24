@@ -66,7 +66,7 @@ func (bm *BlockMeta) UnmarshalJSON(data []byte) (err error) {
 	return aminoCodec.UnmarshalJSON(data, &bm.BlockMeta)
 }
 
-// Needed for go-amino handling of interface types
+// Needed for amino handling of interface types
 type Block struct {
 	*tmTypes.Block
 }

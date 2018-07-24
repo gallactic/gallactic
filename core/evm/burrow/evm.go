@@ -4,7 +4,7 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/txs/tx"
-	burrowState "github.com/hyperledger/burrow/account/state"
+	burrowState "github.com/hyperledger/burrow/acm/state"
 	burrowBinary "github.com/hyperledger/burrow/binary"
 	burrowEVM "github.com/hyperledger/burrow/execution/evm"
 	"github.com/hyperledger/burrow/logging"
@@ -32,9 +32,8 @@ func CallCode(bc *blockchain.Blockchain, caller, callee *account.Account, data [
 
 	st := bState{st: bc.State()}
 	txCache := burrowState.NewCache(st, burrowState.Name("TxCache"))
-	publisher := eventPublisher{}
 	vm := burrowEVM.NewVM(params, bCaller.Address(), bTx, logging.NewNoopLogger())
-	vm.SetPublisher(publisher)
+	vm.SetEventSink(nil)
 	ret, exception := vm.Call(txCache, bCaller, bCallee, code, data, value, gas)
 	txCache.Flush(st, st)
 

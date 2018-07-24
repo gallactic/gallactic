@@ -2,7 +2,7 @@ package tendermint
 
 import (
 	"github.com/hyperledger/burrow/logging"
-	tmLog "github.com/tendermint/tmlibs/log"
+	tmLog "github.com/tendermint/tendermint/libs/log"
 )
 
 type tendermintLogger struct {

@@ -8,7 +8,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/tendermint/tendermint/consensus"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
-	tm_crypto "github.com/tendermint/go-crypto"
+	tmCrypto "github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/state"
 	"github.com/tendermint/tendermint/types"
@@ -77,7 +77,7 @@ func (nv *NodeView) PeerRoundStates() ([]*consensusTypes.PeerRoundState, error) 
 }
 
 func (nv *NodeView) PrivValidatorPublicKey() (crypto.PublicKey, error) {
-	pub := nv.tmNode.PrivValidator().GetPubKey().(tm_crypto.PubKeyEd25519)
+	pub := nv.tmNode.PrivValidator().GetPubKey().(tmCrypto.PubKeyEd25519)
 
 	return crypto.PublicKeyFromRawBytes(pub[:])
 }

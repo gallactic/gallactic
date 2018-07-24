@@ -9,7 +9,7 @@ import (
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tmlibs/db"
+	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
 func loadState(t *testing.T, hash []byte) *state.State {

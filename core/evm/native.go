@@ -57,7 +57,7 @@ func registerNativeContracts() {
 //-----------------------------------------------------------------------------
 
 func ExecuteNativeContract(addr binary.Word256, st *state.State, caller *account.Account, input []byte, gas *uint64,
-	logger *logging.Logger) ([]byte, error) {	
+	logger *logging.Logger) ([]byte, error) {
 	contract, ok := registeredNativeContracts[addr]
 	if !ok {
 		addr, _ := crypto.AddressFromWord256(addr)

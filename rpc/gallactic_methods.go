@@ -12,7 +12,7 @@ const (
 	GET_ACCOUNT         = GALLACTIC + "getAccount"
 	GET_STORAGE         = GALLACTIC + "getStorage"
 	GET_STORAGE_AT      = GALLACTIC + "getStorageAt"
-	GET_STATUS          = GALLACTIC + "getState"
+	GET_STATUS          = GALLACTIC + "getStatus"
 	GET_LATEST_BLOCK    = GALLACTIC + "getLatestBlock"
 	GET_BLOCKS          = GALLACTIC + "getBlocks"
 	GET_BLOCK           = GALLACTIC + "getBlock"

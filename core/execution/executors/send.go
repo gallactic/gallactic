@@ -13,8 +13,8 @@ import (
 
 type SendContext struct {
 	Committing bool
-	Cache     *state.Cache
-	Logger    *logging.Logger
+	Cache      *state.Cache
+	Logger     *logging.Logger
 }
 
 func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {

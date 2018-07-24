@@ -30,6 +30,7 @@ import (
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
+	"github.com/gallactic/gallactic/version"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 	tmTypes "github.com/tendermint/tendermint/types"
@@ -38,7 +39,6 @@ import (
 // Magic! Should probably be configurable, but not shouldn't be so huge we
 // end up DoSing ourselves.
 const MaxBlockLookback = 1000
-const AccountsRingMutexCount = 100
 
 // Base service that provides implementation for all underlying RPC methods
 type Service struct {
@@ -132,8 +132,7 @@ func (s *Service) Status() (*StatusOutput, error) {
 		LatestBlockHash:   latestBlockHash,
 		LatestBlockHeight: latestHeight,
 		LatestBlockTime:   latestBlockTime,
-		// TODO Ahmad
-		//NodeVersion:       project.History.CurrentVersion().String(),
+		NodeVersion:       version.Version,
 	}, nil
 }
 

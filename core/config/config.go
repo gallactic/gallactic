@@ -7,14 +7,14 @@ import (
 
 	"github.com/BurntSushi/toml"
 	rpcConfig "github.com/gallactic/gallactic/rpc/config"
-	logging_config "github.com/hyperledger/burrow/logging/config"
+	logconfig "github.com/hyperledger/burrow/logging/logconfig"
 )
 
 type Config struct {
-	Validator  *ValidatorConfig              `toml:"validator"`
-	Tendermint *TendermintConfig             `toml:"tendermint"`
-	RPC        *rpcConfig.RPCConfig          `toml:"rpc"`
-	Logging    *logging_config.LoggingConfig `toml:"logging,omitempty"`
+	Validator  *ValidatorConfig         `toml:"validator"`
+	Tendermint *TendermintConfig        `toml:"tendermint"`
+	RPC        *rpcConfig.RPCConfig     `toml:"rpc"`
+	Logging    *logconfig.LoggingConfig `toml:"logging,omitempty"`
 }
 
 func defaultConfig() *Config {
@@ -22,7 +22,7 @@ func defaultConfig() *Config {
 		Validator:  DefaultValidatorConfig(),
 		Tendermint: DefaultTendermintConfig(),
 		RPC:        rpcConfig.DefaultRPCConfig(),
-		Logging:    logging_config.DefaultNodeLoggingConfig(),
+		Logging:    logconfig.DefaultNodeLoggingConfig(),
 	}
 }
 
