@@ -1,3 +1,2 @@
 # Gallactic
-
-## Gallactic blockchain with Hyperledger's Burrow EVM and Tendermint consensus engine
+*Gallactic blockchain with Hyperledger Burrow EVM and Tendermint consensus engine*
