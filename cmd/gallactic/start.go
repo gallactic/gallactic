@@ -7,7 +7,7 @@ import (
 
 	"github.com/gallactic/gallactic/core"
 	"github.com/gallactic/gallactic/core/config"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/jawher/mow.cli"
 )
 
@@ -38,7 +38,7 @@ func Start() func(cmd *cli.Cmd) {
 			configFile := "./config.toml"
 			genesisFile := "./genesis.json"
 
-			gen, err := genesis.LoadFromFile(genesisFile)
+			gen, err := proposal.LoadFromFile(genesisFile)
 			if err != nil {
 				log.Fatalf("could not obtain genesis from file: %v", err)
 			}

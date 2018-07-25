@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gallactic/gallactic/crypto"
-	e "github.com/gallactic/gallactic/errors"
+	"github.com/gallactic/gallactic/errors"
 	amino "github.com/tendermint/go-amino"
 )
 

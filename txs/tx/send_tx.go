@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/gallactic/errors"
 )
 
 type SendTx struct {
@@ -27,9 +28,20 @@ func NewSendTx(from, to crypto.Address, seq, amt, fee uint64) (*SendTx, error) {
 }
 
 func (tx *SendTx) Type() Type            { return TypeSend }
-func (tx *SendTx) Signers() []TxInput    { return tx.data.Senders }
 func (tx *SendTx) Senders() []TxInput    { return tx.data.Senders }
 func (tx *SendTx) Receivers() []TxOutput { return tx.data.Receivers }
+
+func (tx *SendTx) Signers() []TxInput {
+	return tx.data.Senders
+}
+
+func (tx *SendTx) Amount() uint64 {
+	return tx.outAmount()
+}
+
+func (tx *SendTx) Fee() uint64 {
+	return tx.inAmount() - tx.outAmount()
+}
 
 func (tx *SendTx) AddSender(addr crypto.Address, seq, amt uint64) {
 	tx.data.Senders = append(tx.data.Senders, TxInput{
@@ -44,6 +56,50 @@ func (tx *SendTx) AddReceiver(addr crypto.Address, amt uint64) {
 		Address: addr,
 		Amount:  amt,
 	})
+}
+
+func (tx *SendTx) inAmount() uint64 {
+	inAmt := uint64(0)
+	for _, in := range tx.data.Senders {
+		inAmt += in.Amount
+	}
+	return inAmt
+}
+
+func (tx *SendTx) outAmount() uint64 {
+	outAmt := uint64(0)
+	for _, out := range tx.data.Receivers {
+		outAmt += out.Amount
+	}
+	return outAmt
+}
+
+func (tx *SendTx) EnsureValid() error {
+	if tx.outAmount() > tx.inAmount() {
+		return e.Error(e.ErrInsufficientFunds)
+	}
+
+	for _, in := range tx.data.Senders {
+		if err := in.ensureValid(); err != nil {
+			return err
+		}
+
+		if !in.Address.IsAccountAddress() {
+			return e.Error(e.ErrInvalidAddress)
+		}
+	}
+
+	for _, out := range tx.data.Receivers {
+		if err := out.ensureValid(); err != nil {
+			return err
+		}
+
+		if !out.Address.IsAccountAddress() {
+			return e.Error(e.ErrInvalidAddress)
+		}
+	}
+
+	return nil
 }
 
 /// ----------

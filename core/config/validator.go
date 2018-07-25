@@ -7,5 +7,5 @@ type ValidatorConfig struct {
 }
 
 func DefaultValidatorConfig() *ValidatorConfig {
-	return nil
+	return &ValidatorConfig{}
 }

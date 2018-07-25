@@ -5,6 +5,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/gallactic/errors"
 )
 
 type PermissionsTx struct {
@@ -37,12 +38,38 @@ func NewPermissionsTx(modifier, modified crypto.Address, perm account.Permission
 }
 
 func (tx *PermissionsTx) Type() Type                       { return TypePermissions }
-func (tx *PermissionsTx) Signers() []TxInput               { return []TxInput{tx.data.Modifier} }
-func (tx *PermissionsTx) Modifier() crypto.Address         { return tx.data.Modifier.Address }
-func (tx *PermissionsTx) Modified() crypto.Address         { return tx.data.Modified.Address }
-func (tx *PermissionsTx) Fee() uint64                      { return tx.data.Modifier.Amount }
+func (tx *PermissionsTx) Modifier() TxInput                { return tx.data.Modifier }
+func (tx *PermissionsTx) Modified() TxOutput               { return tx.data.Modified }
 func (tx *PermissionsTx) Permissions() account.Permissions { return tx.data.Permissions }
 func (tx *PermissionsTx) Set() bool                        { return tx.data.Set }
+
+func (tx *PermissionsTx) Signers() []TxInput {
+	return []TxInput{tx.data.Modifier}
+}
+
+func (tx *PermissionsTx) Amount() uint64 {
+	return 0
+}
+
+func (tx *PermissionsTx) Fee() uint64 {
+	return tx.data.Modifier.Amount
+}
+
+func (tx *PermissionsTx) EnsureValid() error {
+	if tx.data.Modified.Amount != 0 {
+		return e.Error(e.ErrInvalidAmount)
+	}
+
+	if err := tx.data.Modified.ensureValid(); err != nil {
+		return err
+	}
+
+	if err := tx.data.Modifier.ensureValid(); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 /// ----------
 /// MARSHALING

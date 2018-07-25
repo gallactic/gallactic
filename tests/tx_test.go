@@ -36,7 +36,7 @@ func addReceiver(t *testing.T, tx *tx.SendTx, to string, amt uint64) *tx.SendTx 
 	return tx
 }
 
-func makeCallTx(t *testing.T, from string, addr *crypto.Address, data []byte, amt, fee uint64) *tx.CallTx {
+func makeCallTx(t *testing.T, from string, addr crypto.Address, data []byte, amt, fee uint64) *tx.CallTx {
 	acc := getAccountByName(t, from)
 	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, 210000, amt, fee)
 	assert.NoError(t, err)

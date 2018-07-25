@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/gallactic/gallactic/core/account"
-	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/blockchain"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs/tx"
@@ -20,7 +19,8 @@ func TestVM(t *testing.T) {
 	val := []*validator.Validator{
 		validator.NewValidator(crypto.GeneratePrivateKey(nil).PublicKey(), 1000, 0)}
 
-	gen := genesis.MakeGenesisDoc("bar", time.Now().Truncate(0), permission.AllPermissions, nil, val)
+	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
+	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, val)
 	db := dbm.NewMemDB()
 	bc, err := blockchain.LoadOrNewBlockchain(db, gen, logging.NewNoopLogger())
 	require.NoError(t, err)
@@ -30,7 +30,7 @@ func TestVM(t *testing.T) {
 	caller, _ := account.NewAccount(callerAddr)
 	callee, _ := account.NewAccount(calleeAddr)
 	callee.SetCode(createContractCode())
-	tx, _ := tx.NewCallTx(caller.Address(), &calleeAddr, 1, []byte{1}, 2100, 0, 100)
+	tx, _ := tx.NewCallTx(caller.Address(), calleeAddr, 1, []byte{1}, 2100, 0, 100)
 	var gas uint64
 
 	Call(bc, caller, callee, tx, &gas)

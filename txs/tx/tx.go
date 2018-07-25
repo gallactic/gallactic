@@ -60,7 +60,11 @@ func init() {
 }
 
 func TxTypeFromString(name string) Type {
-	return typeFromName[name]
+	t, ok := typeFromName[name]
+	if !ok {
+		return TypeUnknown
+	}
+	return t
 }
 
 func (typ Type) String() string {
@@ -83,29 +87,11 @@ func (typ *Type) UnmarshalText(data []byte) error {
 type Tx interface {
 	Signers() []TxInput
 	Type() Type
+	Amount() uint64
+	Fee() uint64
+	EnsureValid() error
 }
 
-/*
-func InAmount(tx Tx) uint64 {
-	inAmount := uint64(0)
-	for _, input := range tx.Inputs() {
-		inAmount += input.Amount
-	}
-	return inAmount
-}
-
-func OutAmount(tx Tx) uint64 {
-	outAmount := uint64(0)
-	for _, output := range tx.Outputs() {
-		outAmount += output.Amount
-	}
-	return outAmount
-}
-
-func Fee(tx Tx) uint64 {
-	return InAmount(tx) - OutAmount(tx)
-}
-*/
 func String(tx Tx) string {
 	bytes, err := json.Marshal(tx)
 	if err != nil {

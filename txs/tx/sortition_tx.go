@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/gallactic/errors"
 )
 
 type SortitionTx struct {
@@ -33,7 +34,34 @@ func NewSortitionTx(validator crypto.Address, height, index, sequence, fee uint6
 }
 
 func (tx *SortitionTx) Type() Type         { return TypeSortition }
-func (tx *SortitionTx) Signers() []TxInput { return []TxInput{tx.data.Validator} }
+func (tx *SortitionTx) Validator() TxInput { return tx.data.Validator }
+func (tx *SortitionTx) Height() uint64     { return tx.data.Height }
+func (tx *SortitionTx) Index() uint64      { return tx.data.Index }
+func (tx *SortitionTx) Proof() []byte      { return tx.data.Proof }
+
+func (tx *SortitionTx) Signers() []TxInput {
+	return []TxInput{tx.data.Validator}
+}
+
+func (tx *SortitionTx) Amount() uint64 {
+	return 0
+}
+
+func (tx *SortitionTx) Fee() uint64 {
+	return tx.data.Validator.Amount
+}
+
+func (tx *SortitionTx) EnsureValid() error {
+	if err := tx.data.Validator.ensureValid(); err != nil {
+		return err
+	}
+
+	if !tx.data.Validator.Address.IsValidatorAddress() {
+		return e.Error(e.ErrInvalidAddress)
+	}
+
+	return nil
+}
 
 /// ----------
 /// MARSHALING

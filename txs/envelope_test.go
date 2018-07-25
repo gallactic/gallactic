@@ -26,7 +26,7 @@ func TestCallMarshaling(t *testing.T) {
 	pv := crypto.GeneratePrivateKey(nil)
 	signer := crypto.NewAccountSigner(pv)
 	caller := signer.Address()
-	tx, err := tx.NewCallTx(caller, nil, 1, []byte{1, 2, 3}, 2100, 100, 200)
+	tx, err := tx.NewCallTx(caller, crypto.Address{}, 1, []byte{1, 2, 3}, 2100, 100, 200)
 	require.NoError(t, err)
 
 	testMarshaling(t, tx, signer)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/gallactic/errors"
 )
 
 type UnbondTx struct {
@@ -31,12 +32,45 @@ func NewUnbondTx(from, to crypto.Address, amount, sequence, fee uint64) *UnbondT
 	}
 }
 
-func (tx *UnbondTx) Type() Type           { return TypeUnbond }
-func (tx *UnbondTx) Signers() []TxInput   { return []TxInput{tx.data.From} }
-func (tx *UnbondTx) From() crypto.Address { return tx.data.From.Address }
-func (tx *UnbondTx) To() crypto.Address   { return tx.data.To.Address }
-func (tx *UnbondTx) Amount() uint64       { return tx.data.To.Amount }
-func (tx *UnbondTx) Fee() uint64          { return tx.data.From.Amount - tx.data.To.Amount }
+func (tx *UnbondTx) Type() Type    { return TypeUnbond }
+func (tx *UnbondTx) From() TxInput { return tx.data.From }
+func (tx *UnbondTx) To() TxOutput  { return tx.data.To }
+
+func (tx *UnbondTx) Signers() []TxInput {
+	return []TxInput{tx.data.From}
+}
+
+func (tx *UnbondTx) Amount() uint64 {
+	return tx.data.To.Amount
+}
+
+func (tx *UnbondTx) Fee() uint64 {
+	return tx.data.From.Amount - tx.data.To.Amount
+}
+
+func (tx *UnbondTx) EnsureValid() error {
+	if tx.data.To.Amount > tx.data.From.Amount {
+		return e.Error(e.ErrInsufficientFunds)
+	}
+
+	if err := tx.data.From.ensureValid(); err != nil {
+		return err
+	}
+
+	if err := tx.data.To.ensureValid(); err != nil {
+		return err
+	}
+
+	if !tx.data.From.Address.IsValidatorAddress() {
+		return e.Error(e.ErrInvalidAddress)
+	}
+
+	if !tx.data.To.Address.IsAccountAddress() {
+		return e.Error(e.ErrInvalidAddress)
+	}
+
+	return nil
+}
 
 /// ----------
 /// MARSHALING

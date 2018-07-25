@@ -33,12 +33,12 @@ func CallCode(bc *blockchain.Blockchain, caller, callee *account.Account, data [
 	st := bState{st: bc.State()}
 	txCache := burrowState.NewCache(st, burrowState.Name("TxCache"))
 	vm := burrowEVM.NewVM(params, bCaller.Address(), bTx, logging.NewNoopLogger())
-	vm.SetEventSink(nil)
+	eventSink := &noopEventSink{}
+	vm.SetEventSink(eventSink)
 	ret, exception := vm.Call(txCache, bCaller, bCallee, code, data, value, gas)
 	txCache.Flush(st, st)
 
 	return ret, exception
-
 }
 
 func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {

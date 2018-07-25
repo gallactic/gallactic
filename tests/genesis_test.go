@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"github.com/gallactic/gallactic/core/account"
-	"github.com/gallactic/gallactic/core/account/permission"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
@@ -32,7 +31,10 @@ func setupGenesis(m *testing.M) {
 		validator := validator.NewValidator(publicKey, stake, 0)
 		validators[i] = validator
 	}
-	tGenesis = genesis.MakeGenesisDoc("test-chain", time.Now(), permission.ZeroPermissions, accounts, validators)
+
+	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
+
+	tGenesis = proposal.MakeGenesis("test-chain", time.Now(), gAcc, accounts, nil, validators)
 	tChainID = tGenesis.ChainID()
 }
 
@@ -40,7 +42,7 @@ func TestGenesisDocFromJSON(t *testing.T) {
 	bs, err := tGenesis.MarshalJSON()
 	assert.NoError(t, err)
 
-	gen2 := new(genesis.Genesis)
+	gen2 := new(proposal.Genesis)
 	err = gen2.UnmarshalJSON(bs)
 	assert.NoError(t, err)
 

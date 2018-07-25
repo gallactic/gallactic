@@ -120,6 +120,11 @@ func (addr Address) MarshalAmino() ([]byte, error) {
 }
 
 func (addr *Address) UnmarshalAmino(bs []byte) error {
+	/// when the address is empty, unmarshal it as empty address
+	if len(bs) == 0 {
+		return nil
+	}
+
 	a, err := AddressFromRawBytes(bs)
 	if err != nil {
 		return err
@@ -134,6 +139,11 @@ func (addr Address) MarshalText() ([]byte, error) {
 }
 
 func (addr *Address) UnmarshalText(text []byte) error {
+	/// when the address is empty, unmarshal it as empty address
+	if len(text) == 0 {
+		return nil
+	}
+
 	a, err := AddressFromString(string(text))
 	if err != nil {
 		return err
@@ -184,12 +194,20 @@ func (addr Address) checksum() (chksum [4]byte) {
 	return
 }
 
+func (addr *Address) IsContractAddress() bool {
+	return addr.version() == contractAddress
+}
+
 func (addr *Address) IsValidatorAddress() bool {
 	return addr.version() == validatorAddress
 }
 
 func (addr *Address) IsAccountAddress() bool {
-	return addr.version() == accountAddress
+	if addr.version() == accountAddress {
+		return true
+	}
+
+	return addr.EqualsTo(GlobalAddress) /// Global address technically is an account address
 }
 
 func (addr Address) EqualsTo(right Address) bool {

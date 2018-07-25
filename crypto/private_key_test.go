@@ -16,15 +16,15 @@ func TestMarshalingEmptyPrivateKey(t *testing.T) {
 	assert.Equal(t, js, []byte("\"\""))
 	var pv2 PrivateKey
 	err = json.Unmarshal(js, &pv2)
-	assert.Error(t, err)
+	assert.Error(t, err) /// return error
 	assert.Equal(t, pv1, pv2)
 
 	bs, err := pv1.MarshalAmino()
 	assert.NoError(t, err)
 	assert.Equal(t, bs, []byte(nil))
 	var pv3 PrivateKey
-	err = json.Unmarshal(bs, &pv3)
-	assert.Error(t, err)
+	err = pv3.UnmarshalAmino(bs)
+	assert.Error(t, err) /// return error
 	assert.Equal(t, pv1, pv3)
 }
 

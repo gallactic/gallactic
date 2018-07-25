@@ -17,7 +17,7 @@ import (
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	tmv "github.com/gallactic/gallactic/core/consensus/tendermint/validator" // TODO:::
 	"github.com/gallactic/gallactic/core/execution"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/rpc"
@@ -49,8 +49,7 @@ type Kernel struct {
 	shutdownOnce   sync.Once
 }
 
-func NewKernel(ctx context.Context, gen *genesis.Genesis, conf *config.Config, passphrase string) (*Kernel, error) {
-
+func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, passphrase string) (*Kernel, error) {
 	if gen == nil {
 		return nil, fmt.Errorf("no Genesis defined, cannot make Kernel")
 	}

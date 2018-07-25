@@ -95,8 +95,12 @@ func (exe *executor) Execute(txEnv *txs.Envelope) (err error) {
 	logger.TraceMsg("Executing transaction", "tx", txEnv.String())
 
 	// Verify transaction signature against inputs
-	err = txEnv.Verify()
-	if err != nil {
+
+	if err = txEnv.Verify(); err != nil {
+		return err
+	}
+
+	if err = txEnv.Tx.EnsureValid(); err != nil {
 		return err
 	}
 

@@ -1,8 +1,6 @@
 package executors
 
 import (
-	"fmt"
-
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/evm/burrow"
 
@@ -51,15 +49,15 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 			"init_code", tx.Data())
 	} else {
 		// check if its a native contract
-		if evm.IsRegisteredNativeContract(tx.Callee().Word256()) {
-			return fmt.Errorf("attempt to call a native contract at %s, "+
+		if evm.IsRegisteredNativeContract(tx.Callee().Address.Word256()) {
+			return e.Errorf(e.ErrInvalidAddress, "attempt to call a native contract at %s, "+
 				"but native contracts cannot be called using CallTx. Use a "+
 				"contract that calls the native contract or the appropriate tx "+
 				"type (eg. PermissionsTx, NameTx)", tx.Callee())
 		}
 
 		/// TODO : write test for this case: create and call in same block
-		callee = ctx.Cache.GetAccount(*tx.Callee())
+		callee = ctx.Cache.GetAccount(tx.Callee().Address)
 
 		if ctx.Committing {
 			err := ctx.Deliver(tx, caller, callee)

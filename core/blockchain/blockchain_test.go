@@ -5,8 +5,7 @@ import (
 	"time"
 
 	"github.com/gallactic/gallactic/core/account"
-	"github.com/gallactic/gallactic/core/account/permission"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/hyperledger/burrow/logging"
@@ -20,7 +19,8 @@ func TestPersistedState(t *testing.T) {
 		validator.NewValidator(crypto.GeneratePrivateKey(nil).PublicKey(), 1000, 0)}
 
 	/// To strip monotonics from time use time.Truncate(0)
-	gen := genesis.MakeGenesisDoc("bar", time.Now().Truncate(0), permission.ZeroPermissions, nil, val)
+	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
+	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, val)
 	db := dbm.NewMemDB()
 	bc1, err := newBlockchain(db, gen, logging.NewNoopLogger())
 	require.NoError(t, err)

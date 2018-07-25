@@ -10,11 +10,6 @@ import (
 )
 
 func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*account.Account, error) {
-	// Check Input basic
-	if err := in.ValidateBasic(); err != nil {
-		return nil, err
-	}
-
 	acc := ch.GetAccount(in.Address)
 	if acc == nil {
 		return nil, e.Errorf(e.ErrInvalidAddress, "Account %s doesn't exist", in.Address)
@@ -38,11 +33,6 @@ func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*
 }
 
 func getOutputAccount(ch *state.Cache, out tx.TxOutput) (*account.Account, error) {
-	// Check Input basic
-	if err := out.ValidateBasic(); err != nil {
-		return nil, err
-	}
-
 	acc := ch.GetAccount(out.Address)
 
 	return acc, nil

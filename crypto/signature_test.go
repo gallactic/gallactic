@@ -17,15 +17,15 @@ func TestMarshalingEmptySignature(t *testing.T) {
 	assert.Equal(t, js, []byte("\"\""))
 	var sig2 Signature
 	err = json.Unmarshal(js, &sig2)
-	assert.Error(t, err)
+	assert.Error(t, err) /// return error
 	assert.Equal(t, sig1, sig2)
 
 	bs, err := sig1.MarshalAmino()
 	assert.NoError(t, err)
 	assert.Equal(t, bs, []byte(nil))
 	var sig3 Signature
-	err = json.Unmarshal(bs, &sig3)
-	assert.Error(t, err)
+	err = sig3.UnmarshalAmino(bs)
+	assert.Error(t, err) /// return error
 	assert.Equal(t, sig1, sig3)
 }
 

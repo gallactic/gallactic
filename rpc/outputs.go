@@ -7,7 +7,7 @@ import (
 
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
@@ -149,7 +149,7 @@ type UnconfirmedTxsOutput struct {
 }
 
 type GenesisOutput struct {
-	Genesis *genesis.Genesis
+	Genesis *proposal.Genesis
 }
 
 type BlockTxsOutput struct {

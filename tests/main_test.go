@@ -7,7 +7,7 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/execution"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/hyperledger/burrow/logging"
@@ -17,7 +17,7 @@ import (
 var tChainID string
 var tAccounts map[string]*account.Account
 var tSigners map[string]crypto.Signer /// private keys
-var tGenesis *genesis.Genesis
+var tGenesis *proposal.Genesis
 var tBC *blockchain.Blockchain
 var tDB dbm.DB
 var tState *state.State

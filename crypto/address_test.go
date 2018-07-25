@@ -40,15 +40,15 @@ func TestMarshalingEmptyAddress(t *testing.T) {
 	assert.Equal(t, js, []byte("\"\""))
 	var addr2 Address
 	err = json.Unmarshal(js, &addr2)
-	assert.Error(t, err)
+	assert.NoError(t, err) /// No Error
 	assert.Equal(t, addr1, addr2)
 
 	bs, err := addr1.MarshalAmino()
 	assert.NoError(t, err)
 	assert.Equal(t, bs, []byte(nil))
 	var addr3 Address
-	err = json.Unmarshal(bs, &addr3)
-	assert.Error(t, err)
+	err = addr3.UnmarshalAmino(bs)
+	assert.NoError(t, err) /// No error
 	assert.Equal(t, addr1, addr3)
 }
 

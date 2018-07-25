@@ -8,7 +8,7 @@ import (
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/abci"
 	"github.com/gallactic/gallactic/core/execution"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
@@ -76,7 +76,7 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 	return n, nil
 }
 
-func DeriveGenesisDoc(gen *genesis.Genesis) *tmTypes.GenesisDoc {
+func DeriveGenesisDoc(gen *proposal.Genesis) *tmTypes.GenesisDoc {
 	validators := make([]tmTypes.GenesisValidator, len(gen.Validators()))
 	for i, validator := range gen.Validators() {
 		tm := tmCrypto.PubKeyEd25519{}

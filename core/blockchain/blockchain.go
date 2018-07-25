@@ -6,10 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gallactic/gallactic/core/account"
-	"github.com/gallactic/gallactic/core/genesis"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
-	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/hyperledger/burrow/logging"
 	dbm "github.com/tendermint/tendermint/libs/db"
@@ -26,14 +24,14 @@ type Blockchain struct {
 }
 
 type blockchainData struct {
-	Genesis         *genesis.Genesis `json:"genesisDoc"`
-	LastAppHash     []byte           `json:"lastAppHash"`
-	LastBlockHash   []byte           `json:"lastBlockHash"`
-	LastBlockHeight uint64           `json:"lastBlockHeight"`
-	LastBlockTime   time.Time        `json:"lastBlockTime"`
+	Genesis         *proposal.Genesis `json:"genesis"`
+	LastAppHash     []byte            `json:"lastAppHash"`
+	LastBlockHash   []byte            `json:"lastBlockHash"`
+	LastBlockHeight uint64            `json:"lastBlockHeight"`
+	LastBlockTime   time.Time         `json:"lastBlockTime"`
 }
 
-func LoadOrNewBlockchain(db dbm.DB, gen *genesis.Genesis, logger *logging.Logger) (*Blockchain, error) {
+func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*Blockchain, error) {
 
 	logger = logger.WithScope("LoadOrNewBlockchain")
 	logger.InfoMsg("Trying to load blockchain state from database",
@@ -57,7 +55,7 @@ func LoadOrNewBlockchain(db dbm.DB, gen *genesis.Genesis, logger *logging.Logger
 }
 
 // Pointer to blockchain state initialized from genesis
-func newBlockchain(db dbm.DB, gen *genesis.Genesis, logger *logging.Logger) (*Blockchain, error) {
+func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*Blockchain, error) {
 	if len(gen.Validators()) == 0 {
 		return nil, fmt.Errorf("The genesis file has no validators")
 	}
@@ -76,16 +74,15 @@ func newBlockchain(db dbm.DB, gen *genesis.Genesis, logger *logging.Logger) (*Bl
 		}
 	}
 
-	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
-	gAcc.SetPermissions(gen.GlobalPermissions())
-
-	err := st.UpdateAccount(gAcc)
-	if err != nil {
-		return nil, err
+	for _, acc := range gen.Accounts() {
+		err := st.UpdateAccount(acc)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// We need to save at least once so that readTree points at a non-working-state tree
-	_, err = st.SaveState()
+	hash, err := st.SaveState()
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +95,7 @@ func newBlockchain(db dbm.DB, gen *genesis.Genesis, logger *logging.Logger) (*Bl
 		data: &blockchainData{
 			Genesis:       gen,
 			LastBlockTime: gen.GenesisTime(),
-			LastAppHash:   gen.Hash(),
+			LastAppHash:   hash,
 		},
 	}
 	return bc, nil
@@ -136,13 +133,13 @@ func (bc *Blockchain) State() *state.State {
 	return bc.state
 }
 
-func (bc *Blockchain) ChainID() string           { return bc.chainID }
-func (bc *Blockchain) GenesisHash() []byte       { return bc.genesisHash }
-func (bc *Blockchain) Genesis() *genesis.Genesis { return bc.data.Genesis }
-func (bc *Blockchain) LastBlockHeight() uint64   { return bc.data.LastBlockHeight }
-func (bc *Blockchain) LastBlockTime() time.Time  { return bc.data.LastBlockTime }
-func (bc *Blockchain) LastBlockHash() []byte     { return bc.data.LastBlockHash }
-func (bc *Blockchain) LastAppHash() []byte       { return bc.data.LastAppHash }
+func (bc *Blockchain) ChainID() string            { return bc.chainID }
+func (bc *Blockchain) GenesisHash() []byte        { return bc.genesisHash }
+func (bc *Blockchain) Genesis() *proposal.Genesis { return bc.data.Genesis }
+func (bc *Blockchain) LastBlockHeight() uint64    { return bc.data.LastBlockHeight }
+func (bc *Blockchain) LastBlockTime() time.Time   { return bc.data.LastBlockTime }
+func (bc *Blockchain) LastBlockHash() []byte      { return bc.data.LastBlockHash }
+func (bc *Blockchain) LastAppHash() []byte        { return bc.data.LastAppHash }
 
 func (bc *Blockchain) CommitBlock(blockTime time.Time, blockHash []byte) ([]byte, error) {
 	// Checkpoint on the _previous_ block. If we die, this is where we will resume since we know it must have been

@@ -16,15 +16,15 @@ func TestMarshalingEmptyPublicKey(t *testing.T) {
 	assert.Equal(t, js, []byte("\"\""))
 	var pb2 PublicKey
 	err = json.Unmarshal(js, &pb2)
-	assert.Error(t, err)
+	assert.Error(t, err) /// return error
 	assert.Equal(t, pb1, pb2)
 
 	bs, err := pb1.MarshalAmino()
 	assert.NoError(t, err)
 	assert.Equal(t, bs, []byte(nil))
 	var pb3 PublicKey
-	err = json.Unmarshal(bs, &pb3)
-	assert.Error(t, err)
+	err = pb3.UnmarshalAmino(bs)
+	assert.Error(t, err) /// return error
 	assert.Equal(t, pb1, pb3)
 }
 
