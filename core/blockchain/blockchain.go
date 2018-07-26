@@ -74,13 +74,6 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 		}
 	}
 
-	for _, acc := range gen.Accounts() {
-		err := st.UpdateAccount(acc)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	// We need to save at least once so that readTree points at a non-working-state tree
 	hash, err := st.SaveState()
 	if err != nil {
