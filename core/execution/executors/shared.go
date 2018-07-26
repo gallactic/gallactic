@@ -10,9 +10,9 @@ import (
 )
 
 func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*account.Account, error) {
-	acc := ch.GetAccount(in.Address)
-	if acc == nil {
-		return nil, e.Errorf(e.ErrInvalidAddress, "Account %s doesn't exist", in.Address)
+	acc, err := ch.GetAccount(in.Address)
+	if err != nil {
+		return nil, err
 	}
 
 	// Check sequences
@@ -33,9 +33,9 @@ func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*
 }
 
 func getOutputAccount(ch *state.Cache, out tx.TxOutput) (*account.Account, error) {
-	acc := ch.GetAccount(out.Address)
+	acc, err := ch.GetAccount(out.Address)
 
-	return acc, nil
+	return acc, err
 }
 
 func adjustInputAccount(acc *account.Account, in tx.TxInput) error {
@@ -77,7 +77,7 @@ func adjustInputAccounts(accs map[crypto.Address]*account.Account, ins []tx.TxIn
 	for _, in := range ins {
 		acc := accs[in.Address]
 		if acc == nil {
-			return e.Error(e.ErrTxInvalidAddress)
+			return e.Error(e.ErrInvalidAddress)
 		}
 
 		err := acc.SubtractFromBalance(in.Amount)
@@ -94,7 +94,7 @@ func adjustOutputAccounts(accs map[crypto.Address]*account.Account, outs []tx.Tx
 	for _, out := range outs {
 		acc := accs[out.Address]
 		if acc == nil {
-			return e.Error(e.ErrTxInvalidAddress)
+			return e.Error(e.ErrInvalidAddress)
 		}
 
 		err := acc.AddToBalance(out.Amount)

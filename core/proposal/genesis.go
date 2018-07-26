@@ -54,6 +54,7 @@ type genesisData struct {
 	ChainName     string         `json:"chainName"`
 	GenesisTime   time.Time      `json:"genesisTime"`
 	MaximumPower  int            `json:"maximumPower"`
+	SortitionFee  int            `json:"sortitionFee"`
 	GlobalAccount globalAccount  `json:"global"`
 	Accounts      []genAccount   `json:"accounts"`
 	Contracts     []genContract  `json:"contracts"`

@@ -40,7 +40,7 @@ func TestMarshalingEmptyAddress(t *testing.T) {
 	assert.Equal(t, js, []byte("\"\""))
 	var addr2 Address
 	err = json.Unmarshal(js, &addr2)
-	assert.NoError(t, err) /// No Error
+	assert.NoError(t, err) /// No error
 	assert.Equal(t, addr1, addr2)
 
 	bs, err := addr1.MarshalAmino()

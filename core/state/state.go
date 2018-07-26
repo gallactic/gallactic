@@ -9,7 +9,6 @@ import (
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/errors"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/tendermint/iavl"
 	dbm "github.com/tendermint/tendermint/libs/db"
@@ -94,18 +93,18 @@ func LoadState(db dbm.DB, hash []byte, logger *logging.Logger) (*State, error) {
 	// Get the version associated with this state hash
 	ver, err := st.getVersion(hash)
 	if err != nil {
-		return nil, e.ErrorE(e.ErrLoadingState, err)
+		return nil, err
 	}
 	if ver <= 0 {
-		return nil, e.Errorf(e.ErrLoadingState, "Trying to load state from non-positive version. version %v, hash: %X", ver, hash)
+		return nil, fmt.Errorf("Trying to load state from non-positive version. version %v, hash: %X", ver, hash)
 	}
 
 	treeVer, err := st.vTree.LoadVersion(ver)
 	if err != nil {
-		return nil, e.ErrorE(e.ErrLoadingState, err)
+		return nil, err
 	}
 	if treeVer != ver {
-		return nil, e.Errorf(e.ErrLoadingState, "Trying to load state version %v for state hash %X but loaded version %v", ver, hash, treeVer)
+		return nil, fmt.Errorf("Trying to load state version %v for state hash %X but loaded version %v", ver, hash, treeVer)
 	}
 
 	st.tree = st.vTree.Tree()
@@ -119,10 +118,10 @@ func (st *State) SaveState() ([]byte, error) {
 
 	hash, version, err := st.vTree.SaveVersion()
 	if err != nil {
-		return nil, e.Errorf(e.ErrSavingState, err.Error())
+		return nil, err
 	}
 	if hash == nil {
-		return nil, e.Errorf(e.ErrSavingState, "The root is not set")
+		return nil, fmt.Errorf("IVAL root is not set")
 	}
 
 	// Provide a reference to load this version in the future from the state hash
@@ -154,23 +153,24 @@ func (st *State) setVersion(hash []byte, version int64) {
 // ACCOUNT
 
 func (st *State) GlobalAccount() *account.Account {
-	return st.GetAccount(crypto.GlobalAddress)
+	gAcc, _ := st.GetAccount(crypto.GlobalAddress)
+	return gAcc
 }
 
-func (st *State) GetAccount(addr crypto.Address) *account.Account {
+func (st *State) GetAccount(addr crypto.Address) (*account.Account, error) {
 	st.Lock()
 	defer st.Unlock()
 
 	_, bs := st.tree.Get(accountKey(addr))
 	if bs == nil {
-		return nil
+		return nil, fmt.Errorf("There is no account with this address %s", addr.String())
 	}
 	acc, err := account.AccountFromBytes(bs)
 	if err != nil {
-		panic("Unable to decode encoded Account")
+		return nil, fmt.Errorf("Unable to decode account: %v", err)
 	}
 
-	return acc
+	return acc, nil
 }
 
 func (st *State) UpdateAccount(acc *account.Account) error {
@@ -251,20 +251,20 @@ func (st *State) HasModifyPermission(acc *account.Account) bool {
 // ---------
 // VALIDATOR
 
-func (st *State) GetValidator(addr crypto.Address) *validator.Validator {
+func (st *State) GetValidator(addr crypto.Address) (*validator.Validator, error) {
 	st.Lock()
 	defer st.Unlock()
 
 	_, bytes := st.tree.Get(validatorKey(addr))
 	if bytes == nil {
-		return nil
+		return nil, fmt.Errorf("There is no validator with this address %s", addr.String())
 	}
 	val, err := validator.ValidatorFromBytes(bytes)
 	if err != nil {
-		panic("Unable to decode encoded validator")
+		return nil, fmt.Errorf("Unable to decode validator: %v", err)
 	}
 
-	return val
+	return val, nil
 }
 
 func (st *State) UpdateValidator(val *validator.Validator) error {
@@ -299,6 +299,9 @@ func (st *State) IterateValidators(consumer func(*validator.Validator) (stop boo
 		return consumer(validator)
 	}), nil
 }
+
+// -------
+// STORAGE
 
 func (st *State) GetStorage(addr crypto.Address, key binary.Word256) (binary.Word256, error) {
 	_, value := st.tree.Get(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()))

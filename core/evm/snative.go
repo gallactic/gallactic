@@ -174,7 +174,7 @@ func (contract *SNativeContractDescription) Dispatch(st *state.State, caller *ac
 	logger = logger.With(structure.ScopeKey, "Dispatch", "contract_name", contract.Name)
 
 	if len(args) < abi.FunctionSelectorLength {
-		return nil, e.Errorf(e.ErrVMNativeFunction,
+		return nil, e.Errorf(e.ErrNativeFunction,
 			"SNatives dispatch requires a 4-byte function identifier but arguments are only %v bytes long",
 			len(args))
 	}
@@ -197,7 +197,7 @@ func (contract *SNativeContractDescription) Dispatch(st *state.State, caller *ac
 
 	// ensure there are enough arguments
 	if len(remainingArgs) != function.NArgs()*binary.Word256Length {
-		return nil, e.Errorf(e.ErrVMNativeFunction, "%s() takes %d arguments but got %d (with %d bytes unconsumed - should be 0)",
+		return nil, e.Errorf(e.ErrNativeFunction, "%s() takes %d arguments but got %d (with %d bytes unconsumed - should be 0)",
 			function.Name, function.NArgs(), len(remainingArgs)/binary.Word256Length, len(remainingArgs)%binary.Word256Length)
 	}
 
@@ -218,7 +218,7 @@ func (contract *SNativeContractDescription) FunctionByID(id abi.FunctionSelector
 	f, ok := contract.functionsByID[id]
 	if !ok {
 		return nil,
-			e.Errorf(e.ErrVMNativeFunction, "unknown SNative function with ID %x", id)
+			e.Errorf(e.ErrNativeFunction, "unknown SNative function with ID %x", id)
 	}
 	return f, nil
 }
@@ -288,9 +288,9 @@ func hasPermissions(st *state.State, caller *account.Account, args []byte, gas *
 		return nil, err
 	}
 
-	acc := st.GetAccount(addr)
-	if acc == nil {
-		return nil, e.Error(e.ErrInvalidAddress)
+	acc, err := st.GetAccount(addr)
+	if err != nil {
+		return nil, err
 	}
 
 	perm := account.Permissions(binary.Uint64FromWord256(permNum))
@@ -316,9 +316,9 @@ func setPermissions(st *state.State, caller *account.Account, args []byte, gas *
 		return nil, err
 	}
 
-	acc := st.GetAccount(addr)
-	if acc != nil {
-		return nil, e.Error(e.ErrInvalidAddress)
+	acc, err := st.GetAccount(addr)
+	if err != nil {
+		return nil, err
 	}
 
 	perm := account.Permissions(binary.Uint64FromWord256(permNum))
@@ -347,9 +347,9 @@ func unsetPermissions(st *state.State, caller *account.Account, args []byte, gas
 		return nil, err
 	}
 
-	acc := st.GetAccount(addr)
-	if acc != nil {
-		return nil, e.Error(e.ErrInvalidAddress)
+	acc, err := st.GetAccount(addr)
+	if err != nil {
+		return nil, err
 	}
 
 	perm := account.Permissions(binary.Uint64FromWord256(permNum))

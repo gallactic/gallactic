@@ -28,6 +28,11 @@ func SignatureFromString(text string) (Signature, error) {
 }
 
 func SignatureFromRawBytes(bs []byte) (Signature, error) {
+	/// Check for empty signature
+	if len(bs) == 0 {
+		return Signature{}, nil
+	}
+
 	sig := Signature{
 		data: signatureData{
 			Signature: bs,

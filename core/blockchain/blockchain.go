@@ -8,7 +8,8 @@ import (
 
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
-	"github.com/gallactic/gallactic/errors"
+	"github.com/gallactic/gallactic/core/validator"
+	"github.com/gallactic/gallactic/crypto"
 	"github.com/hyperledger/burrow/logging"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
@@ -16,29 +17,31 @@ import (
 var stateKey = []byte("BlockchainState")
 
 type Blockchain struct {
-	chainID     string
-	genesisHash []byte
-	db          dbm.DB
-	state       *state.State
-	data        *blockchainData
+	chainID      string
+	genesisHash  []byte
+	db           dbm.DB
+	state        *state.State
+	data         *blockchainData
+	validatorSet *validator.ValidatorSet
 }
 
 type blockchainData struct {
 	Genesis         *proposal.Genesis `json:"genesis"`
-	LastAppHash     []byte            `json:"lastAppHash"`
-	LastBlockHash   []byte            `json:"lastBlockHash"`
-	LastBlockHeight uint64            `json:"lastBlockHeight"`
 	LastBlockTime   time.Time         `json:"lastBlockTime"`
+	LastBlockHeight uint64            `json:"lastBlockHeight"`
+	LastBlockHash   []byte            `json:"lastBlockHash"`
+	LastAppHash     []byte            `json:"lastAppHash"`
+	LastValidators  []crypto.Address  `json:"lastValidators"`
+	MaximumPower    int               `json:"maximumPower"`
 }
 
 func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*Blockchain, error) {
-
 	logger = logger.WithScope("LoadOrNewBlockchain")
 	logger.InfoMsg("Trying to load blockchain state from database",
 		"database_key", stateKey)
 	bc, err := loadBlockchain(db, logger)
 	if err != nil {
-		return nil, e.Errorf(e.ErrGeneric, "error loading blockchain state from database: %v", err)
+		return nil, fmt.Errorf("error loading blockchain state from database: %v", err)
 	}
 	if bc != nil {
 		dbHash := bc.genesisHash
@@ -47,11 +50,19 @@ func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logge
 			return nil, fmt.Errorf("Genesis passed to LoadOrNewBlockchain has hash: 0x%X, which does not "+
 				"match the one found in database: 0x%X", argHash, dbHash)
 		}
-		return bc, nil
 	}
 
 	logger.InfoMsg("No existing blockchain state found in database, making new blockchain")
-	return newBlockchain(db, gen, logger)
+	bc, err = newBlockchain(db, gen, logger)
+	if err != nil {
+		return nil, fmt.Errorf("error creating blockchain from genesis doc: %v", err)
+	}
+
+	if err := bc.loadValidatorSet(); err != nil {
+		return nil, err
+	}
+
+	return bc, nil
 }
 
 // Pointer to blockchain state initialized from genesis
@@ -68,17 +79,17 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 
 	// Make accounts state tree
 	for _, acc := range gen.Accounts() {
-		err := st.UpdateAccount(acc)
-		if err != nil {
+		if err := st.UpdateAccount(acc); err != nil {
 			return nil, err
 		}
 	}
 
-	for _, acc := range gen.Accounts() {
-		err := st.UpdateAccount(acc)
-		if err != nil {
+	var vals []crypto.Address
+	for _, val := range gen.Validators() {
+		if err := st.UpdateValidator(val); err != nil {
 			return nil, err
 		}
+		vals = append(vals, val.Address())
 	}
 
 	// We need to save at least once so that readTree points at a non-working-state tree
@@ -93,9 +104,11 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 		db:          db,
 		state:       st,
 		data: &blockchainData{
-			Genesis:       gen,
-			LastBlockTime: gen.GenesisTime(),
-			LastAppHash:   gen.Hash(),
+			Genesis:        gen,
+			LastBlockTime:  gen.GenesisTime(),
+			MaximumPower:   gen.MaximumPower(),
+			LastAppHash:    gen.Hash(),
+			LastValidators: vals,
 		},
 	}
 	return bc, nil
@@ -155,10 +168,16 @@ func (bc *Blockchain) CommitBlock(blockTime time.Time, blockHash []byte) ([]byte
 		return nil, err
 	}
 
+	vals := make([]crypto.Address, 0)
+	for addr, _ := range bc.validatorSet.Validators() {
+		vals = append(vals, addr)
+	}
+
 	bc.data.LastBlockHeight++
 	bc.data.LastBlockTime = blockTime
 	bc.data.LastBlockHash = blockHash
 	bc.data.LastAppHash = appHash
+	bc.data.LastValidators = vals
 	return appHash, nil
 }
 
@@ -170,5 +189,20 @@ func (bc *Blockchain) save() error {
 		}
 		bc.db.SetSync(stateKey, bytes)
 	}
+	return nil
+}
+
+func (bc *Blockchain) loadValidatorSet() error {
+	valMap := make(map[crypto.Address]*validator.Validator)
+	for _, addr := range bc.data.LastValidators {
+		val, err := bc.state.GetValidator(addr)
+		if err != nil {
+			return err
+		}
+
+		valMap[addr] = val
+	}
+
+	bc.validatorSet = validator.NewValidatorSet(valMap, bc.data.MaximumPower)
 	return nil
 }

@@ -83,11 +83,6 @@ func signAndExecute(t *testing.T, errorCode int, tx tx.Tx, names ...string) *txs
 
 	return env
 }
-func getAccountByName(t *testing.T, name string) *account.Account {
-	acc := tState.GetAccount(tAccounts[name].Address())
-	require.NotNil(t, acc)
-	return acc
-}
 
 func setPermissions(t *testing.T, name string, perm account.Permissions) {
 	acc := getAccountByName(t, name)
@@ -104,7 +99,7 @@ func getBalance(t *testing.T, name string) uint64 {
 }
 
 func getBalanceByAddress(t *testing.T, addr crypto.Address) uint64 {
-	acc := tState.GetAccount(addr)
+	acc := getAccount(t, addr)
 	require.NotNil(t, acc)
 	return acc.Balance()
 }
@@ -114,7 +109,7 @@ func checkBalance(t *testing.T, name string, amt uint64) {
 }
 
 func checkBalanceByAddress(t *testing.T, addr crypto.Address, amt uint64) {
-	acc := tState.GetAccount(addr)
+	acc := getAccount(t, addr)
 	require.NotNil(t, acc)
 	assert.Equal(t, acc.Balance(), amt)
 }

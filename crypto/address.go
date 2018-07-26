@@ -72,6 +72,10 @@ func AccountAddress(bs []byte) (Address, error) {
 	return addressFromHash(bs, accountAddress)
 }
 
+func ValidatorAddress(bs []byte) (Address, error) {
+	return addressFromHash(bs, validatorAddress)
+}
+
 /// this is a private constructor
 func addressFromHash(hash []byte, ver uint16) (Address, error) {
 	if len(hash) != 20 {
@@ -120,7 +124,7 @@ func (addr Address) MarshalAmino() ([]byte, error) {
 }
 
 func (addr *Address) UnmarshalAmino(bs []byte) error {
-	/// when the address is empty, unmarshal it as empty address
+	/// Unmarshal empty address
 	if len(bs) == 0 {
 		return nil
 	}
@@ -139,7 +143,7 @@ func (addr Address) MarshalText() ([]byte, error) {
 }
 
 func (addr *Address) UnmarshalText(text []byte) error {
-	/// when the address is empty, unmarshal it as empty address
+	/// Unmarshal empty address
 	if len(text) == 0 {
 		return nil
 	}

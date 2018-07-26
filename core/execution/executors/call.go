@@ -25,7 +25,7 @@ type CallContext struct {
 func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 	tx, ok := txEnv.Tx.(*tx.CallTx)
 	if !ok {
-		return e.Error(e.ErrTxWrongPayload)
+		return e.Error(e.ErrTxInvalidType)
 	}
 
 	caller, err := getInputAccount(ctx.Cache, tx.Caller(), permission.Call)
@@ -57,7 +57,10 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 		}
 
 		/// TODO : write test for this case: create and call in same block
-		callee = ctx.Cache.GetAccount(tx.Callee().Address)
+		callee, err = ctx.Cache.GetAccount(tx.Callee().Address)
+		if err != nil {
+			return err
+		}
 
 		if ctx.Committing {
 			err := ctx.Deliver(tx, caller, callee)

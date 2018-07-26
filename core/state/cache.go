@@ -112,13 +112,13 @@ func (ch *Cache) Flush() error {
 	return nil
 }
 
-func (ch *Cache) GetAccount(addr crypto.Address) *account.Account {
+func (ch *Cache) GetAccount(addr crypto.Address) (*account.Account, error) {
 	ch.Lock()
 	defer ch.Unlock()
 
 	i, ok := ch.accChanges[addr]
 	if ok {
-		return i.acc
+		return i.acc, nil
 	}
 
 	return ch.st.GetAccount(addr)
@@ -133,7 +133,7 @@ func (ch *Cache) UpdateAccount(acc *account.Account) error {
 
 }
 
-func (ch *Cache) GetValidator(addr crypto.Address) *validator.Validator {
+func (ch *Cache) GetValidator(addr crypto.Address) (*validator.Validator, error) {
 	ch.Lock()
 	defer ch.Unlock()
 	/*
@@ -153,7 +153,7 @@ func (ch *Cache) GetValidator(addr crypto.Address) *validator.Validator {
 
 		return val
 	*/
-	return nil
+	return nil, nil
 }
 
 func (ch *Cache) HasPermissions(acc *account.Account, perm account.Permissions) bool {

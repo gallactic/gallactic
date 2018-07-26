@@ -61,11 +61,11 @@ func ExecuteNativeContract(addr binary.Word256, st *state.State, caller *account
 	contract, ok := registeredNativeContracts[addr]
 	if !ok {
 		addr, _ := crypto.AddressFromWord256(addr)
-		return nil, e.Errorf(e.ErrVMNativeFunction, "no native contract registered at address: %v", addr)
+		return nil, e.Errorf(e.ErrNativeFunction, "no native contract registered at address: %v", addr)
 	}
 	output, err := contract(st, caller, input, gas, logger)
 	if err != nil {
-		return nil, e.Errorf(e.ErrVMNativeFunction, err.Error())
+		return nil, e.Errorf(e.ErrNativeFunction, err.Error())
 	}
 	return output, nil
 }
@@ -78,7 +78,7 @@ func sha256Func(st *state.State, caller *account.Account, input []byte, gas *uin
 	// Deduct gas
 	gasRequired := uint64((len(input)+31)/32)*GasSha256Word + GasSha256Base
 	if *gas < gasRequired {
-		return nil, e.Error(e.ErrVMInsufficientGas)
+		return nil, e.Error(e.ErrInsufficientGas)
 	} else {
 		*gas -= gasRequired
 	}
@@ -94,7 +94,7 @@ func ripemd160Func(st *state.State, caller *account.Account, input []byte, gas *
 	// Deduct gas
 	gasRequired := uint64((len(input)+31)/32)*GasRipemd160Word + GasRipemd160Base
 	if *gas < gasRequired {
-		return nil, e.Error(e.ErrVMInsufficientGas)
+		return nil, e.Error(e.ErrInsufficientGas)
 	} else {
 		*gas -= gasRequired
 	}
@@ -110,7 +110,7 @@ func identityFunc(st *state.State, caller *account.Account, input []byte, gas *u
 	// Deduct gas
 	gasRequired := uint64((len(input)+31)/32)*GasIdentityWord + GasIdentityBase
 	if *gas < gasRequired {
-		return nil, e.Error(e.ErrVMInsufficientGas)
+		return nil, e.Error(e.ErrInsufficientGas)
 	}
 
 	*gas -= gasRequired

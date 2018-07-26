@@ -32,6 +32,11 @@ func PrivateKeyFromString(text string) (PrivateKey, error) {
 }
 
 func PrivateKeyFromRawBytes(bs []byte) (PrivateKey, error) {
+	/// Check for empty private key
+	if len(bs) == 0 {
+		return PrivateKey{}, nil
+	}
+	
 	pv := PrivateKey{
 		data: privateKeyData{
 			PrivateKey: bs,

@@ -31,6 +31,11 @@ func PublicKeyFromString(text string) (PublicKey, error) {
 
 // PublicKeyFromRawBytes reads the raw bytes and returns an ed25519 public key.
 func PublicKeyFromRawBytes(bs []byte) (PublicKey, error) {
+	/// Check for empty public key
+	if len(bs) == 0 {
+		return PublicKey{}, nil
+	}
+
 	pb := PublicKey{
 		data: publicKeyData{
 			PublicKey: bs,

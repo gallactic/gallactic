@@ -34,9 +34,16 @@ func updateAccount(t *testing.T, acc *account.Account) {
 	require.NoError(t, err)
 }
 
+func getAccountByName(t *testing.T, name string) *account.Account {
+	acc := getAccount(t, tAccounts[name].Address())
+	require.NotNil(t, acc)
+	return acc
+}
+
 func getAccount(t *testing.T, addr crypto.Address) *account.Account {
-	account := tState.GetAccount(addr)
-	return account
+	acc, err := tState.GetAccount(addr)
+	assert.NoError(t, err)
+	return acc
 }
 
 func TestState_LoadingWrongHash(t *testing.T) {
@@ -76,8 +83,8 @@ func TestState_Loading(t *testing.T) {
 	st2 := loadState(t, hash2)
 	st3 := loadState(t, hash3)
 
-	foo2 := st2.GetAccount(foo.Address())
-	foo3 := st3.GetAccount(foo.Address())
+	foo2, _ := st2.GetAccount(foo.Address())
+	foo3, _ := st3.GetAccount(foo.Address())
 
 	require.Equal(t, uint64(1), foo2.Balance())
 	require.Equal(t, uint64(2), foo3.Balance())
@@ -106,8 +113,8 @@ func TestState_Loading2(t *testing.T) {
 
 	st2 := loadState(t, hash2)
 
-	foo3 := st2.GetAccount(foo.Address())
-	bar3 := st2.GetAccount(bar.Address())
+	foo3, _ := st2.GetAccount(foo.Address())
+	bar3, _ := st2.GetAccount(bar.Address())
 
 	require.Equal(t, uint64(1), foo3.Balance())
 	require.Equal(t, uint64(1), bar3.Balance())

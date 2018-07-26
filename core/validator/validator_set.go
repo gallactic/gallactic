@@ -2,7 +2,6 @@ package validator
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"sort"
 
@@ -30,33 +29,28 @@ func (vlp _validatorListProxy) validators(height int64) (*tmRPCTypes.ResultValid
 }
 
 type ValidatorSet struct {
-	data    validatorSetData
-	proxy   validatorListProxy
-	leavers []*Validator /// TODO: change to map
+	proxy        validatorListProxy
+	maximumPower int
+	leavers      map[crypto.Address]*Validator
+	validators   map[crypto.Address]*Validator
 }
 
-type validatorSetData struct {
-	MaximumPower int          `json:"maximumPower"`
-	Validators   []*Validator `json:"validators"`
-}
-
-func NewValidatorSet(validators []*Validator) *ValidatorSet {
+func NewValidatorSet(validators map[crypto.Address]*Validator, maximumPower int) *ValidatorSet {
 	set := &ValidatorSet{
-		data: validatorSetData{
-			Validators:   validators,
-			MaximumPower: minimumTendermintNode,
-		},
-		proxy: _validatorListProxy{},
+		validators:   validators,
+		leavers:      make(map[crypto.Address]*Validator),
+		maximumPower: maximumPower,
+		proxy:        _validatorListProxy{},
 	}
 	return set
 }
 
 // TotalPower equals to the number of validator in the set
 func (set *ValidatorSet) TotalPower() int {
-	return len(set.data.Validators)
+	return len(set.validators)
 }
 
-func (set *ValidatorSet) SetMaximumPower(maximumPower int) {
+func (set *ValidatorSet) UpdateMaximumPower(maximumPower int) {
 	if maximumPower > maximumTendermintNode {
 		maximumPower = maximumTendermintNode
 	}
@@ -65,23 +59,25 @@ func (set *ValidatorSet) SetMaximumPower(maximumPower int) {
 		maximumPower = minimumTendermintNode
 	}
 
-	set.data.MaximumPower = maximumPower
+	set.maximumPower = maximumPower
 }
 
 func (set *ValidatorSet) MaximumPower() int {
-	return set.data.MaximumPower
+	return set.maximumPower
 }
 
 func (set *ValidatorSet) AdjustPower(height int64) error {
 	/// first clear the slice
-	set.leavers = set.leavers[:0]
+	for k := range set.leavers {
+		delete(set.leavers, k)
+	}
 
-	dif := set.TotalPower() - set.data.MaximumPower
+	dif := set.TotalPower() - set.maximumPower
 	if dif <= 0 {
 		return nil
 	}
 
-	limit := set.data.MaximumPower/3 - 1
+	limit := set.maximumPower/3 - 1
 	if dif > limit {
 		dif = limit
 	}
@@ -90,8 +86,14 @@ func (set *ValidatorSet) AdjustPower(height int64) error {
 	var vals1 []*Validator
 	var vals2 []*tmTypes.Validator
 
-	vals1 = make([]*Validator, len(set.data.Validators))
-	copy(vals1, set.data.Validators)
+	/// initialize the validator slice
+	vals1 = make([]*Validator, len(set.validators))
+	i := 0
+	for _, v := range set.validators {
+		vals1[i] = v
+		i++
+	}
+
 	sort.SliceStable(vals1, func(i, j int) bool {
 		return bytes.Compare(vals1[i].Address().RawBytes(), vals1[j].Address().RawBytes()) < 0
 	})
@@ -159,24 +161,23 @@ func (set *ValidatorSet) AdjustPower(height int64) error {
 	}
 
 	// println(fmt.Sprintf("%v", vals1))
-	for _, v1 := range vals1 {
-		for i, v2 := range set.data.Validators {
-			if v1.Address().EqualsTo(v2.Address()) {
-				set.data.Validators = append(set.data.Validators[:i], set.data.Validators[i+1:]...)
-				set.leavers = append(set.leavers, v2)
-				break
-			}
+	for _, v := range vals1 {
+		a := v.Address()
+		v, ok := set.validators[a]
+		if ok {
+			delete(set.validators, a)
+			set.leavers[a] = v
 		}
 	}
 
 	return nil
 }
 
-func (set *ValidatorSet) Validators() []*Validator {
-	return set.data.Validators
+func (set *ValidatorSet) Validators() map[crypto.Address]*Validator {
+	return set.validators
 }
 
-func (set *ValidatorSet) Leavers() []*Validator {
+func (set *ValidatorSet) Leavers() map[crypto.Address]*Validator {
 	return set.leavers
 }
 
@@ -186,7 +187,7 @@ func (set *ValidatorSet) Join(val *Validator) error {
 	}
 
 	/// Welcome to the party!
-	set.data.Validators = append(set.data.Validators, val)
+	set.validators[val.Address()] = val
 	return nil
 }
 
@@ -195,35 +196,15 @@ func (set *ValidatorSet) ForceLeave(val *Validator) error {
 		return fmt.Errorf("This validator currently is not in the set: %v", val.Address())
 	}
 
-	for i, v := range set.data.Validators {
-		if v.Address().EqualsTo(val.Address()) {
-			set.data.Validators = append(set.data.Validators[:i], set.data.Validators[i+1:]...)
-			break
-		}
+	_, ok := set.validators[val.Address()]
+	if ok {
+		delete(set.validators, val.Address())
 	}
 
 	return nil
 }
 
 func (set *ValidatorSet) Contains(addr crypto.Address) bool {
-	for _, v := range set.data.Validators {
-		if v.Address().EqualsTo(addr) {
-			return true
-		}
-	}
-
-	return false
-}
-
-func (set ValidatorSet) MarshalJSON() ([]byte, error) {
-	return json.Marshal(set.data)
-}
-
-func (set *ValidatorSet) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &set.data)
-	if err != nil {
-		return err
-	}
-	set.proxy = _validatorListProxy{}
-	return nil
+	_, ok := set.validators[addr]
+	return ok
 }

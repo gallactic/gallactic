@@ -25,11 +25,11 @@ func (s bState) GetAccount(bAddr burrowCrypto.Address) (acm.Account, error) {
 	}
 
 	addr := fromBurrowAddress(bAddr, false)
-	acc := s.st.GetAccount(addr)
+	acc, _ := s.st.GetAccount(addr)
 
 	if acc == nil {
 		addr := fromBurrowAddress(bAddr, true)
-		acc = s.st.GetAccount(addr)
+		acc, _ = s.st.GetAccount(addr)
 	}
 
 	if acc == nil {

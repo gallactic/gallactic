@@ -181,8 +181,8 @@ func (s *Service) Genesis() *GenesisOutput {
 }
 
 func (s *Service) GetAccount(address crypto.Address) (*AccountOutput, error) {
-	acc := s.state.GetAccount(address)
-	if acc == nil {
+	acc, err := s.state.GetAccount(address)
+	if err != nil {
 		return nil, nil //TODO we should return a proper error!
 	}
 	return &AccountOutput{Account: acc}, nil
@@ -204,11 +204,6 @@ func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*Accounts
 }
 
 func (s *Service) GetStorage(address crypto.Address, key []byte) (*StorageOutput, error) {
-	acc := s.state.GetAccount(address)
-	if acc == nil {
-		return nil, fmt.Errorf("UnknownAddress: %s", address)
-	}
-
 	value, err := s.state.GetStorage(address, binary.LeftPadWord256(key))
 	if err != nil {
 		return nil, err
@@ -220,10 +215,6 @@ func (s *Service) GetStorage(address crypto.Address, key []byte) (*StorageOutput
 }
 
 func (s *Service) DumpStorage(address crypto.Address) (*DumpstorageOutput, error) {
-	acc := s.state.GetAccount(address)
-	if acc == nil {
-		return nil, fmt.Errorf("UnknownAddress: %X", address)
-	}
 
 	var storageItems []StorageItem
 	s.state.IterateStorage(address, func(key, value binary.Word256) (stop bool) {

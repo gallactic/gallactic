@@ -104,7 +104,7 @@ func DeriveConfig(conf *config.Config) *tmConfig.Config {
 	tmConf.P2P.PersistentPeers = conf.Tendermint.PersistentPeers
 	tmConf.P2P.ListenAddress = conf.Tendermint.ListenAddress
 	tmConf.Moniker = conf.Tendermint.Moniker
-	tmConf.RPC.ListenAddress = "tcp://0.0.0.0:0"
+	tmConf.RPC.ListenAddress = "tcp://0.0.0.0:0" /// TODO: change it to localhost:0
 
 	return tmConf
 }
