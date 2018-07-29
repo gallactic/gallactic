@@ -21,11 +21,14 @@ import (
 )
 
 const (
+	//Scrypt parameters
 	keyHeaderKDF = "scrypt"
-	scryptN      = 2
-	scryptP      = 1
-	scryptR      = 8
 	scryptDKLen  = 32
+
+	//TODO : should be configurable
+	scryptN = 2
+	scryptP = 1
+	scryptR = 8
 
 	// number of bits in a big.Word
 	wordBits = 32 << (uint64(^big.Word(0)) >> 63)
@@ -33,7 +36,7 @@ const (
 	wordBytes = wordBits / 8
 	version   = 3
 
-	filePath = "/tmp/"
+	dirPath = "/tmp/"
 )
 
 type encryptedKeyJSONV3 struct {
@@ -54,9 +57,10 @@ type cipherparamsJSON struct {
 	IV string `json:"iv"`
 }
 
-// DecryptKeyFile returns an instance of Key object
-func DecryptKeyFile(file, auth string) (*Key, error) {
-	data, err := ioutil.ReadFile(file)
+// DecryptKeyFile decrypts the file and returns Key
+func DecryptKeyFile(auth, fname string) (*Key, error) {
+	filePath := dirPath + fname;
+	data, err := ioutil.ReadFile(filePath)
 
 	kj := new(encryptedKeyJSONV3)
 	if err := json.Unmarshal(data, kj); err != nil {
@@ -76,6 +80,7 @@ func DecryptKeyFile(file, auth string) (*Key, error) {
 	}, nil
 }
 
+//DecryptKey decrypts the Key from a json blob and returns the plaintext of the private key
 func DecryptKey(kj *encryptedKeyJSONV3, auth string) (keyBytes []byte, err error) {
 
 	if kj.Crypto.Cipher != "aes-128-ctr" {
@@ -144,8 +149,18 @@ func getKDFKey(cryptoJSON cryptoJSON, auth string) ([]byte, error) {
 	return nil, fmt.Errorf("Unsupported KDF: %s", cryptoJSON.KDF)
 }
 
-// EncryptKeyFile encrypts a key and return encrypted byte array
-func EncryptKeyFile(key *Key, auth string) ([]byte, error) {
+func EncryptKeyFile(key *Key, auth, fname string) error {
+	bs, err := EncryptKey(key, auth)
+	if err != nil {
+		return err
+	}
+	filePath := dirPath + fname //TODO : should be configurable
+
+	return writeKeyFile(filePath, bs)
+}
+
+// EncryptKey encrypts a key and returns the encrypted byte array
+func EncryptKey(key *Key, auth string) ([]byte, error) {
 	authArray := []byte(auth)
 	salt := GetEntropyCSPRNG(32)
 	derivedKey, err := scrypt.Key(authArray, salt, scryptN, scryptR, scryptP, scryptDKLen)
@@ -191,21 +206,6 @@ func EncryptKeyFile(key *Key, auth string) ([]byte, error) {
 	return json.Marshal(encryptedKeyJSONV3)
 }
 
-func storeNewKey(k *Key, auth, fname string) error {
-
-	bs, err := EncryptKeyFile(k, auth)
-	if err != nil {
-		return err
-	}
-
-	fileName := filePath + fname
-	error := writeKeyFile(fileName, bs)
-	if error != nil {
-		return error
-	}
-	return nil
-}
-
 func GetEntropyCSPRNG(n int) []byte {
 	mainBuff := make([]byte, n)
 	_, err := io.ReadFull(crand.Reader, mainBuff)
@@ -227,8 +227,6 @@ func aesCTRXOR(key, inText, iv []byte) ([]byte, error) {
 	return outText, err
 }
 
-// why do integers in KDF params end up as float64 and not int after
-// unmarshal?
 func ensureInt(x interface{}) int {
 	res, ok := x.(int)
 	if !ok {

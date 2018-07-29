@@ -1,7 +1,6 @@
 package key
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
 	"testing"
@@ -16,23 +15,15 @@ func TestEncryption(t *testing.T) {
 
 	fname := fmt.Sprintf("%s.json", k1.Address().String())
 
-	//Encrypts Private Key
-	data, err := EncryptKeyFile(k1, auth)
+	//Encrypts the key json blob
+	err := EncryptKeyFile(k1, auth, fname)
 	assert.NoError(t, err)
-
-	err = storeNewKey(k1, auth, fname)
-	assert.NoError(t, err)
-
-	kj := new(encryptedKeyJSONV3)
-	if err := json.Unmarshal(data, kj); err != nil {
-		assert.NoError(t, err)
-	}
 
 	//Decrypts Json Object
-	k2, err := DecryptKeyFile(filePath+fname, auth)
+	k2, err := DecryptKeyFile(auth, fname)
 	assert.NoError(t, err)
 
-	if !reflect.DeepEqual(k1.data.PrivateKey, k2.data.PrivateKey) {
+	if !reflect.DeepEqual(k1, k2) {
 		t.Fatal(err)
 	}
 }
