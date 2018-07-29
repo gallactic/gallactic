@@ -23,7 +23,13 @@ func TestEncryption(t *testing.T) {
 	k2, err := DecryptKeyFile(auth, fname)
 	assert.NoError(t, err)
 
-	if !reflect.DeepEqual(k1, k2) {
+	if !reflect.DeepEqual(k1.data.Address, k2.data.Address) {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(k1.data.PublicKey, k2.data.PublicKey) {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(k1.data.PrivateKey, k2.data.PrivateKey) {
 		t.Fatal(err)
 	}
 }
