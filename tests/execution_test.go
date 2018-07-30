@@ -18,6 +18,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+/// TODO : test fro sequence increase. +1 after tx get successfull. 0: if not successfull. +2: for create contract
+
 var _fee uint64 = 10
 
 func setupBatchChecker(m *testing.M) {

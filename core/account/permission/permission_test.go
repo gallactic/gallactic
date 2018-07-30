@@ -31,7 +31,7 @@ func TestModifying(t *testing.T) {
 }
 
 func TestAccountPermissions(t *testing.T) {
-	acc := account.NewAccountFromSecret("Super Semi Secret")
+	acc := account.NewAccountFromSecret("PERM")
 	acc.SetPermissions(Call)
 	assert.Equal(t, acc.Permissions(), Call)
 	acc.SetPermissions(CreateChain)

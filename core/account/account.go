@@ -91,15 +91,14 @@ func (acc *Account) IncSequence() {
 	acc.data.Sequence++
 }
 
-func (acc *Account) SetPermissions(perm Permissions) (error, Permissions) {
-
+func (acc *Account) SetPermissions(perm Permissions) error {
 	acc.data.Permissions.Set(perm)
-	return nil, acc.Permissions()
+	return nil
 }
 
-func (acc *Account) UnsetPermissions(perm Permissions) (error, Permissions) {
+func (acc *Account) UnsetPermissions(perm Permissions) error {
 	acc.data.Permissions.Unset(perm)
-	return nil, acc.Permissions()
+	return nil
 }
 
 ///---- Serialization methods

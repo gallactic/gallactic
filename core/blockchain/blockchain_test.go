@@ -22,7 +22,7 @@ func TestPersistedState(t *testing.T) {
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
 	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, val)
 	db := dbm.NewMemDB()
-	bc1, err := newBlockchain(db, gen, logging.NewNoopLogger())
+	bc1, err := LoadOrNewBlockchain(db, gen, logging.NewNoopLogger())
 	require.NoError(t, err)
 
 	hash1, err := bc1.CommitBlock(time.Now().Truncate(0), []byte{1, 2})

@@ -130,7 +130,7 @@ func (env *Envelope) Sign(signers ...crypto.Signer) error {
 	env.Signatories = env.Signatories[:0]
 	signBytes, err := env.SignBytes()
 	if err != nil {
-		return e.ErrorE(e.ErrInvalidSignature, err)
+		return err
 	}
 
 	signerMap := make(map[crypto.Address]crypto.Signer)

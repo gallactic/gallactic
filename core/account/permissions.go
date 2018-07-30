@@ -29,10 +29,9 @@ func (p Permissions) MarshalText() ([]byte, error) {
 	return []byte(str), nil
 }
 
-func (p *Permissions) UnmarshalJSON(bs []byte) error {
-	cleaned := string(bs)
+func (p *Permissions) UnmarshalText(text []byte) error {
+	cleaned := string(text)
 	cleaned = strings.Replace(cleaned, "0x", "", -1)
-	cleaned = strings.Replace(cleaned, "\"", "", -1)
 
 	val, err := strconv.ParseUint(cleaned, 16, 64)
 	if err != nil {

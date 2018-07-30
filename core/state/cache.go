@@ -23,7 +23,7 @@ const (
 type Cache struct {
 	sync.Mutex
 	name       string
-	st         *State
+	state      *State
 	valChanges map[crypto.Address]*validatorInfo
 	accChanges map[crypto.Address]*accountInfo
 }
@@ -39,9 +39,9 @@ type accountInfo struct {
 
 type CacheOption func(*Cache)
 
-func NewCache(st *State, options ...CacheOption) *Cache {
+func NewCache(state *State, options ...CacheOption) *Cache {
 	ch := &Cache{
-		st:         st,
+		state:      state,
 		valChanges: make(map[crypto.Address]*validatorInfo),
 		accChanges: make(map[crypto.Address]*accountInfo),
 	}
@@ -53,89 +53,84 @@ func NewCache(st *State, options ...CacheOption) *Cache {
 }
 
 func Name(name string) CacheOption {
-	return func(ch *Cache) {
-		ch.name = name
+	return func(c *Cache) {
+		c.name = name
 	}
 }
 
-func (ch *Cache) Reset() {
-	for a := range ch.accChanges {
-		delete(ch.accChanges, a)
+func (c *Cache) Reset() {
+	for a := range c.accChanges {
+		delete(c.accChanges, a)
 	}
 
-	for v := range ch.valChanges {
-		delete(ch.valChanges, v)
+	for v := range c.valChanges {
+		delete(c.valChanges, v)
 	}
 }
 
 //
-func (ch *Cache) Flush() error {
-	ch.Lock()
-	defer ch.Unlock()
-	for _, i := range ch.accChanges {
-		if err := ch.st.UpdateAccount(i.acc); err != nil {
+func (c *Cache) Flush(set *validator.ValidatorSet) error {
+	c.Lock()
+	defer c.Unlock()
+	for _, i := range c.accChanges {
+		if err := c.state.UpdateAccount(i.acc); err != nil {
 			return err
 		}
 	}
-	/*
-		for _, valInfo := range ch.valChanges {
-			switch valInfo.status {
-			case addToSet:
-				if err := pool.set.Join(valInfo.validator); err != nil {
-					return err
-				}
+	for _, i := range c.valChanges {
+		switch i.status {
+		case addToSet:
+			if err := set.Join(i.val); err != nil {
+				return err
+			}
 
-			case updateValidator, addToPool:
-				bytes, err := valInfo.validator.Encode()
-				if err != nil {
-					return err
-				}
+		case updateValidator, addToPool:
+			if err := c.state.UpdateValidator(i.val); err != nil {
+				return err
+			}
 
-				if !pool.tree.Set(validatorKey(valInfo.validator.Address()), bytes) {
-					return fmt.Errorf("Unable to set validator to tree")
-				}
+		case removeFromPool:
+			if err := set.ForceLeave(i.val); err != nil {
+				/// when the node is byzantine
+				return err
+			}
 
-			case removeFromPool:
-				if err := pool.set.ForceLeave(valInfo.validator); err != nil {
-					/// when the node is byzantine
-					return err
-				}
-
-				if _, removed := pool.tree.Remove(validatorKey(valInfo.validator.Address())); !removed {
-					return fmt.Errorf("Unable to remove validator from tree")
-				}
+			if err := c.state.RemoveValidator(i.val); err != nil {
+				return err
 			}
 		}
+	}
 
-		pool.clear()
-	*/
 	return nil
 }
 
-func (ch *Cache) GetAccount(addr crypto.Address) (*account.Account, error) {
-	ch.Lock()
-	defer ch.Unlock()
+func (c *Cache) GetAccount(addr crypto.Address) (*account.Account, error) {
+	c.Lock()
+	defer c.Unlock()
 
-	i, ok := ch.accChanges[addr]
+	i, ok := c.accChanges[addr]
 	if ok {
 		return i.acc, nil
 	}
 
-	return ch.st.GetAccount(addr)
+	return c.state.GetAccount(addr)
 }
 
-func (ch *Cache) UpdateAccount(acc *account.Account) error {
-	ch.Lock()
-	defer ch.Unlock()
+func (c *Cache) UpdateAccount(acc *account.Account) error {
+	c.Lock()
+	defer c.Unlock()
 
-	ch.accChanges[acc.Address()] = &accountInfo{acc: acc}
+	c.accChanges[acc.Address()] = &accountInfo{acc: acc}
 	return nil
-
 }
 
-func (ch *Cache) GetValidator(addr crypto.Address) (*validator.Validator, error) {
-	ch.Lock()
-	defer ch.Unlock()
+func (c *Cache) HasPermissions(acc *account.Account, perm account.Permissions) bool {
+	return c.state.HasPermissions(acc, perm)
+}
+
+func (c *Cache) GetValidator(addr crypto.Address) (*validator.Validator, error) {
+	c.Lock()
+	defer c.Unlock()
 	/*
 		valInfo, ok := pool.changes[addr]
 		if ok {
@@ -156,13 +151,9 @@ func (ch *Cache) GetValidator(addr crypto.Address) (*validator.Validator, error)
 	return nil, nil
 }
 
-func (ch *Cache) HasPermissions(acc *account.Account, perm account.Permissions) bool {
-	return ch.st.HasPermissions(acc, perm)
-}
-
-func (ch *Cache) AddToPool(val *validator.Validator) error {
-	ch.Lock()
-	defer ch.Unlock()
+func (c *Cache) AddToPool(val *validator.Validator) error {
+	c.Lock()
+	defer c.Unlock()
 	/*
 		address := validator.Address()
 		_, ok := pool.changes[address]
@@ -178,9 +169,9 @@ func (ch *Cache) AddToPool(val *validator.Validator) error {
 	return nil
 }
 
-func (ch *Cache) AddToSet(val *validator.Validator) error {
-	ch.Lock()
-	defer ch.Unlock()
+func (c *Cache) AddToSet(val *validator.Validator) error {
+	c.Lock()
+	defer c.Unlock()
 	/*
 		address := validator.Address()
 		_, ok := pool.changes[address]
@@ -196,9 +187,9 @@ func (ch *Cache) AddToSet(val *validator.Validator) error {
 	return nil
 }
 
-func (ch *Cache) RemoveFromPool(val *validator.Validator) error {
-	ch.Lock()
-	defer ch.Unlock()
+func (c *Cache) RemoveFromPool(val *validator.Validator) error {
+	c.Lock()
+	defer c.Unlock()
 	/*
 		address := validator.Address()
 		_, ok := pool.changes[address]
@@ -214,9 +205,9 @@ func (ch *Cache) RemoveFromPool(val *validator.Validator) error {
 	return nil
 }
 
-func (ch *Cache) UpdateValidator(val *validator.Validator) error {
-	ch.Lock()
-	defer ch.Unlock()
+func (c *Cache) UpdateValidator(val *validator.Validator) error {
+	c.Lock()
+	defer c.Unlock()
 	/*
 		address := validator.Address()
 		_, ok := pool.changes[address]

@@ -8,6 +8,7 @@ import (
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
+
 	"github.com/hyperledger/burrow/logging"
 )
 
@@ -20,7 +21,7 @@ type SendContext struct {
 func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {
 	tx, ok := txEnv.Tx.(*tx.SendTx)
 	if !ok {
-		return e.Error(e.ErrTxInvalidType)
+		return e.Error(e.ErrInvalidTxType)
 	}
 
 	accs := make(map[crypto.Address]*account.Account)

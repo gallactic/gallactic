@@ -84,6 +84,14 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 		}
 	}
 
+	var vals []crypto.Address
+	for _, val := range gen.Validators() {
+		if err := st.UpdateValidator(val); err != nil {
+			return nil, err
+		}
+		vals = append(vals, val.Address())
+	}
+
 	// We need to save at least once so that readTree points at a non-working-state tree
 	_, err := st.SaveState()
 	if err != nil {
@@ -145,6 +153,10 @@ func (bc *Blockchain) LastBlockHeight() uint64    { return bc.data.LastBlockHeig
 func (bc *Blockchain) LastBlockTime() time.Time   { return bc.data.LastBlockTime }
 func (bc *Blockchain) LastBlockHash() []byte      { return bc.data.LastBlockHash }
 func (bc *Blockchain) LastAppHash() []byte        { return bc.data.LastAppHash }
+
+func (bc *Blockchain) ValidatorSet() *validator.ValidatorSet {
+	return bc.validatorSet
+}
 
 func (bc *Blockchain) CommitBlock(blockTime time.Time, blockHash []byte) ([]byte, error) {
 	// Checkpoint on the _previous_ block. If we die, this is where we will resume since we know it must have been

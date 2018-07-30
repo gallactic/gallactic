@@ -3,7 +3,6 @@ package executors
 import (
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/evm/burrow"
-
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/evm"
@@ -11,6 +10,7 @@ import (
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
+	
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 )
@@ -25,7 +25,7 @@ type CallContext struct {
 func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 	tx, ok := txEnv.Tx.(*tx.CallTx)
 	if !ok {
-		return e.Error(e.ErrTxInvalidType)
+		return e.Error(e.ErrInvalidTxType)
 	}
 
 	caller, err := getInputAccount(ctx.Cache, tx.Caller(), permission.Call)

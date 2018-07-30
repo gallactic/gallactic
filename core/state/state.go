@@ -276,8 +276,15 @@ func (st *State) UpdateValidator(val *validator.Validator) error {
 		return err
 	}
 
-	st.tree.Set(accountKey(val.Address()), bs)
+	st.tree.Set(validatorKey(val.Address()), bs)
+	return nil
+}
 
+func (st *State) RemoveValidator(val *validator.Validator) error {
+	st.Lock()
+	defer st.Unlock()
+
+	st.tree.Remove(validatorKey(val.Address()))
 	return nil
 }
 

@@ -10,6 +10,7 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
+
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 )
@@ -119,7 +120,7 @@ func (exe *executor) Commit() (err error) {
 		}
 	}()
 
-	return exe.cache.Flush()
+	return exe.cache.Flush(exe.bc.ValidatorSet()) /// TODO: better way???
 }
 
 func (exe *executor) Reset() error {

@@ -326,8 +326,7 @@ func setPermissions(st *state.State, caller *account.Account, args []byte, gas *
 		return nil, e.Error(e.ErrPermInvalid)
 	}
 
-	err, _ = acc.SetPermissions(perm)
-	if err != nil {
+	if err := acc.SetPermissions(perm); err != nil {
 		return nil, err
 	}
 	st.UpdateAccount(acc)
@@ -357,8 +356,7 @@ func unsetPermissions(st *state.State, caller *account.Account, args []byte, gas
 		return nil, e.Error(e.ErrPermInvalid)
 	}
 
-	err, _ = acc.UnsetPermissions(perm)
-	if err != nil {
+	if err = acc.UnsetPermissions(perm); err != nil {
 		return nil, err
 	}
 	st.UpdateAccount(acc)

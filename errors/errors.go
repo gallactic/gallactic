@@ -8,20 +8,19 @@ const (
 	ErrNone = iota
 	ErrGeneric
 	ErrTimeOut
-	ErrMultipleErrors
 	ErrInvalidAddress
 	ErrInvalidPublicKey
 	ErrInvalidPrivateKey
 	ErrInvalidSignature
-	ErrDuplicateAddress
 	ErrInvalidAmount
-	ErrInsufficientFunds
 	ErrInvalidSequence
+	ErrInvalidTxType
+	ErrDuplicateAddress
+	ErrInsufficientFunds
+	ErrInsufficientGas
 	ErrPermInvalid
 	ErrPermDenied
 	ErrNativeFunction
-	ErrInsufficientGas
-	ErrTxInvalidType
 
 	errCount
 )
@@ -30,20 +29,19 @@ var messages = map[int]string{
 	ErrNone:              "No error",
 	ErrGeneric:           "Generic error",
 	ErrTimeOut:           "Timeout error",
-	ErrMultipleErrors:    "Multiple errors",
 	ErrInvalidAddress:    "Invalid address",
 	ErrInvalidPublicKey:  "Invalid public key",
 	ErrInvalidPrivateKey: "Invalid private key",
 	ErrInvalidSignature:  "Invalid signature",
-	ErrDuplicateAddress:  "error duplicate address",
 	ErrInvalidAmount:     "error invalid amount",
-	ErrInsufficientFunds: "error insufficient funds",
 	ErrInvalidSequence:   "Error invalid sequence",
+	ErrInvalidTxType:     "Invalid transaction type",
+	ErrDuplicateAddress:  "error duplicate address",
+	ErrInsufficientFunds: "error insufficient funds",
+	ErrInsufficientGas:   "Insufficient Gas",
 	ErrPermInvalid:       "Invalid permission",
 	ErrPermDenied:        "Permission denied",
 	ErrNativeFunction:    "Error on calling native contracts",
-	ErrInsufficientGas:   "Insufficient Gas",
-	ErrTxInvalidType:     "Invalid transaction type",
 }
 
 type withCode struct {
@@ -63,20 +61,6 @@ func Error(code int) error {
 	}
 }
 
-func Errors(errors ...error) error {
-	message := messages[ErrMultipleErrors]
-
-	for _, err := range errors {
-		message += "\n"
-		message += err.Error()
-	}
-
-	return &withCode{
-		code:    ErrMultipleErrors,
-		message: message,
-	}
-}
-
 func Errorf(code int, format string, a ...interface{}) error {
 	message, ok := messages[code]
 	if !ok {
@@ -86,18 +70,6 @@ func Errorf(code int, format string, a ...interface{}) error {
 	return &withCode{
 		code:    code,
 		message: message + ": " + fmt.Sprintf(format, a...),
-	}
-}
-
-func ErrorE(code int, err error) error {
-	message, ok := messages[code]
-	if !ok {
-		message = "Unknown error code"
-	}
-
-	return &withCode{
-		code:    code,
-		message: message + ": " + err.Error(),
 	}
 }
 
