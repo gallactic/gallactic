@@ -84,14 +84,6 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 		}
 	}
 
-	var vals []crypto.Address
-	for _, val := range gen.Validators() {
-		if err := st.UpdateValidator(val); err != nil {
-			return nil, err
-		}
-		vals = append(vals, val.Address())
-	}
-
 	// We need to save at least once so that readTree points at a non-working-state tree
 	_, err := st.SaveState()
 	if err != nil {
