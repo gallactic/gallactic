@@ -75,7 +75,7 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 	}
 
 	// We need to save at least once so that readTree points at a non-working-state tree
-	hash, err := st.SaveState()
+	_, err := st.SaveState()
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 		data: &blockchainData{
 			Genesis:       gen,
 			LastBlockTime: gen.GenesisTime(),
-			LastAppHash:   hash,
+			LastAppHash:   gen.Hash(),
 		},
 	}
 	return bc, nil

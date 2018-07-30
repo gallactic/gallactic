@@ -8,12 +8,15 @@ import (
 )
 
 func TestEncryption(t *testing.T) {
+	auth := "1234"
+	//Generates Private Key
 	k1 := GenAccountKey()
-
 	fname := fmt.Sprintf("%s.json", k1.Address().String())
-	err := EncryptKeyFile(k1, fname, "1234")
+	//Encrypts the key json blob
+	err := EncryptKeyFile(k1, auth, fname)
 	assert.NoError(t, err)
-	k2, err := DecryptKeyFile(fname, "1234")
+	//Decrypts Json Object
+	k2, err := DecryptKeyFile(auth, fname)
 	assert.NoError(t, err)
 	assert.Equal(t, k1, k2)
 }
