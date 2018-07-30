@@ -3,9 +3,9 @@ package tx
 import (
 	"encoding/json"
 
-	"github.com/gallactic/gallactic/errors"
-
+	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/gallactic/errors"
 )
 
 type CallTx struct {
@@ -13,10 +13,10 @@ type CallTx struct {
 }
 
 type callData struct {
-	Caller   TxInput  `json:"caller"`
-	Callee   TxOutput `json:"callee"`
-	GasLimit uint64   `json:"gasLimit"`
-	Data     []byte   `json:"data,omitempty"`
+	Caller   TxInput         `json:"caller"`
+	Callee   TxOutput        `json:"callee"`
+	GasLimit uint64          `json:"gasLimit"`
+	Data     binary.HexBytes `json:"data,omitempty"`
 }
 
 func NewCallTx(caller, callee crypto.Address, sequence uint64, data []byte, gasLimit, amount, fee uint64) (*CallTx, error) {
