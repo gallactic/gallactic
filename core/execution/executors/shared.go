@@ -34,8 +34,11 @@ func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*
 }
 
 func getOutputAccount(ch *state.Cache, out tx.TxOutput) (*account.Account, error) {
-	acc, err := ch.GetAccount(out.Address)
-	return acc, err
+	if !ch.HasAccount(out.Address) {
+		return nil, nil
+	}
+
+	return ch.GetAccount(out.Address)
 }
 
 func getInputValidator(ch *state.Cache, in tx.TxInput) (*validator.Validator, error) {
@@ -58,8 +61,10 @@ func getInputValidator(ch *state.Cache, in tx.TxInput) (*validator.Validator, er
 }
 
 func getOutputValidator(ch *state.Cache, out tx.TxOutput) (*validator.Validator, error) {
-	val, err := ch.GetValidator(out.Address)
-	return val, err
+	if !ch.HasValidator(out.Address) {
+		return nil, nil
+	}
+	return ch.GetValidator(out.Address)
 }
 
 func getInputAccounts(ch *state.Cache, ins []tx.TxInput, req account.Permissions, accs map[crypto.Address]*account.Account) error {
@@ -76,7 +81,6 @@ func getInputAccounts(ch *state.Cache, ins []tx.TxInput, req account.Permissions
 }
 
 func getOutputAccounts(ch *state.Cache, outs []tx.TxOutput, accs map[crypto.Address]*account.Account) error {
-
 	for _, out := range outs {
 		acc, err := getOutputAccount(ch, out)
 		if err != nil {

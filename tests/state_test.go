@@ -6,6 +6,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/state"
+	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -44,6 +45,18 @@ func getAccount(t *testing.T, addr crypto.Address) *account.Account {
 	acc, err := tState.GetAccount(addr)
 	assert.NoError(t, err)
 	return acc
+}
+
+func getValidatorByName(t *testing.T, name string) *validator.Validator {
+	val := getValidator(t, tValidators[name].Address())
+	require.NotNil(t, val)
+	return val
+}
+
+func getValidator(t *testing.T, addr crypto.Address) *validator.Validator {
+	val, err := tState.GetValidator(addr)
+	assert.NoError(t, err)
+	return val
 }
 
 func TestState_LoadingWrongHash(t *testing.T) {

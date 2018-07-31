@@ -15,16 +15,16 @@ import (
 func TestValidatorSet(t *testing.T) {
 	publicKeys := generatePublickKeys()
 	validators := make(map[crypto.Address]*Validator)
-	validators[publicKeys[0].ValidatorAddress()] = NewValidator(publicKeys[0], 100, 1)
-	validators[publicKeys[1].ValidatorAddress()] = NewValidator(publicKeys[1], 200, 1)
-	validators[publicKeys[2].ValidatorAddress()] = NewValidator(publicKeys[2], 300, 1)
-	validators[publicKeys[3].ValidatorAddress()] = NewValidator(publicKeys[3], 400, 1)
-	validators[publicKeys[4].ValidatorAddress()] = NewValidator(publicKeys[4], 500, 1)
-	validators[publicKeys[5].ValidatorAddress()] = NewValidator(publicKeys[5], 600, 1)
+	validators[publicKeys[0].ValidatorAddress()], _ = NewValidator(publicKeys[0], 1)
+	validators[publicKeys[1].ValidatorAddress()], _ = NewValidator(publicKeys[1], 1)
+	validators[publicKeys[2].ValidatorAddress()], _ = NewValidator(publicKeys[2], 1)
+	validators[publicKeys[3].ValidatorAddress()], _ = NewValidator(publicKeys[3], 1)
+	validators[publicKeys[4].ValidatorAddress()], _ = NewValidator(publicKeys[4], 1)
+	validators[publicKeys[5].ValidatorAddress()], _ = NewValidator(publicKeys[5], 1)
 
 	vs := NewValidatorSet(validators, 8)
 
-	val := NewValidator(publickKeyFromSecret("z"), 100, 1)
+	val, _ := NewValidator(publickKeyFromSecret("z"), 1)
 
 	err := vs.ForceLeave(val)
 	assert.Error(t, err)
@@ -151,7 +151,7 @@ func TestAdjusting(t *testing.T) {
 	var err error
 
 	for i, p := range publicKeys {
-		validators[i] = NewValidator(p, 1, 100)
+		validators[i], _ = NewValidator(p, 1)
 	}
 
 	for i := 0; i < 4; i++ {

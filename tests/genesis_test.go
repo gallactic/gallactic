@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"math/rand"
 	"testing"
 	"time"
 
@@ -13,9 +12,8 @@ import (
 )
 
 func setupGenesis(m *testing.M) {
-	numValidators := 80
 	accounts := make([]*account.Account, len(tAccounts))
-	validators := make([]*validator.Validator, numValidators)
+	validators := make([]*validator.Validator, len(tValidators))
 
 	i := 0
 	for _, acc := range tAccounts {
@@ -23,13 +21,10 @@ func setupGenesis(m *testing.M) {
 		i++
 	}
 
-	for i := 0; i < numValidators; i++ {
-		stake := rand.New(rand.NewSource(int64(i))).Uint64()
-		privateKey := crypto.GeneratePrivateKey(nil)
-		publicKey := privateKey.PublicKey()
-
-		validator := validator.NewValidator(publicKey, stake, 0)
-		validators[i] = validator
+	i = 0
+	for _, val := range tValidators {
+		validators[i] = val
+		i++
 	}
 
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)

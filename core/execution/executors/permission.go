@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/gallactic/gallactic/core/account/permission"
-	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
@@ -15,7 +14,6 @@ import (
 
 type PermissionContext struct {
 	Committing bool
-	BC         *blockchain.Blockchain
 	Cache      *state.Cache
 	Logger     *logging.Logger
 }

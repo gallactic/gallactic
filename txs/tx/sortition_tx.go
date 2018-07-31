@@ -18,7 +18,7 @@ type sortitionData struct {
 	Proof     []byte  `json:"proof"`
 }
 
-func NewSortitionTx(validator crypto.Address, height, index, sequence, fee uint64, proof []byte) *SortitionTx {
+func NewSortitionTx(validator crypto.Address, height, index, sequence, fee uint64, proof []byte) (*SortitionTx, error) {
 	return &SortitionTx{
 		data: sortitionData{
 			Validator: TxInput{
@@ -30,7 +30,7 @@ func NewSortitionTx(validator crypto.Address, height, index, sequence, fee uint6
 			Index:  index,
 			Proof:  proof,
 		},
-	}
+	}, nil
 }
 
 func (tx *SortitionTx) Type() Type         { return TypeSortition }
@@ -66,7 +66,7 @@ func (tx *SortitionTx) EnsureValid() error {
 /// ----------
 /// MARSHALING
 
-func (tx *SortitionTx) MarshalAmino() ([]byte, error) {
+func (tx SortitionTx) MarshalAmino() ([]byte, error) {
 	return cdc.MarshalBinary(tx.data)
 }
 

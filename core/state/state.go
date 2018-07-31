@@ -157,6 +157,10 @@ func (st *State) GlobalAccount() *account.Account {
 	return gAcc
 }
 
+func (st *State) HasAccount(addr crypto.Address) bool {
+	return st.tree.Has(accountKey(addr))
+}
+
 func (st *State) GetAccount(addr crypto.Address) (*account.Account, error) {
 	st.Lock()
 	defer st.Unlock()
@@ -250,6 +254,10 @@ func (st *State) HasModifyPermission(acc *account.Account) bool {
 
 // ---------
 // VALIDATOR
+
+func (st *State) HasValidator(addr crypto.Address) bool {
+	return st.tree.Has(validatorKey(addr))
+}
 
 func (st *State) GetValidator(addr crypto.Address) (*validator.Validator, error) {
 	st.Lock()

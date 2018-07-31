@@ -16,11 +16,11 @@ import (
 )
 
 func TestVM(t *testing.T) {
-	val := []*validator.Validator{
-		validator.NewValidator(crypto.GeneratePrivateKey(nil).PublicKey(), 1000, 0)}
+	val1, _ := validator.NewValidator(crypto.GeneratePrivateKey(nil).PublicKey(), 0)
+	vals := []*validator.Validator{val1}
 
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
-	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, val)
+	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, vals)
 	db := dbm.NewMemDB()
 	bc, err := blockchain.LoadOrNewBlockchain(db, gen, logging.NewNoopLogger())
 	require.NoError(t, err)

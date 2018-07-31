@@ -78,6 +78,22 @@ func newExecutor(name string, committing bool, bc *blockchain.Blockchain, logger
 			Cache:      exe.cache,
 			Logger:     exe.logger,
 		},
+		tx.TypePermissions: &executors.PermissionContext{
+			Committing: committing,
+			Cache:      exe.cache,
+			Logger:     exe.logger,
+		},
+		tx.TypeBond: &executors.BondContext{
+			Committing: committing,
+			BC:         bc,
+			Cache:      exe.cache,
+			Logger:     exe.logger,
+		},
+		tx.TypeUnbond: &executors.UnbondContext{
+			Committing: committing,
+			Cache:      exe.cache,
+			Logger:     exe.logger,
+		},
 	}
 	return exe
 }

@@ -20,15 +20,16 @@ type validatorData struct {
 	Sequence      uint64           `json:"sequence"`
 }
 
-func NewValidator(publicKey crypto.PublicKey, stake, bondingHeight uint64) *Validator {
-	return &Validator{
+func NewValidator(publicKey crypto.PublicKey, bondingHeight uint64) (*Validator, error) {
+	val := &Validator{
 		data: validatorData{
 			PublicKey:     publicKey,
-			Stake:         stake,
 			BondingHeight: bondingHeight,
+			Stake:         0,
 			Sequence:      0,
 		},
 	}
+	return val, nil
 }
 
 func (val *Validator) Address() crypto.Address     { return val.data.PublicKey.ValidatorAddress() }

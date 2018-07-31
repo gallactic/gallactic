@@ -7,23 +7,35 @@ type Signer interface {
 }
 
 type signer struct {
-	pv PrivateKey
+	address    Address
+	publicKey  PublicKey
+	privateKey PrivateKey
 }
 
 func NewAccountSigner(pv PrivateKey) Signer {
 	return &signer{
-		pv: pv,
+		privateKey: pv,
+		publicKey:  pv.PublicKey(),
+		address:    pv.PublicKey().AccountAddress(),
+	}
+}
+
+func NewValidatorSigner(pv PrivateKey) Signer {
+	return &signer{
+		privateKey: pv,
+		publicKey:  pv.PublicKey(),
+		address:    pv.PublicKey().ValidatorAddress(),
 	}
 }
 
 func (s *signer) Address() Address {
-	return s.PublicKey().AccountAddress()
+	return s.address
 }
 
 func (s *signer) PublicKey() PublicKey {
-	return s.pv.PublicKey()
+	return s.publicKey
 }
 
 func (s *signer) Sign(msg []byte) (Signature, error) {
-	return s.pv.Sign(msg)
+	return s.privateKey.Sign(msg)
 }
