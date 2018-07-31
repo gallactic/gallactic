@@ -30,7 +30,7 @@ func TestMarshalingEmptySignature(t *testing.T) {
 }
 
 func TestMarshalingSignature(t *testing.T) {
-	privKey := GeneratePrivateKey(nil)
+	_, privKey := GenerateKey(nil)
 	sig1, err := privKey.Sign([]byte("Test message"))
 	require.NoError(t, err)
 

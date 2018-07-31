@@ -20,7 +20,7 @@ func makeBondTx(t *testing.T, from, to string, amount, fee uint64) *tx.BondTx {
 	if to != "" {
 		toPb = tValidators[to].PublicKey()
 	} else {
-		toPb = crypto.GeneratePrivateKey(nil).PublicKey()
+		toPb, _ = crypto.GenerateKey(nil)
 	}
 
 	tx, err := tx.NewBondTx(acc.Address(), toPb, amount, acc.Sequence()+1, fee)

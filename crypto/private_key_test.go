@@ -29,7 +29,7 @@ func TestMarshalingEmptyPrivateKey(t *testing.T) {
 }
 
 func TestMarshalingPrivateKey(t *testing.T) {
-	pv1 := GeneratePrivateKey(nil)
+	_, pv1 := GenerateKey(nil)
 	js, err := json.Marshal(&pv1)
 	assert.NoError(t, err)
 

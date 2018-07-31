@@ -14,7 +14,7 @@ import (
 )
 
 func TestSendMarshaling(t *testing.T) {
-	pv := crypto.GeneratePrivateKey(nil)
+	_, pv := crypto.GenerateKey(nil)
 	signer := crypto.NewAccountSigner(pv)
 	sender := signer.Address()
 	tx, err := tx.NewSendTx(sender, crypto.GlobalAddress, 1, 100, 200)
@@ -24,7 +24,7 @@ func TestSendMarshaling(t *testing.T) {
 }
 
 func TestCallMarshaling(t *testing.T) {
-	pv := crypto.GeneratePrivateKey(nil)
+	_, pv := crypto.GenerateKey(nil)
 	signer := crypto.NewAccountSigner(pv)
 	caller := signer.Address()
 	tx, err := tx.NewCallTx(caller, crypto.Address{}, 1, []byte{1, 2, 3}, 2100, 100, 200)
@@ -34,10 +34,11 @@ func TestCallMarshaling(t *testing.T) {
 }
 
 func TestPermissionMarshaling(t *testing.T) {
-	pv := crypto.GeneratePrivateKey(nil)
+	_, pv := crypto.GenerateKey(nil)
+	pk, _ := crypto.GenerateKey(nil)
 	signer := crypto.NewAccountSigner(pv)
 	modifier := signer.Address()
-	modified := crypto.GeneratePrivateKey(nil).PublicKey().AccountAddress()
+	modified := pk.AccountAddress()
 	tx, err := tx.NewPermissionsTx(modifier, modified, permission.Call, true, 1, 100)
 	require.NoError(t, err)
 
@@ -45,21 +46,22 @@ func TestPermissionMarshaling(t *testing.T) {
 }
 
 func TestBondMarshaling(t *testing.T) {
-	pv := crypto.GeneratePrivateKey(nil)
+	_, pv := crypto.GenerateKey(nil)
+	pk, _ := crypto.GenerateKey(nil)
 	signer := crypto.NewAccountSigner(pv)
 	from := signer.Address()
-	to := crypto.GeneratePrivateKey(nil).PublicKey()
-	tx, err := tx.NewBondTx(from, to, 9999, 1, 100)
+	tx, err := tx.NewBondTx(from, pk, 9999, 1, 100)
 	require.NoError(t, err)
 
 	testMarshaling(t, tx, signer)
 }
 
 func TestUnbondMarshaling(t *testing.T) {
-	pv := crypto.GeneratePrivateKey(nil)
+	_, pv := crypto.GenerateKey(nil)
+	pk, _ := crypto.GenerateKey(nil)
 	signer := crypto.NewValidatorSigner(pv)
 	from := pv.PublicKey().ValidatorAddress()
-	to := crypto.GeneratePrivateKey(nil).PublicKey().AccountAddress()
+	to := pk.AccountAddress()
 	tx, err := tx.NewUnbondTx(from, to, 9999, 1, 100)
 	require.NoError(t, err)
 
@@ -67,7 +69,7 @@ func TestUnbondMarshaling(t *testing.T) {
 }
 
 func TestSortitionMarshaling(t *testing.T) {
-	pv := crypto.GeneratePrivateKey(nil)
+	_, pv := crypto.GenerateKey(nil)
 	signer := crypto.NewValidatorSigner(pv)
 	val := pv.PublicKey().ValidatorAddress()
 	tx, err := tx.NewSortitionTx(val, 1, 555, 1, 100, []byte{1, 2, 3})
@@ -120,9 +122,9 @@ func testMarshaling(t *testing.T, tx tx.Tx, signer crypto.Signer) {
 }
 
 func TestSignature(t *testing.T) {
-	privKey1 := crypto.GeneratePrivateKey(nil)
-	privKey2 := crypto.GeneratePrivateKey(nil)
-	privKey3 := crypto.GeneratePrivateKey(nil)
+	_, privKey1 := crypto.GenerateKey(nil)
+	_, privKey2 := crypto.GenerateKey(nil)
+	_, privKey3 := crypto.GenerateKey(nil)
 
 	pubKey1 := privKey1.PublicKey()
 	pubKey2 := privKey2.PublicKey()
