@@ -32,7 +32,7 @@ func addReceiver(t *testing.T, tx *tx.SendTx, to string, amt uint64) *tx.SendTx 
 	if to != "" {
 		toAddress = tAccounts[to].Address()
 	} else {
-		toAddress = generateNewAccountAddress(t)
+		toAddress = newAccountAddress(t)
 	}
 
 	tx.AddReceiver(toAddress, amt)

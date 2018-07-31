@@ -16,7 +16,8 @@ import (
 )
 
 func TestVM(t *testing.T) {
-	val1, _ := validator.NewValidator(crypto.GeneratePrivateKey(nil).PublicKey(), 0)
+	pk, _ := crypto.GenerateKey(nil)
+	val1, _ := validator.NewValidator(pk, 0)
 	vals := []*validator.Validator{val1}
 
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)

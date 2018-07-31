@@ -240,7 +240,7 @@ func TestCreateContractPermission2(t *testing.T) {
 
 	// call to contract that calls unknown account - without create_account perm
 	// create contract that calls the simple contract
-	newAddress := generateNewAccountAddress(t)
+	newAddress := newAccountAddress(t)
 	contractCode := callContractCode(newAddress, 3)
 	_, caller1Addr := makeContractAccount(t, contractCode, 0, 0)
 

@@ -45,8 +45,13 @@ func setupAccountPool(m *testing.M) {
 	}
 }
 
+func newAccountAddress(t *testing.T) crypto.Address {
+	pb, _ := crypto.GenerateKey(nil)
+	return pb.AccountAddress()
+}
+
 func makeAccount(t *testing.T, bal uint64, perm account.Permissions) (*account.Account, crypto.Address) {
-	acc, err := account.NewAccount(generateNewAccountAddress(t))
+	acc, err := account.NewAccount(newAccountAddress(t))
 	require.NoError(t, err)
 	acc.SetPermissions(perm)
 	acc.AddToBalance(bal)

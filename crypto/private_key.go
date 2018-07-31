@@ -36,7 +36,7 @@ func PrivateKeyFromRawBytes(bs []byte) (PrivateKey, error) {
 	if len(bs) == 0 {
 		return PrivateKey{}, nil
 	}
-	
+
 	pv := PrivateKey{
 		data: privateKeyData{
 			PrivateKey: bs,
@@ -54,17 +54,19 @@ func PrivateKeyFromSecret(secret string) PrivateKey {
 	hasher := sha256.New()
 	hasher.Write(([]byte)(secret))
 
-	return GeneratePrivateKey(bytes.NewBuffer(hasher.Sum(nil)))
+	_, pv := GenerateKey(bytes.NewBuffer(hasher.Sum(nil)))
+	return pv
 }
 
-func GeneratePrivateKey(random io.Reader) PrivateKey {
+func GenerateKey(random io.Reader) (PublicKey, PrivateKey) {
 	if random == nil {
 		random = rand.Reader
 	}
 	// No error from a buffer
-	_, privKey, _ := ed25519.GenerateKey(random)
+	pubKey, privKey, _ := ed25519.GenerateKey(random)
+	pk, _ := PublicKeyFromRawBytes(pubKey)
 	pv, _ := PrivateKeyFromRawBytes(privKey)
-	return pv
+	return pk, pv
 }
 
 /// -------

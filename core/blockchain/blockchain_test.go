@@ -15,7 +15,8 @@ import (
 )
 
 func TestPersistedState(t *testing.T) {
-	val1, _ := validator.NewValidator(crypto.GeneratePrivateKey(nil).PublicKey(), 0)
+	pb, _ := crypto.GenerateKey(nil)
+	val1, _ := validator.NewValidator(pb, 0)
 	vals := []*validator.Validator{val1}
 
 	/// To strip monotonics from time use time.Truncate(0)

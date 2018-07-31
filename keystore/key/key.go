@@ -15,23 +15,23 @@ type keyData struct {
 }
 
 func GenAccountKey() *Key {
-	pv := crypto.GeneratePrivateKey(nil)
+	pk, pv := crypto.GenerateKey(nil)
 	return &Key{
 		data: keyData{
 			PrivateKey: pv,
-			PublicKey:  pv.PublicKey(),
-			Address:    pv.PublicKey().AccountAddress(),
+			PublicKey:  pk,
+			Address:    pk.AccountAddress(),
 		},
 	}
 }
 
 func GenValidatorKey() *Key {
-	pv := crypto.GeneratePrivateKey(nil)
+	pk, pv := crypto.GenerateKey(nil)
 	return &Key{
 		data: keyData{
 			PrivateKey: pv,
-			PublicKey:  pv.PublicKey(),
-			Address:    pv.PublicKey().ValidatorAddress(),
+			PublicKey:  pk,
+			Address:    pk.ValidatorAddress(),
 		},
 	}
 }
