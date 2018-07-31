@@ -40,8 +40,9 @@ const (
 )
 
 type encryptedKeyJSONV3 struct {
-	Crypto  cryptoJSON `json:"crypto"`
-	Version int        `json:"version"`
+	Address crypto.Address `json:address`
+	Crypto  cryptoJSON     `json:"crypto"`
+	Version int            `json:"version"`
 }
 
 type cryptoJSON struct {
@@ -64,30 +65,16 @@ func DecryptKeyFile(auth, fname string) (*Key, error) {
 	if err != nil {
 		return nil, err
 	}
-	kj := new(encryptedKeyJSONV3)
-	if err := json.Unmarshal(data, kj); err != nil {
-		return nil, err
-	}
-	keyBytes, err := decryptKey(kj, auth)
-	if err != nil {
-		return nil, err
-	}
-	pv, err := crypto.PrivateKeyFromRawBytes(keyBytes)
-	if err != nil {
-		return nil,err
-	}
-	return &Key{
-		data: keyData{
-			PrivateKey: pv,
-			PublicKey:  pv.PublicKey(),
-			Address:    pv.PublicKey().AccountAddress(),
-		},
-	}, nil
+	return DecryptKey(data, auth)
 }
 
 //DecryptKey decrypts the Key from a json blob and returns the plaintext of the private key
-func decryptKey(kj *encryptedKeyJSONV3, auth string) (keyBytes []byte, err error) {
+func DecryptKey(bs []byte, auth string) (*Key, error) {
 
+	kj := new(encryptedKeyJSONV3)
+	if err := json.Unmarshal(bs, kj); err != nil {
+		return nil, err
+	}
 	if kj.Crypto.Cipher != "aes-128-ctr" {
 		return nil, fmt.Errorf("Cipher not supported: %v", kj.Crypto.Cipher)
 	}
@@ -115,8 +102,18 @@ func decryptKey(kj *encryptedKeyJSONV3, auth string) (keyBytes []byte, err error
 	if err != nil {
 		return nil, err
 	}
+	pv, err := crypto.PrivateKeyFromRawBytes(plainText)
+	if err != nil {
+		return nil, err
+	}
+	return &Key{
+		data: keyData{
+			PrivateKey: pv,
+			PublicKey:  pv.PublicKey(),
+			Address:    kj.Address,
+		},
+	}, nil
 
-	return plainText, err
 }
 
 func getKDFKey(cryptoJSON cryptoJSON, auth string) ([]byte, error) {
@@ -148,7 +145,7 @@ func getKDFKey(cryptoJSON cryptoJSON, auth string) ([]byte, error) {
 }
 
 func EncryptKeyFile(key *Key, auth, fname string) error {
-	bs, err := encryptKey(key, auth)
+	bs, err := EncryptKey(key, auth)
 	if err != nil {
 		return err
 	}
@@ -158,15 +155,17 @@ func EncryptKeyFile(key *Key, auth, fname string) error {
 }
 
 // EncryptKey encrypts a key and returns the encrypted byte array
-func encryptKey(key *Key, auth string) ([]byte, error) {
+func EncryptKey(key *Key, auth string) ([]byte, error) {
 	authArray := []byte(auth)
 	salt := getEntropyCSPRNG(32)
 	derivedKey, err := scrypt.Key(authArray, salt, scryptN, scryptR, scryptP, scryptDKLen)
 	if err != nil {
 		return nil, err
 	}
+
 	encryptKey := derivedKey[:16]
 	keyBytes := key.PrivateKey().RawBytes()
+
 	iv := getEntropyCSPRNG(aes.BlockSize) // 16
 	cipherText, err := aesCTRXOR(encryptKey, keyBytes, iv)
 	if err != nil {
@@ -192,7 +191,9 @@ func encryptKey(key *Key, auth string) ([]byte, error) {
 		KDFParams:    scryptParamsJSON,
 		MAC:          hex.EncodeToString(mac),
 	}
+
 	encryptedKeyJSONV3 := encryptedKeyJSONV3{
+		key.data.Address,
 		cryptoStruct,
 		version,
 	}
