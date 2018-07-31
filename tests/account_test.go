@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 
@@ -8,6 +9,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/evm"
+	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 )
 
@@ -16,6 +18,7 @@ func setupAccountPool(m *testing.M) {
 		"smblucker", "shuangjj", "compleatang", "prestonjbyrne", "ietv", "bryant1410", "jaekwon", "ratranqu", "dennismckinnon"}
 
 	tAccounts = make(map[string]*account.Account)
+	tValidators = make(map[string]*validator.Validator)
 	tSigners = make(map[string]crypto.Signer)
 
 	for i, name := range names {
@@ -23,10 +26,21 @@ func setupAccountPool(m *testing.M) {
 		pv := crypto.PrivateKeyFromSecret(name)
 		acc, _ := account.NewAccount(pv.PublicKey().AccountAddress())
 		signer := crypto.NewAccountSigner(pv)
-
 		acc.AddToBalance(bal)
 
 		tAccounts[name] = acc
+		tSigners[name] = signer
+	}
+
+	for i := 0; i < 80; i++ {
+		stake := rand.New(rand.NewSource(int64(i))).Uint64()
+		name := fmt.Sprintf("val_%d", i+1)
+		pv := crypto.PrivateKeyFromSecret(name)
+		val, _ := validator.NewValidator(pv.PublicKey(), 0)
+		signer := crypto.NewValidatorSigner(pv)
+		val.AddToStake(stake)
+
+		tValidators[name] = val
 		tSigners[name] = signer
 	}
 }

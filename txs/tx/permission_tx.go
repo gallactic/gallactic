@@ -2,6 +2,7 @@ package tx
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/crypto"
@@ -56,16 +57,21 @@ func (tx *PermissionsTx) Fee() uint64 {
 }
 
 func (tx *PermissionsTx) EnsureValid() error {
+	/// Just modifying permission, not transferring money
 	if tx.data.Modified.Amount != 0 {
 		return e.Error(e.ErrInvalidAmount)
+	}
+
+	if err := tx.data.Modifier.ensureValid(); err != nil {
+		return err
 	}
 
 	if err := tx.data.Modified.ensureValid(); err != nil {
 		return err
 	}
 
-	if err := tx.data.Modifier.ensureValid(); err != nil {
-		return err
+	if tx.data.Modified.Address == crypto.GlobalAddress {
+		return fmt.Errorf("You can not change global account's permission")
 	}
 
 	return nil
@@ -74,7 +80,7 @@ func (tx *PermissionsTx) EnsureValid() error {
 /// ----------
 /// MARSHALING
 
-func (tx *PermissionsTx) MarshalAmino() ([]byte, error) {
+func (tx PermissionsTx) MarshalAmino() ([]byte, error) {
 	return cdc.MarshalBinary(tx.data)
 }
 

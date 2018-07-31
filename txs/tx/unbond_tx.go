@@ -16,7 +16,7 @@ type unbondData struct {
 	To   TxOutput `json:"to"`
 }
 
-func NewUnbondTx(from, to crypto.Address, amount, sequence, fee uint64) *UnbondTx {
+func NewUnbondTx(from, to crypto.Address, amount, sequence, fee uint64) (*UnbondTx, error) {
 	return &UnbondTx{
 		data: unbondData{
 			From: TxInput{
@@ -29,7 +29,7 @@ func NewUnbondTx(from, to crypto.Address, amount, sequence, fee uint64) *UnbondT
 				Amount:  amount,
 			},
 		},
-	}
+	}, nil
 }
 
 func (tx *UnbondTx) Type() Type    { return TypeUnbond }
@@ -75,7 +75,7 @@ func (tx *UnbondTx) EnsureValid() error {
 /// ----------
 /// MARSHALING
 
-func (tx *UnbondTx) MarshalAmino() ([]byte, error) {
+func (tx UnbondTx) MarshalAmino() ([]byte, error) {
 	return cdc.MarshalBinary(tx.data)
 }
 

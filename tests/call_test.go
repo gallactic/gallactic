@@ -6,9 +6,7 @@ import (
 	"runtime/debug"
 	"testing"
 
-	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
-	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
@@ -18,13 +16,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-/// TODO : test fro sequence increase. +1 after tx get successfull. 0: if not successfull. +2: for create contract
+/// TODO : test frofor sequence increase. +1 after tx gets successfull. 0: if not successfull. +2: for create contract
 
-var _fee uint64 = 10
+func makeCallTx(t *testing.T, from string, addr crypto.Address, data []byte, amt, fee uint64) *tx.CallTx {
+	acc := getAccountByName(t, from)
+	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, 210000, amt, fee)
+	assert.NoError(t, err)
 
-func setupBatchChecker(m *testing.M) {
-	tChecker = execution.NewBatchChecker(tBC, tLogger)
-	tCommitter = execution.NewBatchCommitter(tBC, tLogger)
+	return tx
 }
 
 func execTxWaitAccountCall(t *testing.T, tx tx.Tx, name string, addr crypto.Address) ( /* *events.EventDataCall*/ error, error) {
@@ -54,91 +53,6 @@ func execTxWaitAccountCall(t *testing.T, tx tx.Tx, name string, addr crypto.Addr
 		}
 	*/
 	return err, err
-}
-
-func commit(t *testing.T) {
-	err := tCommitter.Commit()
-
-	assert.NoError(t, err)
-	// commit and clear caches
-	assert.NoError(t, tCommitter.Reset())
-	assert.NoError(t, tChecker.Reset())
-}
-
-func signAndExecute(t *testing.T, errorCode int, tx tx.Tx, names ...string) *txs.Envelope {
-	signers := make([]crypto.Signer, len(names))
-	for i, name := range names {
-		signers[i] = tSigners[name]
-	}
-
-	env := txs.Enclose(tChainID, tx)
-	require.NoError(t, env.Sign(signers...), "Could not sign tx in call: %s", debug.Stack())
-
-	if errorCode != e.ErrNone {
-		require.Equal(t, e.Code(tChecker.Execute(env)), errorCode, "Tx should fail: %s", debug.Stack())
-		require.Equal(t, e.Code(tCommitter.Execute(env)), errorCode, "Tx should fail: %s", debug.Stack())
-	} else {
-		require.NoError(t, tChecker.Execute(env), "Tx should not fail: %s", debug.Stack())
-		require.NoError(t, tCommitter.Execute(env), "Tx should not fail: %s", debug.Stack())
-		commit(t)
-	}
-
-	return env
-}
-
-func setPermissions(t *testing.T, name string, perm account.Permissions) {
-	acc := getAccountByName(t, name)
-	/// First remove all permissions, then set new one
-	acc.UnsetPermissions(acc.Permissions())
-	acc.SetPermissions(perm)
-	updateAccount(t, acc)
-
-	commit(t)
-}
-
-func getBalance(t *testing.T, name string) uint64 {
-	return getBalanceByAddress(t, tAccounts[name].Address())
-}
-
-func getBalanceByAddress(t *testing.T, addr crypto.Address) uint64 {
-	acc := getAccount(t, addr)
-	require.NotNil(t, acc)
-	return acc.Balance()
-}
-
-func checkBalance(t *testing.T, name string, amt uint64) {
-	checkBalanceByAddress(t, tAccounts[name].Address(), amt)
-}
-
-func checkBalanceByAddress(t *testing.T, addr crypto.Address, amt uint64) {
-	acc := getAccount(t, addr)
-	require.NotNil(t, acc)
-	assert.Equal(t, acc.Balance(), amt)
-}
-
-func TestSendTxFails(t *testing.T) {
-	setPermissions(t, "alice", permission.Send)
-	setPermissions(t, "bob", permission.Call)
-	setPermissions(t, "carol", permission.CreateContract)
-
-	tx1 := makeSendTx(t, "alice", "dan", 100, _fee)
-	signAndExecute(t, e.ErrNone, tx1, "alice")
-
-	// simple send tx with call perm should fail
-	tx2 := makeSendTx(t, "bob", "dan", 100, _fee)
-	signAndExecute(t, e.ErrPermDenied, tx2, "bob")
-
-	// simple send tx with create perm should fail
-	tx3 := makeSendTx(t, "carol", "dan", 100, _fee)
-	signAndExecute(t, e.ErrPermDenied, tx3, "carol")
-
-	// simple send tx to unknown account without create_account perm should fail
-	tx5 := makeSendTx(t, "alice", "", 100, _fee)
-	signAndExecute(t, e.ErrPermDenied, tx5, "alice")
-
-	// Output amount can  be zero
-	tx6 := makeSendTx(t, "alice", "dan", 0, _fee)
-	signAndExecute(t, e.ErrNone, tx6, "alice")
 }
 
 func TestCallFails(t *testing.T) {
@@ -177,22 +91,6 @@ func TestCallFails(t *testing.T) {
 	// simple call create tx with call perm should fail
 	tx6 := makeCallTx(t, "carol", crypto.Address{}, nil, 100, _fee)
 	signAndExecute(t, e.ErrPermDenied, tx6, "carol")
-}
-
-func TestSendPermission(t *testing.T) {
-	setPermissions(t, "alice", permission.Send)
-	setPermissions(t, "bob", 0)
-
-	// A single input, having the permission, should succeed
-	tx1 := makeSendTx(t, "alice", "carol", 10, _fee)
-	signAndExecute(t, e.ErrNone, tx1, "alice")
-
-	tx2 := makeSendTx(t, "alice", "carol", 10, _fee)
-	addSender(t, tx2, "bob", 10, _fee)
-	addReceiver(t, tx2, "carol", 10)
-
-	// Two inputs, one with permission, one without, should fail
-	signAndExecute(t, e.ErrPermDenied, tx2, "alice", "bob")
 }
 
 func TestCallPermission(t *testing.T) {
@@ -256,7 +154,7 @@ func TestCallPermission(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestCreatePermission(t *testing.T) {
+func TestCreateContractPermission(t *testing.T) {
 	setPermissions(t, "alice", permission.Call|permission.CreateContract)
 
 	//------------------------------
@@ -328,7 +226,7 @@ func TestCreatePermission(t *testing.T) {
 	}
 }
 
-func TestCreateAccountPermission(t *testing.T) {
+func TestCreateContractPermission2(t *testing.T) {
 	setPermissions(t, "alice", permission.Send|permission.CreateAccount)
 	setPermissions(t, "bob", permission.Send)
 	setPermissions(t, "carol", permission.Call)
@@ -336,48 +234,6 @@ func TestCreateAccountPermission(t *testing.T) {
 	aliceBalance := getBalance(t, "alice")
 	bobBalance := getBalance(t, "bob")
 	carolBalance := getBalance(t, "carol")
-	//----------------------------------------------------------
-	// SendTx to unknown account
-
-	// A single input, having the permission, should succeed
-	tx1 := makeSendTx(t, "alice", "", 5, _fee)
-	signAndExecute(t, e.ErrNone, tx1, "alice")
-
-	// Two inputs, both with send, should succeed
-	tx2 := makeSendTx(t, "alice", "eve", 5, _fee)
-	addSender(t, tx2, "bob", 5, _fee)
-	tx2.Receivers()[0].Amount = 10
-
-	signAndExecute(t, e.ErrNone, tx2, "alice", "bob")
-
-	// Two inputs, both with send, one with create, one without, should fail
-	tx3 := makeSendTx(t, "alice", "", 5, _fee)
-	addSender(t, tx3, "bob", 5, _fee)
-	tx3.Receivers()[0].Amount = 10
-
-	signAndExecute(t, e.ErrPermDenied, tx3, "alice", "bob")
-
-	// Two inputs, both with send, one with create, one without, two outputs (one known, one unknown) should fail
-	tx4 := makeSendTx(t, "alice", "eve", 5, _fee)
-	addSender(t, tx4, "bob", 5, _fee)
-	addReceiver(t, tx4, "", 5)
-
-	signAndExecute(t, e.ErrPermDenied, tx4, "alice", "bob")
-
-	// Two inputs, both with send, both with create, should pass
-	setPermissions(t, "bob", permission.Send|permission.CreateAccount)
-	tx5 := makeSendTx(t, "alice", "", 5, _fee)
-	addSender(t, tx5, "bob", 5, _fee)
-	tx5.Receivers()[0].Amount = 10
-
-	signAndExecute(t, e.ErrNone, tx5, "alice", "bob")
-
-	// Two inputs, both with send, both with create, two outputs (one known, one unknown) should pass
-	tx6 := makeSendTx(t, "alice", "eve", 5, _fee)
-	addSender(t, tx6, "bob", 5, _fee)
-	addReceiver(t, tx6, "", 5)
-
-	signAndExecute(t, e.ErrNone, tx6, "alice", "bob")
 
 	//----------------------------------------------------------
 	// CALL to unknown account

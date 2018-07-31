@@ -36,12 +36,13 @@ func (ctx *BondContext) Execute(txEnv *txs.Envelope) error {
 	}
 
 	if to == nil {
-		to = validator.NewValidator(
+		to, err = validator.NewValidator(
 			tx.PublicKey(),
-			tx.To().Amount,
 			ctx.BC.LastBlockHeight())
-	} else {
-		to.AddToStake(tx.To().Amount)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	// Good! Adjust accounts

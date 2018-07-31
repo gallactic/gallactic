@@ -9,6 +9,7 @@ import (
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
+	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/hyperledger/burrow/logging"
 	dbm "github.com/tendermint/tendermint/libs/db"
@@ -16,6 +17,7 @@ import (
 
 var tChainID string
 var tAccounts map[string]*account.Account
+var tValidators map[string]*validator.Validator
 var tSigners map[string]crypto.Signer /// private keys
 var tGenesis *proposal.Genesis
 var tBC *blockchain.Blockchain
@@ -31,7 +33,6 @@ func TestMain(m *testing.M) {
 	setupAccountPool(m)
 	setupGenesis(m)
 	setupBlockchain(m)
-	setupBatchChecker(m)
 
 	exitCode := m.Run()
 
