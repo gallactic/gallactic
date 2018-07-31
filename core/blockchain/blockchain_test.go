@@ -15,14 +15,13 @@ import (
 )
 
 func TestPersistedState(t *testing.T) {
-	pb, _ := crypto.GenerateKey(nil)
-	val1, _ := validator.NewValidator(pb, 0)
+	val1, _ := validator.NewValidator(crypto.GeneratePrivateKey(nil).PublicKey(), 0)
 	vals := []*validator.Validator{val1}
 
 	/// To strip monotonics from time use time.Truncate(0)
 	/// UTC: https://golang.org/pkg/time/#Time.UTC
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
-	gen := proposal.MakeGenesis("bar", time.Now().UTC().Truncate(0), gAcc, nil, nil, vals)
+	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, vals)
 	db := dbm.NewMemDB()
 	bc1, err := LoadOrNewBlockchain(db, gen, nil, logging.NewNoopLogger())
 	require.NoError(t, err)

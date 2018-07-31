@@ -97,12 +97,6 @@ func newExecutor(name string, committing bool, bc *blockchain.Blockchain, logger
 			Cache:      exe.cache,
 			Logger:     exe.logger,
 		},
-		tx.TypeSortition: &executors.SortitionContext{
-			Committing: committing,
-			BC:         bc,
-			Cache:      exe.cache,
-			Logger:     exe.logger,
-		},
 	}
 	return exe
 }

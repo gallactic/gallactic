@@ -78,6 +78,49 @@ func TestSortitionMarshaling(t *testing.T) {
 	testMarshaling(t, tx, signer)
 }
 
+func TestPermissionMarshaling(t *testing.T) {
+	pv := crypto.GeneratePrivateKey(nil)
+	signer := crypto.NewAccountSigner(pv)
+	modifier := signer.Address()
+	modified := crypto.GeneratePrivateKey(nil).PublicKey().AccountAddress()
+	tx, err := tx.NewPermissionsTx(modifier, modified, permission.Call, true, 1, 100)
+	require.NoError(t, err)
+
+	testMarshaling(t, tx, signer)
+}
+
+func TestBondMarshaling(t *testing.T) {
+	pv := crypto.GeneratePrivateKey(nil)
+	signer := crypto.NewAccountSigner(pv)
+	from := signer.Address()
+	to := crypto.GeneratePrivateKey(nil).PublicKey()
+	tx, err := tx.NewBondTx(from, to, 9999, 1, 100)
+	require.NoError(t, err)
+
+	testMarshaling(t, tx, signer)
+}
+
+func TestUnbondMarshaling(t *testing.T) {
+	pv := crypto.GeneratePrivateKey(nil)
+	signer := crypto.NewValidatorSigner(pv)
+	from := pv.PublicKey().ValidatorAddress()
+	to := crypto.GeneratePrivateKey(nil).PublicKey().AccountAddress()
+	tx, err := tx.NewUnbondTx(from, to, 9999, 1, 100)
+	require.NoError(t, err)
+
+	testMarshaling(t, tx, signer)
+}
+
+func TestSortitionMarshaling(t *testing.T) {
+	pv := crypto.GeneratePrivateKey(nil)
+	signer := crypto.NewValidatorSigner(pv)
+	val := pv.PublicKey().ValidatorAddress()
+	tx, err := tx.NewSortitionTx(val, 1, 555, 1, 100, []byte{1, 2, 3})
+	require.NoError(t, err)
+
+	testMarshaling(t, tx, signer)
+}
+
 func testMarshaling(t *testing.T, tx tx.Tx, signer crypto.Signer) {
 	ac := NewAminoCodec()
 	jc := NewJSONCodec()

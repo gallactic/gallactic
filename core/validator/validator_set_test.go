@@ -24,8 +24,7 @@ func TestValidatorSet(t *testing.T) {
 
 	vs := NewValidatorSet(validators, 8, nil)
 
-	pb, _ := crypto.GenerateKeyFromSecret("z")
-	val, _ := NewValidator(pb, 1)
+	val, _ := NewValidator(publickKeyFromSecret("z"), 1)
 
 	err := vs.ForceLeave(val.Address())
 	assert.Error(t, err)

@@ -18,7 +18,7 @@ type sortitionData struct {
 	Proof     []byte  `json:"proof"`
 }
 
-func NewSortitionTx(validator crypto.Address, height, seq, fee, index uint64, proof []byte) (*SortitionTx, error) {
+func NewSortitionTx(validator crypto.Address, height, index, sequence, fee uint64, proof []byte) (*SortitionTx, error) {
 	return &SortitionTx{
 		data: sortitionData{
 			Validator: TxInput{

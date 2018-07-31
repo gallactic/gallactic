@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/gallactic/gallactic/core/account"
+	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 )
@@ -34,19 +35,14 @@ func setupAccountPool(m *testing.M) {
 	for i := 0; i < 80; i++ {
 		stake := rand.New(rand.NewSource(int64(i))).Uint64()
 		name := fmt.Sprintf("val_%d", i+1)
-		pb, pv := crypto.GenerateKeyFromSecret(name)
-		val, _ := validator.NewValidator(pb, 0)
+		pv := crypto.PrivateKeyFromSecret(name)
+		val, _ := validator.NewValidator(pv.PublicKey(), 0)
 		signer := crypto.NewValidatorSigner(pv)
 		val.AddToStake(stake)
 
 		tValidators[name] = val
 		tSigners[name] = signer
 	}
-}
-
-func newAccountAddress(t *testing.T) crypto.Address {
-	pb, _ := crypto.GenerateKey(nil)
-	return pb.AccountAddress()
 }
 
 func makeAccount(t *testing.T, bal uint64, perm account.Permissions) (*account.Account, crypto.Address) {

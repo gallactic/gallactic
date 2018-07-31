@@ -14,8 +14,6 @@ func makeUnbondTx(t *testing.T, from, to string, amount, fee uint64) *tx.UnbondT
 	val := getValidatorByName(t, from)
 	acc := getAccountByName(t, to)
 	tx, err := tx.NewUnbondTx(val.Address(), acc.Address(), amount, val.Sequence()+1, fee)
-	require.Equal(t, amount, tx.Amount())
-	require.Equal(t, fee, tx.Fee())
 	require.NoError(t, err)
 	return tx
 }
