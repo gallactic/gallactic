@@ -7,9 +7,7 @@ import (
 
 type KeyStore interface {
 	// Loads and decrypts the key from disk.
-	GetKey(addr crypto.Address,  auth string) (*key.Key, error)
+	GetKey(addr crypto.Address, auth string) (*key.Key, error)
 	// Writes and encrypts the key.
 	StoreKey(k *key.Key, auth string) error
 }
-
-

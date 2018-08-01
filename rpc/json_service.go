@@ -94,14 +94,14 @@ func (js *JSONService) Process(r *http.Request, w http.ResponseWriter) {
 	// Error when decoding.
 	if errU != nil {
 		js.writeError("Failed to parse request: "+errU.Error(), "",
-			PARSE_ERROR, w)
+			RPCErrorParseError, w)
 		return
 	}
 
 	// Wrong protocol version.
 	if req.JSONRPC != "2.0" {
 		js.writeError("Wrong protocol version: "+req.JSONRPC, req.Id,
-			INVALID_REQUEST, w)
+			RPCErrorInvalidRequest, w)
 		return
 	}
 
@@ -118,7 +118,7 @@ func (js *JSONService) Process(r *http.Request, w http.ResponseWriter) {
 			js.writeResponse(req.Id, resp, w)
 		}
 	} else {
-		js.writeError("Method not found: "+mName, req.Id, METHOD_NOT_FOUND, w)
+		js.writeError("Method not found: "+mName, req.Id, RPCErrorMethodNotFound, w)
 	}
 }
 
@@ -139,7 +139,7 @@ func (js *JSONService) writeResponse(id string, result interface{}, w http.Respo
 	response := NewRPCResponse(id, result)
 	err := js.codec.Encode(response, w)
 	if err != nil {
-		js.writeError("Internal error: "+err.Error(), id, INTERNAL_ERROR, w)
+		js.writeError("Internal error: "+err.Error(), id, RPCErrorInternalError, w)
 		return
 	}
 	w.WriteHeader(200)
