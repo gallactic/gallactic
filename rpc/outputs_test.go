@@ -6,12 +6,16 @@ import (
 
 	"fmt"
 
+	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmTypes "github.com/tendermint/tendermint/types"
+	"time"
 )
 
 func TestResultBroadcastTx(t *testing.T) {
@@ -118,8 +122,11 @@ func TestResultEvent(t *testing.T) {
 	//fmt.Println(string(bsOut))
 }
 
+
+*/
+
 func TestResultGetBlock(t *testing.T) {
-	res := &GetBlockOutput{
+	res := &BlockOutput{
 		Block: &Block{&tmTypes.Block{
 			LastCommit: &tmTypes.Commit{
 				Precommits: []*tmTypes.Vote{
@@ -133,24 +140,7 @@ func TestResultGetBlock(t *testing.T) {
 	}
 	bs, err := json.Marshal(res)
 	require.NoError(t, err)
-	resOut := new(GetBlockOutput)
-	require.NoError(t, json.Unmarshal([]byte(bs), resOut))
-	bsOut, err := json.Marshal(resOut)
-	require.NoError(t, err)
-	assert.Equal(t, string(bs), string(bsOut))
-}
-
-func TestResultDumpConsensusState(t *testing.T) {
-	res := &DumpConsensusStateOutput{
-		RoundState: types.RoundStateSimple{
-			HeightRoundStep: "34/0/3",
-			Votes:           json.RawMessage(`[{"i'm a json": "32"}]`),
-			LockedBlockHash: common.HexBytes{'b', 'y', 't', 'e', 's'},
-		},
-	}
-	bs, err := json.Marshal(res)
-	require.NoError(t, err)
-	resOut := new(DumpConsensusStateOutput)
+	resOut := new(BlockOutput)
 	require.NoError(t, json.Unmarshal([]byte(bs), resOut))
 	bsOut, err := json.Marshal(resOut)
 	require.NoError(t, err)
@@ -158,7 +148,7 @@ func TestResultDumpConsensusState(t *testing.T) {
 }
 
 func TestResultLastBlockInfo(t *testing.T) {
-	res := &GetLastBlockInfoOutput{
+	res := &LastBlockInfoOutput{
 		LastBlockTime:   time.Now(),
 		LastBlockHash:   binary.HexBytes{3, 4, 5, 6},
 		LastBlockHeight: 2343,
@@ -168,4 +158,3 @@ func TestResultLastBlockInfo(t *testing.T) {
 	fmt.Println(string(bs))
 
 }
-*/

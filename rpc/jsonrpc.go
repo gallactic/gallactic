@@ -21,11 +21,12 @@ import (
 
 // JSON-RPC 2.0 error codes.
 const (
-	INVALID_REQUEST  = -32600
-	METHOD_NOT_FOUND = -32601
-	INVALID_PARAMS   = -32602
-	INTERNAL_ERROR   = -32603
-	PARSE_ERROR      = -32700
+	RPCErrorServerError    = -32000
+	RPCErrorInvalidRequest = -32600
+	RPCErrorMethodNotFound = -32601
+	RPCErrorInvalidParams  = -32602
+	RPCErrorInternalError  = -32603
+	RPCErrorParseError     = -32700
 )
 
 // Request and Response objects. Id is a string. Error data not used.

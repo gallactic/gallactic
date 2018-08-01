@@ -36,11 +36,11 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		txEnv := new(txs.Envelope)
 		err := codec.DecodeBytes(txEnv, request.Params)
 		if err != nil {
-			return nil, INVALID_PARAMS, err
+			return nil, RPCErrorInvalidParams, err
 		}
 		receipt, err := service.Transactor().BroadcastTx(txEnv)
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return receipt, 0, nil
 	}
@@ -50,19 +50,19 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		if len(request.Params) > 0 {
 			err := codec.DecodeBytes(input, request.Params)
 			if err != nil {
-				return nil, INVALID_PARAMS, err
+				return nil, RPCErrorInvalidParams, err
 			}
 		}
 		filter, err := accountFilterFactory.NewFilter(input.Filters)
 		if err != nil {
-			return nil, INVALID_PARAMS, err
+			return nil, RPCErrorInvalidParams, err
 		}
 		list, err := service.ListAccounts(func(account *account.Account) bool {
 			return filter.Match(account)
 
 		})
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return list, 0, nil
 	}
@@ -71,12 +71,12 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		input := &AddressInput{}
 		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
-			return nil, INVALID_PARAMS, err
+			return nil, RPCErrorInvalidParams, err
 		}
 
 		acc, err := service.GetAccount(input.Address)
 		if acc == nil || err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return acc, 0, nil
 	}
@@ -85,11 +85,11 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		input := &AddressInput{}
 		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
-			return nil, INVALID_PARAMS, err
+			return nil, RPCErrorInvalidParams, err
 		}
 		storage, err := service.DumpStorage(input.Address)
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return storage, 0, nil
 	}
@@ -98,12 +98,12 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		input := &StorageAtInput{}
 		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
-			return nil, INVALID_PARAMS, err
+			return nil, RPCErrorInvalidParams, err
 		}
 
 		storageItem, err := service.GetStorage(input.Address, input.Key)
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return storageItem, 0, nil
 	}
@@ -111,7 +111,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	rpcServiceMap[GET_STATUS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		status, err := service.Status()
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return status, 0, nil
 	}
@@ -119,11 +119,11 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	rpcServiceMap[GET_LATEST_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		status, err := service.Status()
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		resultGetBlock, err := service.GetBlock(status.LatestBlockHeight)
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return resultGetBlock, 0, nil
 	}
@@ -132,11 +132,11 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		input := &BlocksInput{}
 		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
-			return nil, INVALID_PARAMS, err
+			return nil, RPCErrorInvalidParams, err
 		}
 		blocks, err := service.ListBlocks(input.MinHeight, input.MaxHeight)
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return blocks, 0, err
 	}
@@ -145,11 +145,11 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		input := &BlockInput{}
 		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
-			return nil, INVALID_PARAMS, err
+			return nil, RPCErrorInvalidParams, err
 		}
 		block, err := service.GetBlock(input.Height)
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return block, 0, nil
 	}
@@ -157,7 +157,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	rpcServiceMap[GET_UNCONFIRMED_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		transactions, err := service.ListUnconfirmedTxs(-1)
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return transactions, 0, nil
 	}
@@ -166,11 +166,11 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		input := &BlockInput{}
 		err := codec.DecodeBytes(input, request.Params)
 		if err != nil {
-			return nil, INVALID_PARAMS, err
+			return nil, RPCErrorInvalidParams, err
 		}
 		transactions, err := service.ListBlockTxs(input.Height)
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return transactions, 0, nil
 	}
@@ -178,7 +178,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	rpcServiceMap[GET_CONSENSUS_STATE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		consensusState, err := service.DumpConsensusState()
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return consensusState, 0, nil
 	}
@@ -186,7 +186,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	rpcServiceMap[GET_VALIDATORS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		validators, err := service.ListValidators()
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return validators, 0, nil
 	}
@@ -194,7 +194,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	rpcServiceMap[GET_NETWORK_INFO] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		info, err := service.NetInfo()
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return info, 0, nil
 	}
@@ -202,7 +202,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	rpcServiceMap[GET_CHAIN_ID] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		chainId, err := service.ChainIdentifiers()
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return chainId, 0, nil
 	}
@@ -210,7 +210,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	rpcServiceMap[GET_PEERS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		peers, err := service.Peers()
 		if err != nil {
-			return nil, INTERNAL_ERROR, err
+			return nil, RPCErrorInternalError, err
 		}
 		return peers, 0, nil
 	}
