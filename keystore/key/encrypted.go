@@ -59,7 +59,7 @@ type cipherparamsJSON struct {
 }
 
 // DecryptKeyFile decrypts the file and returns Key
-func DecryptKeyFile(auth, fname string) (*Key, error) {
+func DecryptKeyFile(fname, auth string) (*Key, error) {
 	filePath := dirPath + fname
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -144,7 +144,7 @@ func getKDFKey(cryptoJSON cryptoJSON, auth string) ([]byte, error) {
 	return nil, fmt.Errorf("Unsupported KDF: %s", cryptoJSON.KDF)
 }
 
-func EncryptKeyFile(key *Key, auth, fname string) error {
+func EncryptKeyFile(key *Key, fname, auth string) error {
 	bs, err := EncryptKey(key, auth)
 	if err != nil {
 		return err

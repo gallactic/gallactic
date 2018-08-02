@@ -37,6 +37,11 @@ func GenValidatorKey() *Key {
 }
 
 func NewKey(addr crypto.Address, pv crypto.PrivateKey) *Key {
+	/// Check if the address is derived from given private key
+	if !addr.Verify(pv.PublicKey()) {
+		return nil
+	}
+
 	return &Key{
 		data: keyData{
 			PrivateKey: pv,
