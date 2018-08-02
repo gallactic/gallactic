@@ -23,7 +23,7 @@ func TestVM(t *testing.T) {
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
 	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, vals)
 	db := dbm.NewMemDB()
-	bc, err := blockchain.LoadOrNewBlockchain(db, gen, logging.NewNoopLogger())
+	bc, err := blockchain.LoadOrNewBlockchain(db, gen, nil, logging.NewNoopLogger())
 	require.NoError(t, err)
 
 	callerAddr, _ := crypto.AddressFromString("ac9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")

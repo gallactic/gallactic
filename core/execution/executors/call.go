@@ -75,7 +75,7 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 		return err
 	}
 
-	/// Update account
+	/// Update state cache
 	ctx.Cache.UpdateAccount(caller)
 	ctx.Cache.UpdateAccount(callee)
 

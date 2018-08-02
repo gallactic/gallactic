@@ -19,7 +19,7 @@ import (
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
-	"github.com/gallactic/gallactic/core/validator"
+	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/rpc"
 	"github.com/gallactic/gallactic/txs"
 
@@ -49,7 +49,7 @@ type Kernel struct {
 	shutdownOnce   sync.Once
 }
 
-func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, passphrase string) (*Kernel, error) {
+func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, myVal crypto.Signer) (*Kernel, error) {
 	if gen == nil {
 		return nil, fmt.Errorf("no Genesis defined, cannot make Kernel")
 	}
@@ -67,37 +67,26 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	logger = logger.WithScope("NewKernel()").With(structure.TimeKey, kitlog.DefaultTimestampUTC)
 	tmLogger := logger.With(structure.CallerKey, kitlog.Caller(loggingCallerDepth+1))
 	logger = logger.WithInfo(structure.CallerKey, kitlog.Caller(loggingCallerDepth))
-
-	tmGenesisDoc := tendermint.DeriveGenesisDoc(gen)
 	tmConfig := tendermint.DeriveConfig(conf)
-
 	stateDB := dbm.NewDB("gallactic_state", dbm.GoLevelDBBackend, tmConfig.DBDir())
 
-	bc, err := blockchain.LoadOrNewBlockchain(stateDB, gen, logger)
+	bc, err := blockchain.LoadOrNewBlockchain(stateDB, gen, myVal, logger)
 	if err != nil {
-		/// TODO: return proper error with code
 		return nil, fmt.Errorf("error creating or loading blockchain state: %v", err)
 	}
 
-	signer, err := validator.NewPrivateValidator("", passphrase)
-	if err != nil {
-		return nil, fmt.Errorf("could not create the signer from keystore: %v", err)
-	}
-	privValidator := tmv.NewPrivValidatorMemory(signer)
-
+	privVal := tmv.NewPrivValidatorMemory(myVal)
 	txCodec := txs.NewAminoCodec()
 	checker := execution.NewBatchChecker(bc, logger)
 	committer := execution.NewBatchCommitter(bc, logger)
+	tmGenesis := tendermint.DeriveGenesisDoc(gen)
 
-	tmNode, err := tendermint.NewNode(tmConfig, privValidator, tmGenesisDoc, bc, checker, committer, txCodec,
-		tmLogger)
-
+	tmNode, err := tendermint.NewNode(tmConfig, privVal, tmGenesis, bc, checker, committer, txCodec, tmLogger)
 	if err != nil {
 		return nil, err
 	}
 
 	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, txCodec, logger)
-
 	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode, txCodec), logger)
 
 	launchers := []process.Launcher{

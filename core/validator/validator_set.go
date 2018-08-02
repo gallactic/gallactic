@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/hyperledger/burrow/logging"
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 	tmRPCTypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
@@ -33,14 +34,16 @@ type ValidatorSet struct {
 	maximumPower int
 	leavers      map[crypto.Address]*Validator
 	validators   map[crypto.Address]*Validator
+	logger       *logging.Logger
 }
 
-func NewValidatorSet(validators map[crypto.Address]*Validator, maximumPower int) *ValidatorSet {
+func NewValidatorSet(validators map[crypto.Address]*Validator, maximumPower int, logger *logging.Logger) *ValidatorSet {
 	set := &ValidatorSet{
 		validators:   validators,
 		leavers:      make(map[crypto.Address]*Validator),
 		maximumPower: maximumPower,
 		proxy:        _validatorListProxy{},
+		logger:       logger,
 	}
 	return set
 }
@@ -191,14 +194,14 @@ func (set *ValidatorSet) Join(val *Validator) error {
 	return nil
 }
 
-func (set *ValidatorSet) ForceLeave(val *Validator) error {
-	if false == set.Contains(val.Address()) {
-		return fmt.Errorf("This validator currently is not in the set: %v", val.Address())
+func (set *ValidatorSet) ForceLeave(addr crypto.Address) error {
+	if false == set.Contains(addr) {
+		return fmt.Errorf("This validator currently is not in the set: %v", addr)
 	}
 
-	_, ok := set.validators[val.Address()]
+	_, ok := set.validators[addr]
 	if ok {
-		delete(set.validators, val.Address())
+		delete(set.validators, addr)
 	}
 
 	return nil
