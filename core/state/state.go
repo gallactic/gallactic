@@ -288,11 +288,11 @@ func (st *State) UpdateValidator(val *validator.Validator) error {
 	return nil
 }
 
-func (st *State) RemoveValidator(val *validator.Validator) error {
+func (st *State) RemoveValidator(addr crypto.Address) error {
 	st.Lock()
 	defer st.Unlock()
 
-	st.tree.Remove(validatorKey(val.Address()))
+	st.tree.Remove(validatorKey(addr))
 	return nil
 }
 

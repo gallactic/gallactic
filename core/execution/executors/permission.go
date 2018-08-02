@@ -5,6 +5,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/state"
+	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
@@ -27,6 +28,10 @@ func (ctx *PermissionContext) Execute(txEnv *txs.Envelope) error {
 	modifier, err := getInputAccount(ctx.Cache, tx.Modifier(), permission.ModifyPermission)
 	if err != nil {
 		return err
+	}
+
+	if tx.Modified().Address == crypto.GlobalAddress {
+		return fmt.Errorf("Modifying global account is not allowed")
 	}
 
 	modified, err := getOutputAccount(ctx.Cache, tx.Modified())
@@ -63,7 +68,7 @@ func (ctx *PermissionContext) Execute(txEnv *txs.Envelope) error {
 		return err
 	}
 
-	/// Update account
+	/// Update state cache
 	ctx.Cache.UpdateAccount(modified)
 	ctx.Cache.UpdateAccount(modifier)
 

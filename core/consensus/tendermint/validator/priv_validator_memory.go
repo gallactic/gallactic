@@ -17,10 +17,10 @@ var _ tmTypes.PrivValidator = &privValidatorMemory{}
 
 // Create a PrivValidator with in-memory state that takes an addressable representing the validator identity
 // and a signer providing private signing for that identity.
-func NewPrivValidatorMemory(pv crypto.Signer) *privValidatorMemory {
+func NewPrivValidatorMemory(signer crypto.Signer) *privValidatorMemory {
 	return &privValidatorMemory{
-		publicKey:      pv.PublicKey().TMPubKey(),
-		signer:         asTendermintSigner(pv),
+		publicKey:      signer.PublicKey().TMPubKey(),
+		signer:         asTendermintSigner(signer),
 		lastSignedInfo: NewLastSignedInfo(),
 	}
 }

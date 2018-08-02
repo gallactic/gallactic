@@ -20,7 +20,7 @@ var _fee uint64 = 10
 
 func setupBlockchain(m *testing.M) {
 	tDB = dbm.NewMemDB()
-	tBC, _ = blockchain.LoadOrNewBlockchain(tDB, tGenesis, tLogger)
+	tBC, _ = blockchain.LoadOrNewBlockchain(tDB, tGenesis, nil, tLogger)
 	tChecker = execution.NewBatchChecker(tBC, tLogger)
 	tCommitter = execution.NewBatchCommitter(tBC, tLogger)
 	tState = tBC.State()

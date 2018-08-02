@@ -29,6 +29,7 @@ type Envelope struct {
 	Type        tx.Type     `json:"type"`
 	Tx          tx.Tx       `json:"tx"`
 	Signatories []Signatory `json:"signatories,omitempty"`
+	/// TODO: save tx hash to prevent calling json marshal everytime
 }
 
 // Signatory contains signature and PublicKey to identify the signer

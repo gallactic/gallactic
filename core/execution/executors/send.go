@@ -68,7 +68,7 @@ func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {
 		return err
 	}
 
-	/// Update account
+	/// Update state cache
 	for _, acc := range accs {
 		ctx.Cache.UpdateAccount(acc)
 	}

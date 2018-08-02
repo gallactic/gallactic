@@ -19,10 +19,12 @@ func Start() func(cmd *cli.Cmd) {
 			Desc: "Working directory of the configuration files",
 		})
 
-		passphraseOpt := cmd.String(cli.StringOpt{
-			Name: "p passphrase",
-			Desc: "The passphrase of the validator keystore",
-		})
+		/*
+			passphraseOpt := cmd.String(cli.StringOpt{
+				Name: "p passphrase",
+				Desc: "The passphrase of the validator keystore",
+			})
+		*/
 
 		cmd.Spec = "[--working-dir=<Working directory of the configuration files>] " +
 			"[--passphrase=<passphrase of the validator keystore>]"
@@ -51,7 +53,7 @@ func Start() func(cmd *cli.Cmd) {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 
-			kernel, err := core.NewKernel(ctx, gen, conf, *passphraseOpt)
+			kernel, err := core.NewKernel(ctx, gen, conf, nil)
 			if err != nil {
 				log.Fatalf("could not create kernel: %v", err)
 			}

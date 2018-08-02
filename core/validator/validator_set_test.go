@@ -22,11 +22,11 @@ func TestValidatorSet(t *testing.T) {
 	validators[publicKeys[4].ValidatorAddress()], _ = NewValidator(publicKeys[4], 1)
 	validators[publicKeys[5].ValidatorAddress()], _ = NewValidator(publicKeys[5], 1)
 
-	vs := NewValidatorSet(validators, 8)
+	vs := NewValidatorSet(validators, 8, nil)
 
 	val, _ := NewValidator(publickKeyFromSecret("z"), 1)
 
-	err := vs.ForceLeave(val)
+	err := vs.ForceLeave(val.Address())
 	assert.Error(t, err)
 	assert.Equal(t, 6, vs.TotalPower())
 	assert.Equal(t, false, vs.Contains(val.Address()))
@@ -37,7 +37,7 @@ func TestValidatorSet(t *testing.T) {
 	/// expecting an error, validator already exist in the set
 	err = vs.Join(val)
 	assert.Error(t, err)
-	vs.ForceLeave(val)
+	vs.ForceLeave(val.Address())
 	assert.Equal(t, 6, vs.TotalPower())
 	assert.Equal(t, false, vs.Contains(val.Address()))
 }

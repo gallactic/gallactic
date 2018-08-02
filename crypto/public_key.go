@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 
 	"github.com/gallactic/gallactic/errors"
+	tmABCI "github.com/tendermint/tendermint/abci/types"
 	tmCrypto "github.com/tendermint/tendermint/crypto"
 	"golang.org/x/crypto/ed25519"
 )
@@ -58,6 +59,13 @@ func (pb PublicKey) RawBytes() []byte {
 
 func (pb PublicKey) String() string {
 	return hex.EncodeToString(pb.RawBytes())
+}
+
+func (pb PublicKey) ABCIPubKey() tmABCI.PubKey {
+	return tmABCI.PubKey{
+		Type: tmABCI.PubKeyEd25519,
+		Data: pb.RawBytes(),
+	}
 }
 
 // TMPubKey returns the tendermint PubKey.

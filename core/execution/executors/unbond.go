@@ -36,7 +36,7 @@ func (ctx *UnbondContext) Execute(txEnv *txs.Envelope) error {
 		return e.Error(e.ErrInvalidAddress)
 	}
 
-	// Good! Adjust accounts
+	// Good! Adjust account and validator
 	err = adjustInputValidator(from, tx.From())
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func (ctx *UnbondContext) Execute(txEnv *txs.Envelope) error {
 		return err
 	}
 
-	/// Update account
+	/// Update state cache
 	ctx.Cache.UpdateValidator(from)
 	ctx.Cache.UpdateAccount(to)
 
