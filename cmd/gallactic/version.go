@@ -9,16 +9,8 @@ import (
 
 func Version() func(cmd *cli.Cmd) {
 	return func(cmd *cli.Cmd) {
-
-		versionOpt := cmd.String(cli.StringOpt{
-			Name: "v version",
-			Desc: "Gallactic version",
-		})
-
-		cmd.Spec = "[-v]"
-
 		cmd.Action = func() {
-			fmt.Println(version.Version, *versionOpt)
+			fmt.Println(version.Version)
 		}
 	}
 }
