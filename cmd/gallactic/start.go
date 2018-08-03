@@ -12,7 +12,6 @@ import (
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/keystore/key"
-	"github.com/gallactic/gallactic/version"
 	"github.com/jawher/mow.cli"
 )
 
@@ -25,23 +24,19 @@ func Start() func(cmd *cli.Cmd) {
 			Desc: "working directory of the configuration files",
 		})
 
-		privatekeyOpt := cmd.String(cli.StringOpt{
-			Name: "p privatekey",
-			Desc: "private key of the node's validator",
-		})
-
 		keystoreOpt := cmd.String(cli.StringOpt{
-			Name: "k key-file",
-			Desc: "path to the encrypted node's key file",
+			Name: "k keyPath",
+			Desc: "path to the key file",
 		})
 
-		keyfileauthOpt := cmd.String(cli.StringOpt{
-			Name: "a auth",
-			Desc: "key file passphrase",
+		privatekeyOpt := cmd.Bool(cli.BoolOpt{
+			Name: "p privatekey",
+			Desc: "private key of the account",
 		})
 
 		cmd.Spec = "[--working-dir=<Working directory of the configuration files>] " +
-			"[--privatekey=<private key of the account>] | [--key-file=<path to the key file>] [--auth=<keyfile password>]"
+			"[--keyPath=<path to the key file>]" +
+			"[--privatekey]"
 
 		cmd.LongDesc = "Starting the node"
 		cmd.Before = func() { fmt.Println(ascii) }
@@ -49,84 +44,73 @@ func Start() func(cmd *cli.Cmd) {
 			fmt.Println("\n\n\nYou are running a gallactic blockchian node version: ", version.Version, ". Welcome!")
 			workingDir := *workingDirOpt
 			if workingDir != "" {
-				keyObj := new(key.Key)
-				switch {
-				case *keystoreOpt == "" && *privatekeyOpt == "":
-					kj, _ := key.DecryptKeyFile(workingDir+"/validator_key.json", "")
-					if kj != nil {
-						keyObj = kj
-					} else {
+				if *privatekeyOpt || *keystoreOpt != "" {
+					keyObj := new(key.Key)
+
+					if *privatekeyOpt {
+						fmt.Println("you are going to run gallactic blockchain ! Cheers!!")
 						// Creating KeyObject from Private Key
-						kj, err := gtxkey.PromptPrivateKey()
+						kj, err := PromptPrivateKey(*privatekeyOpt)
 						if err != nil {
 							log.Fatalf("Aborted: %v", err)
 						}
 						keyObj = kj
 					}
-				case *keystoreOpt != "" && *keyfileauthOpt != "":
-					//Creating KeyObject from keystore
-					passphrase := *keyfileauthOpt
-					kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
-					if err != nil {
-						log.Fatalf("Could not decrypt file: %v", err)
+
+					if *keystoreOpt != "" {
+						//Creating KeyObject from keystore
+						passphrase := promptPassphrase(true)
+						kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
+						if err != nil {
+							log.Fatalf("could not decrypt file: %v", err)
+						}
+						keyObj = kj
 					}
-					keyObj = kj
-				case *keystoreOpt != "" && *keyfileauthOpt == "":
-					//Creating KeyObject from keystore
-					passphrase := gtxkey.PromptPassphrase(true)
-					kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
-					if err != nil {
-						log.Fatalf("Could not decrypt file: %v", err)
+
+					fmt.Println("", keyObj.Address().String())
+					// change working directory
+					if err := os.Chdir(workingDir); err != nil {
+						log.Fatalf("Unable to changes working directory: %v", err)
 					}
-					keyObj = kj
-				case *privatekeyOpt != "":
-					// Creating KeyObject from Private Key
-					pv, err := crypto.PrivateKeyFromString(*privatekeyOpt)
+					configFile := "./config.toml"
+					genesisFile := "./genesis.json"
+
+					gen, err := proposal.LoadFromFile(genesisFile)
 					if err != nil {
-						log.Fatalf("Could not decrypt file: %v", err)
+						log.Fatalf("could not obtain genesis from file: %v", err)
 					}
-					kj := gtxkey.CreateKey(pv)
-					keyObj = kj
+
+					conf, err := config.LoadFromFile(configFile)
+					if err != nil {
+						log.Fatalf("could not obtain config from file: %v", err)
+					}
+
+					ctx, cancel := context.WithCancel(context.Background())
+					defer cancel()
+
+					kernel, err := core.NewKernel(ctx, gen, conf, nil)
+					if err != nil {
+						log.Fatalf("could not create kernel: %v", err)
+					}
+
+					err = kernel.Boot()
+					if err != nil {
+						log.Fatalf("could not boot kernel: %v", err)
+					}
+
+					kernel.WaitForShutdown()
+
+				} else {
+					fmt.Println("see 'gallactic start --help ' list available commands to start gallactic node")
 				}
-
-				fmt.Println("Validator address: ", keyObj.Address().String())
-
-				// change working directory
-				if err := os.Chdir(workingDir); err != nil {
-					log.Fatalf("Unable to changes working directory: %v", err)
-				}
-				configFile := "./config.toml"
-				genesisFile := "./genesis.json"
-
-				gen, err := proposal.LoadFromFile(genesisFile)
-				if err != nil {
-					log.Fatalf("Could not obtain genesis from file: %v", err)
-				}
-
-				conf, err := config.LoadFromFile(configFile)
-				if err != nil {
-					log.Fatalf("Could not obtain config from file: %v", err)
-				}
-
-				ctx, cancel := context.WithCancel(context.Background())
-				defer cancel()
-
-				signer := crypto.NewValidatorSigner(keyObj.PrivateKey())
-				kernel, err := core.NewKernel(ctx, gen, conf, signer)
-				if err != nil {
-					log.Fatalf("Could not create kernel: %v", err)
-				}
-
-				err = kernel.Boot()
-				if err != nil {
-					log.Fatalf("Could not boot kernel: %v", err)
-				}
-
-				kernel.WaitForShutdown()
-
 			} else {
-				fmt.Println("see 'gallactic start --help ' list of available commands to start gallactic node")
+				fmt.Println("see 'gallactic start --help ' list available commands to start gallactic node")
 			}
 		}
 	}
+}
+
+func CreateKey(pv crypto.PrivateKey) *key.Key {
+	addr := pv.PublicKey().ValidatorAddress()
+	return key.NewKey(addr, pv)
 }

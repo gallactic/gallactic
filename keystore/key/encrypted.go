@@ -39,10 +39,9 @@ const (
 )
 
 type encryptedKeyJSONV3 struct {
-	Address    crypto.Address     `json:"address"`
-	Crypto     *cryptoJSON        `json:"crypto,omitempty"`
-	PrivateKey *crypto.PrivateKey `json:"privatekey,omitempty"`
-	Version    int                `json:"version"`
+	Address crypto.Address `json:"address"`
+	Crypto  cryptoJSON     `json:"crypto"`
+	Version int            `json:"version"`
 }
 
 type cryptoJSON struct {
@@ -146,7 +145,7 @@ func EncryptKeyFile(key *Key, filePath, auth string) error {
 	if err != nil {
 		return err
 	}
-	return common.WriteFile(filePath, bs)
+	return writeKeyFile(filePath, bs)
 }
 
 // EncryptKey encrypts a key and returns the encrypted byte array
@@ -234,4 +233,20 @@ func ensureInt(x interface{}) int {
 		res = int(x.(float64))
 	}
 	return res
+}
+
+func writeKeyFile(filePath string, content []byte) error {
+
+	f, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	if b, err := f.Write(content); err != nil {
+		fmt.Printf("wrote %d bytes\n", b)
+		f.Close()
+		return err
+	}
+
+	f.Close()
+	return os.Rename(f.Name(), filePath)
 }
