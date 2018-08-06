@@ -11,8 +11,22 @@ import (
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/keystore/key"
+	"github.com/gallactic/gallactic/version"
 	"github.com/jawher/mow.cli"
 )
+
+var welcomeMessage = `
+       ___           ___                                       ___           ___                                   ___
+      /  /\         /  /\                                     /  /\         /  /\          ___       ___          /  /\
+     /  /:/_       /  /::\                                   /  /::\       /  /:/         /  /\     /  /\        /  /:/
+    /  /:/ /\     /  /:/\:\    ___     ___   ___     ___    /  /:/\:\     /  /:/         /  /:/    /  /:/       /  /:/
+   /  /:/_/::\   /  /:/~/::\  /__/\   /  /\ /__/\   /  /\  /  /:/~/::\   /  /:/  ___    /  /:/    /__/::\      /  /:/  ___
+  /__/:/__\/\:\ /__/:/ /:/\:\ \  \:\ /  /:/ \  \:\ /  /:/ /__/:/ /:/\:\ /__/:/  /  /\  /  /::\    \__\/\:\__  /__/:/  /  /\
+  \  \:\ /~~/:/ \  \:\/:/__\/  \  \:\  /:/   \  \:\  /:/  \  \:\/:/__\/ \  \:\ /  /:/ /__/:/\:\      \  \:\/\ \  \:\ /  /:/
+   \  \:\  /:/   \  \::/        \  \:\/:/     \  \:\/:/    \  \::/       \  \:\  /:/  \__\/  \:\      \__\::/  \  \:\  /:/
+    \  \:\/:/     \  \:\         \  \::/       \  \::/      \  \:\        \  \:\/:/        \  \:\     /__/:/    \  \:\/:/
+     \  \::/       \  \:\         \__\/         \__\/        \  \:\        \  \::/          \__\/     \__\/      \  \::/
+      \__\/         \__\/                                     \__\/         \__\/                                 \__\/    `
 
 func Start() func(cmd *cli.Cmd) {
 	return func(cmd *cli.Cmd) {
@@ -43,6 +57,8 @@ func Start() func(cmd *cli.Cmd) {
 			"[--auth=<keyfile password>]"
 
 		cmd.Action = func() {
+			fmt.Print(welcomeMessage)
+			fmt.Println("\n\n\nYou are running a gallactic blockchian node version: ", version.Version, ". Welcome!")
 			workingDir := *workingDirOpt
 			if workingDir != "" {
 				keyObj := new(key.Key)
