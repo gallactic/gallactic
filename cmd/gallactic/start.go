@@ -22,84 +22,99 @@ func Start() func(cmd *cli.Cmd) {
 			Desc: "working directory of the configuration files",
 		})
 
+		privatekeyOpt := cmd.String(cli.StringOpt{
+			Name: "p privatekey",
+			Desc: "private key of the account",
+		})
+
 		keystoreOpt := cmd.String(cli.StringOpt{
 			Name: "k keyPath",
 			Desc: "path to the key file",
 		})
 
-		privatekeyOpt := cmd.Bool(cli.BoolOpt{
-			Name: "p privatekey",
-			Desc: "private key of the account",
+		keyfileauthOpt := cmd.String(cli.StringOpt{
+			Name: "a auth",
+			Desc: "keyfile password",
 		})
 
 		cmd.Spec = "[--working-dir=<Working directory of the configuration files>] " +
+			"[--privatekey=<private key of the account>]" +
 			"[--keyPath=<path to the key file>]" +
-			"[--privatekey]"
+			"[--auth=<keyfile password>]"
 
 		cmd.Action = func() {
 			workingDir := *workingDirOpt
 			if workingDir != "" {
-				if *privatekeyOpt || *keystoreOpt != "" {
-					keyObj := new(key.Key)
-
-					if *privatekeyOpt {
-						fmt.Println("you are going to run gallactic blockchain ! Cheers!!")
-						// Creating KeyObject from Private Key
-						kj, err := PromptPrivateKey(*privatekeyOpt)
-						if err != nil {
-							log.Fatalf("Aborted: %v", err)
-						}
-						keyObj = kj
-					}
-
-					if *keystoreOpt != "" {
-						//Creating KeyObject from keystore
-						passphrase := promptPassphrase(true)
-						kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
-						if err != nil {
-							log.Fatalf("could not decrypt file: %v", err)
-						}
-						keyObj = kj
-					}
-
-					fmt.Println("", keyObj.Address().String())
-					// change working directory
-					if err := os.Chdir(workingDir); err != nil {
-						log.Fatalf("Unable to changes working directory: %v", err)
-					}
-					configFile := "./config.toml"
-					genesisFile := "./genesis.json"
-
-					gen, err := proposal.LoadFromFile(genesisFile)
+				keyObj := new(key.Key)
+				switch {
+				case *keystoreOpt == "" && *privatekeyOpt == "":
+					// Creating KeyObject from Private Key
+					kj, err := PromptPrivateKey(true)
 					if err != nil {
-						log.Fatalf("could not obtain genesis from file: %v", err)
+						log.Fatalf("Aborted: %v", err)
 					}
-
-					conf, err := config.LoadFromFile(configFile)
+					keyObj = kj
+				case *keystoreOpt != "" && *keyfileauthOpt != "":
+					//Creating KeyObject from keystore
+					passphrase := *keyfileauthOpt
+					kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
 					if err != nil {
-						log.Fatalf("could not obtain config from file: %v", err)
+						log.Fatalf("could not decrypt file: %v", err)
 					}
-
-					ctx, cancel := context.WithCancel(context.Background())
-					defer cancel()
-
-					kernel, err := core.NewKernel(ctx, gen, conf, nil)
+					keyObj = kj
+				case *keystoreOpt != "" && *keyfileauthOpt == "":
+					//Creating KeyObject from keystore
+					passphrase := promptPassphrase(true)
+					kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
 					if err != nil {
-						log.Fatalf("could not create kernel: %v", err)
+						log.Fatalf("could not decrypt file: %v", err)
 					}
-
-					err = kernel.Boot()
+					keyObj = kj
+				case *privatekeyOpt != "":
+					// Creating KeyObject from Private Key
+					pv, err := crypto.PrivateKeyFromString(*privatekeyOpt)
 					if err != nil {
-						log.Fatalf("could not boot kernel: %v", err)
+						log.Fatalf("could not decrypt file: %v", err)
 					}
-
-					kernel.WaitForShutdown()
-
-				} else {
-					fmt.Println("see 'gallactic start --help ' list available commands to start gallactic node")
+					kj := CreateKey(pv)
+					keyObj = kj
 				}
+
+				fmt.Println("", keyObj.Address().String())
+				// change working directory
+				if err := os.Chdir(workingDir); err != nil {
+					log.Fatalf("Unable to changes working directory: %v", err)
+				}
+				configFile := "./config.toml"
+				genesisFile := "./genesis.json"
+
+				gen, err := proposal.LoadFromFile(genesisFile)
+				if err != nil {
+					log.Fatalf("could not obtain genesis from file: %v", err)
+				}
+
+				conf, err := config.LoadFromFile(configFile)
+				if err != nil {
+					log.Fatalf("could not obtain config from file: %v", err)
+				}
+
+				ctx, cancel := context.WithCancel(context.Background())
+				defer cancel()
+
+				kernel, err := core.NewKernel(ctx, gen, conf, nil)
+				if err != nil {
+					log.Fatalf("could not create kernel: %v", err)
+				}
+
+				err = kernel.Boot()
+				if err != nil {
+					log.Fatalf("could not boot kernel: %v", err)
+				}
+
+				kernel.WaitForShutdown()
+
 			} else {
-				fmt.Println("see 'gallactic start --help ' list available commands to start gallactic node")
+				fmt.Println("see 'gallactic start --help ' list of available commands to start gallactic node")
 			}
 		}
 	}
