@@ -91,38 +91,33 @@ func newTerminalPrompter() *terminalPrompter {
 	return p
 }
 
-func PromptPrivateKey(confirmation bool) (*key.Key, error) {
-
-	if confirmation {
-		line := liner.NewLiner()
-		defer line.Close()
-		line.SetCtrlCAborts(true)
-		privatekey, err := line.Prompt("please enter your privateKey for validator: ")
-		if err != nil {
-			return nil, fmt.Errorf("Failed to read Private Key %v", err)
-		} else if err == liner.ErrPromptAborted {
-			log.Print("Aborted")
-			return nil, err
-		}
-		pv, err := crypto.PrivateKeyFromString(privatekey)
-		if err != nil {
-			return nil, fmt.Errorf("This was not a valid private key ")
-		}
-		keyObj := CreateKey(pv)
-		if confirmation {
-			fmt.Println("The private key is assigned to validator address: ", (keyObj.Address().String()))
-			fmt.Println("press 'y' to proceed or 'n' to exit")
-			confirm, err := line.Prompt("y/n: ")
-			if err != nil {
-				return nil, fmt.Errorf("Failed to read confirmation: %v", err)
-			}
-			if confirm == "y" {
-				log.Print("Running Blockchain")
-				return keyObj, nil
-			} else {
-				return nil, fmt.Errorf("Stopped running Blockhain: %v", err)
-			}
-		}
+func PromptPrivateKey() (*key.Key, error) {
+	line := liner.NewLiner()
+	defer line.Close()
+	line.SetCtrlCAborts(true)
+	privatekey, err := line.Prompt("please enter your privateKey for validator: ")
+	if err != nil {
+		return nil, fmt.Errorf("Failed to read Private Key %v", err)
+	} else if err == liner.ErrPromptAborted {
+		log.Print("Aborted")
+		return nil, err
+	}
+	pv, err := crypto.PrivateKeyFromString(privatekey)
+	if err != nil {
+		return nil, fmt.Errorf("This was not a valid private key ")
+	}
+	keyObj := CreateKey(pv)
+	fmt.Println("The private key is assigned to validator address: ", (keyObj.Address().String()))
+	fmt.Println("press 'y' to proceed or 'n' to exit")
+	confirm, err := line.Prompt("y/n: ")
+	if err != nil {
+		return nil, fmt.Errorf("Failed to read confirmation: %v", err)
+	}
+	if confirm == "y" {
+		log.Print("Running Blockchain")
+		return keyObj, nil
+	} else {
+		return nil, fmt.Errorf("Stopped running Blockhain: %v", err)
 	}
 	return nil, fmt.Errorf("Abort")
 }
