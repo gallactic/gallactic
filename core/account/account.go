@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	amino "github.com/tendermint/go-amino"
@@ -15,11 +16,11 @@ type Account struct {
 }
 
 type accountData struct {
-	Address     crypto.Address `json:"address"`
-	Sequence    uint64         `json:"sequence"`
-	Balance     uint64         `json:"balance"`
-	Code        []byte         `json:"code"`
-	Permissions Permissions    `json:"permissions"`
+	Address     crypto.Address  `json:"address"`
+	Sequence    uint64          `json:"sequence"`
+	Balance     uint64          `json:"balance"`
+	Code        binary.HexBytes `json:"code"`
+	Permissions Permissions     `json:"permissions"`
 }
 
 ///---- Constructors

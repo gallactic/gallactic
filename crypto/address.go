@@ -8,7 +8,6 @@ import (
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/mr-tron/base58/base58"
-	"fmt"
 )
 
 const (
@@ -180,7 +179,6 @@ func (addr *Address) EnsureValid() error {
 
 func (addr Address) Verify(pb PublicKey) bool {
 	if addr.IsAccountAddress() {
-		fmt.Println(pb.AccountAddress())
 		return pb.AccountAddress().EqualsTo(addr)
 	} else if addr.IsValidatorAddress() {
 		return pb.ValidatorAddress().EqualsTo(addr)
