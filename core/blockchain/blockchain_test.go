@@ -23,7 +23,7 @@ func TestPersistedState(t *testing.T) {
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
 	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, vals)
 	db := dbm.NewMemDB()
-	bc1, err := LoadOrNewBlockchain(db, gen, logging.NewNoopLogger())
+	bc1, err := LoadOrNewBlockchain(db, gen, nil, logging.NewNoopLogger())
 	require.NoError(t, err)
 
 	hash1, err := bc1.CommitBlock(time.Now().Truncate(0), []byte{1, 2})
@@ -45,7 +45,7 @@ func TestPersistedState(t *testing.T) {
 	bc1.save() /// save last state
 
 	/// load blockchain
-	bc2, err2 := loadBlockchain(db, logging.NewNoopLogger())
+	bc2, err2 := LoadOrNewBlockchain(db, gen, nil, logging.NewNoopLogger())
 	require.NoError(t, err2)
 
 	assert.Equal(t, bc1.data, bc2.data)

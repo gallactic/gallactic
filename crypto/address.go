@@ -10,6 +10,8 @@ import (
 	"github.com/mr-tron/base58/base58"
 )
 
+const AddressSize = 26
+
 const (
 	accountAddress   uint16 = 0xEC12 // ac...
 	validatorAddress uint16 = 0x2A1E //
@@ -46,8 +48,8 @@ func AddressFromString(text string) (Address, error) {
 }
 
 func AddressFromRawBytes(bs []byte) (Address, error) {
-	if len(bs) != 26 {
-		return Address{}, e.Errorf(e.ErrInvalidAddress, "Address raw bytes should be 26 bytes, but it is %v bytes", len(bs))
+	if len(bs) != AddressSize {
+		return Address{}, e.Errorf(e.ErrInvalidAddress, "Address should be 26 bytes, but it is %v bytes", len(bs))
 	}
 
 	var addr Address

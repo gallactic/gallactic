@@ -40,7 +40,7 @@ const (
 )
 
 type encryptedKeyJSONV3 struct {
-	Address crypto.Address `json:address`
+	Address crypto.Address `json:"address"`
 	Crypto  cryptoJSON     `json:"crypto"`
 	Version int            `json:"version"`
 }
@@ -59,8 +59,7 @@ type cipherparamsJSON struct {
 }
 
 // DecryptKeyFile decrypts the file and returns Key
-func DecryptKeyFile(fname, auth string) (*Key, error) {
-	filePath := dirPath + fname
+func DecryptKeyFile(filePath, auth string) (*Key, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err
@@ -96,7 +95,7 @@ func DecryptKey(bs []byte, auth string) (*Key, error) {
 	}
 	calculatedMAC := sha3.Sha3(derivedKey[16:32], cipherText)
 	if !bytes.Equal(calculatedMAC, mac) {
-		return nil, err
+		return nil, fmt.Errorf("could not decrypt key with given passphrase")
 	}
 	plainText, err := aesCTRXOR(derivedKey[:16], cipherText, iv)
 	if err != nil {
@@ -144,13 +143,11 @@ func getKDFKey(cryptoJSON cryptoJSON, auth string) ([]byte, error) {
 	return nil, fmt.Errorf("Unsupported KDF: %s", cryptoJSON.KDF)
 }
 
-func EncryptKeyFile(key *Key, fname, auth string) error {
+func EncryptKeyFile(key *Key, filePath, auth string) error {
 	bs, err := EncryptKey(key, auth)
 	if err != nil {
 		return err
 	}
-	filePath := dirPath + fname //TODO : should be configurable
-
 	return writeKeyFile(filePath, bs)
 }
 
@@ -230,9 +227,9 @@ func ensureInt(x interface{}) int {
 	return res
 }
 
-func writeKeyFile(filepath string, content []byte) error {
+func writeKeyFile(filePath string, content []byte) error {
 
-	f, err := os.Create(filepath)
+	f, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}
@@ -243,5 +240,5 @@ func writeKeyFile(filepath string, content []byte) error {
 	}
 
 	f.Close()
-	return os.Rename(f.Name(), filepath)
+	return os.Rename(f.Name(), filePath)
 }

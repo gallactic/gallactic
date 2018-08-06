@@ -32,6 +32,8 @@ func TestMarshalingEmptySignature(t *testing.T) {
 func TestMarshalingSignature(t *testing.T) {
 	_, privKey := GenerateKey(nil)
 	sig1, err := privKey.Sign([]byte("Test message"))
+	sig11, err := privKey.Sign([]byte("Test message"))
+	require.Equal(t, sig1, sig11)
 	require.NoError(t, err)
 
 	bs, err := sig1.MarshalText()

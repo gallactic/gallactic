@@ -77,7 +77,7 @@ func (c *Cache) Flush(set *validator.ValidatorSet) error {
 			return err
 		}
 	}
-	for _, i := range c.valChanges {
+	for addr, i := range c.valChanges {
 		switch i.status {
 		case addToSet:
 			if err := set.Join(i.validator); err != nil {
@@ -90,12 +90,12 @@ func (c *Cache) Flush(set *validator.ValidatorSet) error {
 			}
 
 		case removeFromPool:
-			if err := set.ForceLeave(i.validator); err != nil {
+			if err := set.ForceLeave(addr); err != nil {
 				/// when the node is byzantine
 				return err
 			}
 
-			if err := c.state.RemoveValidator(i.validator); err != nil {
+			if err := c.state.RemoveValidator(addr); err != nil {
 				return err
 			}
 		}

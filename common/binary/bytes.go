@@ -1,6 +1,6 @@
 package binary
 
-import "github.com/tmthrgd/go-hex"
+import "encoding/hex"
 
 type HexBytes []byte
 
@@ -18,5 +18,5 @@ func (hb HexBytes) MarshalText() ([]byte, error) {
 }
 
 func (hb HexBytes) String() string {
-	return hex.EncodeUpperToString(hb)
+	return hex.EncodeToString(hb)
 }

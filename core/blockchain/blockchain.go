@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gallactic/gallactic/core/proposal"
+	"github.com/gallactic/gallactic/core/sortition"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
@@ -23,6 +24,8 @@ type Blockchain struct {
 	state        *state.State
 	data         *blockchainData
 	validatorSet *validator.ValidatorSet
+	sortition    *sortition.Sortition
+	logger       *logging.Logger
 }
 
 type blockchainData struct {
@@ -35,7 +38,7 @@ type blockchainData struct {
 	MaximumPower    int               `json:"maximumPower"`
 }
 
-func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*Blockchain, error) {
+func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, myVal crypto.Signer, logger *logging.Logger) (*Blockchain, error) {
 	logger = logger.WithScope("LoadOrNewBlockchain")
 	logger.InfoMsg("Trying to load blockchain state from database",
 		"database_key", stateKey)
@@ -43,6 +46,7 @@ func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logge
 	if err != nil {
 		return nil, fmt.Errorf("error loading blockchain state from database: %v", err)
 	}
+
 	if bc != nil {
 		dbHash := bc.genesisHash
 		argHash := gen.Hash()
@@ -50,15 +54,24 @@ func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logge
 			return nil, fmt.Errorf("Genesis passed to LoadOrNewBlockchain has hash: 0x%X, which does not "+
 				"match the one found in database: 0x%X", argHash, dbHash)
 		}
+	} else {
+
+		logger.InfoMsg("No existing blockchain state found in database, making new blockchain")
+
+		bc, err = newBlockchain(db, gen, logger)
+		if err != nil {
+			return nil, fmt.Errorf("error creating blockchain from genesis doc: %v", err)
+		}
 	}
 
-	logger.InfoMsg("No existing blockchain state found in database, making new blockchain")
-	bc, err = newBlockchain(db, gen, logger)
-	if err != nil {
-		return nil, fmt.Errorf("error creating blockchain from genesis doc: %v", err)
-	}
+	/// set logger
+	bc.logger = logger
 
 	if err := bc.loadValidatorSet(); err != nil {
+		return nil, err
+	}
+
+	if err := bc.createSortition(myVal); err != nil {
 		return nil, err
 	}
 
@@ -153,6 +166,7 @@ func (bc *Blockchain) LastBlockHeight() uint64    { return bc.data.LastBlockHeig
 func (bc *Blockchain) LastBlockTime() time.Time   { return bc.data.LastBlockTime }
 func (bc *Blockchain) LastBlockHash() []byte      { return bc.data.LastBlockHash }
 func (bc *Blockchain) LastAppHash() []byte        { return bc.data.LastAppHash }
+func (bc *Blockchain) MaximumPower() int          { return bc.data.MaximumPower }
 
 func (bc *Blockchain) ValidatorSet() *validator.ValidatorSet {
 	return bc.validatorSet
@@ -207,6 +221,26 @@ func (bc *Blockchain) loadValidatorSet() error {
 		valMap[addr] = val
 	}
 
-	bc.validatorSet = validator.NewValidatorSet(valMap, bc.data.MaximumPower)
+	bc.validatorSet = validator.NewValidatorSet(valMap, bc.data.MaximumPower, bc.logger)
 	return nil
+}
+
+func (bc *Blockchain) createSortition(myVal crypto.Signer) error {
+	bc.sortition = sortition.NewSortition(myVal, bc.chainID, bc.logger)
+	return nil
+}
+
+func (bc *Blockchain) EvaluateSortition(blockHeight uint64, blockHash []byte) {
+
+	// check if this validator is in set or not
+	if bc.validatorSet.Contains(bc.sortition.Address()) {
+		return
+	}
+
+	// this validator is not in the set
+	go bc.sortition.Evaluate(blockHeight, blockHash)
+}
+
+func (bc *Blockchain) VerifySortition(blockHash []byte, publicKey crypto.PublicKey, info uint64, proof []byte) bool {
+	return bc.sortition.Verify(blockHash, publicKey, info, proof)
 }

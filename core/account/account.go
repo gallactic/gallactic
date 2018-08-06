@@ -29,6 +29,10 @@ func NewAccount(addr crypto.Address) (*Account, error) {
 		return nil, err
 	}
 
+	if !addr.IsAccountAddress() {
+		return nil, e.Errorf(e.ErrInvalidAddress, "This is not a valid acccount address: %s", addr.String())
+	}
+
 	return &Account{
 		data: accountData{
 			Address: addr,

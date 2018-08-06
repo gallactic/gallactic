@@ -45,7 +45,7 @@ func (ctx *BondContext) Execute(txEnv *txs.Envelope) error {
 		}
 	}
 
-	// Good! Adjust accounts
+	// Good! Adjust account and validator
 	err = adjustInputAccount(from, tx.From())
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (ctx *BondContext) Execute(txEnv *txs.Envelope) error {
 		return err
 	}
 
-	/// Update account
+	/// Update state cache
 	ctx.Cache.UpdateAccount(from)
 	ctx.Cache.UpdateValidator(to)
 

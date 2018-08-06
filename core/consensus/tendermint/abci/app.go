@@ -1,20 +1,20 @@
 package abci
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
 
-	"encoding/json"
-
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/codes"
 	"github.com/gallactic/gallactic/core/execution"
+	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
-
 	"github.com/pkg/errors"
+
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -125,6 +125,23 @@ func (app *App) InitChain(chain abciTypes.RequestInitChain) (respInitChain abciT
 func (app *App) BeginBlock(block abciTypes.RequestBeginBlock) (respBeginBlock abciTypes.ResponseBeginBlock) {
 	app.block = &block
 
+	set := app.bc.ValidatorSet()
+	state := app.bc.State()
+	byzantines := block.ByzantineValidators
+
+	for _, b := range byzantines {
+		addr, err := crypto.ValidatorAddress(b.Validator.Address)
+		if err != nil {
+			/// TODO:::
+		} else {
+			/// remove Byzantine validator from state and set
+			set.ForceLeave(addr)
+			state.RemoveValidator(addr)
+		}
+	}
+
+	app.bc.EvaluateSortition(uint64(block.Header.Height), block.Hash)
+
 	return
 }
 
@@ -174,7 +191,29 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 }
 
 func (app *App) EndBlock(reqEndBlock abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
-	return abciTypes.ResponseEndBlock{}
+	/// Update validator set
+	set := app.bc.ValidatorSet()
+	set.AdjustPower(reqEndBlock.GetHeight())
+	vals := set.Validators()
+	leavers := set.Leavers()
+
+	updates := make([]abciTypes.Validator, len(vals)+len(leavers))
+	i := 0
+	for _, v := range vals {
+		updates[i].Power = v.Power()
+		updates[i].PubKey = v.PublicKey().ABCIPubKey()
+		i++
+	}
+
+	for _, v := range leavers {
+		updates[i].Power = 0
+		updates[i].PubKey = v.PublicKey().ABCIPubKey()
+		i++
+	}
+
+	return abciTypes.ResponseEndBlock{
+		ValidatorUpdates: updates,
+	}
 }
 
 func (app *App) Commit() abciTypes.ResponseCommit {
