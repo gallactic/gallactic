@@ -65,7 +65,7 @@ func Start() func(cmd *cli.Cmd) {
 				switch {
 				case *keystoreOpt == "" && *privatekeyOpt == "":
 					// Creating KeyObject from Private Key
-					kj, err := PromptPrivateKey(true)
+					kj, err := PromptPrivateKey()
 					if err != nil {
 						log.Fatalf("Aborted: %v", err)
 					}
