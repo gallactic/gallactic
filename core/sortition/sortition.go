@@ -21,30 +21,20 @@ type Sortition struct {
 	logger       *logging.Logger
 }
 
-func NewSortition(signer crypto.Signer, chainID string, logger *logging.Logger) *Sortition {
+func NewSortition(state *state.State, signer crypto.Signer, chainID string, logger *logging.Logger) *Sortition {
 	return &Sortition{
 		signer:  signer,
+		state:   state,
 		chainID: chainID,
+		vrf:     NewVRF(signer),
 		logger:  logger,
 	}
 }
 
-/*
-func (s *sortition) SetTransactor(transactor ITransactor) {
-	s.transactor = transactor
-}
-
-func (s *sortition) SetValidaorPool(validatorPool ValidatorPool) {
-	s.validatorPool = validatorPool
-}
-*/
-
 // Evaluate return the vrf for self choosing to be a validator
 func (s *Sortition) Evaluate(blockHeight uint64, blockHash []byte) {
 	totalStake, valStake := s.getTotalStake(s.signer.Address())
-
 	s.vrf.SetMax(totalStake)
-
 	index, proof := s.vrf.Evaluate(blockHash)
 
 	if index < valStake {
@@ -88,7 +78,7 @@ func (s *Sortition) Evaluate(blockHeight uint64, blockHash []byte) {
 	}
 }
 
-func (s *Sortition) Verify(prevBlockHash []byte, pb crypto.PublicKey, index uint64, proof []byte) bool {
+func (s *Sortition) Verify(blockHash []byte, pb crypto.PublicKey, index uint64, proof []byte) bool {
 
 	totalStake, valStake := s.getTotalStake(pb.ValidatorAddress())
 
@@ -96,7 +86,7 @@ func (s *Sortition) Verify(prevBlockHash []byte, pb crypto.PublicKey, index uint
 	// So we calculate the index again
 	s.vrf.SetMax(totalStake)
 
-	index2, result := s.vrf.Verify(prevBlockHash, pb, proof)
+	index2, result := s.vrf.Verify(blockHash, pb, proof)
 
 	if result == false {
 		return false
@@ -106,7 +96,7 @@ func (s *Sortition) Verify(prevBlockHash []byte, pb crypto.PublicKey, index uint
 }
 
 func (s *Sortition) Address() crypto.Address {
-	return s.Address()
+	return s.signer.Address()
 }
 
 func (s *Sortition) getTotalStake(addr crypto.Address) (totalStake uint64, validatorStake uint64) {

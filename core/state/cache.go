@@ -59,6 +59,9 @@ func Name(name string) CacheOption {
 }
 
 func (c *Cache) Reset() {
+	c.Lock()
+	defer c.Unlock()
+
 	for a := range c.accChanges {
 		delete(c.accChanges, a)
 	}
@@ -72,11 +75,13 @@ func (c *Cache) Reset() {
 func (c *Cache) Flush(set *validator.ValidatorSet) error {
 	c.Lock()
 	defer c.Unlock()
+
 	for _, i := range c.accChanges {
 		if err := c.state.UpdateAccount(i.account); err != nil {
 			return err
 		}
 	}
+
 	for addr, i := range c.valChanges {
 		switch i.status {
 		case addToSet:
@@ -99,6 +104,15 @@ func (c *Cache) Flush(set *validator.ValidatorSet) error {
 				return err
 			}
 		}
+	}
+
+	/// reset cache
+	for a := range c.accChanges {
+		delete(c.accChanges, a)
+	}
+
+	for v := range c.valChanges {
+		delete(c.valChanges, v)
 	}
 
 	return nil

@@ -53,7 +53,7 @@ func (vrf *VRF) Evaluate(m []byte) (index uint64, proof []byte) {
 }
 
 // Verify ensure the proof is valid
-func (vrf *VRF) Verify(m []byte, publicKey crypto.PublicKey, proof []byte) (index uint64, result bool) {
+func (vrf *VRF) Verify(msg []byte, publicKey crypto.PublicKey, proof []byte) (index uint64, result bool) {
 	address, err := crypto.AddressFromRawBytes(proof[0:crypto.AddressSize])
 	if err != nil {
 		return 0, false
@@ -70,7 +70,7 @@ func (vrf *VRF) Verify(m []byte, publicKey crypto.PublicKey, proof []byte) (inde
 	}
 
 	// Verify signature (proof)
-	if !publicKey.Verify(m, sig) {
+	if !publicKey.Verify(msg, sig) {
 		return 0, false
 	}
 

@@ -56,9 +56,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	if conf == nil {
 		return nil, fmt.Errorf("no Config defined, cannot make Kernel")
 	}
-	if err := conf.Validator.Address.EnsureValid(); err != nil {
-		return nil, fmt.Errorf("Not a valid address provided for validator, cannot make Kernel: %v", err)
-	}
+
 	logger, err := lifecycle.NewLoggerFromLoggingConfig(conf.Logging)
 	if err != nil {
 		return nil, fmt.Errorf("could not generate logger from logging config: %v", err)
