@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:282acb7fe0ca456de4ea5c3174c2691a2bd74008462e966b69094ad0b2c23e6e"
+  digest = "1:b16fbfbcc20645cb419f78325bb2e85ec729b338e996a228124d68931a6f2a37"
   name = "github.com/BurntSushi/toml"
   packages = ["."]
   pruneopts = "UT"
@@ -19,7 +19,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6aabc1566d6351115d561d038da82a4c19b46c3b6e17f4a0a2fa60260663dc79"
+  digest = "1:2c00f064ba355903866cbfbf3f7f4c0fe64af6638cc7d1b8bdcf3181bc67f1d8"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
   pruneopts = "UT"
@@ -65,7 +65,7 @@
   revision = "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
 
 [[projects]]
-  digest = "1:76052d394539fa449628bc0a7d19d12051e350d3598d28d2263798c2976e9cf5"
+  digest = "1:489e108f21464371ebf9cb5c30b1eceb07c6dd772dff073919267493dd9d04ea"
   name = "github.com/gin-gonic/gin"
   packages = [
     ".",
@@ -77,7 +77,7 @@
   version = "v1.2"
 
 [[projects]]
-  digest = "1:fa30c0652956e159cdb97dcb2ef8b8db63ed668c02a5c3a40961c8f0641252fe"
+  digest = "1:fdf5169073fb0ad6dc12a70c249145e30f4058647bea25f0abd48b6d9f228a11"
   name = "github.com/go-kit/kit"
   packages = [
     "log",
@@ -109,7 +109,7 @@
   version = "v1.7.0"
 
 [[projects]]
-  digest = "1:212285efb97b9ec2e20550d81f0446cb7897e57cbdfd7301b1363ab113d8be45"
+  digest = "1:35621fe20f140f05a0c4ef662c26c0ab4ee50bca78aa30fe87d33120bd28165e"
   name = "github.com/gogo/protobuf"
   packages = [
     "gogoproto",
@@ -124,7 +124,7 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:cb22af0ed7c72d495d8be1106233ee553898950f15fd3f5404406d44c2e86888"
+  digest = "1:17fe264ee908afc795734e8c4e63db2accabaf57326dbf21763a7d6b86096260"
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
@@ -155,7 +155,7 @@
 
 [[projects]]
   branch = "develop"
-  digest = "1:69e18970f0c6f63862cfcdb13a4a42fdb6c6b7fd6336ca7ebfd82c3a432358c8"
+  digest = "1:96e8975c61e6b2c8fbe3c533b339944f867ea0595fef63367d764959e3b12b43"
   name = "github.com/hyperledger/burrow"
   packages = [
     "acm",
@@ -194,7 +194,7 @@
   revision = "ed661945b8b4c9bae4470f8f8868d8e80a670561"
 
 [[projects]]
-  digest = "1:e6cdf641a24ee23d360d9cf680dd63b226f504d368e44b3d55cee7c652d50b50"
+  digest = "1:cd685a8b273acf671df4e26ec54c77c363d76eb80b554ed5374233a55f6e424f"
   name = "github.com/jawher/mow.cli"
   packages = [
     ".",
@@ -235,6 +235,14 @@
   version = "v0.0.3"
 
 [[projects]]
+  digest = "1:e2d1d410fb367567c2b53ed9e2d719d3c1f0891397bb2fa49afd747cfbf1e8e4"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
+  version = "v0.0.2"
+
+[[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
@@ -249,6 +257,14 @@
   packages = ["base58"]
   pruneopts = "UT"
   revision = "4df4dc6e86a912614d09719d10cad427b087cbfb"
+
+[[projects]]
+  branch = "master"
+  digest = "1:f1da02f4db9d4448d14655eb0d3f6bcba03ea1894472c70361f846f3b0e90047"
+  name = "github.com/peterh/liner"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8c1271fcf47f341a9e6771872262870e1ad7650c"
 
 [[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
@@ -267,7 +283,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:98225904b7abff96c052b669b25788f18225a36673fba022fb93514bb9a2a64e"
+  digest = "1:c1a04665f9613e082e1209cf288bf64f4068dcd6c87a64bf1c4ff006ad422ba0"
   name = "github.com/prometheus/client_golang"
   packages = [
     "prometheus",
@@ -278,7 +294,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0f37e09b3e92aaeda5991581311f8dbf38944b36a3edec61cc2d1991f527554a"
+  digest = "1:2d5cd61daa5565187e1d96bae64dbbc6080dacf741448e9629c64fd93203b0d4"
   name = "github.com/prometheus/client_model"
   packages = ["go"]
   pruneopts = "UT"
@@ -286,7 +302,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4d291d51042ed9de40eef61a3c1b56e969d6e0f8aa5fd3da5e958ec66bee68e4"
+  digest = "1:e469cd65badf7694aeb44874518606d93c1d59e7735d3754ad442782437d3cc3"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
@@ -298,7 +314,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:55d7449d6987dabf272b4e81b2f9c449f05b17415c939b68d1e82f57e3374b7f"
+  digest = "1:20d9bb50dbee172242f9bcd6ec24a917dd7a5bb17421bf16a79c33111dea7db1"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -318,7 +334,7 @@
   revision = "6617b501e485b77e61b98cd533aefff9e258b5a7"
 
 [[projects]]
-  digest = "1:befd7181c2f92c9f05abf17cd7e15538919f19cf7871d794cacc45a4fb99c135"
+  digest = "1:c40d65817cdd41fac9aa7af8bed56927bb2d6d47e4fea566a74880f5c2b1c41e"
   name = "github.com/stretchr/testify"
   packages = [
     "assert",
@@ -330,7 +346,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:922191411ad8f61bcd8018ac127589bb489712c1d1a0ab2497aca4b16de417d2"
+  digest = "1:b3cfb8d82b1601a846417c3f31c03a7961862cb2c98dcf0959c473843e6d9a2b"
   name = "github.com/syndtr/goleveldb"
   packages = [
     "leveldb",
@@ -351,7 +367,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:203b409c21115233a576f99e8f13d8e07ad82b25500491f7e1cca12588fb3232"
+  digest = "1:087aaa7920e5d0bf79586feb57ce01c35c830396ab4392798112e8aae8c47722"
   name = "github.com/tendermint/ed25519"
   packages = [
     ".",
@@ -378,7 +394,7 @@
   version = "v0.9.2"
 
 [[projects]]
-  digest = "1:46ac5207f9074a8ca246a3fce7aa576f5c5f43a30c8f3ef833e247777fdb8a4f"
+  digest = "1:655269eb91b18f28ee2a596256a088dc140d38ab2e27d6e97dd999eafa548665"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -461,7 +477,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e8a7e74fac1ad39ecaef7f4004feeecd8514cef5b0e49ba306b11ff1770d0233"
+  digest = "1:b7423dce9f626d3823cec2f139e1fce75bee06423aa277ed3996b5eff75e3e84"
   name = "golang.org/x/crypto"
   packages = [
     "curve25519",
@@ -482,7 +498,7 @@
   revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
 [[projects]]
-  digest = "1:04dda8391c3e2397daf254ac68003f30141c069b228d06baec8324a5f81dc1e9"
+  digest = "1:d36f55a999540d29b6ea3c2ea29d71c76b1d9853fdcd3e5c5cb4836f2ba118f1"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -499,7 +515,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0470500d9a2c5c653f89fc369cdf2fece01996432d42ef87e03ebc3e5b5f8717"
+  digest = "1:d5805c7decaaed636ef300476ddc5df845d53ceefedd8b7f0167fd76b6eb2932"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -509,7 +525,7 @@
   revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
 
 [[projects]]
-  digest = "1:7509ba4347d1f8de6ae9be8818b0cd1abc3deeffe28aeaf4be6d4b6b5178d9ca"
+  digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
   name = "golang.org/x/text"
   packages = [
     "collate",
@@ -539,7 +555,7 @@
   revision = "7fd901a49ba6a7f87732eb344f6e3c5b19d1b200"
 
 [[projects]]
-  digest = "1:4515e3030c440845b046354fd5d57671238428b820deebce2e9dabb5cd3c51ac"
+  digest = "1:2dab32a43451e320e49608ff4542fdfc653c95dcc35d0065ec9c6c3dd540ed74"
   name = "google.golang.org/grpc"
   packages = [
     ".",
@@ -622,6 +638,7 @@
     "github.com/hyperledger/burrow/txs/payload",
     "github.com/jawher/mow.cli",
     "github.com/mr-tron/base58/base58",
+    "github.com/peterh/liner",
     "github.com/pkg/errors",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",
@@ -645,7 +662,9 @@
     "github.com/tmthrgd/go-hex",
     "github.com/tommy351/gin-cors",
     "golang.org/x/crypto/ed25519",
+    "golang.org/x/crypto/pbkdf2",
     "golang.org/x/crypto/ripemd160",
+    "golang.org/x/crypto/scrypt",
     "gopkg.in/tylerb/graceful.v1",
   ]
   solver-name = "gps-cdcl"

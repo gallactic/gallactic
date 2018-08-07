@@ -226,7 +226,7 @@ func (bc *Blockchain) loadValidatorSet() error {
 }
 
 func (bc *Blockchain) createSortition(myVal crypto.Signer) error {
-	bc.sortition = sortition.NewSortition(myVal, bc.chainID, bc.logger)
+	bc.sortition = sortition.NewSortition(bc.state, myVal, bc.chainID, bc.logger)
 	return nil
 }
 

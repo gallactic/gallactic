@@ -50,18 +50,14 @@ func (ctx *SortitionContext) Execute(txEnv *txs.Envelope) error {
 	}
 
 	/// Verify the sortition
-	var prevBlockHeight = int64(tx.Height() - 1)
-	result, err := tmRPC.Block(&prevBlockHeight)
+	var blockHeight = int64(tx.Height())
+	result, err := tmRPC.Block(&blockHeight)
 	if err != nil {
 		return err
 	}
 
-	prevBlockHash := result.Block.Hash()
-	if prevBlockHash != nil {
-		return errors.New("This validator is already in set")
-	}
-
-	isValid := ctx.BC.VerifySortition(prevBlockHash, txEnv.Signatories[0].PublicKey, tx.Index(), tx.Proof())
+	blockHash := result.Block.Hash()
+	isValid := ctx.BC.VerifySortition(blockHash, txEnv.Signatories[0].PublicKey, tx.Index(), tx.Proof())
 	if isValid == false {
 		return errors.New("Sortition transaction is invalid")
 	}

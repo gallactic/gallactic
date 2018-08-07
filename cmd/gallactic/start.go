@@ -38,23 +38,22 @@ func Start() func(cmd *cli.Cmd) {
 
 		privatekeyOpt := cmd.String(cli.StringOpt{
 			Name: "p privatekey",
-			Desc: "private key of the account",
+			Desc: "private key of the node's validator",
 		})
 
 		keystoreOpt := cmd.String(cli.StringOpt{
-			Name: "k keyPath",
-			Desc: "path to the key file",
+			Name: "k key-file",
+			Desc: "path to the encrypted node's key file",
 		})
 
 		keyfileauthOpt := cmd.String(cli.StringOpt{
 			Name: "a auth",
-			Desc: "keyfile password",
+			Desc: "key file passphrase",
 		})
 
-		cmd.Spec = "[--working-dir=<Working directory of the configuration files>] " +
-			"[--privatekey=<private key of the account>]" +
-			"[--keyPath=<path to the key file>]" +
-			"[--auth=<keyfile password>]"
+		/*
+			cmd.Spec = "--working-dir=<working directory of the configuration files>"
+		*/
 
 		cmd.Action = func() {
 			fmt.Print(welcomeMessage)
@@ -75,7 +74,7 @@ func Start() func(cmd *cli.Cmd) {
 					passphrase := *keyfileauthOpt
 					kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
 					if err != nil {
-						log.Fatalf("could not decrypt file: %v", err)
+						log.Fatalf("Could not decrypt file: %v", err)
 					}
 					keyObj = kj
 				case *keystoreOpt != "" && *keyfileauthOpt == "":
@@ -83,20 +82,21 @@ func Start() func(cmd *cli.Cmd) {
 					passphrase := promptPassphrase(true)
 					kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
 					if err != nil {
-						log.Fatalf("could not decrypt file: %v", err)
+						log.Fatalf("Could not decrypt file: %v", err)
 					}
 					keyObj = kj
 				case *privatekeyOpt != "":
 					// Creating KeyObject from Private Key
 					pv, err := crypto.PrivateKeyFromString(*privatekeyOpt)
 					if err != nil {
-						log.Fatalf("could not decrypt file: %v", err)
+						log.Fatalf("Could not decrypt file: %v", err)
 					}
 					kj := CreateKey(pv)
 					keyObj = kj
 				}
 
-				fmt.Println("", keyObj.Address().String())
+				fmt.Println("Validator address: ", keyObj.Address().String())
+
 				// change working directory
 				if err := os.Chdir(workingDir); err != nil {
 					log.Fatalf("Unable to changes working directory: %v", err)
@@ -106,25 +106,26 @@ func Start() func(cmd *cli.Cmd) {
 
 				gen, err := proposal.LoadFromFile(genesisFile)
 				if err != nil {
-					log.Fatalf("could not obtain genesis from file: %v", err)
+					log.Fatalf("Could not obtain genesis from file: %v", err)
 				}
 
 				conf, err := config.LoadFromFile(configFile)
 				if err != nil {
-					log.Fatalf("could not obtain config from file: %v", err)
+					log.Fatalf("Could not obtain config from file: %v", err)
 				}
 
 				ctx, cancel := context.WithCancel(context.Background())
 				defer cancel()
 
-				kernel, err := core.NewKernel(ctx, gen, conf, nil)
+				signer := crypto.NewValidatorSigner(keyObj.PrivateKey())
+				kernel, err := core.NewKernel(ctx, gen, conf, signer)
 				if err != nil {
-					log.Fatalf("could not create kernel: %v", err)
+					log.Fatalf("Could not create kernel: %v", err)
 				}
 
 				err = kernel.Boot()
 				if err != nil {
-					log.Fatalf("could not boot kernel: %v", err)
+					log.Fatalf("Could not boot kernel: %v", err)
 				}
 
 				kernel.WaitForShutdown()

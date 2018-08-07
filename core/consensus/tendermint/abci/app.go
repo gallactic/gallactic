@@ -18,7 +18,7 @@ import (
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 )
 
-const responseInfoName = "Burrow"
+const responseInfoName = "Gallactic"
 
 type App struct {
 	// State
@@ -273,12 +273,12 @@ func (app *App) Commit() abciTypes.ResponseCommit {
 
 	// Perform a sanity check our block height
 	if app.bc.LastBlockHeight() != uint64(app.block.Header.Height) {
-		app.logger.InfoMsg("Burrow block height disagrees with Tendermint block height",
+		app.logger.InfoMsg("gallactic block height disagrees with Tendermint block height",
 			structure.ScopeKey, "Commit()",
-			"burrow_height", app.bc.LastBlockHeight(),
+			"gallactic_height", app.bc.LastBlockHeight(),
 			"tendermint_height", app.block.Header.Height)
 
-		panic(fmt.Errorf("burrow has recorded a block height of %v, "+
+		panic(fmt.Errorf("gallactic has recorded a block height of %v, "+
 			"but Tendermint reports a block height of %v, and the two should agree",
 			app.bc.LastBlockHeight(), app.block.Header.Height))
 	}
