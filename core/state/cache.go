@@ -76,6 +76,7 @@ func (c *Cache) Reset() {
 func (c *Cache) Flush(set *validator.ValidatorSet) error {
 	c.Lock()
 	defer c.Unlock()
+
 	for _, i := range c.accChanges {
 		if err := c.state.UpdateAccount(i.account); err != nil {
 			return err
