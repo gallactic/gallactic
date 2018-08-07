@@ -7,9 +7,7 @@ INCLUDE = -I=. -I=${GOPATH}/src
 BUILD_TAGS?=gallactic
 BUILD_FLAGS = -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
 
-all: check build test install
-
-check: check_tools ensure_deps
+all: tools deps build test install
 
 
 ########################################
@@ -26,32 +24,17 @@ install:
 ########################################
 ### Tools & dependencies
 
-check_tools:
-	@# https://stackoverflow.com/a/25668869
-	@echo "Found tools: $(foreach tool,$(notdir $(GOTOOLS)),\
-        $(if $(shell which $(tool)),$(tool),$(error "No $(tool) in PATH")))"
-
-get_tools:
+tools:
 	@echo "--> Installing tools"
 	go get -u -v $(GOTOOLS)
 	@gometalinter.v2 --install
 
-update_tools:
-	@echo "--> Updating tools"
-	@go get -u $(GOTOOLS)
 
-#Run this from CI
-get_vendor_deps:
+deps:
 	@rm -rf vendor/
 	@echo "--> Running dep"
-	@dep ensure -vendor-only
+	@dep ensure -v
 
-
-#Run this locally.
-ensure_deps:
-	@rm -rf vendor/
-	@echo "--> Running dep"
-	@dep ensure
 
 ########################################
 ### Testing
@@ -109,15 +92,11 @@ metalinter:
 		#--enable=vet \
 		#--enable=vetshadow \
 
-metalinter_all:
-	@echo "--> Running linter (all)"
-	gometalinter.v2 --vendor --deadline=600s --enable-all --disable=lll ./...
-
 
 # To avoid unintended conflicts with file names, always add to .PHONY
 # unless there is a reason not to.
 # https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html
-.PHONY: check build build_race install
+.PHONY: build build_race install
 .PHONY: test test_race test_release test100
-.PHONY: check_tools get_tools update_tools get_vendor_deps ensure_deps
-.PHONY: fmt metalinter metalinter_all
+.PHONY: tools deps
+.PHONY: fmt metalinter
