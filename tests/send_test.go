@@ -12,18 +12,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makeSendTx(t *testing.T, from, to string, amount, fee uint64) *tx.SendTx {
+func makeSendTx(t *testing.T, from, to string, amt, fee uint64) *tx.SendTx {
 	tx, err := tx.EmptySendTx()
 	require.NoError(t, err)
 
-	addSender(t, tx, from, amount, fee)
-	addReceiver(t, tx, to, amount)
+	addSender(t, tx, from, amt, fee)
+	addReceiver(t, tx, to, amt)
+
+	require.Equal(t, amt, tx.Amount())
+	require.Equal(t, fee, tx.Fee())
+
 	return tx
 }
 
-func addSender(t *testing.T, tx *tx.SendTx, from string, amount, fee uint64) *tx.SendTx {
+func addSender(t *testing.T, tx *tx.SendTx, from string, amt, fee uint64) *tx.SendTx {
 	acc := getAccountByName(t, from)
-	tx.AddSender(acc.Address(), acc.Sequence()+1, amount+fee)
+	tx.AddSender(acc.Address(), acc.Sequence()+1, amt+fee)
 	return tx
 }
 
@@ -145,4 +149,21 @@ func TestCreateAccountPermission(t *testing.T) {
 
 	checkBalance(t, "alice", aliceBalance-(4*(5+_fee)))
 	checkBalance(t, "bob", bobBalance-(3*(5+_fee)))
+}
+
+func TestMultiSigs(t *testing.T) {
+	tx, _ := tx.EmptySendTx()
+	names := make([]string, 0)
+
+	for n, a := range tAccounts {
+		acc := getAccount(t, a.Address())
+		acc.SetPermissions(permission.Send | permission.CreateAccount)
+		updateAccount(t, acc) // update required permissions
+
+		tx.AddSender(a.Address(), acc.Sequence()+1, 1000)
+		tx.AddReceiver(newAccountAddress(t), 999) /// send to new address
+		names = append(names, n)
+	}
+
+	signAndExecute(t, e.ErrNone, tx, names...)
 }

@@ -10,10 +10,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makeUnbondTx(t *testing.T, from, to string, amount, fee uint64) *tx.UnbondTx {
+func makeUnbondTx(t *testing.T, from, to string, amt, fee uint64) *tx.UnbondTx {
 	val := getValidatorByName(t, from)
 	acc := getAccountByName(t, to)
-	tx, err := tx.NewUnbondTx(val.Address(), acc.Address(), amount, val.Sequence()+1, fee)
+	tx, err := tx.NewUnbondTx(val.Address(), acc.Address(), amt, val.Sequence()+1, fee)
+	require.Equal(t, amt, tx.Amount())
+	require.Equal(t, fee, tx.Fee())
 	require.NoError(t, err)
 	return tx
 }

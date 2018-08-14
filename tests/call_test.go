@@ -16,11 +16,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-/// TODO : test frofor sequence increase. +1 after tx gets successfull. 0: if not successfull. +2: for create contract
-
 func makeCallTx(t *testing.T, from string, addr crypto.Address, data []byte, amt, fee uint64) *tx.CallTx {
 	acc := getAccountByName(t, from)
 	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, 210000, amt, fee)
+	require.Equal(t, amt, tx.Amount())
+	require.Equal(t, fee, tx.Fee())
 	assert.NoError(t, err)
 
 	return tx

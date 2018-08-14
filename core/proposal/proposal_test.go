@@ -76,15 +76,15 @@ func TestVerifyProposal(t *testing.T) {
 	assert.NoError(t, signerror5)
 
 	/* create array element of public key and signature*/
-	s1 := signatory{PublicKey: pubKey1, Signature: signature1}
-	s2 := signatory{PublicKey: pubKey2, Signature: signature2}
-	s3 := signatory{PublicKey: pubKey3, Signature: signature3}
-	s4 := signatory{PublicKey: pubKey4, Signature: signature4}
-	s5 := signatory{PublicKey: pubKey5, Signature: signature5}
+	s1 := crypto.Signatory{PublicKey: pubKey1, Signature: signature1}
+	s2 := crypto.Signatory{PublicKey: pubKey2, Signature: signature2}
+	s3 := crypto.Signatory{PublicKey: pubKey3, Signature: signature3}
+	s4 := crypto.Signatory{PublicKey: pubKey4, Signature: signature4}
+	s5 := crypto.Signatory{PublicKey: pubKey5, Signature: signature5}
 
 	/* append the array elemet to propsal struct  Signatories*/
 
-	var sigs []signatory
+	var sigs []crypto.Signatory
 	sigs = append(sigs, s1)
 	sigs = append(sigs, s2)
 	sigs = append(sigs, s3)
@@ -125,7 +125,7 @@ func TestVerifyProposal(t *testing.T) {
 	// change publicKey
 	var p5 Proposal
 	p5.Genesis = gen
-	p5.Signatories = make([]signatory, len(sigs))
+	p5.Signatories = make([]crypto.Signatory, len(sigs))
 	copy(p5.Signatories, sigs)
 	p5.Signatories[0].PublicKey = sigs[1].PublicKey
 
@@ -135,7 +135,7 @@ func TestVerifyProposal(t *testing.T) {
 	// change signature
 	var p6 Proposal
 	p6.Genesis = gen
-	p6.Signatories = make([]signatory, len(sigs))
+	p6.Signatories = make([]crypto.Signatory, len(sigs))
 	copy(p6.Signatories, sigs)
 	p6.Signatories[0].Signature = sigs[1].Signature
 

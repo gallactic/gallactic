@@ -29,7 +29,7 @@ func NewCallTx(caller, callee crypto.Address, sequence uint64, data []byte, gasL
 			},
 			Callee: TxOutput{
 				Address: callee,
-				Amount:  amount + fee,
+				Amount:  amount,
 			},
 			GasLimit: gasLimit,
 			Data:     data,
