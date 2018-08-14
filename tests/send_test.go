@@ -12,26 +12,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makeSendTx(t *testing.T, from, to string, amt, fee uint64) *tx.SendTx {
+func makeSendTx(t *testing.T, from, to string, amount, fee uint64) *tx.SendTx {
 	tx, err := tx.EmptySendTx()
 	require.NoError(t, err)
 
-	addSender(t, tx, from, amt, fee)
-	addReceiver(t, tx, to, amt)
+	addSender(t, tx, from, amount, fee)
+	addReceiver(t, tx, to, amount)
 
-	require.Equal(t, amt, tx.Amount())
+	require.Equal(t, amount, tx.Amount())
 	require.Equal(t, fee, tx.Fee())
 
 	return tx
 }
 
-func addSender(t *testing.T, tx *tx.SendTx, from string, amt, fee uint64) *tx.SendTx {
+func addSender(t *testing.T, tx *tx.SendTx, from string, amount, fee uint64) *tx.SendTx {
 	acc := getAccountByName(t, from)
-	tx.AddSender(acc.Address(), acc.Sequence()+1, amt+fee)
+	tx.AddSender(acc.Address(), acc.Sequence()+1, amount+fee)
 	return tx
 }
 
-func addReceiver(t *testing.T, tx *tx.SendTx, to string, amt uint64) *tx.SendTx {
+func addReceiver(t *testing.T, tx *tx.SendTx, to string, amount uint64) *tx.SendTx {
 	var toAddress crypto.Address
 	if to != "" {
 		toAddress = tAccounts[to].Address()
@@ -39,7 +39,7 @@ func addReceiver(t *testing.T, tx *tx.SendTx, to string, amt uint64) *tx.SendTx 
 		toAddress = newAccountAddress(t)
 	}
 
-	tx.AddReceiver(toAddress, amt)
+	tx.AddReceiver(toAddress, amount)
 	return tx
 }
 
@@ -53,14 +53,14 @@ func getBalanceByAddress(t *testing.T, addr crypto.Address) uint64 {
 	return acc.Balance()
 }
 
-func checkBalance(t *testing.T, name string, amt uint64) {
-	checkBalanceByAddress(t, tAccounts[name].Address(), amt)
+func checkBalance(t *testing.T, name string, amount uint64) {
+	checkBalanceByAddress(t, tAccounts[name].Address(), amount)
 }
 
-func checkBalanceByAddress(t *testing.T, addr crypto.Address, amt uint64) {
+func checkBalanceByAddress(t *testing.T, addr crypto.Address, amount uint64) {
 	acc := getAccount(t, addr)
 	require.NotNil(t, acc)
-	assert.Equal(t, acc.Balance(), amt)
+	assert.Equal(t, acc.Balance(), amount)
 }
 
 func TestSendTxFails(t *testing.T) {
