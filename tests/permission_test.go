@@ -12,12 +12,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-/// TODO : test fro sequence increase. +1 after tx get successfull. 0: if not successfull. +2: for create contract
-
 func makePermissionTx(t *testing.T, modifier, modified string, perm account.Permissions, set bool, fee uint64) *tx.PermissionsTx {
 	acc1 := getAccountByName(t, modifier)
 	acc2 := getAccountByName(t, modified)
 	tx, err := tx.NewPermissionsTx(acc1.Address(), acc2.Address(), perm, set, acc1.Sequence()+1, fee)
+	require.Equal(t, 0, tx.Amount())
+	require.Equal(t, fee, tx.Fee())
 	require.NoError(t, err)
 
 	return tx

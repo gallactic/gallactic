@@ -25,17 +25,11 @@ type Decoder interface {
 
 // Envelope contains both the signable Tx and the signatures for each input (in signatories)
 type Envelope struct {
-	ChainID     string      `json:"chainId"`
-	Type        tx.Type     `json:"type"`
-	Tx          tx.Tx       `json:"tx"`
-	Signatories []Signatory `json:"signatories,omitempty"`
-	/// TODO: save tx hash to prevent calling json marshal everytime
-}
-
-// Signatory contains signature and PublicKey to identify the signer
-type Signatory struct {
-	PublicKey crypto.PublicKey `json:"publicKey"`
-	Signature crypto.Signature `json:"signature"`
+	ChainID     string             `json:"chainId"`
+	Type        tx.Type            `json:"type"`
+	Tx          tx.Tx              `json:"tx"`
+	Signatories []crypto.Signatory `json:"signatories,omitempty"`
+	hash        []byte
 }
 
 func Enclose(chainId string, tx tx.Tx) *Envelope {
@@ -48,10 +42,10 @@ func Enclose(chainId string, tx tx.Tx) *Envelope {
 
 func (env *Envelope) UnmarshalJSON(data []byte) error {
 	type _envelope struct {
-		ChainID     string          `json:"chainId"`
-		Type        tx.Type         `json:"type"`
-		Tx          json.RawMessage `json:"tx"`
-		Signatories []Signatory     `json:"signatories,omitempty"`
+		ChainID     string             `json:"chainId"`
+		Type        tx.Type            `json:"type"`
+		Tx          json.RawMessage    `json:"tx"`
+		Signatories []crypto.Signatory `json:"signatories,omitempty"`
 	}
 
 	w := new(_envelope)
@@ -78,14 +72,18 @@ func (env Envelope) SignBytes() ([]byte, error) {
 }
 
 func (env *Envelope) Hash() []byte {
+	if env.hash != nil {
+		return env.hash
+	}
+
 	hasher := ripemd160.New()
 	bytes, err := env.SignBytes()
 	if err != nil {
 		return nil
 	}
 	hasher.Write(bytes)
-	hash := hasher.Sum(nil)
-	return hash
+	env.hash = hasher.Sum(nil)
+	return env.hash
 }
 
 func (env *Envelope) String() string {
@@ -149,7 +147,7 @@ func (env *Envelope) Sign(signers ...crypto.Signer) error {
 			return err
 		}
 		publicKey := signer.PublicKey()
-		env.Signatories = append(env.Signatories, Signatory{
+		env.Signatories = append(env.Signatories, crypto.Signatory{
 			PublicKey: publicKey,
 			Signature: signature,
 		})
