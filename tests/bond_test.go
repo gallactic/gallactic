@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makeBondTx(t *testing.T, from, to string, amt, fee uint64) *tx.BondTx {
+func makeBondTx(t *testing.T, from, to string, amount, fee uint64) *tx.BondTx {
 	acc := getAccountByName(t, from)
 	var toPb crypto.PublicKey
 	if to != "" {
@@ -21,8 +21,8 @@ func makeBondTx(t *testing.T, from, to string, amt, fee uint64) *tx.BondTx {
 		toPb, _ = crypto.GenerateKey(nil)
 	}
 
-	tx, err := tx.NewBondTx(acc.Address(), toPb, amt, acc.Sequence()+1, fee)
-	require.Equal(t, amt, tx.Amount())
+	tx, err := tx.NewBondTx(acc.Address(), toPb, amount, acc.Sequence()+1, fee)
+	require.Equal(t, amount, tx.Amount())
 	require.Equal(t, fee, tx.Fee())
 	require.NoError(t, err)
 	return tx

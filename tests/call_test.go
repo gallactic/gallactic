@@ -16,10 +16,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makeCallTx(t *testing.T, from string, addr crypto.Address, data []byte, amt, fee uint64) *tx.CallTx {
+func makeCallTx(t *testing.T, from string, addr crypto.Address, data []byte, amount, fee uint64) *tx.CallTx {
 	acc := getAccountByName(t, from)
-	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, 210000, amt, fee)
-	require.Equal(t, amt, tx.Amount())
+	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, 210000, amount, fee)
+	require.Equal(t, amount, tx.Amount())
 	require.Equal(t, fee, tx.Fee())
 	assert.NoError(t, err)
 
