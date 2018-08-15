@@ -11,7 +11,6 @@ import (
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/gallactic/core/evm/abi"
-	"github.com/gallactic/gallactic/core/evm/sha3"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/hyperledger/burrow/execution/evm/asm/bc"
 	"github.com/stretchr/testify/assert"
@@ -62,7 +61,7 @@ func TestSNativeContractDescription_Dispatch(t *testing.T) {
 
 	// Should fail since we have no permissions
 	retValue, err := contract.Dispatch(tState, caller, bc.MustSplice(funcID[:],
-		grantee.Address(), permissionsToWord256(permission.CreateAccount)), &defaultGas, tLogger)
+		grantee.Address().RawBytes(), permissionsToWord256(permission.CreateAccount)), &defaultGas, tLogger)
 	if !assert.Error(t, err, "Should fail due to lack of permissions") {
 		return
 	}
@@ -74,12 +73,6 @@ func TestSNativeContractDescription_Dispatch(t *testing.T) {
 		grantee.Address().Word256(), permissionsToWord256(permission.CreateAccount)), &defaultGas, tLogger)
 	require.NoError(t, err)
 	require.Equal(t, retValue, binary.LeftPadBytes([]byte{1}, 32))
-}
-
-func TestSNativeContractDescription_Address(t *testing.T) {
-	contract := evm.NewSNativeContract("A comment",
-		"CoolButVeryLongNamedContractOfDoom")
-	assert.Equal(t, sha3.Sha3(([]byte)(contract.Name))[12:], contract.Address().RawBytes())
 }
 
 //

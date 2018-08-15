@@ -16,7 +16,7 @@ func makePermissionTx(t *testing.T, modifier, modified string, perm account.Perm
 	acc1 := getAccountByName(t, modifier)
 	acc2 := getAccountByName(t, modified)
 	tx, err := tx.NewPermissionsTx(acc1.Address(), acc2.Address(), perm, set, acc1.Sequence()+1, fee)
-	require.Equal(t, 0, tx.Amount())
+	require.Equal(t, uint64(0), tx.Amount())
 	require.Equal(t, fee, tx.Fee())
 	require.NoError(t, err)
 

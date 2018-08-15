@@ -1,9 +1,10 @@
 package crypto
 
 import (
-	"encoding/hex"
+	"unsafe"
 
 	"github.com/gallactic/gallactic/errors"
+	"github.com/mr-tron/base58/base58"
 	tmABCI "github.com/tendermint/tendermint/abci/types"
 	tmCrypto "github.com/tendermint/tendermint/crypto"
 	"golang.org/x/crypto/ed25519"
@@ -21,18 +22,30 @@ type publicKeyData struct {
 /// ------------
 /// CONSTRUCTORS
 
+// PrivateKeyFromString constructs a private key from base58 encoding text and check the prefix and checksum
 func PublicKeyFromString(text string) (PublicKey, error) {
-	bs, err := hex.DecodeString(text)
+	data, err := base58.Decode(text)
 	if err != nil {
 		return PublicKey{}, e.Errorf(e.ErrInvalidPublicKey, "%v", err.Error())
 	}
 
+	err = validateChecksum(data)
+	if err != nil {
+		return PublicKey{}, e.Errorf(e.ErrInvalidPublicKey, err.Error())
+	}
+
+	err = validatePrefix(data, prefixPublicKey)
+	if err != nil {
+		return PublicKey{}, e.Errorf(e.ErrInvalidPublicKey, err.Error())
+	}
+
+	bs := data[2 : ed25519.PublicKeySize+2]
 	return PublicKeyFromRawBytes(bs)
 }
 
 // PublicKeyFromRawBytes reads the raw bytes and returns an ed25519 public key.
 func PublicKeyFromRawBytes(bs []byte) (PublicKey, error) {
-	/// Check for empty public key
+	/// Check for empty value
 	if len(bs) == 0 {
 		return PublicKey{}, nil
 	}
@@ -53,12 +66,25 @@ func PublicKeyFromRawBytes(bs []byte) (PublicKey, error) {
 /// -------
 /// CASTING
 
+// RawBytes returns the ed25519 raw bytes of the public key
 func (pb PublicKey) RawBytes() []byte {
 	return pb.data.PublicKey[:]
 }
 
+// String return the base58 encoding text of the public key with the prefix and checksum
 func (pb PublicKey) String() string {
-	return hex.EncodeToString(pb.RawBytes())
+	if len(pb.data.PublicKey) == 0 {
+		return ""
+	}
+
+	prefix := prefixPublicKey
+	data := make([]byte, 0, ed25519.PublicKeySize+6)
+	data = append(data, (*[2]byte)(unsafe.Pointer(&prefix))[:]...)
+	data = append(data, pb.data.PublicKey...)
+	chksum := checksum(data)
+	data = append(data, chksum[:]...)
+
+	return base58.Encode(data)
 }
 
 func (pb PublicKey) ABCIPubKey() tmABCI.PubKey {
@@ -97,6 +123,11 @@ func (pb PublicKey) MarshalText() ([]byte, error) {
 }
 
 func (pb *PublicKey) UnmarshalText(text []byte) error {
+	/// Unmarshal empty value
+	if len(text) == 0 {
+		return nil
+	}
+
 	p, err := PublicKeyFromString(string(text))
 	if err != nil {
 		return err
@@ -125,16 +156,16 @@ func (pb PublicKey) AccountAddress() Address {
 	tmPubKey := new(tmCrypto.PubKeyEd25519)
 	copy(tmPubKey[:], pb.RawBytes())
 	hash := tmPubKey.Address()
-	address, _ := addressFromHash(hash, accountAddress)
+	addr, _ := addressFromHash(hash, prefixAccountAddress)
 
-	return address
+	return addr
 }
 
 func (pb PublicKey) ValidatorAddress() Address {
 	tmPubKey := new(tmCrypto.PubKeyEd25519)
 	copy(tmPubKey[:], pb.RawBytes())
 	hash := tmPubKey.Address()
-	address, _ := addressFromHash(hash, validatorAddress)
+	addr, _ := addressFromHash(hash, prefixValidatorAddress)
 
-	return address
+	return addr
 }
