@@ -24,7 +24,8 @@ func TestValidatorSet(t *testing.T) {
 
 	vs := NewValidatorSet(validators, 8, nil)
 
-	val, _ := NewValidator(publickKeyFromSecret("z"), 1)
+	pb, _ := crypto.GenerateKeyFromSecret("z")
+	val, _ := NewValidator(pb, 1)
 
 	err := vs.ForceLeave(val.Address())
 	assert.Error(t, err)
@@ -291,40 +292,36 @@ func compareValidators(validators1 map[crypto.Address]*Validator, tmValidators [
 	return true
 }
 
-func publickKeyFromSecret(secret string) crypto.PublicKey {
-	return crypto.PrivateKeyFromSecret(secret).PublicKey()
-}
-
 func generatePublickKeys() []crypto.PublicKey {
 	publicKeys := make([]crypto.PublicKey, 26)
 
 	/// sorted by address
-	publicKeys[0] = publickKeyFromSecret("m")  // vaCwdxTmJQUkCMr85Zo7e43nqvEWigNqfek
-	publicKeys[1] = publickKeyFromSecret("w")  // vaHtTqwBbwDyNWfFSKGYER7uGwFNg1iCimD
-	publicKeys[2] = publickKeyFromSecret("c")  // vaVFZ28jjDyEAvjw2UtDQAttuCuiEKy24R6
-	publicKeys[3] = publickKeyFromSecret("x")  // vaCTakoLDRMrZRZEvuPdC7xXehpkounNJAN
-	publicKeys[4] = publickKeyFromSecret("v")  // vaYU6dNdPnAM5Q6CoPR3vqDGHXUJ95pEFAi
-	publicKeys[5] = publickKeyFromSecret("a")  // vaEy3rRFBVt8yAxCzPAjr3qL2VJWdn3Q6LR
-	publicKeys[6] = publickKeyFromSecret("r")  // vaV5D9ndeVSC8oGuGpXwMtRCS1ouaxim1P6
-	publicKeys[7] = publickKeyFromSecret("z")  // vaBQvqznfToiDgKTFgiYgV7Q214ENCDuS63
-	publicKeys[8] = publickKeyFromSecret("t")  // vaHQQymJ2fzQYFvRvZUDBybRzaDhMjF4MRJ
-	publicKeys[9] = publickKeyFromSecret("n")  // vaCwr5Q2pGStDFiXTtrnXspW628xVeUvhBv
-	publicKeys[10] = publickKeyFromSecret("k") // vaHPDBa14pHLv3vfyKnLDcq6oRmMv9vPJKS
-	publicKeys[11] = publickKeyFromSecret("i") // vaCV3aa81M8fzjdxRfbsXSLu26Y3LA3dWti
-	publicKeys[12] = publickKeyFromSecret("j") // vaBy3MyaCdXsWuULtuQ1HMDgCtnRxbRkMJ7
-	publicKeys[13] = publickKeyFromSecret("d") // vaLFiiB1gMhC7ZJPaYR7ZJxbDnTjQaDes85
-	publicKeys[14] = publickKeyFromSecret("q") // vaUfroLyxyMJ8pQqau5UeeSnZQxv5TLBTCS
-	publicKeys[15] = publickKeyFromSecret("h") // vaXRchdAtC3nE8P9mcwaLc3RoPCNxGPc7nR
-	publicKeys[16] = publickKeyFromSecret("b") // vaRGTNDViWGuxp9uUxcSsvwVRnAhDoCPubt
-	publicKeys[17] = publickKeyFromSecret("s") // vaC4FTSA1GpTW651NcWyz88R2teyynxc8xH
-	publicKeys[18] = publickKeyFromSecret("u") // vaMwP3ny4SoMsCyAVSYq5XMgaZMy8LEGLM2
-	publicKeys[19] = publickKeyFromSecret("y") // vaVFmotUpFNxzYUZ3x4vRi6Z8i3tFo4Q7jY
-	publicKeys[20] = publickKeyFromSecret("p") // vaJAreyU72KmXbLPw7k7rSY7LCBgD5KYF7Y
-	publicKeys[21] = publickKeyFromSecret("l") // vaZgYD2XzXuXrQAE77EmEfGWwhe7P9JLuPA
-	publicKeys[22] = publickKeyFromSecret("e") // vaT5rBh6UDKyxFFqPoJ4gqKcmhkkEL7uNDF
-	publicKeys[23] = publickKeyFromSecret("f") // vaXw9oo51Za66j1YK8PLgDRcmGFuHjqN5Xw
-	publicKeys[24] = publickKeyFromSecret("o") // vaZQCXRHd6Q8D62GxmyL7MzH41ZTd8rhMGr
-	publicKeys[25] = publickKeyFromSecret("g") // vaJHdewyGjV4Zmaj1p92S4UZBRhg5MEmmbS
+	publicKeys[0], _ = crypto.GenerateKeyFromSecret("m")  // vaCwdxTmJQUkCMr85Zo7e43nqvEWigNqfek
+	publicKeys[1], _ = crypto.GenerateKeyFromSecret("w")  // vaHtTqwBbwDyNWfFSKGYER7uGwFNg1iCimD
+	publicKeys[2], _ = crypto.GenerateKeyFromSecret("c")  // vaVFZ28jjDyEAvjw2UtDQAttuCuiEKy24R6
+	publicKeys[3], _ = crypto.GenerateKeyFromSecret("x")  // vaCTakoLDRMrZRZEvuPdC7xXehpkounNJAN
+	publicKeys[4], _ = crypto.GenerateKeyFromSecret("v")  // vaYU6dNdPnAM5Q6CoPR3vqDGHXUJ95pEFAi
+	publicKeys[5], _ = crypto.GenerateKeyFromSecret("a")  // vaEy3rRFBVt8yAxCzPAjr3qL2VJWdn3Q6LR
+	publicKeys[6], _ = crypto.GenerateKeyFromSecret("r")  // vaV5D9ndeVSC8oGuGpXwMtRCS1ouaxim1P6
+	publicKeys[7], _ = crypto.GenerateKeyFromSecret("z")  // vaBQvqznfToiDgKTFgiYgV7Q214ENCDuS63
+	publicKeys[8], _ = crypto.GenerateKeyFromSecret("t")  // vaHQQymJ2fzQYFvRvZUDBybRzaDhMjF4MRJ
+	publicKeys[9], _ = crypto.GenerateKeyFromSecret("n")  // vaCwr5Q2pGStDFiXTtrnXspW628xVeUvhBv
+	publicKeys[10], _ = crypto.GenerateKeyFromSecret("k") // vaHPDBa14pHLv3vfyKnLDcq6oRmMv9vPJKS
+	publicKeys[11], _ = crypto.GenerateKeyFromSecret("i") // vaCV3aa81M8fzjdxRfbsXSLu26Y3LA3dWti
+	publicKeys[12], _ = crypto.GenerateKeyFromSecret("j") // vaBy3MyaCdXsWuULtuQ1HMDgCtnRxbRkMJ7
+	publicKeys[13], _ = crypto.GenerateKeyFromSecret("d") // vaLFiiB1gMhC7ZJPaYR7ZJxbDnTjQaDes85
+	publicKeys[14], _ = crypto.GenerateKeyFromSecret("q") // vaUfroLyxyMJ8pQqau5UeeSnZQxv5TLBTCS
+	publicKeys[15], _ = crypto.GenerateKeyFromSecret("h") // vaXRchdAtC3nE8P9mcwaLc3RoPCNxGPc7nR
+	publicKeys[16], _ = crypto.GenerateKeyFromSecret("b") // vaRGTNDViWGuxp9uUxcSsvwVRnAhDoCPubt
+	publicKeys[17], _ = crypto.GenerateKeyFromSecret("s") // vaC4FTSA1GpTW651NcWyz88R2teyynxc8xH
+	publicKeys[18], _ = crypto.GenerateKeyFromSecret("u") // vaMwP3ny4SoMsCyAVSYq5XMgaZMy8LEGLM2
+	publicKeys[19], _ = crypto.GenerateKeyFromSecret("y") // vaVFmotUpFNxzYUZ3x4vRi6Z8i3tFo4Q7jY
+	publicKeys[20], _ = crypto.GenerateKeyFromSecret("p") // vaJAreyU72KmXbLPw7k7rSY7LCBgD5KYF7Y
+	publicKeys[21], _ = crypto.GenerateKeyFromSecret("l") // vaZgYD2XzXuXrQAE77EmEfGWwhe7P9JLuPA
+	publicKeys[22], _ = crypto.GenerateKeyFromSecret("e") // vaT5rBh6UDKyxFFqPoJ4gqKcmhkkEL7uNDF
+	publicKeys[23], _ = crypto.GenerateKeyFromSecret("f") // vaXw9oo51Za66j1YK8PLgDRcmGFuHjqN5Xw
+	publicKeys[24], _ = crypto.GenerateKeyFromSecret("o") // vaZQCXRHd6Q8D62GxmyL7MzH41ZTd8rhMGr
+	publicKeys[25], _ = crypto.GenerateKeyFromSecret("g") // vaJHdewyGjV4Zmaj1p92S4UZBRhg5MEmmbS
 
 	// Sorting by address because of _validatorListProxyMock
 	sort.SliceStable(publicKeys, func(i, j int) bool {
