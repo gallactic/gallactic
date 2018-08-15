@@ -29,7 +29,7 @@ var (
 func promptPassphrase(confirmation bool) string {
 
 	if confirmation {
-		passphrase, err := Stdin.PromptPassword("Passphrase: ")
+		passphrase, err := Stdin.PromptPassword("New passphrase: ")
 		if err != nil {
 			fmt.Errorf("Failed to read passphrase: %v", err)
 		}
@@ -121,4 +121,16 @@ func PromptPrivateKey() (*key.Key, error) {
 		return keyObj, nil
 	}
 	return nil, fmt.Errorf("Abort")
+}
+
+// oldPassphrase prompts for the old password of the keyfile
+func oldPassphrase() string {
+	line := liner.NewLiner()
+	defer line.Close()
+	line.SetCtrlCAborts(true)
+	passphrase, err := line.Prompt("Old Password: ")
+	if err != nil {
+		fmt.Errorf("Failed to read passphrase: %v", err)
+	}
+	return passphrase
 }
