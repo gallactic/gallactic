@@ -56,6 +56,15 @@ gtxkey verify eb6c89611b4fd043fe87877b8c61ce740495e5d950be58ca5cf27dd99a89280b 9
 Signature Verification successfull!
 ```
 
-### `gallactic gtxkey changepassword`
+### `gallactic gtxkey changepassword <keyfile>`
 
 Change the password of the keyfile which is used for encrytption and decrytption.
+
+Example
+
+```
+gallactic gtxkey changeauth acJyYHmi8EHjsADq3XwqWeVrgM7gw1nbr55.json
+Old Password:
+Passphrase:
+Repeat passphrase: 
+```
