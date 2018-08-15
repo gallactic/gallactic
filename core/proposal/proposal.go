@@ -7,14 +7,9 @@ import (
 	"github.com/gallactic/gallactic/errors"
 )
 
-type signatory struct {
-	PublicKey crypto.PublicKey
-	Signature crypto.Signature
-}
-
 type Proposal struct {
-	Genesis     *Genesis    `json:"genesis"`
-	Signatories []signatory `json:"signatories,omitempty"`
+	Genesis     *Genesis           `json:"genesis"`
+	Signatories []crypto.Signatory `json:"signatories,omitempty"`
 }
 
 func (p *Proposal) Verify() error {
