@@ -28,6 +28,7 @@ var welcomeMessage = `
      \  \::/       \  \:\         \__\/         \__\/        \  \:\        \  \::/          \__\/     \__\/      \  \::/
       \__\/         \__\/                                     \__\/         \__\/                                 \__\/    `
 
+//Start starts the gallactic node
 func Start() func(cmd *cli.Cmd) {
 	return func(cmd *cli.Cmd) {
 
@@ -51,9 +52,8 @@ func Start() func(cmd *cli.Cmd) {
 			Desc: "key file passphrase",
 		})
 
-		/*
-			cmd.Spec = "--working-dir=<working directory of the configuration files>"
-		*/
+		cmd.Spec = "[--working-dir=<Working directory of the configuration files>] " +
+			"[--privatekey=<private key of the account>] | [--key-file=<path to the key file>] [--auth=<keyfile password>]"
 
 		cmd.Action = func() {
 			fmt.Print(welcomeMessage)

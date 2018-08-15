@@ -91,6 +91,9 @@ func newTerminalPrompter() *terminalPrompter {
 	return p
 }
 
+//PromptPrivateKey prompts the user to enter the private key,
+// validates the private key, displays the validator address and
+// starts the node after confirmation
 func PromptPrivateKey() (*key.Key, error) {
 	line := liner.NewLiner()
 	defer line.Close()
@@ -116,8 +119,6 @@ func PromptPrivateKey() (*key.Key, error) {
 	if confirm == "y" {
 		log.Print("Running Blockchain")
 		return keyObj, nil
-	} else {
-		return nil, fmt.Errorf("Stopped running Blockhain: %v", err)
 	}
 	return nil, fmt.Errorf("Abort")
 }

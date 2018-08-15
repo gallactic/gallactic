@@ -13,7 +13,12 @@ func gallactic() *cli.Cli {
 
 	app.Command("start", "start the gallactic blockchain", Start())
 	app.Command("version", "print the gallactic version", Version())
-
+	app.Command("gtxkey", "gallactic key manager", func(key *cli.Cmd) {
+		key.Command("generate", "generate a new key", Generate())
+		key.Command("inspect", "inspect a key file", Inspect())
+		key.Command("signmessage", "inspect a key file", Sign())
+		key.Command("verify", "verify a signature of a messsage", Verify())
+	})
 	return app
 }
 
