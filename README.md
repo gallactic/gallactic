@@ -20,7 +20,6 @@ make install
 
  gallactic init -w=<workspace_folder_path>
 
-
  This command will:
 — Create 3 files in the folder, path of which is given above, namely config.toml, genesis.json, and …………
 — Display the private key (let’s call it priv_key) and validator address 
@@ -84,4 +83,7 @@ Thanks for considering to contribute in Gallactic project!
 
 ## License
 The Gallactic blockchain is under MIT <TODO: link> license.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Update README.md
