@@ -1,0 +1,18 @@
+# build target
+target
+build/
+
+# tests
+test_scratch/
+*.log
+
+# Temporary / cached
+*.swp
+debug*
+.idea
+.vscode
+
+.gopath_bos
+vendor/*
+
+commit_hash.tx
