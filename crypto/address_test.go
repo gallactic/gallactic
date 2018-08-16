@@ -117,10 +117,10 @@ func TestValidity(t *testing.T) {
 	_, err = AddressFromString("ac9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
 	assert.NoError(t, err)
 
-	_, err = AddressFromString("ac9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaM")
+	_, err = AddressFromString("ac9e2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
 	assert.Error(t, err)
 
-	_, err = AddressFromString("009E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaM")
+	_, err = AddressFromString("AC9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
 	assert.Error(t, err)
 
 	_, err = AddressFromString("invalid_addres")
