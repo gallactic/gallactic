@@ -21,8 +21,6 @@ func TestGlobalAddress(t *testing.T) {
 
 //
 // http://lenschulwitz.com/base58
-// 0590000000000000000000000000000000000000000000000000000000000000000000000000
-// 0590ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 //
 // 12EC000000000000000000000000000000000000000000000000 - ac8CpYzraGsdAWaNdZESoxMTqkX2JmSeF7M
 // 12ECffffffffffffffffffffffffffffffffffffffffffffffff - acXYRY79rz463L1Wiaen8SUjdP2HFUgE5Rg
