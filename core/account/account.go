@@ -40,6 +40,22 @@ func NewAccount(addr crypto.Address) (*Account, error) {
 	}, nil
 }
 
+func NewContractAccount(addr crypto.Address) (*Account, error) {
+	if err := addr.EnsureValid(); err != nil {
+		return nil, err
+	}
+
+	if !addr.IsContractAddress() {
+		return nil, e.Errorf(e.ErrInvalidAddress, "This is not a valid contract address: %s", addr.String())
+	}
+
+	return &Account{
+		data: accountData{
+			Address: addr,
+		},
+	}, nil
+}
+
 /// For tests
 func NewAccountFromSecret(secret string) *Account {
 	acc, _ := NewAccount(crypto.PrivateKeyFromSecret(secret).PublicKey().AccountAddress())
