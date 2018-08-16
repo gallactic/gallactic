@@ -28,7 +28,7 @@ ed25519: require canonical signatures
 https://go-review.googlesource.com/c/crypto/+/100436
 
 ## Contribution
-Thsnks for considering to contribute in Gallactic project!
+Thanks for considering to contribute in Gallactic project!
 
 ## License
 The Gallactic blockchain is under MIT <TODO: link> license.
