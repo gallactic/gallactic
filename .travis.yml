@@ -1,0 +1,16 @@
+language: go
+go_import_path: github.com/gallactic/gallactic
+sudo: false
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      go: 1.10.x
+      script:
+        - make 
+
+
+    - os: osx
+      go: 1.10.x
+      script:
+        - make 
