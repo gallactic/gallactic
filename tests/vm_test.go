@@ -113,21 +113,21 @@ func TestStorage(t *testing.T) {
 	setPermissions(t, "alice", permission.CreateContract|permission.Call)
 
 	/*
-	pragma solidity ^0.4.18;
+		pragma solidity ^0.4.18;
 
-	contract EvmTest1{
+		contract EvmTest1{
 
-	    int value;
+		    int value;
 
-	    function setVal(int val) public {
-	        value = val;
-	    }
+		    function setVal(int val) public {
+		        value = val;
+		    }
 
-	    function getVal() public returns(int) {
-	        return value;
-	    }
+		    function getVal() public returns(int) {
+		        return value;
+		    }
 
-	}}
+		}}
 	*/
 
 	// This bytecode is compiled from Solidity contract above using remix.ethereum.org online compiler
