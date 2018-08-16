@@ -71,4 +71,20 @@ func TestGenerateAddress(t *testing.T) {
 	assert.Equal(t, va.String(), "vaB3dLM1UwnarCJsRNLYtwkRRay4zZovj2M")
 }
 
+func TestPublicKeyValidity(t *testing.T) {
+	var err error
+	_, err = PublicKeyFromString("pjjHzwbbW5gVGNsc8u3vyX9AxBB7jqXcyV5XavPFesUJiWpaai8")
+	assert.NoError(t, err)
 
+	_, err = PublicKeyFromString("pjJHzwbbW5gVGNsc8u3vyX9AxBB7jqXcyV5XavPFesUJiWpaai8")
+	assert.Error(t, err)
+
+	_, err = PublicKeyFromString("PJjHzwbbW5gVGNsc8u3vyX9AxBB7jqXcyV5XavPFesUJiWpaai8")
+	assert.Error(t, err)
+
+	_, err = PublicKeyFromString("invalid_public_key")
+	assert.Error(t, err)
+
+	_, err = PublicKeyFromRawBytes([]byte{0, 1, 2, 3, 4, 5, 6})
+	assert.Error(t, err)
+}
