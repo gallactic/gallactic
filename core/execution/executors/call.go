@@ -61,12 +61,12 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 		if err != nil {
 			return err
 		}
+	}
 
-		if ctx.Committing {
-			err := ctx.Deliver(tx, caller, callee)
-			if err != nil {
-				return err
-			}
+	if ctx.Committing {
+		err := ctx.Deliver(tx, caller, callee)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -110,6 +110,9 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) 
 	ret, err := burrow.Call(ctx.BC, caller, callee, tx, &gas)
 	if err != nil {
 		return err
+	}
+	if tx.CreateContract() {
+		callee.SetCode(ret)
 	}
 	code := callee.Code()
 	ctx.Logger.TraceMsg("Calling existing contract",
