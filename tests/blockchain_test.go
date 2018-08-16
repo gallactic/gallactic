@@ -47,9 +47,15 @@ func signAndExecute(t *testing.T, errorCode int, tx tx.Tx, names ...string) *txs
 	totalBalance2 := uint64(0)
 
 	for i, in := range ins {
-		acc := getAccount(t, in.Address)
-		seq[i] = acc.Sequence()
-		totalBalance1 += acc.Balance()
+		if in.Address.IsAccountAddress() {
+			acc := getAccount(t, in.Address)
+			seq[i] = acc.Sequence()
+			totalBalance1 += acc.Balance()
+		} else {
+			val := getValidator(t, in.Address)
+			seq[i] = val.Sequence()
+			totalBalance1 += val.Stake()
+		}
 	}
 
 	env := txs.Enclose(tChainID, tx)
@@ -59,14 +65,21 @@ func signAndExecute(t *testing.T, errorCode int, tx tx.Tx, names ...string) *txs
 		require.Equal(t, e.Code(tChecker.Execute(env)), errorCode, "Tx should fail: %s", debug.Stack())
 		require.Equal(t, e.Code(tCommitter.Execute(env)), errorCode, "Tx should fail: %s", debug.Stack())
 
-		/// check total balance and sequence
+		/// check total balance and sequence, should not change
 		for i, in := range ins {
-			acc := getAccount(t, in.Address)
-			if seq[i] != acc.Sequence() {
-				assert.Failf(t, "Invalid sequence", "Account: %v. Got: %v, Expected: %v", in.Address.String(), in.Sequence, seq[i]+1)
+			if in.Address.IsAccountAddress() {
+				acc := getAccount(t, in.Address)
+				if seq[i] != acc.Sequence() {
+					assert.Failf(t, "Invalid sequence", "Account: %v. Got: %v, Expected: %v", in.Address.String(), in.Sequence, seq[i])
+				}
+				totalBalance2 += acc.Balance()
+			} else {
+				val := getValidator(t, in.Address)
+				if seq[i] != val.Sequence() {
+					assert.Failf(t, "Invalid sequence", "Validator: %v. Got: %v, Expected: %v", in.Address.String(), in.Sequence, seq[i])
+				}
+				totalBalance2 += val.Stake()
 			}
-
-			totalBalance2 += acc.Balance()
 		}
 
 		assert.Equal(t, totalBalance2, totalBalance1, "Unexpected total balance")
@@ -76,14 +89,21 @@ func signAndExecute(t *testing.T, errorCode int, tx tx.Tx, names ...string) *txs
 		require.NoError(t, tCommitter.Execute(env), "Tx should not fail: %s", debug.Stack())
 		commit(t)
 
-		/// check total balance and sequence
+		/// check total balance and sequence, should change
 		for i, in := range ins {
-			acc := getAccount(t, in.Address)
-			if seq[i]+1 != acc.Sequence() {
-				assert.Failf(t, "Invalid sequence", "Account: %v. Got: %v, Expected: %v", in.Address.String(), in.Sequence, seq[i]+1)
+			if in.Address.IsAccountAddress() {
+				acc := getAccount(t, in.Address)
+				if seq[i]+1 != acc.Sequence() {
+					assert.Failf(t, "Invalid sequence", "Account: %v. Got: %v, Expected: %v", in.Address.String(), acc.Sequence(), seq[i]+1)
+				}
+				totalBalance2 += acc.Balance()
+			} else {
+				val := getValidator(t, in.Address)
+				if seq[i]+1 != val.Sequence() {
+					assert.Failf(t, "Invalid sequence", "Validator: %v. Got: %v, Expected: %v", in.Address.String(), val.Sequence(), seq[i]+1)
+				}
+				totalBalance2 += val.Stake()
 			}
-
-			totalBalance2 += acc.Balance()
 		}
 
 		assert.Equal(t, totalBalance2, totalBalance1-tx.Amount()-tx.Fee(), "Unexpected total balance")

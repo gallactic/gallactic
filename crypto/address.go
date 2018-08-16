@@ -2,7 +2,6 @@ package crypto
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"unsafe"
 
 	"github.com/gallactic/gallactic/common/binary"
@@ -12,27 +11,12 @@ import (
 
 const AddressSize = 26
 
-const (
-	accountAddress   uint16 = 0xEC12 // ac...
-	validatorAddress uint16 = 0x2A1E //
-	contractAddress  uint16 = 0x3414
-	globalAddress    uint16 = 0x4C16
-)
-
 type Address struct {
 	data addressData
 }
 
 type addressData struct {
-	Address [26]byte
-}
-
-// checksum: first four bytes of sha256^2
-func checksum(input []byte) (chksum [4]byte) {
-	h := sha256.Sum256(input)
-	h2 := sha256.Sum256(h[:])
-	copy(chksum[:], h2[:4])
-	return
+	Address [AddressSize]byte
 }
 
 /// ------------
@@ -49,7 +33,7 @@ func AddressFromString(text string) (Address, error) {
 
 func AddressFromRawBytes(bs []byte) (Address, error) {
 	if len(bs) != AddressSize {
-		return Address{}, e.Errorf(e.ErrInvalidAddress, "Address should be 26 bytes, but it is %v bytes", len(bs))
+		return Address{}, e.Errorf(e.ErrInvalidAddress, "Address should be %d bytes, but it is %v bytes", AddressSize, len(bs))
 	}
 
 	var addr Address
@@ -67,43 +51,37 @@ func AddressFromWord256(w binary.Word256) (Address, error) {
 }
 
 func ContractAddress(bs []byte) (Address, error) {
-	return addressFromHash(bs, contractAddress)
+	return addressFromHash(bs, prefixContractAddress)
 }
 
 func AccountAddress(bs []byte) (Address, error) {
-	return addressFromHash(bs, accountAddress)
+	return addressFromHash(bs, prefixAccountAddress)
 }
 
 func ValidatorAddress(bs []byte) (Address, error) {
-	return addressFromHash(bs, validatorAddress)
+	return addressFromHash(bs, prefixValidatorAddress)
 }
 
 /// this is a private constructor
-func addressFromHash(hash []byte, ver uint16) (Address, error) {
+func addressFromHash(hash []byte, prefix uint16) (Address, error) {
 	if len(hash) != 20 {
 		return Address{}, e.Errorf(e.ErrInvalidAddress, "Address hash should be 20 bytes but it is %v bytes", len(hash))
 	}
 
-	bs := make([]byte, 0, 2+20+4)
-	bs = append(bs, (*[2]byte)(unsafe.Pointer(&ver))[:]...)
-	bs = append(bs, hash...)
-	chksum := checksum(bs)
-	bs = append(bs, chksum[:]...)
+	data := make([]byte, 0, AddressSize)
+	data = append(data, (*[2]byte)(unsafe.Pointer(&prefix))[:]...)
+	data = append(data, hash...)
+	chksum := checksum(data)
+	data = append(data, chksum[:]...)
 
-	var addr Address
-	copy(addr.data.Address[:], bs[:])
-	if err := addr.EnsureValid(); err != nil {
-		return Address{}, err
-	}
-
-	return addr, nil
+	return AddressFromRawBytes(data)
 }
 
 /// -------
 /// CASTING
 
 func (addr Address) RawBytes() []byte {
-	if addr.data.Address == [26]byte{} {
+	if addr.data.Address == [AddressSize]byte{} {
 		return nil
 	}
 
@@ -126,7 +104,7 @@ func (addr Address) MarshalAmino() ([]byte, error) {
 }
 
 func (addr *Address) UnmarshalAmino(bs []byte) error {
-	/// Unmarshal empty address
+	/// Unmarshal empty value
 	if len(bs) == 0 {
 		return nil
 	}
@@ -145,7 +123,7 @@ func (addr Address) MarshalText() ([]byte, error) {
 }
 
 func (addr *Address) UnmarshalText(text []byte) error {
-	/// Unmarshal empty address
+	/// Unmarshal empty value
 	if len(text) == 0 {
 		return nil
 	}
@@ -164,16 +142,14 @@ func (addr *Address) UnmarshalText(text []byte) error {
 
 func (addr *Address) EnsureValid() error {
 	bs := addr.RawBytes()
-	chksum1 := addr.checksum()
-	chksum2 := checksum(bs[0:22])
-	if chksum1 != chksum2 {
-		return e.Errorf(e.ErrInvalidAddress, "Checksum doesn't match. It should be %v but it is %v", chksum1, chksum2)
+	err := validateChecksum(bs)
+	if err != nil {
+		return e.Errorf(e.ErrInvalidAddress, err.Error())
 	}
 
-	ver := (uint16(bs[1])<<8 | uint16(bs[0]))
-	if ver != accountAddress && ver != validatorAddress &&
-		ver != contractAddress && ver != globalAddress {
-		return e.Errorf(e.ErrInvalidAddress, "Invalid version: %X", ver)
+	err = validatePrefix(bs, prefixAccountAddress, prefixValidatorAddress, prefixContractAddress, prefixGlobalAddress)
+	if err != nil {
+		return e.Errorf(e.ErrInvalidAddress, err.Error())
 	}
 
 	return nil
@@ -189,27 +165,20 @@ func (addr Address) Verify(pb PublicKey) bool {
 	return false
 }
 
-func (addr Address) version() uint16 {
+func (addr Address) prefix() uint16 {
 	bs := addr.RawBytes()
 	return (uint16(bs[1])<<8 | uint16(bs[0]))
 }
-
-func (addr Address) checksum() (chksum [4]byte) {
-	bs := addr.RawBytes()
-	copy(chksum[:], bs[22:26])
-	return
-}
-
 func (addr *Address) IsContractAddress() bool {
-	return addr.version() == contractAddress
+	return addr.prefix() == prefixContractAddress
 }
 
 func (addr *Address) IsValidatorAddress() bool {
-	return addr.version() == validatorAddress
+	return addr.prefix() == prefixValidatorAddress
 }
 
 func (addr *Address) IsAccountAddress() bool {
-	if addr.version() == accountAddress {
+	if addr.prefix() == prefixAccountAddress {
 		return true
 	}
 

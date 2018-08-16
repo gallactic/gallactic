@@ -50,7 +50,7 @@ func TestListUnconfirmedTxs(t *testing.T) {
 
 	jsonResult, err := json.Marshal(result)
 	require.NoError(t, err)
-	expected := "{\"Count\":1,\"Txs\":[{\"chainId\":\"testChain\",\"type\":\"CallTx\",\"tx\":{\"caller\":{\"address\":\"ac8KfZqAKYayEWsc6vuwfLu5GDBaCUvoH8B\",\"amount\":112,\"sequence\":1},\"callee\":{\"address\":\"acTqSGVw94xP1myXrnCm3rBWgzcJ5uEbB1f\",\"amount\":100},\"gas_limit\":1}}]}"
+	expected := "{\"Count\":1,\"Txs\":[{\"chainId\":\"testChain\",\"type\":\"CallTx\",\"tx\":{\"caller\":{\"address\":\"ac8KfZqAKYayEWsc6vuwfLu5GDBaCUvoH8B\",\"amount\":112,\"sequence\":1},\"callee\":{\"address\":\"acTqSGVw94xP1myXrnCm3rBWgzcJ5uEbB1f\",\"amount\":100},\"gasLimit\":1}}]}"
 	assert.Equal(t, expected, string(jsonResult))
 }
 
