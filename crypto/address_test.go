@@ -18,7 +18,7 @@ func TestAddress(t *testing.T) {
 		1, 2, 3, 4, 5,
 		1, 2, 3, 4, 5,
 	}
-	address1, err := addressFromHash(bytes, accountAddress)
+	address1, err := addressFromHash(bytes, prefixAccountAddress)
 	assert.NoError(t, err)
 	word256 := address1.Word256()
 	leadingZeroes := []byte{
@@ -62,11 +62,11 @@ func TestMarshalingAddress(t *testing.T) {
 
 	for _, addr := range addrs {
 		bs, _ := hex.DecodeString(addr)
-		ac1, err := addressFromHash(bs, accountAddress)
+		ac1, err := addressFromHash(bs, prefixAccountAddress)
 		assert.NoError(t, err)
-		va1, err := addressFromHash(bs, validatorAddress)
+		va1, err := addressFromHash(bs, prefixValidatorAddress)
 		assert.NoError(t, err)
-		ct1, err := addressFromHash(bs, contractAddress)
+		ct1, err := addressFromHash(bs, prefixContractAddress)
 		assert.NoError(t, err)
 		fmt.Println(ac1.String())
 		fmt.Println(va1.String())
@@ -117,10 +117,10 @@ func TestValidity(t *testing.T) {
 	_, err = AddressFromString("ac9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
 	assert.NoError(t, err)
 
-	_, err = AddressFromString("ac9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaM")
+	_, err = AddressFromString("ac9e2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
 	assert.Error(t, err)
 
-	_, err = AddressFromString("009E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaM")
+	_, err = AddressFromString("AC9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
 	assert.Error(t, err)
 
 	_, err = AddressFromString("invalid_addres")

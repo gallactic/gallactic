@@ -209,7 +209,7 @@ func (contract *SNativeContractDescription) Dispatch(st *state.State, caller *ac
 // hash of its name
 func (contract *SNativeContractDescription) Address() crypto.Address {
 	hash := sha3.Sha3([]byte(contract.Name))
-	address, _ := crypto.ContractAddress(hash)
+	address, _ := crypto.ContractAddress(hash[0:20])
 	return address
 }
 

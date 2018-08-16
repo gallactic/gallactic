@@ -23,8 +23,8 @@ func setupAccountPool(m *testing.M) {
 
 	for i, name := range names {
 		bal := rand.New(rand.NewSource(int64(i))).Uint64()
-		pv := crypto.PrivateKeyFromSecret(name)
-		acc, _ := account.NewAccount(pv.PublicKey().AccountAddress())
+		pb, pv := crypto.GenerateKeyFromSecret(name)
+		acc, _ := account.NewAccount(pb.AccountAddress())
 		signer := crypto.NewAccountSigner(pv)
 		acc.AddToBalance(bal)
 
@@ -35,8 +35,8 @@ func setupAccountPool(m *testing.M) {
 	for i := 0; i < 80; i++ {
 		stake := rand.New(rand.NewSource(int64(i))).Uint64()
 		name := fmt.Sprintf("val_%d", i+1)
-		pv := crypto.PrivateKeyFromSecret(name)
-		val, _ := validator.NewValidator(pv.PublicKey(), 0)
+		pb, pv := crypto.GenerateKeyFromSecret(name)
+		val, _ := validator.NewValidator(pb, 0)
 		signer := crypto.NewValidatorSigner(pv)
 		val.AddToStake(stake)
 

@@ -58,7 +58,8 @@ func NewContractAccount(addr crypto.Address) (*Account, error) {
 
 /// For tests
 func NewAccountFromSecret(secret string) *Account {
-	acc, _ := NewAccount(crypto.PrivateKeyFromSecret(secret).PublicKey().AccountAddress())
+	pb, _ := crypto.GenerateKeyFromSecret(secret)
+	acc, _ := NewAccount(pb.AccountAddress())
 	return acc
 }
 
