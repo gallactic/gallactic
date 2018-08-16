@@ -20,24 +20,25 @@ func TestPersistedState(t *testing.T) {
 	vals := []*validator.Validator{val1}
 
 	/// To strip monotonics from time use time.Truncate(0)
+	/// UTC: https://golang.org/pkg/time/#Time.UTC
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
-	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, vals)
+	gen := proposal.MakeGenesis("bar", time.Now().UTC().Truncate(0), gAcc, nil, nil, vals)
 	db := dbm.NewMemDB()
 	bc1, err := LoadOrNewBlockchain(db, gen, nil, logging.NewNoopLogger())
 	require.NoError(t, err)
 
-	hash1, err := bc1.CommitBlock(time.Now().Truncate(0), []byte{1, 2})
+	hash1, err := bc1.CommitBlock(time.Now().UTC().Truncate(0), []byte{1, 2})
 	require.NoError(t, err)
 
 	// The hash should not change
-	hash2, err := bc1.CommitBlock(time.Now().Truncate(0), []byte{3, 4})
+	hash2, err := bc1.CommitBlock(time.Now().UTC().Truncate(0), []byte{3, 4})
 	require.NoError(t, err)
 
 	// update state, the hash should change
 	addr, _ := crypto.AddressFromString("ac9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
 	acc, _ := account.NewAccount(addr)
 	assert.NoError(t, bc1.state.UpdateAccount(acc))
-	hash3, err := bc1.CommitBlock(time.Now().Truncate(0), []byte{5, 6})
+	hash3, err := bc1.CommitBlock(time.Now().UTC().Truncate(0), []byte{5, 6})
 	require.NoError(t, err)
 
 	require.Equal(t, hash1, hash2)
