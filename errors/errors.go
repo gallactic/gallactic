@@ -21,6 +21,7 @@ const (
 	ErrPermInvalid
 	ErrPermDenied
 	ErrNativeFunction
+	ErrInternalEvm
 
 	errCount
 )
@@ -42,6 +43,7 @@ var messages = map[int]string{
 	ErrPermInvalid:       "Invalid permission",
 	ErrPermDenied:        "Permission denied",
 	ErrNativeFunction:    "Error on calling native contracts",
+	ErrInternalEvm:	      "Internal EVM error",
 }
 
 type withCode struct {
