@@ -10,6 +10,7 @@ import (
 	"github.com/hyperledger/burrow/logging"
 	burrowTx "github.com/hyperledger/burrow/txs"
 	burrowPayload "github.com/hyperledger/burrow/txs/payload"
+	"github.com/gallactic/gallactic/errors"
 )
 
 func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {
@@ -36,8 +37,15 @@ func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.Cal
 	eventSink := &noopEventSink{}
 	vm.SetEventSink(eventSink)
 	*gas = tx.GasLimit()
-	ret, exception := vm.Call(txCache, bCaller, bCallee, code, tx.Data(), tx.Amount(), gas)
+	ret, err := vm.Call(txCache, bCaller, bCallee, code, tx.Data(), tx.Amount(), gas)
 	txCache.Flush(st, st)
 
-	return ret, exception
+
+	// TODO We need to fix this code in future, it's not a good Idea to only return a generic error for all evm issues!
+
+	if err != nil{
+		err = e.Error(e.ErrInternalEvm)
+	}
+
+	return ret, err
 }
