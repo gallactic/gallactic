@@ -122,38 +122,78 @@ func testMarshaling(t *testing.T, tx tx.Tx, signer crypto.Signer) {
 }
 
 func TestSignature(t *testing.T) {
-	_, privKey1 := crypto.GenerateKey(nil)
-	_, privKey2 := crypto.GenerateKey(nil)
-	_, privKey3 := crypto.GenerateKey(nil)
-
-	pubKey1 := privKey1.PublicKey()
-	pubKey2 := privKey2.PublicKey()
-	pubKey3 := privKey3.PublicKey()
+	pubKey1, privKey1 := crypto.GenerateKey(nil)
+	pubKey2, privKey2 := crypto.GenerateKey(nil)
+	pubKey3, privKey3 := crypto.GenerateKey(nil)
+	pubKey4, privKey4 := crypto.GenerateKey(nil)
 
 	signer1 := crypto.NewAccountSigner(privKey1)
 	signer2 := crypto.NewAccountSigner(privKey2)
 	signer3 := crypto.NewAccountSigner(privKey3)
+	signer4 := crypto.NewAccountSigner(privKey4)
 
-	tx, _ := tx.EmptySendTx()
-	tx.AddReceiver(crypto.GlobalAddress, 1)
-	tx.AddSender(pubKey1.AccountAddress(), 1, 1)
-	tx.AddSender(pubKey2.AccountAddress(), 1, 1)
-	tx.AddSender(pubKey3.AccountAddress(), 1, 1)
+	tx1, _ := tx.EmptySendTx()
+	tx1.AddReceiver(crypto.GlobalAddress, 1)
+	tx1.AddSender(pubKey1.AccountAddress(), 1, 1)
+	tx1.AddSender(pubKey2.AccountAddress(), 1, 1)
+	tx1.AddSender(pubKey3.AccountAddress(), 1, 1)
 
-	txEnv := Enclose("test-chain", tx)
+	env1 := Enclose("test-chain", tx1)
 
-	err := txEnv.Sign(signer1, signer2)
+	err := env1.Sign(signer1, signer2)
 	assert.Error(t, err)
 
 	// Should fail, one signature is missed
-	err = txEnv.Verify()
+	err = env1.Verify()
 	require.Error(t, err)
 
-	err = txEnv.Sign(signer1, signer2, signer3)
+	err = env1.Sign(signer1, signer2, signer3)
+	require.NoError(t, err)
+	err = env1.Verify()
 	require.NoError(t, err)
 
-	err = txEnv.Verify()
-	require.NoError(t, err)
+	// invalid public key, should fail
+	env2 := Enclose("test-chain", tx1)
+	env2.Sign(signer1, signer2, signer3)
+	env2.Signatories[0].PublicKey = pubKey2
+	err = env2.Verify()
+	require.Error(t, err)
 
-	/// TODO: Add more tests here
+	// extra signature, should fail
+	env3 := Enclose("test-chain", tx1)
+	env3.Sign(signer1, signer2, signer3)
+	bs, _ := env3.SignBytes()
+	sig, _ := signer4.Sign(bs)
+	env3.Signatories = append(env3.Signatories, crypto.Signatory{
+		PublicKey: pubKey4,
+		Signature: sig})
+	err = env3.Verify()
+	require.Error(t, err)
+
+	// invalid signature, should fail
+	env4 := Enclose("test-chain", tx1)
+	env4.Sign(signer1, signer2, signer3)
+	env4.Signatories[0].Signature = sig
+	err = env2.Verify()
+	require.Error(t, err)
+
+	// invalid signBytes, should fail
+	env5 := Enclose("test-chain", tx1)
+	env5.Sign(signer1, signer2, signer3)
+	env5.ChainID = "test-chain-bad"
+	err = env5.Verify()
+	require.Error(t, err)
+
+	// duplicated sender, should pass
+	tx2, _ := tx.EmptySendTx()
+	tx2.AddReceiver(crypto.GlobalAddress, 1)
+	tx2.AddSender(pubKey1.AccountAddress(), 1, 1)
+	tx2.AddSender(pubKey1.AccountAddress(), 1, 1) /// duplicated sender
+	tx2.AddSender(pubKey3.AccountAddress(), 1, 1)
+
+	env6 := Enclose("test-chain", tx2)
+	// sender1 signs tx twice. It's ridicules but correct.
+	env6.Sign(signer1, signer3)
+	err = env6.Verify()
+	require.NoError(t, err)
 }

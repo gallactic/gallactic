@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/hex"
 	"io"
+	"unsafe"
 
 	"github.com/gallactic/gallactic/errors"
+	"github.com/mr-tron/base58/base58"
 	"golang.org/x/crypto/ed25519"
 )
 
@@ -22,17 +23,34 @@ type privateKeyData struct {
 /// ------------
 /// CONSTRUCTORS
 
+// PrivateKeyFromString constructs a private key from base58 encoding text and check the prefix and checksum
 func PrivateKeyFromString(text string) (PrivateKey, error) {
-	bs, err := hex.DecodeString(text)
+	data, err := base58.Decode(text)
 	if err != nil {
 		return PrivateKey{}, e.Errorf(e.ErrInvalidPrivateKey, "%v", err.Error())
 	}
 
+	if len(data) != ed25519.PrivateKeySize+6 {
+		return PrivateKey{}, e.Errorf(e.ErrInvalidPrivateKey, "Private key should be %v bytes but it is %v bytes", ed25519.PrivateKeySize+6, len(data))
+	}
+
+	err = validateChecksum(data)
+	if err != nil {
+		return PrivateKey{}, e.Errorf(e.ErrInvalidPrivateKey, err.Error())
+	}
+
+	err = validatePrefix(data, prefixPrivateKey)
+	if err != nil {
+		return PrivateKey{}, e.Errorf(e.ErrInvalidPrivateKey, err.Error())
+	}
+
+	bs := data[2 : ed25519.PrivateKeySize+2]
 	return PrivateKeyFromRawBytes(bs)
 }
 
+// PrivateKeyFromRawBytes constructs a private key from ed25519 raw bytes.
 func PrivateKeyFromRawBytes(bs []byte) (PrivateKey, error) {
-	/// Check for empty private key
+	/// Check for empty value
 	if len(bs) == 0 {
 		return PrivateKey{}, nil
 	}
@@ -50,12 +68,11 @@ func PrivateKeyFromRawBytes(bs []byte) (PrivateKey, error) {
 	return pv, nil
 }
 
-func PrivateKeyFromSecret(secret string) PrivateKey {
+func GenerateKeyFromSecret(secret string) (PublicKey, PrivateKey) {
 	hasher := sha256.New()
 	hasher.Write(([]byte)(secret))
 
-	_, pv := GenerateKey(bytes.NewBuffer(hasher.Sum(nil)))
-	return pv
+	return GenerateKey(bytes.NewBuffer(hasher.Sum(nil)))
 }
 
 func GenerateKey(random io.Reader) (PublicKey, PrivateKey) {
@@ -71,13 +88,25 @@ func GenerateKey(random io.Reader) (PublicKey, PrivateKey) {
 
 /// -------
 /// CASTING
-
+// RawBytes returns the ed25519 raw bytes of the private key
 func (pv PrivateKey) RawBytes() []byte {
 	return pv.data.PrivateKey
 }
 
+// String return the base58 encoding text of the private key with the prefix and checksum
 func (pv PrivateKey) String() string {
-	return hex.EncodeToString(pv.RawBytes())
+	if len(pv.data.PrivateKey) == 0 {
+		return ""
+	}
+
+	prefix := prefixPrivateKey
+	data := make([]byte, 0, ed25519.PrivateKeySize+6)
+	data = append(data, (*[2]byte)(unsafe.Pointer(&prefix))[:]...)
+	data = append(data, pv.data.PrivateKey...)
+	chksum := checksum(data)
+	data = append(data, chksum[:]...)
+
+	return base58.Encode(data)
 }
 
 /// ----------
@@ -102,6 +131,11 @@ func (pv PrivateKey) MarshalText() ([]byte, error) {
 }
 
 func (pv *PrivateKey) UnmarshalText(text []byte) error {
+	/// Unmarshal empty text
+	if len(text) == 0 {
+		return nil
+	}
+
 	p, err := PrivateKeyFromString(string(text))
 	if err != nil {
 		return err

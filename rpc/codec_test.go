@@ -2,23 +2,24 @@ package rpc
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestKeysEncoding(t *testing.T) {
 	codec := NewTCodec()
-	privKey := crypto.PrivateKeyFromSecret("codec test")
+	pb, pv := crypto.GenerateKeyFromSecret("codec test")
 	type keyPair struct {
 		PrivateKey crypto.PrivateKey
 		PublicKey  crypto.PublicKey
 	}
 
 	kp := keyPair{
-		PrivateKey: privKey,
-		PublicKey:  privKey.PublicKey(),
+		PrivateKey: pv,
+		PublicKey:  pb,
 	}
 	fmt.Println("Original Key Pair :\n", kp)
 
