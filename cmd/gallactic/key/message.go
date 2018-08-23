@@ -1,4 +1,4 @@
-package main
+package key
 
 import (
 	"fmt"
@@ -64,7 +64,7 @@ func Sign() func(cmd *cli.Cmd) {
 			} else if *keyfilePath != "" {
 				var passphrase string
 				if *keyfileauthOpt == "" {
-					passphrase = promptPassphrase(true)
+					passphrase = PromptPassphrase(true)
 				} else {
 					passphrase = *keyfileauthOpt
 				}

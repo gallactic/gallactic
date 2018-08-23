@@ -1,4 +1,4 @@
-package main
+package key
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ func Generate() func(cmd *cli.Cmd) {
 				keyObj = key.GenAccountKey()
 			}
 			// Encrypt key with passphrase.
-			passphrase := promptPassphrase(true)
+			passphrase := PromptPassphrase(true)
 			keyjson, err := key.EncryptKey(keyObj, passphrase)
 			if err != nil {
 				log.Fatalf("Failed to Encrypt: %v", err)
