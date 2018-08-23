@@ -3,22 +3,21 @@ package main
 import (
 	"os"
 
+	"github.com/gallactic/gallactic/cmd/gallactic/key"
 	"github.com/jawher/mow.cli"
 )
 
 func gallactic() *cli.Cli {
-	/// help string. ::TBD
-	/// gallactic blockchain node with Hyperledger Burrow's EVM and Tendermint consensus engine
 	app := cli.App("gallactic", "Gallactic blockchain node")
     app.Command("init", "initialize the gallactic blockchain", Init())
 	app.Command("start", "start the gallactic blockchain", Start())
 	app.Command("version", "print the gallactic version", Version())
-	app.Command("gtxkey", "gallactic key manager", func(key *cli.Cmd) {
-		key.Command("generate", "generate a new key", Generate())
-		key.Command("inspect", "inspect a key file", Inspect())
-		key.Command("signmessage", "inspect a key file", Sign())
-		key.Command("verify", "verify a signature of a messsage", Verify())
-		key.Command("changeauth", "change the passphrase of the keyfile", ChangePassphrase())
+	app.Command("key", "gallactic key manager", func(k *cli.Cmd) {
+		k.Command("generate", "generate a new key", key.Generate())
+		k.Command("inspect", "inspect a key file", key.Inspect())
+		k.Command("signmessage", "inspect a key file", key.Sign())
+		k.Command("verify", "verify a signature of a messsage", key.Verify())
+		k.Command("changeauth", "change the passphrase of the keyfile", key.ChangePassphrase())
 	})
 	return app
 }

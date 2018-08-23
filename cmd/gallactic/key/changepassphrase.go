@@ -1,4 +1,4 @@
-package main
+package key
 
 import (
 	"fmt"
@@ -34,7 +34,7 @@ func ChangePassphrase() func(cmd *cli.Cmd) {
 				log.Fatalf("Password does not match: %v", err)
 			}
 			//Prompt for the new passphrase
-			passphrase = promptPassphrase(true)
+			passphrase = PromptPassphrase(true)
 			// Encrypt key with passphrase.
 			keyjson, err = key.EncryptKey(keyObj, passphrase)
 			if err != nil {

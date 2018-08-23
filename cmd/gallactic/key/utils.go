@@ -1,4 +1,4 @@
-package main
+package key
 
 import (
 	"fmt"
@@ -26,20 +26,20 @@ var (
 
 // promptPassphrase prompts the user for a passphrase.  Set confirmation to true
 // to require the user to confirm the passphrase.
-func promptPassphrase(confirmation bool) string {
+func PromptPassphrase(confirmation bool) string {
 
 	if confirmation {
 		passphrase, err := Stdin.PromptPassword("New passphrase: ")
 		if err != nil {
-			fmt.Errorf("Failed to read passphrase: %v", err)
+			log.Fatalf("Failed to read passphrase: %v", err)
 		}
 
 		confirm, err := Stdin.PromptPassword("Repeat passphrase: ")
 		if err != nil {
-			fmt.Errorf("Failed to read passphrase confirmation: %v", err)
+			log.Fatalf("Failed to read passphrase confirmation: %v", err)
 		}
 		if passphrase != confirm {
-			fmt.Errorf("Passphrases do not match")
+			log.Fatalf("Passphrases do not match")
 		}
 		return passphrase
 	}
@@ -133,4 +133,9 @@ func oldPassphrase() string {
 		fmt.Errorf("Failed to read passphrase: %v", err)
 	}
 	return passphrase
+}
+
+func CreateKey(pv crypto.PrivateKey) *key.Key {
+	addr := pv.PublicKey().ValidatorAddress()
+	return key.NewKey(addr, pv)
 }
