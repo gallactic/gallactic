@@ -1,4 +1,4 @@
-package main
+package key
 
 import (
 	"fmt"
@@ -23,14 +23,14 @@ func Inspect() func(cmd *cli.Cmd) {
 		cmd.Spec = "KEYFILE [--private]"
 
 		cmd.Action = func() {
-			keyfilepath := defaultKeyfilePath + *keyfile	//TODO include custom path as well
+			keyfilepath := defaultKeyfilePath + *keyfile //TODO include custom path as well
 			// Read key from file.
 			keyjson, err := ioutil.ReadFile(keyfilepath)
 			if err != nil {
 				log.Fatalf("Failed to read the keyfile at '%s': %v", keyfilepath, err)
 			}
 			// Decrypt key with passphrase.
-			passphrase := promptPassphrase(true)
+			passphrase := PromptPassphrase(true)
 			keyObj, err := key.DecryptKey(keyjson, passphrase)
 			if err != nil {
 				log.Fatalf("Error decrypting key: %v", err)
