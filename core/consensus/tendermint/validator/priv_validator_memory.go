@@ -4,6 +4,8 @@ import (
 	"github.com/gallactic/gallactic/crypto"
 
 	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmEd25519 "github.com/tendermint/tendermint/crypto/ed25519"
+
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
@@ -47,14 +49,13 @@ func (pvm *privValidatorMemory) SignHeartbeat(chainID string, heartbeat *tmTypes
 }
 
 func asTendermintSigner(signer crypto.Signer) tmSigner {
-	return func(msg []byte) tmCrypto.Signature {
+	return func(msg []byte) []byte {
 		sig, err := signer.Sign(msg)
 		if err != nil {
 			return nil
 		}
-		tmSig := tmCrypto.SignatureEd25519{}
+		var tmSig [tmEd25519.SignatureEd25519Size]byte
 		copy(tmSig[:], sig.RawBytes())
-		return tmSig
-
+		return tmSig[:]
 	}
 }

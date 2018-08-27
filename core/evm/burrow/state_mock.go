@@ -119,7 +119,7 @@ func toBurrowAccount(acc *account.Account) *acm.MutableAccount {
 }
 
 func fromBurrowAccount(bAcc acm.MutableAccount) *account.Account {
-	contract := len(bAcc.PublicKey().RawBytes()) == 0
+	contract := len(bAcc.PublicKey().PublicKey) == 0
 	addr := fromBurrowAddress(bAcc.Address(), contract)
 	perm := account.Permissions(bAcc.Permissions().Base.Perms)
 
