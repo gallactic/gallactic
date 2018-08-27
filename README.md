@@ -17,7 +17,7 @@ make
 make install
 ```
 
-Run `gallactic version` to make sure gallactic is properly compiled and installed in yur machine.
+Run `gallactic version` to make sure gallactic is properly compiled and installed in your machine.
 
 NOTE:
 

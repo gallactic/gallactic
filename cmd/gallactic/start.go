@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	gtxkey "github.com/gallactic/gallactic/cmd/gallactic/key"
 	"github.com/gallactic/gallactic/core"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/proposal"
@@ -28,6 +29,7 @@ var welcomeMessage = `
      \  \::/       \  \:\         \__\/         \__\/        \  \:\        \  \::/          \__\/     \__\/      \  \::/
       \__\/         \__\/                                     \__\/         \__\/                                 \__\/    `
 
+//Start starts the gallactic node
 func Start() func(cmd *cli.Cmd) {
 	return func(cmd *cli.Cmd) {
 
@@ -51,9 +53,8 @@ func Start() func(cmd *cli.Cmd) {
 			Desc: "key file passphrase",
 		})
 
-		/*
-			cmd.Spec = "--working-dir=<working directory of the configuration files>"
-		*/
+		cmd.Spec = "[--working-dir=<Working directory of the configuration files>] " +
+			"[--privatekey=<private key of the account>] | [--key-file=<path to the key file>] [--auth=<keyfile password>]"
 
 		cmd.Action = func() {
 			fmt.Print(welcomeMessage)
@@ -64,7 +65,7 @@ func Start() func(cmd *cli.Cmd) {
 				switch {
 				case *keystoreOpt == "" && *privatekeyOpt == "":
 					// Creating KeyObject from Private Key
-					kj, err := PromptPrivateKey()
+					kj, err := gtxkey.PromptPrivateKey()
 					if err != nil {
 						log.Fatalf("Aborted: %v", err)
 					}
@@ -79,7 +80,7 @@ func Start() func(cmd *cli.Cmd) {
 					keyObj = kj
 				case *keystoreOpt != "" && *keyfileauthOpt == "":
 					//Creating KeyObject from keystore
-					passphrase := promptPassphrase(true)
+					passphrase := gtxkey.PromptPassphrase(true)
 					kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
 					if err != nil {
 						log.Fatalf("Could not decrypt file: %v", err)
@@ -91,7 +92,7 @@ func Start() func(cmd *cli.Cmd) {
 					if err != nil {
 						log.Fatalf("Could not decrypt file: %v", err)
 					}
-					kj := CreateKey(pv)
+					kj := gtxkey.CreateKey(pv)
 					keyObj = kj
 				}
 
@@ -135,9 +136,4 @@ func Start() func(cmd *cli.Cmd) {
 			}
 		}
 	}
-}
-
-func CreateKey(pv crypto.PrivateKey) *key.Key {
-	addr := pv.PublicKey().ValidatorAddress()
-	return key.NewKey(addr, pv)
 }

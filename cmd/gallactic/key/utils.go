@@ -1,4 +1,4 @@
-package main
+package key
 
 import (
 	"fmt"
@@ -26,20 +26,20 @@ var (
 
 // promptPassphrase prompts the user for a passphrase.  Set confirmation to true
 // to require the user to confirm the passphrase.
-func promptPassphrase(confirmation bool) string {
+func PromptPassphrase(confirmation bool) string {
 
 	if confirmation {
-		passphrase, err := Stdin.PromptPassword("Passphrase: ")
+		passphrase, err := Stdin.PromptPassword("New passphrase: ")
 		if err != nil {
-			fmt.Errorf("Failed to read passphrase: %v", err)
+			log.Fatalf("Failed to read passphrase: %v", err)
 		}
 
 		confirm, err := Stdin.PromptPassword("Repeat passphrase: ")
 		if err != nil {
-			fmt.Errorf("Failed to read passphrase confirmation: %v", err)
+			log.Fatalf("Failed to read passphrase confirmation: %v", err)
 		}
 		if passphrase != confirm {
-			fmt.Errorf("Passphrases do not match")
+			log.Fatalf("Passphrases do not match")
 		}
 		return passphrase
 	}
@@ -91,6 +91,9 @@ func newTerminalPrompter() *terminalPrompter {
 	return p
 }
 
+//PromptPrivateKey prompts the user to enter the private key,
+// validates the private key, displays the validator address and
+// starts the node after confirmation
 func PromptPrivateKey() (*key.Key, error) {
 	line := liner.NewLiner()
 	defer line.Close()
@@ -116,8 +119,23 @@ func PromptPrivateKey() (*key.Key, error) {
 	if confirm == "y" {
 		log.Print("Running Blockchain")
 		return keyObj, nil
-	} else {
-		return nil, fmt.Errorf("Stopped running Blockhain: %v", err)
 	}
 	return nil, fmt.Errorf("Abort")
+}
+
+// oldPassphrase prompts for the old password of the keyfile
+func oldPassphrase() string {
+	line := liner.NewLiner()
+	defer line.Close()
+	line.SetCtrlCAborts(true)
+	passphrase, err := line.Prompt("Old Password: ")
+	if err != nil {
+		fmt.Errorf("Failed to read passphrase: %v", err)
+	}
+	return passphrase
+}
+
+func CreateKey(pv crypto.PrivateKey) *key.Key {
+	addr := pv.PublicKey().ValidatorAddress()
+	return key.NewKey(addr, pv)
 }
