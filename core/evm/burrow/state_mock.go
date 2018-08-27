@@ -49,13 +49,14 @@ func (s bState) IterateAccounts(consumer func(acm.Account) (stop bool)) (stopped
 func (s bState) UpdateAccount(updatedAccount acm.Account) error {
 
 	addr := fromBurrowAddress(updatedAccount.Address(), true)
-	acc, _ := s.st.GetAccount(addr)
+	acc, err := s.st.GetAccount(addr)
+
 	if acc == nil {
-		panic(fmt.Errorf("could not convert account from burrow to gallactic"))
+		err = fmt.Errorf("could not convert account from burrow to gallactic")
 	}
-	err := s.st.UpdateAccount(acc)
+	err = s.st.UpdateAccount(acc)
 	if err != nil {
-		panic(fmt.Errorf("could not update account %s", err))
+		err = fmt.Errorf("could not update account %s", err)
 	}
 	return err
 }

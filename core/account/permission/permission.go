@@ -5,7 +5,6 @@ import "github.com/gallactic/gallactic/core/account"
 //------------------------------------------------------------------------------------------------
 // Base permission references are like unix (the index is already bit shifted)
 const (
-	None             account.Permissions = 0
 	Root             account.Permissions = 1 << iota // 0x0001
 	Send                                             // 0x0002
 	Call                                             // 0x0004
@@ -17,6 +16,7 @@ const (
 	InterChainTx
 
 	Reserved
+	None             account.Permissions = 0
 )
 
 var (
