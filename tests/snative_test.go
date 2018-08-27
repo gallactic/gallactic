@@ -28,6 +28,8 @@ ccc2936e setPermissions(address,uint64)
 30f69812 unsetPermissions(address,uint64)
 `
 
+var defaultGas uint64 = 100000
+
 func TestPermissionsContractSignatures(t *testing.T) {
 	contract := evm.SNativeContracts()["Permissions"]
 
