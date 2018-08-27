@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	tmCrypto "github.com/tendermint/tendermint/crypto"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
@@ -36,11 +35,11 @@ func voteToStep(vote *tmTypes.Vote) int8 {
 // data signed by a validator to help prevent double signing.
 type LastSignedInfo struct {
 	sync.Mutex
-	Height    int64              `json:"height"`
-	Round     int                `json:"round"`
-	Step      int8               `json:"step"`
-	Signature tmCrypto.Signature `json:"signature,omitempty"` // so we dont lose signatures
-	SignBytes cmn.HexBytes       `json:"signBytes,omitempty"` // so we dont lose signatures
+	Height    int64        `json:"height"`
+	Round     int          `json:"round"`
+	Step      int8         `json:"step"`
+	Signature []byte       `json:"signature,omitempty"` // so we dont lose signatures
+	SignBytes cmn.HexBytes `json:"signBytes,omitempty"` // so we dont lose signatures
 }
 
 func NewLastSignedInfo() *LastSignedInfo {
@@ -49,7 +48,7 @@ func NewLastSignedInfo() *LastSignedInfo {
 	}
 }
 
-type tmSigner func(msg []byte) tmCrypto.Signature
+type tmSigner func(msg []byte) []byte
 
 // SignVote signs a canonical representation of the vote, along with the
 // chainID. Implements PrivValidator.
@@ -175,7 +174,7 @@ func (lsi *LastSignedInfo) signProposal(sign tmSigner, chainID string, proposal 
 
 // Persist height/round/step and signature
 func (lsi *LastSignedInfo) saveSigned(height int64, round int, step int8,
-	signBytes []byte, sig tmCrypto.Signature) {
+	signBytes []byte, sig []byte) {
 
 	lsi.Height = height
 	lsi.Round = round

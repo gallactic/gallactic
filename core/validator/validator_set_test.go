@@ -7,7 +7,7 @@ import (
 
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/stretchr/testify/assert"
-	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmEd25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	tmRPCTypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
@@ -55,7 +55,7 @@ func newValidatorListProxyMock() *_validatorListProxyMock {
 	validators := make([]*tmTypes.Validator, len(publicKeys))
 
 	for i, p := range publicKeys {
-		tmPubKey := tmCrypto.PubKeyEd25519{}
+		tmPubKey := tmEd25519.PubKeyEd25519{}
 		copy(tmPubKey[:], p.RawBytes())
 
 		validators[i] = tmTypes.NewValidator(tmPubKey, 1)
