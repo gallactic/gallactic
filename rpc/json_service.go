@@ -69,7 +69,7 @@ type JSONService struct {
 	logger          *logging.Logger
 }
 
-// Create a new JSON-RPC 2.0 service for burrow (tendermint).
+// Create a new JSON-RPC 2.0 service for gallactic
 func NewJSONService(codec Codec, service *Service, logger *logging.Logger) HttpService {
 
 	httpService := &JSONService{

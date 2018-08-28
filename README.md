@@ -1,4 +1,4 @@
-# Gallactic
+# Gallactic [![Build Status](https://api.travis-ci.org/gallactic/gallactic.svg?branch=master)](https://travis-ci.org/gallactic/gallactic) 
 *Gallactic blockchain with Hyperledger Burrow EVM and Tendermint consensus engine*
 
 ## Compiling the code

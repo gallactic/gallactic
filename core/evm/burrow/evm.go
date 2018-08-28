@@ -10,15 +10,16 @@ import (
 	"github.com/hyperledger/burrow/logging"
 	burrowTx "github.com/hyperledger/burrow/txs"
 	burrowPayload "github.com/hyperledger/burrow/txs/payload"
+	"github.com/gallactic/gallactic/errors"
 )
 
-func CallCode(bc *blockchain.Blockchain, caller, callee *account.Account, data []byte, value, fee, gasLimit uint64, gas *uint64) (output []byte, err error) {
+func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {
 
 	params := burrowEVM.Params{
 		BlockHeight: bc.LastBlockHeight(),
 		BlockHash:   burrowBinary.LeftPadWord256(bc.LastBlockHash()),
 		BlockTime:   bc.LastBlockTime().Unix(),
-		GasLimit:    uint64(1000000),
+		GasLimit:    tx.GasLimit(),
 	}
 
 	bCaller := toBurrowAccount(caller)
@@ -27,7 +28,7 @@ func CallCode(bc *blockchain.Blockchain, caller, callee *account.Account, data [
 	code := bCallee.Code()
 
 	bPayload := burrowPayload.NewCallTxWithSequence(bCaller.PublicKey(), &bCalleeAddr,
-		data, value, gasLimit, fee, bCaller.Sequence()+1)
+		tx.Data(), tx.Amount(), tx.GasLimit(), tx.Fee(), bCaller.Sequence()+1)
 	bTx := burrowTx.NewTx(bPayload)
 
 	st := bState{st: bc.State()}
@@ -35,16 +36,16 @@ func CallCode(bc *blockchain.Blockchain, caller, callee *account.Account, data [
 	vm := burrowEVM.NewVM(params, bCaller.Address(), bTx, logging.NewNoopLogger())
 	eventSink := &noopEventSink{}
 	vm.SetEventSink(eventSink)
-	ret, exception := vm.Call(txCache, bCaller, bCallee, code, data, value, gas)
+	*gas = tx.GasLimit()
+	ret, err := vm.Call(txCache, bCaller, bCallee, code, tx.Data(), tx.Amount(), gas)
 	txCache.Flush(st, st)
 
-	return ret, exception
-}
 
-func Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {
-	data := tx.Data()
-	value := tx.Amount()
-	gasLimit := tx.GasLimit()
+	// TODO We need to fix this code in future, it's not a good Idea to only return a generic error for all evm issues!
 
-	return CallCode(bc, caller, callee, data, value, tx.Fee(), gasLimit, gas)
+	if err != nil{
+		err = e.Error(e.ErrInternalEvm)
+	}
+
+	return ret, err
 }

@@ -15,7 +15,7 @@ func DeriveNewAccount(creator *account.Account) (*account.Account, error) {
 	addr := crypto.DeriveContractAddress(creator.Address(), seq)
 
 	// Create account from address.
-	acc, err := account.NewAccount(addr)
+	acc, err := account.NewContractAccount(addr)
 	if err != nil {
 		return nil, err
 	}
