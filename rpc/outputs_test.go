@@ -6,6 +6,8 @@ import (
 
 	"fmt"
 
+	"time"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/crypto"
@@ -13,9 +15,7 @@ import (
 	"github.com/gallactic/gallactic/txs/tx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	tmCrypto "github.com/tendermint/tendermint/crypto"
 	tmTypes "github.com/tendermint/tendermint/types"
-	"time"
 )
 
 func TestResultBroadcastTx(t *testing.T) {
@@ -131,7 +131,7 @@ func TestResultGetBlock(t *testing.T) {
 			LastCommit: &tmTypes.Commit{
 				Precommits: []*tmTypes.Vote{
 					{
-						Signature: tmCrypto.SignatureEd25519{1, 2, 3},
+						Signature: []byte{1, 2, 3},
 					},
 				},
 			},

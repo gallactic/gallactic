@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/codes"
@@ -261,7 +260,7 @@ func (app *App) Commit() abciTypes.ResponseCommit {
 
 	// Commit to our blockchain state which will checkpoint the previous app hash by saving it to the database
 	// (we know the previous app hash is safely committed because we are about to commit the next)
-	appHash, err := app.bc.CommitBlock(time.Unix(int64(app.block.Header.Time), 0), app.block.Hash)
+	appHash, err := app.bc.CommitBlock(app.block.Header.Time, app.block.Hash)
 	if err != nil {
 		panic(errors.Wrap(err, "could not commit block to blockchain state"))
 	}

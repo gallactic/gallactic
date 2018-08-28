@@ -13,7 +13,7 @@ import (
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 	tmConfig "github.com/tendermint/tendermint/config"
-	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmEd25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/node"
 	"github.com/tendermint/tendermint/proxy"
@@ -79,7 +79,7 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 func DeriveGenesisDoc(gen *proposal.Genesis) *tmTypes.GenesisDoc {
 	validators := make([]tmTypes.GenesisValidator, len(gen.Validators()))
 	for i, validator := range gen.Validators() {
-		tm := tmCrypto.PubKeyEd25519{}
+		tm := tmEd25519.PubKeyEd25519{}
 		copy(tm[:], validator.PublicKey().RawBytes())
 		validators[i] = tmTypes.GenesisValidator{
 			PubKey: tm,

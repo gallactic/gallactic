@@ -7,6 +7,7 @@ import (
 	"github.com/mr-tron/base58/base58"
 	tmABCI "github.com/tendermint/tendermint/abci/types"
 	tmCrypto "github.com/tendermint/tendermint/crypto"
+	tmEd25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	"golang.org/x/crypto/ed25519"
 )
 
@@ -96,7 +97,7 @@ func (pb PublicKey) ABCIPubKey() tmABCI.PubKey {
 
 // TMPubKey returns the tendermint PubKey.
 func (pb PublicKey) TMPubKey() tmCrypto.PubKey {
-	pk := tmCrypto.PubKeyEd25519{}
+	var pk tmEd25519.PubKeyEd25519
 	copy(pk[:], pb.RawBytes())
 	return pk
 }
@@ -153,7 +154,7 @@ func (pb PublicKey) Verify(msg []byte, signature Signature) bool {
 }
 
 func (pb PublicKey) AccountAddress() Address {
-	tmPubKey := new(tmCrypto.PubKeyEd25519)
+	tmPubKey := new(tmEd25519.PubKeyEd25519)
 	copy(tmPubKey[:], pb.RawBytes())
 	hash := tmPubKey.Address()
 	addr, _ := addressFromHash(hash, prefixAccountAddress)
@@ -162,7 +163,7 @@ func (pb PublicKey) AccountAddress() Address {
 }
 
 func (pb PublicKey) ValidatorAddress() Address {
-	tmPubKey := new(tmCrypto.PubKeyEd25519)
+	tmPubKey := new(tmEd25519.PubKeyEd25519)
 	copy(tmPubKey[:], pb.RawBytes())
 	hash := tmPubKey.Address()
 	addr, _ := addressFromHash(hash, prefixValidatorAddress)
