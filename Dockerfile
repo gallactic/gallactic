@@ -9,8 +9,7 @@ RUN addgroup guser && \
 RUN mkdir -p $WORKING_DIR && \
     chown -R guser:guser $WORKING_DIR
 
-RUN apk add --no-cache bash curl jq rust cargo
-
+RUN apk add --no-cache bash curl jq
 
 ENV GOPATH /go
 ENV PATH "$PATH:/go/bin"
@@ -19,10 +18,15 @@ RUN mkdir -p /go/src/github.com/gallactic/gallactic/ && \
     cd /go/src/github.com/gallactic/gallactic/ && \
     git clone https://github.com/gallactic/gallactic/ . && \
     git checkout develop && \
-    make tools deps install && \
+    make tools  && \
+    make deps  && \
+    make build && \
+    make install && \
     cd - && \
-    rm -rf /go/src/ && \
-    apk del build-base git rust
+    rm -rf /go/src/github.com/gallactic/gallactic/ && \
+    apk del go build-base git
+
+
 
 
 EXPOSE 45566
