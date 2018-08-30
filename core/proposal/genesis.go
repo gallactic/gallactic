@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -139,15 +142,6 @@ func (gen *Genesis) Validators() []*validator.Validator {
 	return vals
 }
 
-func (gen *Genesis) ValidatorsAddress() []crypto.Address {
-	var vals []crypto.Address
-	for _, genVal := range gen.data.Validators {
-		vals = append(vals, genVal.Address)
-	}
-
-	return vals
-}
-
 func (gen *Genesis) MaximumPower() int {
 	if gen.data.MaximumPower < len(gen.data.Validators) {
 		return len(gen.data.Validators)
@@ -266,17 +260,101 @@ func LoadFromFile(file string) (*Genesis, error) {
 	return &gen, nil
 }
 
-// SaveToFile saves the genesis info a JSON file
-func (gen *Genesis) SaveToFile(file string) error {
-	json, err := gen.MarshalJSON()
-	if err != nil {
-		return err
+/* save genesis file to file system */
+
+func SaveGenesisFile(workingDir string, chainName string) string {
+
+	/* Generate the private public key */
+	accPubkey, accPrivKey := crypto.GenerateKey(nil)
+	acc1Pubkey, acc1PrivKey := crypto.GenerateKey(nil)
+	valPubKey, valPrivKey := crypto.GenerateKey(nil)
+	_ = accPrivKey
+	_ = acc1PrivKey
+	/* create the address from public_key */
+	address1 := accPubkey.AccountAddress()
+	address2 := acc1Pubkey.AccountAddress()
+	valAddress := valPubKey.ValidatorAddress()
+
+	/* create  accounts for genesis */
+	acc1, err1 := account.NewAccount(address1)
+	if err1 != nil {
+		log.Fatalf("acc1 in genesis SaveGenesisFile function %s", (err1))
+	}
+	acc2, err2 := account.NewAccount(address2)
+	if err2 != nil {
+		log.Fatalf("acc2 in genesis SaveGenesisFile function %s", (err2))
 	}
 
-	// write  dataContent to file
-	if err := ioutil.WriteFile(file, json, 0777); err != nil {
-		return fmt.Errorf("Failed to write genesis file to %s: %v", file, err)
+	/* create validator account for genesis  */
+	validtorAcc, valerror := validator.NewValidator(valPubKey, 100)
+	if valerror != nil {
+		log.Fatalf("validatorAcc in genesis SaveGenesisFile function %s", (valerror))
 	}
 
-	return nil
+	valKey, valerr := validtorAcc.MarshalJSON()
+	if (valerr) != nil {
+		log.Fatalf("validator  error %s", valerr)
+	}
+
+	/* create global account*/
+	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
+	/*create accounts list to generate genesis file*/
+	accounts := []*account.Account{acc1, acc2}
+	/* create validator account to generate genesis file*/
+	validators := []*validator.Validator{validtorAcc}
+
+	/* create the validator key file  */
+	createFile(workingDir, "priv_validator.json", valKey, nil)
+
+	gChainName := ""
+	if chainName != "" {
+		gChainName = chainName
+	} else {
+		gChainName = "test-chain"
+	}
+
+	/* create  genesis   */
+	genesis := MakeGenesis(gChainName, time.Now(), gAcc, accounts, nil, validators)
+
+	gene, generr := genesis.MarshalJSON()
+	if (generr) != nil {
+		log.Fatalf("genesis error %s", generr)
+	}
+
+	/* create the genesis file  */
+	createFile(workingDir, "genesis.json", nil, gene)
+	msg := " The file has created at" + workingDir + "genesis.json"
+
+	fmt.Println("valPrivKey", valPrivKey)
+	fmt.Println("valaddress", valAddress)
+
+	return msg
+}
+
+/* create file for genesis and validator key files */
+func createFile(defaultfilePath string, filename string, valkey []byte, genesis []byte) {
+
+	/* filepath consist of filename with default file path */
+	filePath := defaultfilePath + filename
+	var data []byte
+
+	/* check validator key content*/
+	if len(valkey) > 0 {
+		data = valkey
+	}
+
+	/* check genesis  content*/
+	if len(genesis) > 0 {
+		data = genesis
+	}
+
+	/* create the directory*/
+	if err := os.MkdirAll(filepath.Dir(filePath), 0777); err != nil {
+		log.Fatalf("could not create directory %s", filepath.Dir(filePath))
+	}
+	/* write  dataContent to file */
+	if err := ioutil.WriteFile(filePath, data, 0600); err != nil {
+		log.Fatalf("failed to write genesisfile to %s: %v", filePath, err)
+	}
+
 }
