@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gallactic/gallactic/core/account"
-	config "github.com/gallactic/gallactic/core/config"
+	"github.com/gallactic/gallactic/core/config"
 	proposal "github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
@@ -30,7 +30,7 @@ func Init() func(cmd *cli.Cmd) {
 		})
 
 		ChainNameOpts := cmd.String(cli.StringOpt{
-			Name: "c chainname",
+			Name: "n chain-name",
 			Desc: "chainname for genesis block",
 		})
 
@@ -77,23 +77,20 @@ func makeGenesis(workingDir string, chainName string) (*proposal.Genesis, string
 	}
 
 	/*check for working path */
-	wDir := ""
-	if workingDir != "" {
-		wDir = workingDir
-	} else {
-		wDir = "/tmp/chain/"
+	if workingDir == "" {
+		workingDir = "/tmp/chain/"
 	}
-	filedir := wDir + "pv_validator.json"
 
+	fileDir := workingDir + "pv_validator.json"
 	/* create the directory */
-	if err := os.MkdirAll(filepath.Dir(filedir), 0777); err != nil {
-		log.Fatalf("could not create directory %s", filepath.Dir(filedir))
+	if err := os.MkdirAll(filepath.Dir(fileDir), 0777); err != nil {
+		log.Fatalf("could not create directory %s", filepath.Dir(fileDir))
 	}
 	/* write  validiator private key to file */
-	if err := ioutil.WriteFile(filedir, valPrivateKey, 0600); err != nil {
-		log.Fatalf("failed to write genesisfile to %s: %v", filedir, err)
+	if err := ioutil.WriteFile(fileDir, valPrivateKey, 0600); err != nil {
+		log.Fatalf("failed to write genesisfile to %s: %v", fileDir, err)
 	}
-	msg := "created at" + " " + filedir
+	msg := "created at" + " " + fileDir
 
 	/* create the address from public_key */
 	address1 := accPubkey.AccountAddress()
