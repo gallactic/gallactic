@@ -8,8 +8,11 @@ import (
 )
 
 func gallactic() *cli.Cli {
-	app := cli.App("gallactic", "Gallactic blockchain node")
-
+	/// help string. ::TBD
+	/// gallactic blockchain node with Hyperledger Burrow's EVM and Tendermint consensus engine
+	app := cli.App("gallactic", "Start gallactic node")
+	app.Command("init", "initialize the gallactic blockchain", Init())
+	app.Command("version", "Version of the gallactic node", Version())
 	app.Command("start", "start the gallactic blockchain", Start())
 	app.Command("version", "print the gallactic version", Version())
 	app.Command("key", "gallactic key manager", func(k *cli.Cmd) {
