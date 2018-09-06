@@ -259,17 +259,13 @@ func LoadFromFile(file string) (*Genesis, error) {
 	return &gen, nil
 }
 
-
 /* save genesis file to file system */
 func (gen *Genesis) Save(workingDir string) string {
 
-	wDir := " "
-	if workingDir != "" {
-		wDir = workingDir
-	} else {
-		wDir = "/tmp/chain/"
+	if workingDir == "" {
+		workingDir = "/tmp/chain/"
 	}
-	filedir := wDir + "genesis.json"
+	filedir := workingDir + "genesis.json"
 	gene, generr := gen.MarshalJSON()
 	if (generr) != nil {
 		log.Fatalf("genesis error %s", generr)
