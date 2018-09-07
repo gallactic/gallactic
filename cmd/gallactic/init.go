@@ -34,7 +34,7 @@ func Init() func(cmd *cli.Cmd) {
 			Desc: "chainname for genesis block",
 		})
 
-		cmd.Spec = "[--working-dir=<Working directory to save the configuration files>] " + "[--chainname =<chainname for genesis block>]"
+		cmd.Spec = "[--working-dir=<Working directory to save the configuration files>] " + "[--chain-name =<chainname for genesis block>]"
 		cmd.Action = func() {
 			workingDir := *workingDirOpts
 			chainName := *ChainNameOpts
