@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"fmt"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/state"
@@ -54,10 +55,11 @@ func (s bState) UpdateAccount(updatedAccount acm.Account) error {
 	if acc == nil {
 		err = fmt.Errorf("could not convert account from burrow to gallactic")
 	}
-	err = s.st.UpdateAccount(acc)
+	/*err = s.st.UpdateAccount(acc)
 	if err != nil {
 		err = fmt.Errorf("could not update account %s", err)
 	}
+	*/
 	return err
 }
 
@@ -76,13 +78,17 @@ func (s bState) GetStorage(bAddr burrowCrypto.Address, key burrowBinary.Word256)
 }
 
 func (s bState) SetStorage(bAddr burrowCrypto.Address, key, value burrowBinary.Word256) error {
-	addr := fromBurrowAddress(bAddr, true)
 
-	err := s.st.SetStorage(addr, binary.Word256(key), binary.Word256(value))
-	if err != nil {
-		panic(fmt.Errorf("cannot set storage  %s", err))
-	}
-	return err
+	/*
+		addr := fromBurrowAddress(bAddr, true)
+
+		err := s.st.SetStorage(addr, binary.Word256(key), binary.Word256(value))
+		if err != nil {
+			panic(fmt.Errorf("cannot set storage  %s", err))
+		}
+		return err
+	*/
+	return nil
 }
 
 func (s bState) IterateStorage(bAddr burrowCrypto.Address, consumer func(key, value binary.Word256) (stop bool)) (stopped bool, err error) {

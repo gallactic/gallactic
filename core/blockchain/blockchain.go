@@ -90,23 +90,14 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 
 	st := state.NewState(db, logger)
 
-	// Make accounts state tree
-	for _, acc := range gen.Accounts() {
-		if err := st.UpdateAccount(acc); err != nil {
-			return nil, err
-		}
-	}
-
-	var vals []crypto.Address
-	for _, val := range gen.Validators() {
-		if err := st.UpdateValidator(val); err != nil {
-			return nil, err
-		}
-		vals = append(vals, val.Address())
+	// Update state for genesis accounts
+	err := st.UpdateGenesisState(gen)
+	if err != nil {
+		return nil, err
 	}
 
 	// We need to save at least once so that readTree points at a non-working-state tree
-	_, err := st.SaveState()
+	_, err = st.SaveState()
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +112,7 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 			LastBlockTime:  gen.GenesisTime(),
 			MaximumPower:   gen.MaximumPower(),
 			LastAppHash:    gen.Hash(),
-			LastValidators: vals,
+			LastValidators: gen.ValidatorsAddress(),
 		},
 	}
 	return bc, nil

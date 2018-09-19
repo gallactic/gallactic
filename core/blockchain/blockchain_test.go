@@ -35,9 +35,8 @@ func TestPersistedState(t *testing.T) {
 	require.NoError(t, err)
 
 	// update state, the hash should change
-	addr, _ := crypto.AddressFromString("ac9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
-	acc, _ := account.NewAccount(addr)
-	assert.NoError(t, bc1.state.UpdateAccount(acc))
+	bc1.validatorSet.ForceLeave(pb.ValidatorAddress())
+	assert.NoError(t, bc1.state.ByzantineValidator(pb.ValidatorAddress()))
 	hash3, err := bc1.CommitBlock(time.Now().UTC().Truncate(0), []byte{5, 6})
 	require.NoError(t, err)
 

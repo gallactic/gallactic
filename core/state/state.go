@@ -7,6 +7,7 @@ import (
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/hyperledger/burrow/logging"
@@ -112,6 +113,24 @@ func LoadState(db dbm.DB, hash []byte, logger *logging.Logger) (*State, error) {
 	return st, nil
 }
 
+// UpdateGenesisState updates state at genesis time
+func (st *State) UpdateGenesisState(gen *proposal.Genesis) error {
+	// Make accounts state tree
+	for _, acc := range gen.Accounts() {
+		if err := st.updateAccount(acc); err != nil {
+			return err
+		}
+	}
+
+	for _, val := range gen.Validators() {
+		if err := st.updateValidator(val); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (st *State) SaveState() ([]byte, error) {
 	st.Lock()
 	defer st.Unlock()
@@ -175,19 +194,6 @@ func (st *State) GetAccount(addr crypto.Address) (*account.Account, error) {
 	}
 
 	return acc, nil
-}
-
-func (st *State) UpdateAccount(acc *account.Account) error {
-	st.Lock()
-	defer st.Unlock()
-
-	bs, err := acc.Encode()
-	if err != nil {
-		return err
-	}
-
-	st.tree.Set(accountKey(acc.Address()), bs)
-	return nil
 }
 
 func (st *State) AccountCount() int {
@@ -275,27 +281,6 @@ func (st *State) GetValidator(addr crypto.Address) (*validator.Validator, error)
 	return val, nil
 }
 
-func (st *State) UpdateValidator(val *validator.Validator) error {
-	st.Lock()
-	defer st.Unlock()
-
-	bs, err := val.Encode()
-	if err != nil {
-		return err
-	}
-
-	st.tree.Set(validatorKey(val.Address()), bs)
-	return nil
-}
-
-func (st *State) RemoveValidator(addr crypto.Address) error {
-	st.Lock()
-	defer st.Unlock()
-
-	st.tree.Remove(validatorKey(addr))
-	return nil
-}
-
 func (st *State) ValidatorCount() int {
 	count := 0
 	st.IterateValidators(func(val *validator.Validator) (stop bool) {
@@ -323,15 +308,6 @@ func (st *State) GetStorage(addr crypto.Address, key binary.Word256) (binary.Wor
 	return binary.LeftPadWord256(value), nil
 }
 
-func (st *State) SetStorage(addr crypto.Address, key, value binary.Word256) error {
-	if value == binary.Zero256 {
-		st.tree.Remove(key.Bytes())
-	} else {
-		st.tree.Set(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()), value.Bytes())
-	}
-	return nil
-}
-
 func (st *State) IterateStorage(addr crypto.Address,
 	consumer func(key, value binary.Word256) (stop bool)) (stopped bool, err error) {
 	stopped = st.tree.IterateRange(storageStart, storageEnd, true, func(key []byte, value []byte) (stop bool) {
@@ -349,4 +325,53 @@ func (st *State) IterateStorage(addr crypto.Address,
 		return consumer(binary.LeftPadWord256(key), binary.LeftPadWord256(value))
 	})
 	return
+}
+
+func (st *State) ByzantineValidator(addr crypto.Address) error {
+	return st.removeValidator(addr)
+}
+
+/// -----------------------------
+/// Modifier methods are private.
+func (st *State) updateAccount(acc *account.Account) error {
+	st.Lock()
+	defer st.Unlock()
+
+	bs, err := acc.Encode()
+	if err != nil {
+		return err
+	}
+
+	st.tree.Set(accountKey(acc.Address()), bs)
+	return nil
+}
+
+func (st *State) updateValidator(val *validator.Validator) error {
+	st.Lock()
+	defer st.Unlock()
+
+	bs, err := val.Encode()
+	if err != nil {
+		return err
+	}
+
+	st.tree.Set(validatorKey(val.Address()), bs)
+	return nil
+}
+
+func (st *State) removeValidator(addr crypto.Address) error {
+	st.Lock()
+	defer st.Unlock()
+
+	st.tree.Remove(validatorKey(addr))
+	return nil
+}
+
+func (st *State) setStorage(addr crypto.Address, key, value binary.Word256) error {
+	if value == binary.Zero256 {
+		st.tree.Remove(key.Bytes())
+	} else {
+		st.tree.Set(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()), value.Bytes())
+	}
+	return nil
 }

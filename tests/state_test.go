@@ -31,7 +31,10 @@ func saveState(t *testing.T) []byte {
 }
 
 func updateAccount(t *testing.T, acc *account.Account) {
-	err := tState.UpdateAccount(acc)
+	ch := state.NewCache(tState)
+	ch.UpdateAccount(acc)
+	err := ch.Flush(nil)
+
 	require.NoError(t, err)
 }
 
