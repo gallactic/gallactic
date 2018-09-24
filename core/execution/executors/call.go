@@ -107,7 +107,7 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) 
 	}
 
 	var gas uint64
-	ret, err := burrow.Call(ctx.BC, caller, callee, tx, &gas)
+	ret, err := burrow.Call(ctx.BC, ctx.Cache, caller, callee, tx, &gas)
 	if err != nil {
 		return err
 	}
