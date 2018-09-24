@@ -99,8 +99,7 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) 
 	}
 
 	var gas uint64
-	ret, err := sputnik.Execute(ctx.BC, ctx.Cache, caller, callee, tx, &gas, false)
-
+	ret, err := burrow.Call(ctx.BC, ctx.Cache, caller, callee, tx, &gas)
 	if err != nil {
 		return err
 	}

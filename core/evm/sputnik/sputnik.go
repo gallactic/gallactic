@@ -1,14 +1,20 @@
-package sputnik
+package burrow
 
 import (
-	"bytes"
-	"errors"
+	"fmt"
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
+	burrowState "github.com/hyperledger/burrow/acm/state"
+	burrowBinary "github.com/hyperledger/burrow/binary"
+	burrowEVM "github.com/hyperledger/burrow/execution/evm"
+	"github.com/hyperledger/burrow/logging"
+	burrowTx "github.com/hyperledger/burrow/txs"
+	burrowPayload "github.com/hyperledger/burrow/txs/payload"
 
 	"math/big"
 
@@ -17,20 +23,28 @@ import (
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
 )
 
-//Execute for executing virtual machine
-func Execute(bc *blockchain.Blockchain, cache *state.Cache, caller, callee *account.Account, tx *tx.CallTx, gas *uint64, isDeploying bool) ([]uint8, error) {
+func Call(bc *blockchain.Blockchain, cache *state.Cache, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {
 
+	var ret []byte
 	var retError error
 
 	var addrCaller common.Address
+	var callerStr string
 
 	var addrCallee common.Address
+	var calleeStr string
 
-	callerBytes := caller.Address().RawBytes()[2:22]
+	callerBytes := caller.Address().RawBytes()
 	addrCaller.SetBytes(callerBytes)
 
-	calleeBytes := callee.Address().RawBytes()[2:22]
+	// if tx.CreateContract() {
+	// 	addr := DeriveNewContractAddress(caller)
+	// 	calleeBytes := addr.RawBytes()
+	// 	addrCallee.SetBytes(calleeBytes)
+	// } else {
+	calleeBytes := callee.Address().RawBytes()
 	addrCallee.SetBytes(calleeBytes)
+	//}
 
 	transaction := sputnikvm.Transaction{
 		Caller:   addrCaller,
@@ -52,6 +66,8 @@ func Execute(bc *blockchain.Blockchain, cache *state.Cache, caller, callee *acco
 
 	vm := sputnikvm.NewFrontier(&transaction, &header)
 
+	fmt.Println("\nSputnikvm is starting...")
+
 Loop:
 	for {
 		require := vm.Fire()
@@ -62,192 +78,111 @@ Loop:
 			break Loop
 
 		case sputnikvm.RequireAccount:
-			//Require Account
+
 			if require.Address().IsEmpty() {
 				vm.CommitNonexist(require.Address())
 			} else {
-				acc := GetAccount(cache, require.Address())
-				if acc != nil {
-					vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()), new(big.Int).SetUint64(acc.Balance()), acc.Code())
-				} else {
-					return []byte{}, errors.New("No Exist Account")
+				addr, err := crypto.AddressFromRawBytes(require.Address().Bytes())
+				if err != nil {
+					return nil, err
 				}
-
+				acc, err := cache.GetAccount(addr)
+				if err != nil {
+					return nil, err
+				}
+				vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()), new(big.Int).SetUint64(acc.Balance()), acc.Code())
 			}
 
 		case sputnikvm.RequireAccountCode:
-			//Require Account Code
-			acc := GetAccount(cache, require.Address())
-			if acc != nil {
-				vm.CommitAccountCode(require.Address(), acc.Code())
-			} else {
-				return []byte{}, errors.New("No Exist Account for Acquire Code")
+			addr, err := crypto.AddressFromRawBytes(require.Address().Bytes())
+			if err != nil {
+				return nil, err
 			}
+			acc, err := cache.GetAccount(addr)
+			if err != nil {
+				return nil, err
+			}
+			vm.CommitAccountCode(require.Address(), acc.Code())
 
 		case sputnikvm.RequireAccountStorage:
-			//Require Account Storage
-			converted, addr := fromEthAddress(require.Address(), true)
-			if !converted {
-				vm.CommitNonexist(require.Address())
-				break
+			addr, err := crypto.AddressFromRawBytes(require.Address().Bytes())
+			if err != nil {
+				return nil, err
 			}
-			key := binary.Uint64ToWord256(require.StorageKey().Uint64())
+			var key binary.Word256
+			copy(require.StorageKey().Bytes(), key.Bytes())
 			storage, err := cache.GetStorage(addr, key)
 			if err != nil {
 				vm.CommitAccountStorage(require.Address(), require.StorageKey(), new(big.Int).SetUint64(0))
-				break
 			}
 			var value big.Int
-			value.SetUint64(binary.Uint64FromWord256(storage))
+			copy(storage.Bytes(), value.Bytes())
 			vm.CommitAccountStorage(require.Address(), require.StorageKey(), &value)
 
 		case sputnikvm.RequireBlockhash:
-			//Require Blockhash
 			blockNumber := new(big.Int).SetUint64(bc.LastBlockHeight())
 			var hash common.Hash
-			hash.SetBytes(bc.LastBlockHash())
+			copy(bc.LastBlockHash(), hash.Bytes())
 			vm.CommitBlockhash(blockNumber, hash)
 
 		default:
-			return nil, errors.New("Not Supperted Require by Sputnik")
+			//panic("Panic : unreachable!")
+			return nil, retError
 		}
-	}
-
-	if vm.Failed() {
-		return []byte{}, errors.New("VM Failed")
-	}
-
-	changedaccs := vm.AccountChanges()
-	lacc := len(changedaccs)
-
-	for i := 0; i < lacc; i++ {
-		acc1 := changedaccs[i]
-
-		if acc1.Address().IsEmpty() {
-			continue
-		}
-
-		switch acc1.Typ() {
-
-		case sputnikvm.AccountChangeIncreaseBalance:
-			//Increase Balance
-			amount := acc1.ChangedAmount()
-			targetAcc := GetAccount(cache, acc1.Address())
-			targetAcc.AddToBalance(amount.Uint64())
-			cache.UpdateAccount(targetAcc)
-
-		case sputnikvm.AccountChangeDecreaseBalance:
-			//Decrease Balance
-			amount := acc1.ChangedAmount()
-			targetAcc := GetAccount(cache, acc1.Address())
-			targetAcc.SubtractFromBalance(amount.Uint64())
-			cache.UpdateAccount(targetAcc)
-
-		case sputnikvm.AccountChangeRemoved:
-			//Removing Account
-			//TODO: removeAccount(acc1.Address())
-
-		case sputnikvm.AccountChangeFull, sputnikvm.AccountChangeCreate:
-			// Change or Create Account
-			targetAcc := GetAccount(cache, acc1.Address())
-			targetAcc.SetCode(acc1.Code())
-			cache.UpdateAccount(targetAcc)
-
-			if acc1.Typ() == sputnikvm.AccountChangeFull {
-				changeStorage := acc1.ChangedStorage()
-				if len(changeStorage) > 0 {
-					for i := 0; i < len(changeStorage); i++ {
-						key := binary.Uint64ToWord256(changeStorage[i].Key.Uint64())
-						value := binary.Uint64ToWord256(changeStorage[i].Value.Uint64())
-						cache.SetStorage(targetAcc.Address(), key, value)
-						cache.UpdateAccount(targetAcc)
-					}
-					cache.UpdateAccount(targetAcc)
-					//Ok, Storage is set successfully!
-				}
-			} else {
-				//TODO: createAccount(acc1.Address())
-				changeStorage := acc1.Storage()
-				if len(changeStorage) > 0 {
-					for i := 0; i < len(changeStorage); i++ {
-						//TODO: addToAccountStorage(acc1.Address(), *changeStorage[i].Key, *changeStorage[i].Value)
-					}
-				}
-			}
-
-		default:
-			//Return error :unreachable!
-			return []byte{}, errors.New("unreachable")
-		}
-
-	}
-
-	if !vm.Failed() && isDeploying {
-		callee.SetCode(vm.Output())
 	}
 
 	*gas = vm.UsedGas().Uint64()
 
-	out := make([]uint8, vm.OutLen())
-	copy(out, vm.Output())
+	var out []byte
+	copy(vm.Output(), out)
 
-	vm.Free()
 	return out, retError
 }
 
-func toWord256(inp *big.Int) binary.Word256 {
-	inpBytes := inp.Bytes()
-	var ret binary.Word256
-	copy(ret[:], inpBytes)
-	return ret
+// Create a new account from a parent 'creator' account. The creator account will have its
+// sequence number incremented
+func DeriveNewContractAddress(creator *account.Account) crypto.Address {
+	// Generate an address
+	seq := creator.Sequence()
+	creator.IncSequence()
+
+	addr := crypto.DeriveContractAddress(creator.Address(), seq)
+
+	return addr
 }
 
-//GetAccount for getting account using Sputnik Address
-func GetAccount(cache *state.Cache, ethAddr common.Address) *account.Account {
-	converted, addr := fromEthAddress(ethAddr, false)
+func _Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {
 
-	if converted {
-		acc, _ := cache.GetAccount(addr)
-		if acc != nil {
-			return acc
-		}
+	params := burrowEVM.Params{
+		BlockHeight: bc.LastBlockHeight(),
+		BlockHash:   burrowBinary.LeftPadWord256(bc.LastBlockHash()),
+		BlockTime:   bc.LastBlockTime().Unix(),
+		GasLimit:    tx.GasLimit(),
 	}
 
-	converted, addr = fromEthAddress(ethAddr, true)
+	bCaller := toBurrowAccount(caller)
+	bCallee := toBurrowAccount(callee)
+	bCalleeAddr := bCallee.Address()
+	code := bCallee.Code()
 
-	if converted {
-		acc, _ := cache.GetAccount(addr)
-		return acc
+	bPayload := burrowPayload.NewCallTxWithSequence(bCaller.PublicKey(), &bCalleeAddr,
+		tx.Data(), tx.Amount(), tx.GasLimit(), tx.Fee(), bCaller.Sequence()+1)
+	bTx := burrowTx.NewTx(bPayload)
+
+	st := bState{st: bc.State()}
+	txCache := burrowState.NewCache(st, burrowState.Name("TxCache"))
+	vm := burrowEVM.NewVM(params, bCaller.Address(), bTx, logging.NewNoopLogger())
+	eventSink := &noopEventSink{}
+	vm.SetEventSink(eventSink)
+	*gas = tx.GasLimit()
+	ret, err := vm.Call(txCache, bCaller, bCallee, code, tx.Data(), tx.Amount(), gas)
+	txCache.Flush(st, st)
+
+	// TODO We need to fix this code in future, it's not a good Idea to only return a generic error for all evm issues!
+
+	if err != nil {
+		err = e.Error(e.ErrInternalEvm)
 	}
 
-	return nil
-}
-
-func toEthAddress(addr crypto.Address) common.Address {
-	var ethAddr common.Address
-	ethAddr.SetBytes(addr.RawBytes()[2:22])
-	return ethAddr
-}
-
-func fromEthAddress(ethAdr common.Address, contract bool) (bool, crypto.Address) {
-
-	var addr crypto.Address
-	var err error
-	if contract {
-		addr, err = crypto.ContractAddress(ethAdr.Bytes())
-		if err != nil {
-			return false, addr
-		}
-	} else {
-		if bytes.Equal(ethAdr.Bytes(), crypto.GlobalAddress.RawBytes()[2:22]) {
-			addr = crypto.GlobalAddress
-		} else {
-			addr, err = crypto.AccountAddress(ethAdr.Bytes())
-			if err != nil {
-				return false, addr
-			}
-		}
-	}
-
-	return true, addr
+	return ret, err
 }
