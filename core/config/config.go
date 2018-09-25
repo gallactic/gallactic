@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 	tmConfig "github.com/gallactic/gallactic/core/consensus/tendermint/config"
@@ -26,11 +29,33 @@ func defaultConfig() *Config {
 }
 
 func LoadFromFile(file string) (*Config, error) {
+	fmt.Println("file", file)
 	dat, err := ioutil.ReadFile(file)
+	fmt.Println("dat", dat)
 	if err != nil {
 		return nil, err
 	}
 	return FromTOML(string(dat))
+}
+
+
+func SaveConfigFile(workingDir string) string {
+
+	/*check for working path */
+	if workingDir == "" {
+		workingDir = "/tmp/chain/"
+	}
+	configpath := workingDir + "config.toml"
+	var config = defaultConfig()
+	conf := config.ToTOML()
+	if err := os.MkdirAll(filepath.Dir(configpath), 0700); err != nil {
+		log.Fatalf("Could not create directory %s", filepath.Dir(configpath))
+	}
+	if err := ioutil.WriteFile(configpath, []byte(conf), 0600); err != nil {
+		log.Fatalf("Failed to write config file to %s: %v", configpath, err)
+	}
+	msg := " The file has created at " 
+	return msg
 }
 
 func FromTOML(t string) (*Config, error) {

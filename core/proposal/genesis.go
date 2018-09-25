@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -254,4 +257,29 @@ func LoadFromFile(file string) (*Genesis, error) {
 		return nil, err
 	}
 	return &gen, nil
+}
+
+/* save genesis file to file system */
+func (gen *Genesis) Save(workingDir string) string {
+
+	if workingDir == "" {
+		workingDir = "/tmp/chain/"
+	}
+	filedir := workingDir + "genesis.json"
+	gene, generr := gen.MarshalJSON()
+	if (generr) != nil {
+		log.Fatalf("genesis error %s", generr)
+	}
+	/* create the directory*/
+	if err := os.MkdirAll(filepath.Dir(filedir), 0777); err != nil {
+		log.Fatalf("could not create directory %s", filepath.Dir(filedir))
+	}
+	/* write  dataContent to file */
+	if err := ioutil.WriteFile(filedir, gene, 0600); err != nil {
+		log.Fatalf("failed to write genesisfile to %s: %v", filedir, err)
+	}
+
+	msg := "created at " + filedir
+	return msg
+
 }
