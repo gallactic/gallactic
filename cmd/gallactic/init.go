@@ -139,7 +139,7 @@ func makeGenesis(workingDir string, chainName string) (*proposal.Genesis, string
 //make configuratin file 
 func makeConfig()(*config.Config){
 	conf := config.DefaultConfig()
-	conf.Tendermint.ListenAddress = "1.1.1.1:4444"
+	conf.Tendermint.ListenAddress = "1.1.1.1"
 	conf.Tendermint.Moniker = "monier-2"
 	conf.Tendermint.TendermintRoot = "tendermint"
 	return conf
