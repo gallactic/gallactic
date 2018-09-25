@@ -17,13 +17,15 @@ import (
 type Config struct {
 	Tendermint *tmConfig.TendermintConfig `toml:"tendermint"`
 	RPC        *rpcConfig.RPCConfig       `toml:"rpc"`
+	GRPC       *rpcConfig.GRPCConfig      `toml:"grpc"`
 	Logging    *logconfig.LoggingConfig   `toml:"logging,omitempty"`
 }
 
-func defaultConfig() *Config {
+func DefaultConfig() *Config {
 	return &Config{
 		Tendermint: tmConfig.DefaultTendermintConfig(),
 		RPC:        rpcConfig.DefaultRPCConfig(),
+		GRPC:       rpcConfig.DefaultGRPCConfig(),
 		Logging:    logconfig.DefaultNodeLoggingConfig(),
 	}
 }
@@ -39,19 +41,17 @@ func LoadFromFile(file string) (*Config, error) {
 }
 
 
-func SaveConfigFile(workingDir string) string {
-
-	/*check for working path */
+func (conf *Config)SaveConfigFile(workingDir string) string {
+   /*check for working path */
 	if workingDir == "" {
 		workingDir = "/tmp/chain/"
 	}
 	configpath := workingDir + "config.toml"
-	var config = defaultConfig()
-	conf := config.ToTOML()
+	var config = conf.ToTOML()	
 	if err := os.MkdirAll(filepath.Dir(configpath), 0700); err != nil {
 		log.Fatalf("Could not create directory %s", filepath.Dir(configpath))
 	}
-	if err := ioutil.WriteFile(configpath, []byte(conf), 0600); err != nil {
+	if err := ioutil.WriteFile(configpath, []byte(config), 0600); err != nil {
 		log.Fatalf("Failed to write config file to %s: %v", configpath, err)
 	}
 	msg := " The file has created at " 
@@ -59,7 +59,7 @@ func SaveConfigFile(workingDir string) string {
 }
 
 func FromTOML(t string) (*Config, error) {
-	conf := defaultConfig()
+	conf := DefaultConfig()
 
 	if _, err := toml.Decode(t, conf); err != nil {
 		return nil, err
