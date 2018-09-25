@@ -33,7 +33,7 @@ The Gallactic blockchain starts immediately, upon successful acceptance of the p
 
 ### Usage of Docker
 ------
-   Get the source code
+    Get the source code
 	mkdir -p $GOPATH/src/github.com/gallactic
 	cd $GOPATH/src/github.com/gallactic
 	git clone https://github.com/gallactic/gallactic.git
