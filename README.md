@@ -39,7 +39,7 @@ The Gallactic blockchain starts immediately, upon successful acceptance of the p
 	git clone https://github.com/gallactic/gallactic.git
 	cd gallactic
 
-> [Install](https://www.docker.com/) the docker, as per the OS version of the system.
+ [Install](https://www.docker.com/) the docker, as per the OS version of the system.
 
  * Build the docker file to run the Gallactic blockchain, as follows: 
 _____
@@ -57,7 +57,8 @@ For Mac OSX users:
 
      docker run -it --rm -v "/tmp/chain1:/gallactic"  gallactic init -w=/gallactic
 
-> For users other than Mac OSX:
+**For users other than Mac OSX:**
+----
 
 docker run gallactic init -w=<workspace_folder_path>
 
@@ -70,15 +71,15 @@ This command will:
 > This command will prompt to enter the private key of the validator. Enter the private key (priv_key) of the validator, as provided by the init command above.
 The Gallactic blockchain starts immediately, upon successful acceptance of the private key.
 
-> Run `gallactic version` to make sure gallactic is properly compiled and installed in your machine.
+Run `gallactic version` to make sure gallactic is properly compiled and installed in your machine.
 
 NOTE:
 
- > prevent signature malleability
+ ⋅⋅⋅ prevent signature malleability
 
- > ed25519: require canonical signatures
+ ⋅⋅⋅ ed25519: require canonical signatures
 
- >  https://go-review.googlesource.com/c/crypto/+/100436
+ ⋅⋅⋅ https://go-review.googlesource.com/c/crypto/+/100436
 
 ## Contribution
 *Thanks for considering to contribute in Gallactic project!*
