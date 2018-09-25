@@ -43,9 +43,11 @@ func Init() func(cmd *cli.Cmd) {
 				//create genesis file
 				genesis, msg := makeGenesis(workingDir, chainName)
 				//save genesis file to file system
-				gen := genesis.Save(workingDir)
+				gen := genesis.Save(workingDir)	
+				
+				configfile := makeConfig()
 				//save config file to file system
-				conf := config.SaveConfigFile(workingDir)
+				conf := configfile.SaveConfigFile(workingDir)
 
 				fmt.Println("config.toml", conf)
 				fmt.Println("genesis.json", gen)
@@ -131,4 +133,15 @@ func makeGenesis(workingDir string, chainName string) (*proposal.Genesis, string
 	gene := proposal.MakeGenesis(gChainName, time.Now(), gAcc, accounts, nil, validators)
 	return gene, msg
 
+}
+
+
+//make configuratin file 
+func makeConfig()(*config.Config){
+	conf := config.DefaultConfig()
+	conf.Tendermint.ListenAddress = "1.1.1.1:4444"
+	conf.Tendermint.Moniker = "monier-2"
+	conf.Tendermint.TendermintRoot = "tendermint"
+	return conf
+   
 }
