@@ -59,8 +59,7 @@ For Mac OSX users:
 
 **For users other than Mac OSX:**
 ----
-
-docker run gallactic init -w=<workspace_folder_path>
+     **docker run gallactic init -w=<workspace_folder_path>**
 
 This command will:
 1. Create 3 files in the folder, path of which is given above, namely config.toml, genesis.json, and pv_validator.json
@@ -75,11 +74,11 @@ Run `gallactic version` to make sure gallactic is properly compiled and installe
 
 NOTE:
 
- ⋅⋅⋅ prevent signature malleability
+     prevent signature malleability
 
- ⋅⋅⋅ ed25519: require canonical signatures
+     ed25519: require canonical signatures
 
- ⋅⋅⋅ https://go-review.googlesource.com/c/crypto/+/100436
+     https://go-review.googlesource.com/c/crypto/+/100436
 
 ## Contribution
 *Thanks for considering to contribute in Gallactic project!*
