@@ -33,7 +33,7 @@ The Gallactic blockchain starts immediately, upon successful acceptance of the p
 
 ### Usage of Docker
 ------
-    Get the source code*
+        Get the source code
 	mkdir -p $GOPATH/src/github.com/gallactic
 	cd $GOPATH/src/github.com/gallactic
 	git clone https://github.com/gallactic/gallactic.git
@@ -59,7 +59,7 @@ For Mac OSX users:
 
 **For users other than Mac OSX:**
 ----
-     **docker run gallactic init -w=<workspace_folder_path>**
+     docker run gallactic init -w=<workspace_folder_path>
 
 This command will:
 1. Create 3 files in the folder, path of which is given above, namely config.toml, genesis.json, and pv_validator.json
