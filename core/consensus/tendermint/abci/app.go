@@ -135,7 +135,7 @@ func (app *App) BeginBlock(block abciTypes.RequestBeginBlock) (respBeginBlock ab
 		} else {
 			/// remove Byzantine validator from state and set
 			set.ForceLeave(addr)
-			state.RemoveValidator(addr)
+			state.ByzantineValidator(addr)
 		}
 	}
 

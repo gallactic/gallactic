@@ -78,8 +78,8 @@ func (c *Cache) Flush(set *validator.ValidatorSet) error {
 	c.Lock()
 	defer c.Unlock()
 
-	for _, i := range c.accChanges {
-		if err := c.state.UpdateAccount(i.account); err != nil {
+	for _, a := range c.accChanges {
+		if err := c.state.updateAccount(a.account); err != nil {
 			return err
 		}
 	}
@@ -92,7 +92,7 @@ func (c *Cache) Flush(set *validator.ValidatorSet) error {
 			}
 
 		case updateValidator, addToPool:
-			if err := c.state.UpdateValidator(i.validator); err != nil {
+			if err := c.state.updateValidator(i.validator); err != nil {
 				return err
 			}
 
@@ -102,7 +102,7 @@ func (c *Cache) Flush(set *validator.ValidatorSet) error {
 				return err
 			}
 
-			if err := c.state.RemoveValidator(addr); err != nil {
+			if err := c.state.removeValidator(addr); err != nil {
 				return err
 			}
 		}
@@ -136,9 +136,9 @@ func (c *Cache) GetAccount(addr crypto.Address) (*account.Account, error) {
 	c.Lock()
 	defer c.Unlock()
 
-	i, ok := c.accChanges[addr]
+	a, ok := c.accChanges[addr]
 	if ok {
-		return i.account, nil
+		return a.account, nil
 	}
 
 	return c.state.GetAccount(addr)
@@ -148,7 +148,15 @@ func (c *Cache) UpdateAccount(acc *account.Account) error {
 	c.Lock()
 	defer c.Unlock()
 
-	c.accChanges[acc.Address()] = &accountInfo{account: acc}
+	addr := acc.Address()
+	a, ok := c.accChanges[addr]
+	if ok {
+		a.account = acc
+
+	} else {
+		c.accChanges[addr] = &accountInfo{account: acc}
+	}
+
 	return nil
 }
 
@@ -261,5 +269,41 @@ func (c *Cache) UpdateValidator(val *validator.Validator) error {
 		status:    updateValidator,
 		validator: val,
 	}
+	return nil
+}
+
+func (c *Cache) GetStorage(addr crypto.Address, key binary.Word256) (binary.Word256, error) {
+	c.Lock()
+	defer c.Unlock()
+
+	a, ok := c.accChanges[addr]
+	if ok {
+		s, ok := a.storages[key]
+		if ok {
+			return s, nil
+		}
+	}
+
+	return c.state.GetStorage(addr, key)
+}
+
+func (c *Cache) SetStorage(addr crypto.Address, key, value binary.Word256) error {
+	c.Lock()
+	defer c.Unlock()
+
+	a, ok := c.accChanges[addr]
+	if ok {
+		if a.storages == nil {
+			a.storages = make(map[binary.Word256]binary.Word256)
+		}
+	} else {
+		c.accChanges[addr] = &accountInfo{
+			storages: make(map[binary.Word256]binary.Word256),
+		}
+		a, _ = c.accChanges[addr]
+	}
+
+	a.storages[key] = value
+
 	return nil
 }
