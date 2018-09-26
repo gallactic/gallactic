@@ -139,6 +139,15 @@ func (gen *Genesis) Validators() []*validator.Validator {
 	return vals
 }
 
+func (gen *Genesis) ValidatorsAddress() []crypto.Address {
+	var vals []crypto.Address
+	for _, genVal := range gen.data.Validators {
+		vals = append(vals, genVal.Address)
+	}
+
+	return vals
+}
+
 func (gen *Genesis) MaximumPower() int {
 	if gen.data.MaximumPower < len(gen.data.Validators) {
 		return len(gen.data.Validators)

@@ -44,7 +44,6 @@ func RegisterNativeContract(addr binary.Word256, fn NativeContract) bool {
 
 func init() {
 	registerNativeContracts()
-	registerSNativeContracts()
 }
 
 func registerNativeContracts() {
