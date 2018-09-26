@@ -188,22 +188,6 @@ func (c *Cache) GetValidator(addr crypto.Address) (*validator.Validator, error) 
 	return c.state.GetValidator(addr)
 }
 
-func (c *Cache) GetStorage(addr crypto.Address, key binary.Word256) (binary.Word256, error) {
-	// _, value := st.tree.Get(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()))
-	// return binary.LeftPadWord256(value), nil
-	return *new(binary.Word256), nil
-}
-
-func (c *Cache) SetStorage(addr crypto.Address, key, value binary.Word256) error {
-	// if value == binary.Zero256 {
-	// 	st.tree.Remove(key.Bytes())
-	// } else {
-	// 	st.tree.Set(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()), value.Bytes())
-	// }
-
-	return nil
-}
-
 func (c *Cache) AddToPool(val *validator.Validator) error {
 	c.Lock()
 	defer c.Unlock()

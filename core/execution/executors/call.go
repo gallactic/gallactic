@@ -5,12 +5,12 @@ import (
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/evm"
-	"github.com/gallactic/gallactic/core/evm/burrow"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
+	"github.com/gallactic/gallactic/core/evm/sputnik"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 )
@@ -107,7 +107,8 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) 
 	}
 
 	var gas uint64
-	ret, err := burrow.Call(ctx.BC, ctx.Cache, caller, callee, tx, &gas)
+	ret, err := sputnik.Call(ctx.BC, ctx.Cache, caller, callee, tx, &gas)
+
 	if err != nil {
 		return err
 	}

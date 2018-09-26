@@ -1,4 +1,4 @@
-package burrow
+package sputnik
 
 import (
 	"fmt"
@@ -7,14 +7,7 @@ import (
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
-	burrowState "github.com/hyperledger/burrow/acm/state"
-	burrowBinary "github.com/hyperledger/burrow/binary"
-	burrowEVM "github.com/hyperledger/burrow/execution/evm"
-	"github.com/hyperledger/burrow/logging"
-	burrowTx "github.com/hyperledger/burrow/txs"
-	burrowPayload "github.com/hyperledger/burrow/txs/payload"
 
 	"math/big"
 
@@ -25,14 +18,12 @@ import (
 
 func Call(bc *blockchain.Blockchain, cache *state.Cache, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {
 
-	var ret []byte
+	//var ret []byte
 	var retError error
 
 	var addrCaller common.Address
-	var callerStr string
 
 	var addrCallee common.Address
-	var calleeStr string
 
 	callerBytes := caller.Address().RawBytes()
 	addrCaller.SetBytes(callerBytes)
@@ -136,6 +127,7 @@ Loop:
 	var out []byte
 	copy(vm.Output(), out)
 
+	//cache.Flush()
 	return out, retError
 }
 
@@ -151,6 +143,7 @@ func DeriveNewContractAddress(creator *account.Account) crypto.Address {
 	return addr
 }
 
+/*
 func _Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.CallTx, gas *uint64) (output []byte, err error) {
 
 	params := burrowEVM.Params{
@@ -186,3 +179,4 @@ func _Call(bc *blockchain.Blockchain, caller, callee *account.Account, tx *tx.Ca
 
 	return ret, err
 }
+*/
