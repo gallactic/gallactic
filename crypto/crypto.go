@@ -3,7 +3,6 @@ package crypto
 import (
 	"crypto/sha256"
 	"fmt"
-
 	"github.com/gallactic/gallactic/common/binary"
 	"golang.org/x/crypto/ripemd160"
 )

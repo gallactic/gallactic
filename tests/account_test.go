@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/gallactic/gallactic/core/account"
-	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 )
@@ -63,7 +62,8 @@ func makeAccount(t *testing.T, bal uint64, perm account.Permissions) (*account.A
 
 func makeContractAccount(t *testing.T, code []byte, bal uint64, perm account.Permissions) (*account.Account, crypto.Address) {
 	deriveFrom := getAccountByName(t, "b00f")
-	acc, err := evm.DeriveNewAccount(deriveFrom)
+	ctrAddr := crypto.DeriveContractAddress(deriveFrom.Address(), deriveFrom.Sequence())
+	acc, err := account.NewAccount(ctrAddr)
 	require.NoError(t, err)
 	acc.SetCode(code)
 	acc.SetPermissions(perm)

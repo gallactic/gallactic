@@ -16,7 +16,7 @@ const (
 	InterChainTx
 
 	Reserved
-	None             account.Permissions = 0
+	None account.Permissions = 0
 )
 
 var (
