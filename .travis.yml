@@ -6,11 +6,17 @@ matrix:
     - os: linux
       dist: trusty
       go: 1.10.x
+      before_install:
+        # installing rust and cargo
+        - curl https://sh.rustup.rs -sSf | sh
       script:
-        - make 
+        - make
 
 
     - os: osx
       go: 1.10.x
+      before_install:
+        # installing rust and cargo
+        - curl https://sh.rustup.rs -sSf | sh
       script:
-        - make 
+        - make
