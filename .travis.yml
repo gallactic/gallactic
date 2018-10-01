@@ -5,12 +5,18 @@ matrix:
   include:
     - os: linux
       dist: trusty
-      go: 1.10.x
+      go: master
       script:
-        - make 
+        - make
 
 
     - os: osx
-      go: 1.10.x
+      go: master
       script:
-        - make 
+        - make
+
+before_install:
+  # installing rust and cargo
+  - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
+  - sh rustup-install.sh -y
+  - source $HOME/.cargo/env
