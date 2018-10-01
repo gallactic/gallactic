@@ -2,7 +2,6 @@ package state
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/gallactic/gallactic/common/binary"
@@ -264,7 +263,6 @@ func (c *Cache) GetStorage(addr crypto.Address, key binary.Word256) (binary.Word
 	a, ok := c.accChanges[addr]
 	if ok {
 		s, ok := a.storages[key]
-		fmt.Println("GetStotage---------------->",s.Bytes())
 		if ok {
 			return s, nil
 		}
