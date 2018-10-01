@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"math/big"
 
-	"github.com/gallactic/gallactic/core/evm/sha3"
 	"github.com/gallactic/gallactic/crypto"
 )
 
@@ -81,7 +80,7 @@ func (vrf *VRF) Verify(msg []byte, publicKey crypto.PublicKey, proof []byte) (in
 
 func (vrf *VRF) getIndex(sig []byte) uint64 {
 	hash := big.NewInt(0)
-	hash.SetBytes(sha3.Sha3(sig))
+	hash.SetBytes(crypto.Sha3(sig))
 
 	// construct the numerator and denominator for normalizing the signature uint between [0, 1]
 	index := big.NewInt(0)
