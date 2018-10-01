@@ -3,6 +3,7 @@ package sputnik
 import (
 	"bytes"
 	"errors"
+
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/state"
@@ -30,7 +31,6 @@ func Execute(bc *blockchain.Blockchain, cache *state.Cache, caller, callee *acco
 
 	calleeBytes := callee.Address().RawBytes()[2:22]
 	addrCallee.SetBytes(calleeBytes)
-
 
 	transaction := sputnikvm.Transaction{
 		Caller:   addrCaller,
@@ -79,8 +79,8 @@ Loop:
 			//Require Account Code
 			acc := GetAccount(cache, require.Address())
 			if acc != nil {
-				vm.CommitAccountCode(require.Address(), acc.Code())		
-			}else{
+				vm.CommitAccountCode(require.Address(), acc.Code())
+			} else {
 				return []byte{}, errors.New("No Exist Account for Acquire Code")
 			}
 
@@ -114,7 +114,7 @@ Loop:
 	}
 
 	if vm.Failed() {
-		return []byte{}, retError
+		return []byte{}, errors.New("VM Failed")
 	}
 
 	changedaccs := vm.AccountChanges()
@@ -177,7 +177,7 @@ Loop:
 
 		default:
 			//Return error :unreachable!
-			//TODO: return unreachable
+			return []byte{}, errors.New("unreachable")
 		}
 
 	}
