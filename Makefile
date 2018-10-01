@@ -6,6 +6,7 @@ PACKAGES=$(shell go list ./... | grep -v '/vendor/')
 INCLUDE = -I=. -I=${GOPATH}/src
 BUILD_TAGS?=gallactic
 BUILD_FLAGS = -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
+SPUTNIKVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
 
 all: tools deps build test install
 
@@ -13,28 +14,33 @@ all: tools deps build test install
 ########################################
 ### Build Gallactic
 build:
-	CGO_ENABLED=0 go build $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o build/gallactic ./cmd/gallactic/
+	CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl" go build $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o build/gallactic ./cmd/gallactic/
 
 build_race:
-	CGO_ENABLED=0 go build -race $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o build/gallactic ./cmd/gallactic
+	CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl" go build -race $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o build/gallactic ./cmd/gallactic
 
 install:
-	CGO_ENABLED=0 go install $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' ./cmd/gallactic
+	CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl" go install $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' ./cmd/gallactic
 
 ########################################
 ### Tools & dependencies
 
 tools:
-	@echo "--> Installing tools"
+	@cargo --version || (echo "Install Rust first; see https://rustup.rs/"; false)
+	@echo "Installing tools"
 	go get -u -v $(GOTOOLS)
 	@gometalinter.v2 --install
 
 
 deps:
 	@rm -rf vendor/
-	@echo "--> Running dep"
+	@echo "Running dep"
 	@dep ensure -v
-
+	@echo "Building Sputnikvm Library..." 
+	rm -rf $(SPUTNIKVM_PATH)
+	mkdir $(SPUTNIKVM_PATH)
+	cd $(SPUTNIKVM_PATH) && git clone https://github.com/gallactic/sputnikvm-ffi.git .
+	cd $(SPUTNIKVM_PATH)/c && make build
 
 ########################################
 ### Testing

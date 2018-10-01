@@ -4,9 +4,9 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/blockchain"
-	"github.com/gallactic/gallactic/core/evm"
-	"github.com/gallactic/gallactic/core/evm/burrow"
+	"github.com/gallactic/gallactic/core/evm/sputnik"
 	"github.com/gallactic/gallactic/core/state"
+	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
@@ -39,7 +39,7 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 			return e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", caller.Address(), caller.Permissions(), permission.CreateContract)
 		}
 
-		callee, err = evm.DeriveNewAccount(caller)
+		callee, err = deriveNewAccount(caller)
 		if err != nil {
 			return err
 		}
@@ -48,18 +48,13 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 			"contract_address", callee.Address(),
 			"init_code", tx.Data())
 	} else {
-		// check if its a native contract
-		if evm.IsRegisteredNativeContract(tx.Callee().Address.Word256()) {
-			return e.Errorf(e.ErrInvalidAddress, "attempt to call a native contract at %s, "+
-				"but native contracts cannot be called using CallTx. Use a "+
-				"contract that calls the native contract or the appropriate tx "+
-				"type (eg. PermissionsTx, NameTx)", tx.Callee())
-		}
-
 		/// TODO : write test for this case: create and call in same block
 		callee, err = ctx.Cache.GetAccount(tx.Callee().Address)
 		if err != nil {
 			return err
+		}
+		if callee == nil {
+			return e.Errorf(e.ErrInvalidAddress, "attempt to call a non-existing account: ", tx.Callee())
 		}
 	}
 
@@ -94,11 +89,11 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) 
 		// that will take your fees
 		if callee == nil {
 			panic("panic_test")
-			ctx.Logger.InfoMsg("Call to address that does not exist",
+			ctx.Logger.InfoMsg("Execute to address that does not exist",
 				"caller_address", tx.Caller(),
 				"callee_address", tx.Callee())
 		} else {
-			ctx.Logger.InfoMsg("Call to address that holds no code",
+			ctx.Logger.InfoMsg("Execute to address that holds no code",
 				"caller_address", tx.Caller(),
 				"callee_address", tx.Callee())
 		}
@@ -107,7 +102,8 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) 
 	}
 
 	var gas uint64
-	ret, err := burrow.Call(ctx.BC, caller, callee, tx, &gas)
+	ret, err := sputnik.Execute(ctx.BC, ctx.Cache, caller, callee, tx, &gas, false)
+
 	if err != nil {
 		return err
 	}
@@ -129,4 +125,22 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) 
 		structure.ErrorKey, err)
 
 	return nil
+}
+
+// Create a new account from a parent 'creator' account. The creator account will have its
+// sequence number incremented
+func deriveNewAccount(creator *account.Account) (*account.Account, error) {
+	// Generate an address
+	seq := creator.Sequence()
+	creator.IncSequence()
+
+	addr := crypto.DeriveContractAddress(creator.Address(), seq)
+
+	// Create account from address.
+	acc, err := account.NewAccount(addr)
+	if err != nil {
+		return nil, err
+	}
+
+	return acc, nil
 }
