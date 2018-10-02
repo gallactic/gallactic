@@ -196,7 +196,7 @@ func (app *App) EndBlock(reqEndBlock abciTypes.RequestEndBlock) abciTypes.Respon
 	vals := set.Validators()
 	leavers := set.Leavers()
 
-	updates := make([]abciTypes.Validator, len(vals)+len(leavers))
+	updates := make([]abciTypes.ValidatorUpdate, len(vals)+len(leavers))
 	i := 0
 	for _, v := range vals {
 		updates[i].Power = v.Power()
@@ -256,6 +256,19 @@ func (app *App) Commit() abciTypes.ResponseCommit {
 	err := app.committer.Commit()
 	if err != nil {
 		panic(errors.Wrap(err, "Could not commit transactions in block to execution state"))
+	}
+
+	/// Pay fees to the proposer
+	if app.block.Header.ProposerAddress != nil {
+		addr, err := crypto.ValidatorAddress(app.block.Header.ProposerAddress)
+		if err != nil {
+			panic(errors.Wrap(err, "invalid address for the proposer"))
+		}
+		st := app.bc.State()
+		fee := app.committer.Fees()
+		if err := st.IncentivizeValidator(addr, fee); err != nil {
+			panic(errors.Wrap(err, "could not update proposer information"))
+		}
 	}
 
 	// Commit to our blockchain state which will checkpoint the previous app hash by saving it to the database

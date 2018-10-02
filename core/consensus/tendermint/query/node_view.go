@@ -30,14 +30,6 @@ func (nv *NodeView) NodeInfo() p2p.NodeInfo {
 	return nv.tmNode.NodeInfo()
 }
 
-func (nv *NodeView) IsListening() bool {
-	return nv.tmNode.Switch().IsListening()
-}
-
-func (nv *NodeView) Listeners() []p2p.Listener {
-	return nv.tmNode.Switch().Listeners()
-}
-
 func (nv *NodeView) Peers() p2p.IPeerSet {
 	return nv.tmNode.Switch().Peers()
 }
@@ -49,7 +41,7 @@ func (nv *NodeView) BlockStore() state.BlockStoreRPC {
 // Pass -1 to get all available transactions
 func (nv *NodeView) MempoolTransactions(maxTxs int) ([]*txs.Envelope, error) {
 	var transactions []*txs.Envelope
-	for _, txBytes := range nv.tmNode.MempoolReactor().Mempool.Reap(maxTxs) {
+	for _, txBytes := range nv.tmNode.MempoolReactor().Mempool.ReapMaxTxs(maxTxs) {
 		txEnv, err := nv.txDecoder.DecodeTx(txBytes)
 		if err != nil {
 			return nil, err
