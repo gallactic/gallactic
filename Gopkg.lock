@@ -149,13 +149,15 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:17fe264ee908afc795734e8c4e63db2accabaf57326dbf21763a7d6b86096260"
+  digest = "1:b708de52c2859bedb7de68d2fa54672782e0e24c38c088839e83cd54490ebcdc"
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
+    "protoc-gen-go/descriptor",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
+    "ptypes/struct",
     "ptypes/timestamp",
   ]
   pruneopts = "NUT"
@@ -523,7 +525,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b7423dce9f626d3823cec2f139e1fce75bee06423aa277ed3996b5eff75e3e84"
+  digest = "1:b0cac4ed680ea657e1a4263f26f84dd25f0d7d862e3791f154fdf247e793d300"
   name = "golang.org/x/crypto"
   packages = [
     "chacha20poly1305",
@@ -598,9 +600,12 @@
   version = "v0.3.0"
 
 [[projects]]
-  digest = "1:cd018653a358d4b743a9d3bee89e825521f2ab2f2ec0770164bf7632d8d73ab7"
+  digest = "1:c2dee8dbcc504d1a7858f5dbaed7c8b256c512c5e9e81480158c30185bbd2792"
   name = "google.golang.org/genproto"
-  packages = ["googleapis/rpc/status"]
+  packages = [
+    "googleapis/api/annotations",
+    "googleapis/rpc/status",
+  ]
   pruneopts = "NUT"
   revision = "7fd901a49ba6a7f87732eb344f6e3c5b19d1b200"
 
@@ -671,9 +676,9 @@
     "github.com/gallactic/sputnikvm-ffi/go/sputnikvm",
     "github.com/gin-gonic/gin",
     "github.com/go-kit/kit/log",
-    "github.com/hyperledger/burrow/acm",
-    "github.com/hyperledger/burrow/binary",
-    "github.com/hyperledger/burrow/crypto",
+    "github.com/gogo/protobuf/gogoproto",
+    "github.com/golang/protobuf/proto",
+    "github.com/golang/protobuf/ptypes/struct",
     "github.com/hyperledger/burrow/logging",
     "github.com/hyperledger/burrow/logging/lifecycle",
     "github.com/hyperledger/burrow/logging/logconfig",
@@ -709,6 +714,10 @@
     "golang.org/x/crypto/pbkdf2",
     "golang.org/x/crypto/ripemd160",
     "golang.org/x/crypto/scrypt",
+    "golang.org/x/crypto/sha3",
+    "golang.org/x/net/context",
+    "google.golang.org/genproto/googleapis/api/annotations",
+    "google.golang.org/grpc",
     "gopkg.in/tylerb/graceful.v1",
   ]
   solver-name = "gps-cdcl"

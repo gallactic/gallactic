@@ -1,6 +1,8 @@
 package core
 
 import (
+	
+	"net"
 	"context"
 	"fmt"
 	_ "net/http/pprof"
@@ -26,7 +28,7 @@ import (
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/lifecycle"
 	"github.com/hyperledger/burrow/logging/structure"
-
+	grpc "github.com/gallactic/gallactic/grpc"
 	kitlog "github.com/go-kit/kit/log"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
@@ -145,7 +147,36 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				return serveProcess, nil
 			},
 		},
+
+		{
+			Name:    "GRPC",
+			Enabled:conf.GRPC.Enabled,
+			Launch: func() (process.Process, error) {
+				listen, err := net.Listen("tcp", "localhost:10903")
+				fmt.Println("listen", listen)
+				if err != nil {
+					return nil, err
+				}
+				listen.Addr()
+				grpcServer := grpc.NewGRPCServer(logger)
+				var State *state.State
+				//var nodeview *query.NodeView
+				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(State))
+				// grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc))
+				// grpc.TransactorService(grpcServer, grpc.NewTransactor(transactor))
+				// grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(nodeview))
+				go grpcServer.Serve(listen)
+				fmt.Println("Inside the grpc server", grpcServer)
+				return process.ShutdownFunc(func(ctx context.Context) error {
+					grpcServer.Stop()
+					// listener is closed for us
+					return nil
+				}), nil
+			},
+		},
 	}
+
+	
 
 	return &Kernel{
 		launchers:      launchers,
