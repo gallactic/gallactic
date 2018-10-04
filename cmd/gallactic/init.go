@@ -43,9 +43,9 @@ func Init() func(cmd *cli.Cmd) {
 				//create genesis file
 				genesis, msg := makeGenesis(workingDir, chainName)
 				//save genesis file to file system
-				gen := genesis.Save(workingDir)	
-				
-				configfile := makeConfig()
+				gen := genesis.Save(workingDir)
+
+				configfile := makeConfigfile()
 				//save config file to file system
 				conf := configfile.SaveConfigFile(workingDir)
 
@@ -134,13 +134,12 @@ func makeGenesis(workingDir string, chainName string) (*proposal.Genesis, string
 
 }
 
-
-//make configuratin file 
-func makeConfig()(*config.Config){
+//make configuratin file
+func makeConfigfile() *config.Config {
 	conf := config.DefaultConfig()
-	conf.Tendermint.ListenAddress = "1.1.1.1"
+	conf.Tendermint.ListenAddress = "1.1.1.1:4444"
 	conf.Tendermint.Moniker = "monier-2"
 	conf.Tendermint.TendermintRoot = "tendermint"
 	return conf
-   
+
 }
