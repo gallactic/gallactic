@@ -14,7 +14,6 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/gallactic/gallactic/core/evm/sha3"
 	"github.com/gallactic/gallactic/crypto"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
@@ -93,7 +92,7 @@ func DecryptKey(bs []byte, auth string) (*Key, error) {
 	if err != nil {
 		return nil, err
 	}
-	calculatedMAC := sha3.Sha3(derivedKey[16:32], cipherText)
+	calculatedMAC := crypto.Sha3(derivedKey[16:32], cipherText)
 	if !bytes.Equal(calculatedMAC, mac) {
 		return nil, fmt.Errorf("could not decrypt key with given passphrase")
 	}
@@ -168,7 +167,7 @@ func EncryptKey(key *Key, auth string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	mac := sha3.Sha3(derivedKey[16:32], cipherText)
+	mac := crypto.Sha3(derivedKey[16:32], cipherText)
 
 	scryptParamsJSON := make(map[string]interface{}, 5)
 	scryptParamsJSON["n"] = scryptN
