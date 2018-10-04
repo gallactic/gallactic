@@ -15,6 +15,7 @@ import (
 type Config struct {
 	Tendermint *tmConfig.TendermintConfig `toml:"tendermint"`
 	RPC        *rpcConfig.RPCConfig       `toml:"rpc"`
+	GRPC       *rpcConfig.GRPCConfig      `toml:"grpc"`
 	Logging    *logconfig.LoggingConfig   `toml:"logging,omitempty"`
 }
 
@@ -22,6 +23,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		Tendermint: tmConfig.DefaultTendermintConfig(),
 		RPC:        rpcConfig.DefaultRPCConfig(),
+		GRPC:       rpcConfig.DefaultGRPCConfig(),
 		Logging:    logconfig.DefaultNodeLoggingConfig(),
 	}
 }

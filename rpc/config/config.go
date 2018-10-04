@@ -5,6 +5,18 @@ type RPCConfig struct {
 	Server  *ServerConfig
 }
 
+type GRPCConfig struct {
+	Enabled    bool
+	GRPCserver *ServerConfig
+}
+
+func DefaultGRPCConfig() *GRPCConfig {
+	return &GRPCConfig{
+		Enabled:    true,
+		GRPCserver: DefaultGRPCServerConfig(),
+	}
+}
+
 func DefaultRPCConfig() *RPCConfig {
 	return &RPCConfig{
 		Enabled: true,
@@ -62,6 +74,15 @@ func DefaultServerConfig() *ServerConfig {
 		CORS: CORS{},
 		HTTP: HTTP{
 			JsonRpcEndpoint: "/rpc",
+		},
+	}
+}
+
+func DefaultGRPCServerConfig() *ServerConfig {
+	return &ServerConfig{
+		Bind: Bind{
+			Address: "localhost",
+			Port:    10903,
 		},
 	}
 }
