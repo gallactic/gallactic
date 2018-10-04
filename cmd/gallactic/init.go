@@ -49,8 +49,10 @@ func Init() func(cmd *cli.Cmd) {
 				//save config file to file system
 				conf := configfile.SaveConfigFile(workingDir)
 
+				fmt.Println("pv_validator.json", msg)
 				fmt.Println("config.toml", conf)
 				fmt.Println("genesis.json", gen)
+			
 
 			} else {
 				fmt.Println("see 'gallactic init --help' please enter the working directory")

@@ -8,7 +8,7 @@ import (
 )
 
 func TestLoading(t *testing.T) {
-	conf1 := defaultConfig()
+	conf1 := DefaultConfig()
 	conf1.Tendermint.ListenAddress = "1.1.1.1"
 	conf1.Tendermint.Moniker = "moniker"
 	conf1.Tendermint.TendermintRoot = "tendermint"

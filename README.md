@@ -84,12 +84,4 @@ NOTE:
 *Thanks for considering to contribute in Gallactic project!*
 
 ## License
-<<<<<<< HEAD
 The Gallactic blockchain is under MIT <TODO: link> license.
-<<<<<<< HEAD
-
-=======
->>>>>>> Update README.md
-=======
-*The Gallactic blockchain is under MIT <TODO: link> license.*
->>>>>>> Updated the readme file
