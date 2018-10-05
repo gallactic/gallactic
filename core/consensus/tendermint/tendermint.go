@@ -56,17 +56,24 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 		return nil, err
 	}
 
+	// metricsProvider function
+	metricsProvider := node.DefaultMetricsProvider(&tmConfig.InstrumentationConfig{
+		Prometheus:           false,
+		PrometheusListenAddr: "",
+	})
+
 	tmLogger := NewLogger(logger.WithPrefix(structure.ComponentKey, "Tendermint").With(structure.ScopeKey, "tendermint.NewNode"))
 	n := &Node{}
 	app := abci.NewApp(bc, checker, committer, txDecoder, logger)
 	client := proxy.NewLocalClientCreator(app)
 	conf.NodeKeyFile()
-	n.Node, err = node.NewNode(conf, privValidator, client,
+	n.Node, err = node.NewNode(conf, privValidator, nil,
+		client,
 		func() (*tmTypes.GenesisDoc, error) {
 			return gen, nil
 		},
 		n.DBProvider,
-		nil,
+		metricsProvider,
 		tmLogger)
 
 	if err != nil {

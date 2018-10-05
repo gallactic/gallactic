@@ -7,9 +7,12 @@ import (
 	"sync"
 	"time"
 
+	amino "github.com/tendermint/go-amino"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
+
+var cdc = amino.NewCodec()
 
 // TODO: type ?
 const (
@@ -56,7 +59,7 @@ func (lsi *LastSignedInfo) SignVote(sign tmSigner, chainID string, vote *tmTypes
 	lsi.Lock()
 	defer lsi.Unlock()
 	if err := lsi.signVote(sign, chainID, vote); err != nil {
-		return errors.New(cmn.Fmt("Error signing vote: %v", err))
+		return fmt.Errorf("Error signing vote: %v", err)
 	}
 	return nil
 }
@@ -118,7 +121,7 @@ func (lsi *LastSignedInfo) signVote(sign tmSigner, chainID string, vote *tmTypes
 	// If they only differ by timestamp, use last timestamp and signature
 	// Otherwise, return error
 	if sameHRS {
-		if bytes.Equal(signBytes, lsi.SignBytes) {
+		if bytes.Equal(signBytes, lsi.SignBytes.Bytes()) {
 			vote.Signature = lsi.Signature
 		} else if timestamp, ok := checkVotesOnlyDifferByTimestamp(lsi.SignBytes, signBytes); ok {
 			vote.Timestamp = timestamp

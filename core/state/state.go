@@ -69,18 +69,16 @@ func validatorKey(addr crypto.Address) []byte {
 type State struct {
 	sync.Mutex
 	db     dbm.DB
-	vTree  *iavl.VersionedTree
-	tree   *iavl.Tree
+	tree   *iavl.MutableTree
 	logger *logging.Logger
 }
 
 // NewState creates a new instance of State object
 func NewState(db dbm.DB, logger *logging.Logger) *State {
-	vTree := iavl.NewVersionedTree(db, defaultCacheCapacity)
+	tree := iavl.NewMutableTree(db, defaultCacheCapacity)
 	st := &State{
 		db:     db,
-		vTree:  vTree,
-		tree:   vTree.Tree(),
+		tree:   tree,
 		logger: logger,
 	}
 
@@ -100,15 +98,13 @@ func LoadState(db dbm.DB, hash []byte, logger *logging.Logger) (*State, error) {
 		return nil, fmt.Errorf("Trying to load state from non-positive version. version %v, hash: %X", ver, hash)
 	}
 
-	treeVer, err := st.vTree.LoadVersion(ver)
+	treeVer, err := st.tree.LoadVersion(ver)
 	if err != nil {
 		return nil, err
 	}
 	if treeVer != ver {
 		return nil, fmt.Errorf("Trying to load state version %v for state hash %X but loaded version %v", ver, hash, treeVer)
 	}
-
-	st.tree = st.vTree.Tree()
 
 	return st, nil
 }
@@ -135,7 +131,7 @@ func (st *State) SaveState() ([]byte, error) {
 	st.Lock()
 	defer st.Unlock()
 
-	hash, version, err := st.vTree.SaveVersion()
+	hash, version, err := st.tree.SaveVersion()
 	if err != nil {
 		return nil, err
 	}
@@ -145,9 +141,6 @@ func (st *State) SaveState() ([]byte, error) {
 
 	// Provide a reference to load this version in the future from the state hash
 	st.setVersion(hash, version)
-
-	// Update tree
-	st.tree = st.vTree.Tree()
 
 	return hash, nil
 }
@@ -329,6 +322,15 @@ func (st *State) IterateStorage(addr crypto.Address,
 
 func (st *State) ByzantineValidator(addr crypto.Address) error {
 	return st.removeValidator(addr)
+}
+
+func (st *State) IncentivizeValidator(addr crypto.Address, fee uint64) error {
+	val, err := st.GetValidator(addr)
+	if err != nil {
+		return fmt.Errorf("Could not get proposer information: %v", err)
+	}
+	val.AddToStake(fee)
+	return st.updateValidator(val)
 }
 
 /// -----------------------------

@@ -54,7 +54,7 @@ func asTendermintSigner(signer crypto.Signer) tmSigner {
 		if err != nil {
 			return nil
 		}
-		var tmSig [tmEd25519.SignatureEd25519Size]byte
+		var tmSig [tmEd25519.SignatureSize]byte
 		copy(tmSig[:], sig.RawBytes())
 		return tmSig[:]
 	}

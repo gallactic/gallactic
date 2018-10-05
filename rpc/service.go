@@ -158,19 +158,12 @@ func (s *Service) Peers() (*PeersOutput, error) {
 }
 
 func (s *Service) NetInfo() (*NetInfoOutput, error) {
-	listening := s.nodeView.IsListening()
-	var listeners []string
-	for _, listener := range s.nodeView.Listeners() {
-		listeners = append(listeners, listener.String())
-	}
 	peers, err := s.Peers()
 	if err != nil {
 		return nil, err
 	}
 	return &NetInfoOutput{
-		Listening: listening,
-		Listeners: listeners,
-		Peers:     peers.Peers,
+		Peers: peers.Peers,
 	}, nil
 }
 

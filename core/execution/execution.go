@@ -37,14 +37,17 @@ type BatchCommitter interface {
 	// Commit execution results to underlying State and provide opportunity
 	// to mutate state before it is saved
 	Commit() (err error)
+
+	Fees() uint64
 }
 
 type executor struct {
 	sync.RWMutex
-	logger      *logging.Logger
-	bc          *blockchain.Blockchain
-	cache       *state.Cache
-	txExecutors map[tx.Type]Executor
+	logger          *logging.Logger
+	bc              *blockchain.Blockchain
+	cache           *state.Cache
+	txExecutors     map[tx.Type]Executor
+	accumulatedFees uint64
 }
 
 var _ BatchExecutor = (*executor)(nil)
@@ -128,7 +131,12 @@ func (exe *executor) Execute(txEnv *txs.Envelope) (err error) {
 	}
 
 	if txExecutor, ok := exe.txExecutors[txEnv.Tx.Type()]; ok {
-		return txExecutor.Execute(txEnv)
+		if err = txExecutor.Execute(txEnv); err != nil {
+			return err
+		}
+
+		exe.accumulatedFees += txEnv.Tx.Fee()
+		return err
 	}
 	return fmt.Errorf("unknown transaction type: %v", txEnv.Tx.Type())
 }
@@ -146,7 +154,12 @@ func (exe *executor) Commit() (err error) {
 }
 
 func (exe *executor) Reset() error {
+	exe.accumulatedFees = 0
 	// As with Commit() we do not take the write lock here
 	exe.cache.Reset()
 	return nil
+}
+
+func (exe *executor) Fees() uint64 {
+	return exe.accumulatedFees
 }
