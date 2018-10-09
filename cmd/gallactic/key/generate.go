@@ -2,11 +2,9 @@ package key
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
-	"os"
-	"path/filepath"
 
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/keystore/key"
 	"github.com/jawher/mow.cli"
 )
@@ -33,12 +31,10 @@ func Generate() func(cmd *cli.Cmd) {
 				log.Fatalf("Failed to Encrypt: %v", err)
 			}
 			keyfilepath := defaultKeyfilePath + keyObj.Address().String() + ".json"
+			
 			// Store the file to disk.
-			if err := os.MkdirAll(filepath.Dir(keyfilepath), 0700); err != nil {
-				log.Fatalf("Could not create directory %s", filepath.Dir(keyfilepath))
-			}
-			if err := ioutil.WriteFile(keyfilepath, keyjson, 0600); err != nil {
-				log.Fatalf("Failed to write keyfile to %s: %v", keyfilepath, err)
+			if err := common.WriteFile(keyfilepath, keyjson); err != nil {
+				log.Fatalf("%v", err)
 			}
 			Address := keyObj.Address().String()
 			fmt.Println("Address:", Address)

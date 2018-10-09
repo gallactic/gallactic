@@ -1,34 +1,54 @@
-# Gallactic [![Build Status](https://api.travis-ci.org/gallactic/gallactic.svg?branch=master)](https://travis-ci.org/gallactic/gallactic) 
-*Gallactic blockchain with Hyperledger Burrow EVM and Tendermint consensus engine*
+# Gallactic [![Build Status](https://api.travis-ci.org/gallactic/gallactic.svg?branch=master)](https://travis-ci.org/gallactic/gallactic)
+*Gallactic blockchain with [SputnikVM](https://github.com/gallactic/sputnikvm) and [Tendermint](https://github.com/tendermint/tendermint) consensus engine*
 
 ## Compiling the code
-You need to make sure you have install go version 1.10.1 or higher. Technically your go should have ed25519 signature malleability fix.
-
-Follow these steps to compile and build the gallactic executable:
+You need to make sure you have install [Go](https://golang.org/) (version 1.10.1 or higher) and [rust](https://www.rust-lang.org). After installing them, you can follow these steps to compile and build the gallactic project:
 
 ```
-# Get the source code
-mkdir -p $GOPATH/src/github.com/gallactic
+mkdir -p $GOPATH/src/github.com/gallactic/gallactic
 cd $GOPATH/src/github.com/gallactic
-git clone https://github.com/gallactic/gallactic.git
-cd gallactic
-
+git clone https://github.com/gallactic/gallactic.git .
 make
-make install
 ```
 
 Run `gallactic version` to make sure gallactic is properly compiled and installed in your machine.
 
-NOTE:
+## Running Gallactic
 
-prevent signature malleability
+### Initialize
+Initialize the working directory by running:
+ ```
+ gallactic init -w=<workspace_directory>
+ ```
 
-ed25519: require canonical signatures
+ This command will create config.toml, genesis.json and private key for validator.
 
-https://go-review.googlesource.com/c/crypto/+/100436
+### Run
+For running a Gallactic node, use:
+
+```
+gallactic start -w=<workspace_folder_path>
+```
+
+This command will ask you to enter the private key of the validator. Enter the private key (priv_key) of the validator, as provided by the init command above.
+The Gallactic blockchain starts immediately, upon successful acceptance of the private key.
+
+
+## Usage of Docker
+Install [Docker](https://www.docker.com/) and run the following commands to build the docker file:
+
+```
+cd $GOPATH/src/github.com/gallactic/gallactic
+docker build . --tag gallactic
+```
+Then you can execute the Gallactic blockchain, using the docker:
+```
+docker run -it --rm -v "/tmp/chain1:/gallactic"  gallactic init -w=/gallactic
+```
+
 
 ## Contribution
-Thsnks for considering to contribute in Gallactic project!
+Thanks for considering to contribute in Gallactic project! <TODO>
 
 ## License
 The Gallactic blockchain is under MIT <TODO: link> license.

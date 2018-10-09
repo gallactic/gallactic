@@ -137,5 +137,6 @@ func oldPassphrase() string {
 
 func CreateKey(pv crypto.PrivateKey) *key.Key {
 	addr := pv.PublicKey().ValidatorAddress()
-	return key.NewKey(addr, pv)
+	key, _ := key.NewKey(addr, pv)
+	return key
 }

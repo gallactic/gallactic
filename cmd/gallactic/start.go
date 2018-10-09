@@ -16,19 +16,6 @@ import (
 	"github.com/jawher/mow.cli"
 )
 
-var welcomeMessage = `
-       ___           ___                                       ___           ___                                   ___
-      /  /\         /  /\                                     /  /\         /  /\          ___       ___          /  /\
-     /  /:/_       /  /::\                                   /  /::\       /  /:/         /  /\     /  /\        /  /:/
-    /  /:/ /\     /  /:/\:\    ___     ___   ___     ___    /  /:/\:\     /  /:/         /  /:/    /  /:/       /  /:/
-   /  /:/_/::\   /  /:/~/::\  /__/\   /  /\ /__/\   /  /\  /  /:/~/::\   /  /:/  ___    /  /:/    /__/::\      /  /:/  ___
-  /__/:/__\/\:\ /__/:/ /:/\:\ \  \:\ /  /:/ \  \:\ /  /:/ /__/:/ /:/\:\ /__/:/  /  /\  /  /::\    \__\/\:\__  /__/:/  /  /\
-  \  \:\ /~~/:/ \  \:\/:/__\/  \  \:\  /:/   \  \:\  /:/  \  \:\/:/__\/ \  \:\ /  /:/ /__/:/\:\      \  \:\/\ \  \:\ /  /:/
-   \  \:\  /:/   \  \::/        \  \:\/:/     \  \:\/:/    \  \::/       \  \:\  /:/  \__\/  \:\      \__\::/  \  \:\  /:/
-    \  \:\/:/     \  \:\         \  \::/       \  \::/      \  \:\        \  \:\/:/        \  \:\     /__/:/    \  \:\/:/
-     \  \::/       \  \:\         \__\/         \__\/        \  \:\        \  \::/          \__\/     \__\/      \  \::/
-      \__\/         \__\/                                     \__\/         \__\/                                 \__\/    `
-
 //Start starts the gallactic node
 func Start() func(cmd *cli.Cmd) {
 	return func(cmd *cli.Cmd) {
@@ -56,20 +43,26 @@ func Start() func(cmd *cli.Cmd) {
 		cmd.Spec = "[--working-dir=<Working directory of the configuration files>] " +
 			"[--privatekey=<private key of the account>] | [--key-file=<path to the key file>] [--auth=<keyfile password>]"
 
+		cmd.LongDesc = "Starting the node"
+		cmd.Before = func() { fmt.Println(ascii) }
 		cmd.Action = func() {
-			fmt.Print(welcomeMessage)
 			fmt.Println("\n\n\nYou are running a gallactic blockchian node version: ", version.Version, ". Welcome!")
 			workingDir := *workingDirOpt
 			if workingDir != "" {
 				keyObj := new(key.Key)
 				switch {
 				case *keystoreOpt == "" && *privatekeyOpt == "":
-					// Creating KeyObject from Private Key
-					kj, err := gtxkey.PromptPrivateKey()
-					if err != nil {
-						log.Fatalf("Aborted: %v", err)
+					kj, _ := key.DecryptKeyFile(workingDir+"/validator_key.json", "")
+					if kj != nil {
+						keyObj = kj
+					} else {
+						// Creating KeyObject from Private Key
+						kj, err := gtxkey.PromptPrivateKey()
+						if err != nil {
+							log.Fatalf("Aborted: %v", err)
+						}
+						keyObj = kj
 					}
-					keyObj = kj
 				case *keystoreOpt != "" && *keyfileauthOpt != "":
 					//Creating KeyObject from keystore
 					passphrase := *keyfileauthOpt
