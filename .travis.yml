@@ -1,17 +1,24 @@
 language: go
 go_import_path: github.com/gallactic/gallactic
-sudo: false
+sudo: required
+services:
+  - docker
+
 matrix:
   include:
     - os: linux
       dist: trusty
-      go: 1.10.x
+      go:
+        - 1.10.x
+        - master
       script:
         - make && make docker
 
 
     - os: osx
-      go: 1.10.x
+      go:
+        - 1.10.x
+        - master
       script:
         - make && make docker
 
@@ -20,3 +27,6 @@ before_install:
   - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
   - sh rustup-install.sh -y
   - source $HOME/.cargo/env
+
+install:
+  -
