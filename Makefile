@@ -3,24 +3,25 @@ GOTOOLS = \
 	gopkg.in/alecthomas/gometalinter.v2
 
 PACKAGES=$(shell go list ./... | grep -v '/vendor/')
-INCLUDE = -I=. -I=${GOPATH}/src
-BUILD_TAGS?=gallactic
-BUILD_FLAGS = -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
 SPUTNIKVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
+TAGS=-tags 'gallactic'
+LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
+CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl"
 
-all: tools deps build test install
+
+all: tools deps build install test test100 test_release test_race
 
 
 ########################################
 ### Build Gallactic
 build:
-	CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl" go build $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o build/gallactic ./cmd/gallactic/
+	$(CFLAGS) go build $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic/
 
 build_race:
-	CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl" go build -race $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o build/gallactic ./cmd/gallactic
+	$(CFLAGS) go build -race $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic
 
 install:
-	CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl" go install $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' ./cmd/gallactic
+	$(CFLAGS) go install $(LDFLAGS) $(TAGS) ./cmd/gallactic
 
 
 ########################################
@@ -53,7 +54,7 @@ deps:
 
 
 test_release:
-	@go test -tags release $(PACKAGES)
+	$(CFLAGS) go test -tags release $(PACKAGES)
 
 test100:
 	@for i in {1..100}; do make test; done
@@ -62,11 +63,11 @@ test100:
 ### go tests
 test:
 	@echo "--> Running go test"
-	@go test $(PACKAGES)
+	$(CFLAGS) go test $(PACKAGES)
 
 test_race:
 	@echo "--> Running go test --race"
-	@go test -v -race $(PACKAGES)
+	$(CFLAGS) go test -v -race $(PACKAGES)
 
 
 ########################################
