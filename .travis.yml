@@ -1,32 +1,29 @@
 language: go
 go_import_path: github.com/gallactic/gallactic
-sudo: required
-services:
-  - docker
+sudo: false
 
 matrix:
   include:
     - os: linux
       dist: trusty
-      go:
-        - 1.10.x
-        - master
-      script:
-        - make && make docker
+      go: 1.10.x
+      script: make && make tests && make docker
 
+    - os: linux
+      dist: trusty
+      go: master
+      script: make && make tests && make docker
 
     - os: osx
-      go:
-        - 1.10.x
-        - master
-      script:
-        - make && make docker
+      go: 1.10.x
+      script: make && make tests
+
+    - os: osx
+      go: master
+      script: make && make tests
 
 before_install:
   # installing rust and cargo
   - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
   - sh rustup-install.sh -y
   - source $HOME/.cargo/env
-
-install:
-  -

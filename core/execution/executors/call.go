@@ -54,7 +54,7 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 			return err
 		}
 		if callee == nil {
-			return e.Errorf(e.ErrInvalidAddress, "attempt to call a non-existing account: ", tx.Callee())
+			return e.Errorf(e.ErrInvalidAddress, "attempt to call a non-existing account: %s", tx.Callee().Address)
 		}
 	}
 
