@@ -27,7 +27,7 @@ Initialize the working directory by running:
 For running a Gallactic node, use:
 
 ```
-gallactic start -w=<workspace_folder_path>
+gallactic start -w=<workspace_directory>
 ```
 
 This command will ask you to enter the private key of the validator. Enter the private key (priv_key) of the validator, as provided by the init command above.
