@@ -7,9 +7,19 @@ import (
 	"github.com/jawher/mow.cli"
 )
 
+var ascii = `
+   ____    _    _     _        _    ____ _____ ___ ____
+  / ___|  / \  | |   | |      / \  / ___|_   _|_ _/ ___|
+ | |  _  / _ \ | |   | |     / _ \| |     | |  | | |
+ | |_| |/ ___ \| |___| |___ / ___ \ |___  | |  | | |___
+  \____/_/   \_\_____|_____/_/   \_\____| |_| |___\____|
+
+ `
+
 func gallactic() *cli.Cli {
 	app := cli.App("gallactic", "Gallactic blockchain node")
 
+	app.Command("init", "initialize the gallactic blockchain", Init())
 	app.Command("start", "start the gallactic blockchain", Start())
 	app.Command("version", "print the gallactic version", Version())
 	app.Command("key", "gallactic key manager", func(k *cli.Cmd) {

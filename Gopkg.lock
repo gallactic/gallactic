@@ -514,7 +514,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:36613b8055dd35e84331b3d121b529be8825d1665289556ecbc0a9b5e972b6cd"
+  digest = "1:b0cac4ed680ea657e1a4263f26f84dd25f0d7d862e3791f154fdf247e793d300"
   name = "golang.org/x/crypto"
   packages = [
     "chacha20poly1305",
@@ -531,6 +531,7 @@
     "ripemd160",
     "salsa20/salsa",
     "scrypt",
+    "sha3",
   ]
   pruneopts = "NUT"
   revision = "5295e8364332db77d75fce11f1d19c053919a9c9"
@@ -699,6 +700,7 @@
     "golang.org/x/crypto/pbkdf2",
     "golang.org/x/crypto/ripemd160",
     "golang.org/x/crypto/scrypt",
+    "golang.org/x/crypto/sha3",
     "gopkg.in/tylerb/graceful.v1",
   ]
   solver-name = "gps-cdcl"

@@ -7,13 +7,13 @@ matrix:
       dist: trusty
       go: 1.10.x
       script:
-        - make
+        - make && make docker
 
 
     - os: osx
       go: 1.10.x
       script:
-        - make
+        - make && make docker
 
 before_install:
   # installing rust and cargo

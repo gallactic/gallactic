@@ -12,8 +12,8 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
-	"os"
 
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/crypto"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
@@ -39,9 +39,10 @@ const (
 )
 
 type encryptedKeyJSONV3 struct {
-	Address crypto.Address `json:"address"`
-	Crypto  cryptoJSON     `json:"crypto"`
-	Version int            `json:"version"`
+	Address    crypto.Address     `json:"address"`
+	Crypto     *cryptoJSON        `json:"crypto,omitempty"`
+	PrivateKey *crypto.PrivateKey `json:"privatekey,omitempty"`
+	Version    int                `json:"version"`
 }
 
 type cryptoJSON struct {
@@ -68,10 +69,14 @@ func DecryptKeyFile(filePath, auth string) (*Key, error) {
 
 //DecryptKey decrypts the Key from a json blob and returns the plaintext of the private key
 func DecryptKey(bs []byte, auth string) (*Key, error) {
-
 	kj := new(encryptedKeyJSONV3)
 	if err := json.Unmarshal(bs, kj); err != nil {
 		return nil, err
+	}
+
+	fmt.Println(kj.PrivateKey)
+	if kj.PrivateKey != nil {
+		return NewKey(kj.Address, *kj.PrivateKey)
 	}
 	if kj.Crypto.Cipher != "aes-128-ctr" {
 		return nil, fmt.Errorf("Cipher not supported: %v", kj.Crypto.Cipher)
@@ -104,17 +109,11 @@ func DecryptKey(bs []byte, auth string) (*Key, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Key{
-		data: keyData{
-			PrivateKey: pv,
-			PublicKey:  pv.PublicKey(),
-			Address:    kj.Address,
-		},
-	}, nil
+	return NewKey(kj.Address, pv)
 
 }
 
-func getKDFKey(cryptoJSON cryptoJSON, auth string) ([]byte, error) {
+func getKDFKey(cryptoJSON *cryptoJSON, auth string) ([]byte, error) {
 
 	authArray := []byte(auth)
 	salt, err := hex.DecodeString(cryptoJSON.KDFParams["salt"].(string))
@@ -147,11 +146,22 @@ func EncryptKeyFile(key *Key, filePath, auth string) error {
 	if err != nil {
 		return err
 	}
-	return writeKeyFile(filePath, bs)
+	return common.WriteFile(filePath, bs)
 }
 
 // EncryptKey encrypts a key and returns the encrypted byte array
 func EncryptKey(key *Key, auth string) ([]byte, error) {
+	if auth == "" {
+		pv := key.PrivateKey()
+		encryptedKeyJSONV3 := encryptedKeyJSONV3{
+			Address:    key.data.Address,
+			PrivateKey: &pv,
+			Version:    version,
+		}
+
+		return json.Marshal(encryptedKeyJSONV3)
+	}
+
 	authArray := []byte(auth)
 	salt := getEntropyCSPRNG(32)
 	derivedKey, err := scrypt.Key(authArray, salt, scryptN, scryptR, scryptP, scryptDKLen)
@@ -189,9 +199,9 @@ func EncryptKey(key *Key, auth string) ([]byte, error) {
 	}
 
 	encryptedKeyJSONV3 := encryptedKeyJSONV3{
-		key.data.Address,
-		cryptoStruct,
-		version,
+		Address: key.data.Address,
+		Crypto:  &cryptoStruct,
+		Version: version,
 	}
 
 	return json.Marshal(encryptedKeyJSONV3)
@@ -224,20 +234,4 @@ func ensureInt(x interface{}) int {
 		res = int(x.(float64))
 	}
 	return res
-}
-
-func writeKeyFile(filePath string, content []byte) error {
-
-	f, err := os.Create(filePath)
-	if err != nil {
-		return err
-	}
-	if b, err := f.Write(content); err != nil {
-		fmt.Printf("wrote %d bytes\n", b)
-		f.Close()
-		return err
-	}
-
-	f.Close()
-	return os.Rename(f.Name(), filePath)
 }

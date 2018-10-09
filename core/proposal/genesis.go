@@ -253,6 +253,7 @@ func MakeGenesis(chainName string, genesisTime time.Time,
 	}
 }
 
+// LoadFromFile loads genesis object from a JSON file
 func LoadFromFile(file string) (*Genesis, error) {
 	dat, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -263,4 +264,19 @@ func LoadFromFile(file string) (*Genesis, error) {
 		return nil, err
 	}
 	return &gen, nil
+}
+
+// SaveToFile saves the genesis info a JSON file
+func (gen *Genesis) SaveToFile(file string) error {
+	json, err := gen.MarshalJSON()
+	if err != nil {
+		return err
+	}
+
+	// write  dataContent to file
+	if err := ioutil.WriteFile(file, json, 0777); err != nil {
+		return fmt.Errorf("Failed to write genesis file to %s: %v", file, err)
+	}
+
+	return nil
 }

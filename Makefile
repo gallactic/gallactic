@@ -22,6 +22,12 @@ build_race:
 install:
 	CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl" go install $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' ./cmd/gallactic
 
+
+########################################
+### Docker
+docker:
+	docker build . --tag gallactic
+
 ########################################
 ### Tools & dependencies
 
@@ -36,7 +42,7 @@ deps:
 	@rm -rf vendor/
 	@echo "Running dep"
 	@dep ensure -v
-	@echo "Building Sputnikvm Library..." 
+	@echo "Building Sputnikvm Library..."
 	rm -rf $(SPUTNIKVM_PATH)
 	mkdir $(SPUTNIKVM_PATH)
 	cd $(SPUTNIKVM_PATH) && git clone https://github.com/gallactic/sputnikvm-ffi.git .
@@ -102,7 +108,7 @@ metalinter:
 # To avoid unintended conflicts with file names, always add to .PHONY
 # unless there is a reason not to.
 # https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html
-.PHONY: build build_race install
+.PHONY: build build_race install docker
 .PHONY: test test_race test_release test100
 .PHONY: tools deps
 .PHONY: fmt metalinter
