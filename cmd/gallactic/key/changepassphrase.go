@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
-	"path/filepath"
 
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/keystore/key"
 	"github.com/jawher/mow.cli"
 )
@@ -42,11 +41,8 @@ func ChangePassphrase() func(cmd *cli.Cmd) {
 			}
 			keyfilepath = defaultKeyfilePath + keyObj.Address().String() + ".json"
 			// Store the file to disk.
-			if err := os.MkdirAll(filepath.Dir(keyfilepath), 0700); err != nil {
-				log.Fatalf("Could not create directory %s", filepath.Dir(keyfilepath))
-			}
-			if err := ioutil.WriteFile(keyfilepath, keyjson, 0600); err != nil {
-				log.Fatalf("Failed to write keyfile to %s: %v", keyfilepath, err)
+			if err := common.WriteFile(keyfilepath, keyjson); err != nil {
+				log.Fatalf("%v", err)
 			}
 			fmt.Println("Password changed successfully")
 		}

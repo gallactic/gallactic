@@ -1,9 +1,9 @@
 package tendermint
 
 import (
-	"os"
 	"path"
 
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/abci"
@@ -16,6 +16,7 @@ import (
 	tmEd25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/node"
+	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/proxy"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
@@ -51,7 +52,7 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 
 	var err error
 
-	err = os.MkdirAll(path.Dir(conf.NodeKeyFile()), 0777)
+	err = common.Mkdir(path.Dir(conf.NodeKeyFile()))
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +67,8 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 	n := &Node{}
 	app := abci.NewApp(bc, checker, committer, txDecoder, logger)
 	client := proxy.NewLocalClientCreator(app)
-	conf.NodeKeyFile()
-	n.Node, err = node.NewNode(conf, privValidator, nil,
-		client,
+	nodeKey, _ := p2p.LoadOrGenNodeKey(conf.NodeKeyFile())
+	n.Node, err = node.NewNode(conf, privValidator, nodeKey, client,
 		func() (*tmTypes.GenesisDoc, error) {
 			return gen, nil
 		},

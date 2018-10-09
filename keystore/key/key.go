@@ -1,6 +1,8 @@
 package key
 
 import (
+	"fmt"
+
 	"github.com/gallactic/gallactic/crypto"
 )
 
@@ -36,10 +38,10 @@ func GenValidatorKey() *Key {
 	}
 }
 
-func NewKey(addr crypto.Address, pv crypto.PrivateKey) *Key {
+func NewKey(addr crypto.Address, pv crypto.PrivateKey) (*Key, error) {
 	/// Check if the address is derived from given private key
 	if !addr.Verify(pv.PublicKey()) {
-		return nil
+		return nil, fmt.Errorf("This address doesn't belong to this privatekey")
 	}
 
 	return &Key{
@@ -48,7 +50,7 @@ func NewKey(addr crypto.Address, pv crypto.PrivateKey) *Key {
 			PublicKey:  pv.PublicKey(),
 			Address:    addr,
 		},
-	}
+	}, nil
 }
 
 func (k *Key) Address() crypto.Address {

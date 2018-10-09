@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gallactic/gallactic/version"
 	"github.com/jawher/mow.cli"
@@ -10,8 +11,9 @@ import (
 //Version prints the version of the Gallactic node
 func Version() func(cmd *cli.Cmd) {
 	return func(cmd *cli.Cmd) {
+		cmd.Before = func() { fmt.Println(ascii) }
 		cmd.Action = func() {
-			fmt.Println(version.Version)
+			log.Printf("Version: " + version.Version)
 		}
 	}
 }
