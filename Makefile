@@ -9,29 +9,11 @@ LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-
 CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl"
 
 
-all: tools deps build install test test100 test_release test_race
-
-
-########################################
-### Build Gallactic
-build:
-	$(CFLAGS) go build $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic/
-
-build_race:
-	$(CFLAGS) go build -race $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic
-
-install:
-	$(CFLAGS) go install $(LDFLAGS) $(TAGS) ./cmd/gallactic
-
-
-########################################
-### Docker
-docker:
-	docker build . --tag gallactic
+all: tools deps build build_race install
+tests: test test_release test_race
 
 ########################################
 ### Tools & dependencies
-
 tools:
 	@cargo --version || (echo "Install Rust first; see https://rustup.rs/"; false)
 	@echo "Installing tools"
@@ -50,29 +32,38 @@ deps:
 	cd $(SPUTNIKVM_PATH)/c && make build
 
 ########################################
-### Testing
+### Build Gallactic
+build:
+	$(CFLAGS) go build $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic/
 
+build_race:
+	$(CFLAGS) go build -race $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic
+
+install:
+	$(CFLAGS) go install $(LDFLAGS) $(TAGS) ./cmd/gallactic
+
+########################################
+### Testing
+test:
+	$(CFLAGS) go test $(PACKAGES)
 
 test_release:
 	$(CFLAGS) go test -tags release $(PACKAGES)
 
-test100:
-	@for i in {1..100}; do make test; done
-
-
-### go tests
-test:
-	@echo "--> Running go test"
-	$(CFLAGS) go test $(PACKAGES)
-
+#race condirion
 test_race:
-	@echo "--> Running go test --race"
 	$(CFLAGS) go test -v -race $(PACKAGES)
 
 
 ########################################
-### Formatting, linting, and vetting
+### Docker
+docker:
+	docker build . --tag gallactic
 
+
+
+########################################
+### Formatting, linting, and vetting
 fmt:
 	@go fmt ./...
 
@@ -110,6 +101,6 @@ metalinter:
 # unless there is a reason not to.
 # https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html
 .PHONY: build build_race install docker
-.PHONY: test test_race test_release test100
+.PHONY: tests test test_race test_release
 .PHONY: tools deps
 .PHONY: fmt metalinter

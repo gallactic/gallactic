@@ -18,7 +18,7 @@ func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*
 
 	// Check sequences
 	if acc.Sequence()+1 != uint64(in.Sequence) {
-		return nil, e.Errorf(e.ErrInvalidSequence, "%s has set sequence to %s. It should be %s", in.Address, in.Sequence, acc.Sequence()+1)
+		return nil, e.Errorf(e.ErrInvalidSequence, "%v has set sequence to %v. It should be %v", in.Address, in.Sequence, acc.Sequence()+1)
 	}
 
 	// Check amount
@@ -27,7 +27,7 @@ func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*
 	}
 
 	if !ch.HasPermissions(acc, req) {
-		return nil, e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", in.Address, acc.Permissions(), permission.Send)
+		return nil, e.Errorf(e.ErrPermDenied, "%v has %v but needs %v permission", in.Address, acc.Permissions(), permission.Send)
 	}
 
 	return acc, nil
@@ -49,7 +49,7 @@ func getInputValidator(ch *state.Cache, in tx.TxInput) (*validator.Validator, er
 
 	// Check sequences
 	if val.Sequence()+1 != uint64(in.Sequence) {
-		return nil, e.Errorf(e.ErrInvalidSequence, "%s has set sequence to %s. It should be %s", in.Address, in.Sequence, val.Sequence()+1)
+		return nil, e.Errorf(e.ErrInvalidSequence, "%v has set sequence to %v. It should be %v", in.Address, in.Sequence, val.Sequence()+1)
 	}
 
 	// Check amount
