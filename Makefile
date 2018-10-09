@@ -9,8 +9,8 @@ LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-
 CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl"
 
 
-all: tools deps build build_race install
-tests: test test_release test_race
+all: tools deps build install
+tests: build_race test test_release test_race
 
 ########################################
 ### Tools & dependencies
