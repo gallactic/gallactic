@@ -150,7 +150,7 @@ func (pb *PublicKey) EnsureValid() error {
 }
 
 func (pb PublicKey) Verify(msg []byte, signature Signature) bool {
-	return ed25519.Verify(pb.RawBytes(), msg, signature.RawBytes())
+	return ed25519.Verify(pb.RawBytes(), Sha3(msg), signature.RawBytes())
 }
 
 func (pb PublicKey) AccountAddress() Address {
