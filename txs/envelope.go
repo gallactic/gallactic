@@ -7,6 +7,7 @@ import (
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
+	amino "github.com/tendermint/go-amino"
 	"golang.org/x/crypto/ripemd160"
 )
 
@@ -168,4 +169,43 @@ func (env *Envelope) GenerateReceipt() *Receipt {
 	}
 
 	return receipt
+}
+
+//Protobuf Marshal,Unmarshal and size
+
+var ev = amino.NewCodec()
+
+func (env *Envelope) Encode() ([]byte, error) {
+	return ev.MarshalBinary(&env)
+}
+
+func (env *Envelope) Decode(bs []byte) error {
+	err := ev.UnmarshalBinary(bs, &env)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (env *Envelope) Unmarshal(bs []byte) error {
+	return env.Decode(bs)
+}
+
+func (env *Envelope) Marshal() ([]byte, error) {
+	return env.Encode()
+}
+
+func (env *Envelope) MarshalTo(data []byte) (int, error) {
+	bs, err := env.Encode()
+	if err != nil {
+		return -1, err
+	}
+	return copy(data, bs), nil
+}
+
+func (env *Envelope) Size() int {
+	/// TODO: maybe a better way?
+	bs, _ := env.Encode()
+	return len(bs)
 }

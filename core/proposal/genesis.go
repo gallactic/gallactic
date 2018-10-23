@@ -15,6 +15,7 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
+	amino "github.com/tendermint/go-amino"
 )
 
 // How many bytes to take from the front of the Genesis hash to append
@@ -163,6 +164,46 @@ func (gen *Genesis) UnmarshalJSON(bs []byte) error {
 		return err
 	}
 	return nil
+}
+
+//protobuf marshal,unmrshal and size
+
+///---- Serialization methods
+var ge = amino.NewCodec()
+
+func (gen Genesis) Encode() ([]byte, error) {
+	return ge.MarshalBinary(&gen.data)
+}
+
+func (gen *Genesis) Decode(bs []byte) error {
+	err := ge.UnmarshalBinary(bs, &gen.data)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (gen *Genesis) Unmarshal(bs []byte) error {
+	return gen.Decode(bs)
+}
+
+func (gen *Genesis) Marshal() ([]byte, error) {
+	return gen.Encode()
+}
+
+func (gen *Genesis) MarshalTo(data []byte) (int, error) {
+	bs, err := gen.Encode()
+	if err != nil {
+		return -1, err
+	}
+	return copy(data, bs), nil
+}
+
+func (gen *Genesis) Size() int {
+	/// TODO: maybe a better way?
+	bs, _ := gen.Encode()
+	return len(bs)
 }
 
 func makeGenesisAccount(acc *account.Account) genAccount {

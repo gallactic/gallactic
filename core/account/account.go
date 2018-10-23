@@ -3,6 +3,7 @@ package account
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gallactic/gallactic/event/query"
 
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/crypto"
@@ -139,7 +140,7 @@ func (acc *Account) Decode(bs []byte) error {
 
 }
 
-func (acc Account) MarshalJSON() ([]byte, error) {
+func (acc *Account) MarshalJSON() ([]byte, error) {
 	return json.Marshal(acc.data)
 }
 
@@ -162,4 +163,38 @@ func AccountFromJSON(bs []byte) (*Account, error) {
 func (acc Account) String() string {
 	b, _ := acc.MarshalJSON()
 	return fmt.Sprintf("Account%s", string(b))
+}
+
+func (acc *Account) Unmarshal(bs []byte) error {
+	return acc.Decode(bs)
+}
+
+func (acc *Account) Marshal() ([]byte, error) {
+	return acc.Encode()
+}
+
+func (acc *Account) MarshalTo(data []byte) (int, error) {
+	bs, err := acc.Encode()
+	if err != nil {
+		return -1, err
+	}
+	return copy(data, bs), nil
+}
+
+func (acc *Account) Size() int {
+	/// TODO: maybe a better way?
+	bs, _ := acc.Encode()
+	return len(bs)
+}
+
+type TaggedAccount struct {
+	*Account
+	query.Tagged
+}
+
+func (acc *Account) Tagged() query.Tagged {
+	return &TaggedAccount{
+		Account: acc,
+		Tagged:  query.MustReflectTags(acc),
+	}
 }

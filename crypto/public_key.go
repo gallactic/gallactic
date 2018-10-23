@@ -3,6 +3,8 @@ package crypto
 import (
 	"unsafe"
 
+	amino "github.com/tendermint/go-amino"
+
 	"github.com/gallactic/gallactic/errors"
 	"github.com/mr-tron/base58/base58"
 	tmABCI "github.com/tendermint/tendermint/abci/types"
@@ -105,6 +107,8 @@ func (pb PublicKey) TMPubKey() tmCrypto.PubKey {
 /// ----------
 /// MARSHALING
 
+var pbamino = amino.NewCodec()
+
 func (pb PublicKey) MarshalAmino() ([]byte, error) {
 	return pb.RawBytes(), nil
 }
@@ -136,6 +140,28 @@ func (pb *PublicKey) UnmarshalText(text []byte) error {
 
 	*pb = p
 	return nil
+}
+
+//protobuf function
+func (pb *PublicKey) Marshal() ([]byte, error) {
+	return pb.MarshalAmino()
+}
+
+func (pb *PublicKey) Unmarshal(bs []byte) error {
+	return pb.UnmarshalAmino(bs)
+}
+
+func (pb *PublicKey) Size() int {
+	/// TODO: maybe a better way?
+	bs := pb.data.PublicKey
+	return len(bs)
+}
+
+func (pb *PublicKey) Encode() ([]byte, error) {
+	return pbamino.MarshalBinary(&pb.data.PublicKey)
+}
+func (pb *PublicKey) MarshalTo(data []byte) (int, error) {
+	return copy(data, pb.data.PublicKey[:]), nil
 }
 
 /// ----------
