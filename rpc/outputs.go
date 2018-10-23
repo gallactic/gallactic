@@ -156,3 +156,39 @@ type BlockTxsOutput struct {
 	Count int
 	Txs   []txs.Envelope
 }
+
+//protobuf marshal,unmarshal and size methods
+func (p *Peer) Encode() ([]byte, error) {
+	return aminoCodec.MarshalBinary(&p)
+}
+
+func (p *Peer) Decode(bs []byte) error {
+	err := aminoCodec.UnmarshalBinary(bs, &p)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (p *Peer) Unmarshal(bs []byte) error {
+	return p.Decode(bs)
+}
+
+func (p *Peer) Marshal() ([]byte, error) {
+	return p.Encode()
+}
+
+func (p *Peer) MarshalTo(data []byte) (int, error) {
+	bs, err := p.Encode()
+	if err != nil {
+		return -1, err
+	}
+	return copy(data, bs), nil
+}
+
+func (p *Peer) Size() int {
+	/// TODO: maybe a better way?
+	bs, _ := p.Encode()
+	return len(bs)
+}

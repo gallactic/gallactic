@@ -1,10 +1,9 @@
 package core
 
 import (
-	
-	"net"
 	"context"
 	"fmt"
+	"net"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -25,11 +24,11 @@ import (
 	"github.com/gallactic/gallactic/rpc"
 	"github.com/gallactic/gallactic/txs"
 
+	grpc "github.com/gallactic/gallactic/grpc"
+	kitlog "github.com/go-kit/kit/log"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/lifecycle"
 	"github.com/hyperledger/burrow/logging/structure"
-	grpc "github.com/gallactic/gallactic/grpc"
-	kitlog "github.com/go-kit/kit/log"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
@@ -150,23 +149,20 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 
 		{
 			Name:    "GRPC",
-			Enabled:conf.GRPC.Enabled,
+			Enabled: conf.GRPC.Enabled,
 			Launch: func() (process.Process, error) {
-				listen, err := net.Listen("tcp", "localhost:10903")
+				listen, err := net.Listen("tcp", "127.0.0.1:50051")
 				fmt.Println("listen", listen)
 				if err != nil {
 					return nil, err
 				}
 				listen.Addr()
 				grpcServer := grpc.NewGRPCServer(logger)
-				var State *state.State
-				//var nodeview *query.NodeView
-				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(State))
-				// grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc))
-				// grpc.TransactorService(grpcServer, grpc.NewTransactor(transactor))
-				// grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(nodeview))
-				go grpcServer.Serve(listen)
-				fmt.Println("Inside the grpc server", grpcServer)
+				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(bc))
+				grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode, txCodec)))
+				grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode, txCodec)))
+				// grpc.TransactorService(grpcServer, grpc.TransactorService(transactor))
+				grpcServer.Serve(listen)
 				return process.ShutdownFunc(func(ctx context.Context) error {
 					grpcServer.Stop()
 					// listener is closed for us
@@ -175,8 +171,6 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			},
 		},
 	}
-
-	
 
 	return &Kernel{
 		launchers:      launchers,
