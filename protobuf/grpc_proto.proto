@@ -151,11 +151,14 @@ service Transaction {
 }
 
 message TransactRequest {
-	repeated google.protobuf.ListValue  txs = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
+  TransactRequest txs = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 
+
+
+
 message ReceiptResponse {
- bytes  TxHash = 1;
+ bytes  TxHash = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Receipt"];
 }
 
 message UnconfirmedTxsRequest {
