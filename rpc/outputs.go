@@ -187,8 +187,7 @@ func (p *Peer) MarshalTo(data []byte) (int, error) {
 	return copy(data, bs), nil
 }
 
-func (p *Peer) Size() int {
-	/// TODO: maybe a better way?
+func (p Peer) Size() int {
 	bs, _ := p.Encode()
 	return len(bs)
 }
