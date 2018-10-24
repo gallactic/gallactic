@@ -285,17 +285,18 @@ func (s *networkServer) GetNetworkInfo(context.Context, *Empty) (*NetInfoRespons
 
 //Network service
 func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error) {
+	
 	peers := make([]*Peer, ns.nodeview.Peers().Size())
 
 	for i, peer := range ns.nodeview.Peers().List() {
-		fmt.Println("server inside the peers", peer)
+		fmt.Println("peers", peer)
 		peers[i] = &Peer{
 			// NodeInfo:  peer.NodeInfo(),
 			// IsOutbound: peer.IsOutbound(),
 		}
 	}
 	return &PeerResponse{
-		// Peer: peers,
+	//	 Peer: peers,
 	}, nil
 }
 

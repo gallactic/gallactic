@@ -111,3 +111,26 @@ func (val Validator) String() string {
 	b, _ := val.MarshalJSON()
 	return fmt.Sprintf("Validator%s", string(b))
 }
+
+
+func (val *Validator) Unmarshal(bs []byte) error {
+	return val.Decode(bs)
+}
+
+func (val *Validator) Marshal() ([]byte, error) {
+	return val.Encode()
+}
+
+func (val *Validator) MarshalTo(data []byte) (int, error) {
+	bs, err := val.Encode()
+	if err != nil {
+		return -1, err
+	}
+	return copy(data, bs), nil
+}
+
+func (val *Validator) Size() int {
+	/// TODO: maybe a better way?
+	bs, _ := val.Encode()
+	return len(bs)
+}
