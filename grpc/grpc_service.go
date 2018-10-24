@@ -301,17 +301,16 @@ func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error
 }
 
 //transcation Service
-
 func (tx *transcatorServer) BroadcastTx(ctx context.Context, txreq *TransactRequest) (*ReceiptResponse, error) {
 
-	// tx.logger.Trace.Log("method", "BroadcastTx",
-	// 	"tx_hash", txreq.Hash(),
-	// 	"tx", txreq.String())
-	// txhash, err := s.transact.BroadcastTx(txEnv)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	return nil, nil
+	txhash, err := tx.transactor.BroadcastTx(txreq.Txs)
+	fmt.Println(txhash);
+	if err != nil {
+		return nil, err
+	}
+	return &ReceiptResponse{
+	   TxHash:txhash,
+	},nil
 }
 
 func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq *UnconfirmedTxsRequest) (*UnconfirmTxsResponse, error) {
