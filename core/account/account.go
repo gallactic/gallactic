@@ -3,8 +3,6 @@ package account
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gallactic/gallactic/event/query"
-
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
@@ -187,14 +185,3 @@ func (acc *Account) Size() int {
 	return len(bs)
 }
 
-type TaggedAccount struct {
-	*Account
-	query.Tagged
-}
-
-func (acc *Account) Tagged() query.Tagged {
-	return &TaggedAccount{
-		Account: acc,
-		Tagged:  query.MustReflectTags(acc),
-	}
-}

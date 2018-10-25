@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	port = "localhost:10903"
+	port = "127.0.0.1:50051"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-	c := grpcode.NewAccountsClient(conn)
+	c := grpcode.NewNetworkClient(conn)
 	fmt.Println("gprc is registered", c)
 	defer conn.Close()
 	// Contact the server and print out its response.
@@ -33,7 +33,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(*deadlineMs)*time.Millisecond)
 	defer cancel()
 	//fmt.Println("Address : ", address)
-	f, ferr := c.GetValidators(ctx, &grpcode.Empty{})
+	f, ferr := c.GetNetworkInfo(ctx, &grpcode.Empty{})
 
 	if ferr != nil {
 		log.Fatalf("could not greet: %v", ferr)
