@@ -34,6 +34,7 @@ type BlockchainServer struct {
 	blockchain *blockchain.Blockchain
 }
 
+
 type networkServer struct {
 	nodeview   *query.NodeView
 	blockchain *blockchain.Blockchain
@@ -164,8 +165,8 @@ func (s *BlockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusRes
 
 }
 
+// Blockchain Service
 func (s *BlockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*BlockResponse, error) {
-
 	Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
 	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
 	return &BlockResponse{
@@ -264,8 +265,10 @@ func (s *BlockchainServer) GetBlockTxs(ctx context.Context, block *BlockRequest)
 
 }
 
+//Network service
 func (s *networkServer) GetNetworkInfo(context.Context, *Empty) (*NetInfoResponse, error) {
 	listening := s.nodeview.IsListening()
+	fmt.Println("is listening", listening)
 	var contexts context.Context
 	var listeners []string
 	for _, listener := range s.nodeview.Listeners() {
@@ -283,11 +286,9 @@ func (s *networkServer) GetNetworkInfo(context.Context, *Empty) (*NetInfoRespons
 	}, nil
 }
 
-//Network service
 func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error) {
-	
-	peers := make([]*Peer, ns.nodeview.Peers().Size())
 
+	peers := make([]*Peer, ns.nodeview.Peers().Size())
 	for i, peer := range ns.nodeview.Peers().List() {
 		fmt.Println("peers", peer)
 		peers[i] = &Peer{
@@ -296,7 +297,7 @@ func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error
 		}
 	}
 	return &PeerResponse{
-	//	 Peer: peers,
+		//	 Peer: peers,
 	}, nil
 }
 
@@ -304,13 +305,12 @@ func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error
 func (tx *transcatorServer) BroadcastTx(ctx context.Context, txreq *TransactRequest) (*ReceiptResponse, error) {
 
 	txhash, err := tx.transactor.BroadcastTx(txreq.Txs)
-	fmt.Println(txhash);
 	if err != nil {
 		return nil, err
 	}
 	return &ReceiptResponse{
-	   TxHash:txhash,
-	},nil
+		TxHash: txhash,
+	}, nil
 }
 
 func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq *UnconfirmedTxsRequest) (*UnconfirmTxsResponse, error) {

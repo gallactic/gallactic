@@ -112,7 +112,6 @@ func (val Validator) String() string {
 	return fmt.Sprintf("Validator%s", string(b))
 }
 
-
 func (val *Validator) Unmarshal(bs []byte) error {
 	return val.Decode(bs)
 }
