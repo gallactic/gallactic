@@ -151,7 +151,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			Name:    "GRPC",
 			Enabled: conf.GRPC.Enabled,
 			Launch: func() (process.Process, error) {
-				listen, err := net.Listen("tcp", "127.0.0.1:50051")
+				listen, err := net.Listen("tcp", conf.GRPC.ListenAddress)
 				fmt.Println("listen", listen)
 				if err != nil {
 					return nil, err

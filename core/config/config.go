@@ -10,6 +10,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	tmConfig "github.com/gallactic/gallactic/core/consensus/tendermint/config"
+	grpcConfig "github.com/gallactic/gallactic/grpc/config"
 	rpcConfig "github.com/gallactic/gallactic/rpc/config"
 	logconfig "github.com/hyperledger/burrow/logging/logconfig"
 )
@@ -17,7 +18,7 @@ import (
 type Config struct {
 	Tendermint *tmConfig.TendermintConfig `toml:"tendermint"`
 	RPC        *rpcConfig.RPCConfig       `toml:"rpc"`
-	GRPC       *rpcConfig.GRPCConfig      `toml:"grpc"`
+	GRPC       *grpcConfig.GRPCConfig     `toml:"grpc"`
 	Logging    *logconfig.LoggingConfig   `toml:"logging,omitempty"`
 }
 
@@ -25,7 +26,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		Tendermint: tmConfig.DefaultTendermintConfig(),
 		RPC:        rpcConfig.DefaultRPCConfig(),
-		GRPC:       rpcConfig.DefaultGRPCConfig(),
+		GRPC:       grpcConfig.DefaultGRPCConfig(),
 		Logging:    logconfig.DefaultNodeLoggingConfig(),
 	}
 }
