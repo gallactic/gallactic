@@ -184,4 +184,3 @@ func (acc *Account) Size() int {
 	bs, _ := acc.Encode()
 	return len(bs)
 }
-

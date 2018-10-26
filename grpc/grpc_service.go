@@ -12,6 +12,7 @@ import (
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
+	consensusTypes "github.com/tendermint/tendermint/consensus/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
@@ -33,7 +34,6 @@ type BlockchainServer struct {
 	nodeview   *query.NodeView
 	blockchain *blockchain.Blockchain
 }
-
 
 type networkServer struct {
 	nodeview   *query.NodeView
@@ -166,6 +166,7 @@ func (s *BlockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusRes
 }
 
 // Blockchain Service
+
 func (s *BlockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*BlockResponse, error) {
 	Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
 	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
@@ -202,7 +203,6 @@ func (s *BlockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest)
 }
 
 func (s *BlockchainServer) GetGenesis(context.Context, *Empty) (*GenesisResponse, error) {
-
 	gen := s.blockchain.Genesis()
 	return &GenesisResponse{
 		Genesis: gen,
@@ -210,7 +210,6 @@ func (s *BlockchainServer) GetGenesis(context.Context, *Empty) (*GenesisResponse
 }
 
 func (s *BlockchainServer) GetChainID(context.Context, *Empty) (*ChainResponse, error) {
-
 	return &ChainResponse{
 		ChainName:   s.blockchain.Genesis().ChainName(),
 		ChainId:     s.blockchain.ChainID(),
@@ -230,14 +229,18 @@ func (s *BlockchainServer) GetLatestBlock(context.Context, *BlockRequest) (*Bloc
 }
 func (s *BlockchainServer) GetConsensusState(context.Context, *Empty) (*ConsensusResponse, error) {
 
+	peerRound := make([]consensusTypes.PeerRoundState, 0)
 	peerRoundState, err := s.nodeview.PeerRoundStates()
 	fmt.Println("peerRoundState", peerRoundState)
+	for _, pr := range peerRoundState {
+		peerRound = append(peerRound, *pr)
+	}
 	if err != nil {
 		return nil, err
 	}
 	return &ConsensusResponse{
-		RoundState: s.nodeview.RoundState().RoundStateSimple(),
-		//PeerRoundStates: peerRoundState,
+		RoundState:      s.nodeview.RoundState().RoundStateSimple(),
+		PeerRoundStates: peerRound,
 	}, nil
 
 }
