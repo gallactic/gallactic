@@ -37,5 +37,6 @@ func (s *signer) PublicKey() PublicKey {
 }
 
 func (s *signer) Sign(msg []byte) (Signature, error) {
-	return s.privateKey.Sign(msg)
+	hash := Sha3(msg)
+	return s.privateKey.Sign(hash)
 }
