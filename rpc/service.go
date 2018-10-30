@@ -196,6 +196,14 @@ func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*Accounts
 	}, nil
 }
 
+func (s *Service) GetValidator(address crypto.Address) (*ValidatorOutput, error) {
+	val, err := s.state.GetValidator(address)
+	if err != nil {
+		return nil, nil //TODO we should return a proper error!
+	}
+	return &ValidatorOutput{Validator: val}, nil
+}
+
 func (s *Service) GetStorage(address crypto.Address, key []byte) (*StorageOutput, error) {
 	value, err := s.state.GetStorage(address, binary.LeftPadWord256(key))
 	if err != nil {
