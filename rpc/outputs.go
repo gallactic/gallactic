@@ -129,6 +129,10 @@ type AccountOutput struct {
 	Account *account.Account
 }
 
+type ValidatorOutput struct {
+	Validator *validator.Validator
+}
+
 type BroadcastTxOutput struct {
 	txs.Receipt
 }
