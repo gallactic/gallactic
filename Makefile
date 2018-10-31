@@ -9,15 +9,14 @@ LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-
 CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl"
 
 
-all: tools deps build install
-tests: build_race test test_release test_race
+all: tools deps build install test test_release test_race
 
 ########################################
 ### Tools & dependencies
 tools:
 	@cargo --version || (echo "Install Rust first; see https://rustup.rs/"; false)
 	@echo "Installing tools"
-	go get -u -v $(GOTOOLS)
+	go get $(GOTOOLS)
 	@gometalinter.v2 --install
 
 
@@ -35,9 +34,6 @@ deps:
 ### Build Gallactic
 build:
 	$(CFLAGS) go build $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic/
-
-build_race:
-	$(CFLAGS) go build -race $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic
 
 install:
 	$(CFLAGS) go install $(LDFLAGS) $(TAGS) ./cmd/gallactic
@@ -100,7 +96,6 @@ metalinter:
 # To avoid unintended conflicts with file names, always add to .PHONY
 # unless there is a reason not to.
 # https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html
-.PHONY: build build_race install docker
-.PHONY: tests test test_race test_release
+.PHONY: build install docker test test_race test_release
 .PHONY: tools deps
 .PHONY: fmt metalinter

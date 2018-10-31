@@ -19,7 +19,7 @@ RUN mkdir -p /go/src/github.com/gallactic/gallactic/ && \
     cd /go/src/github.com/gallactic/gallactic/ && \
     git clone https://github.com/gallactic/gallactic/ . && \
     git checkout develop && \
-    make && \
+    make tools deps install && \
     cd - && \
     rm -rf /go/src/ && \
     apk del build-base git rust
