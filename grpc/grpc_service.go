@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -56,14 +57,10 @@ func AccountService(blockchain *blockchain.Blockchain) *accountServer {
 	}
 }
 
-func TransactorService(transactor *execution.Transactor) *transcatorServer {
+func TransactorService(transction *execution.Transactor) *transcatorServer {
 	return &transcatorServer{
-		transactor: transactor,
+		transactor: transction,
 	}
-}
-
-func (s *transcatorServer) Transactor() *execution.Transactor {
-	return s.transactor
 }
 
 func BlockchainService(blockchain *blockchain.Blockchain, nview *query.NodeView) *BlockchainServer {
@@ -80,13 +77,22 @@ func NetowrkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *n
 }
 
 // Account Service
-func (s *accountServer) GetAccount(ctx context.Context, param *AddressRequest) (*Account, error) {
-	acc, err := s.state.GetAccount(param.Address)
+
+func (as *accountServer) GetAccount(ctx context.Context, param *AddressRequest) (*Account, error) {
+	acc, err := as.state.GetAccount(param.Address)
 	if err != nil {
 		return nil, err
 	}
-
 	return &Account{Account: acc}, nil
+
+}
+
+func (as *accountServer) GetValidator(ctx context.Context, param *AddressRequest) (*ValidatorResponse, error) {
+	val, err := as.state.GetValidator(param.Address)
+	if err != nil {
+		return nil, err
+	}
+	return &ValidatorResponse{Validator: val}, nil
 
 }
 
