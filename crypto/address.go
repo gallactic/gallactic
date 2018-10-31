@@ -151,9 +151,7 @@ func (addr *Address) MarshalTo(data []byte) (int, error) {
 }
 
 func (addr *Address) Size() int {
-	/// TODO: maybe a better way?
-	bs := addr.String()
-	return len(bs)
+	return AddressSize
 }
 
 /// -------

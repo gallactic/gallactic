@@ -125,7 +125,7 @@ func (acc *Account) UnsetPermissions(perm Permissions) error {
 ///---- Serialization methods
 var ac = amino.NewCodec()
 
-func (acc Account) Encode() ([]byte, error) {
+func (acc *Account) Encode() ([]byte, error) {
 	return ac.MarshalBinary(&acc.data)
 }
 

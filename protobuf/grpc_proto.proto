@@ -9,16 +9,17 @@ import "google/protobuf/struct.proto";
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.sizer_all) = true;
-option (gogoproto.goproto_registration) = false;
-option (gogoproto.messagename_all) = false;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
 option (gogoproto.protosizer_all) =false;
 
-
+ option (gogoproto.testgen_all) = true;
 
 
 // Account Service definition
 service Accounts {
 	rpc GetAccount(AddressRequest) returns (Account);
+  rpc GetValidator(AddressRequest) returns (ValidatorResponse);
 	rpc GetValidators(Empty) returns (ValidatorsResponse);
 	rpc GetStorage(StorageAtRequest) returns (StorageResponse);
 	rpc GetStorageAt(StorageAtRequest) returns(StorageResponse);
@@ -43,8 +44,12 @@ message ListAccountsParam {
     string Query = 1;
 }
 message AddressRequest {
-	bytes Address = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/crypto.Address", (gogoproto.nullable) = false];
+	bytes Address = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/crypto.Address",(gogoproto.nullable) = false];
 
+}
+
+message ValidatorResponse{
+ bytes Validator  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
 }
 
 message ValidatorsResponse {
@@ -153,9 +158,6 @@ service Transaction {
 message TransactRequest {
   TransactRequest txs = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
-
-
-
 
 message ReceiptResponse {
  bytes  TxHash = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Receipt"];
