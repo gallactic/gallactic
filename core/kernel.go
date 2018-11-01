@@ -152,7 +152,6 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			Enabled: conf.GRPC.Enabled,
 			Launch: func() (process.Process, error) {
 				listen, err := net.Listen("tcp", conf.GRPC.ListenAddress)
-				fmt.Println("listen", listen)
 				if err != nil {
 					return nil, err
 				}
@@ -161,7 +160,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(bc))
 				grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode, txCodec)))
 				grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode, txCodec)))
-				// grpc.TransactorService(grpcServer, grpc.TransactorService(transactor))
+				grpc.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))
 				grpcServer.Serve(listen)
 				return process.ShutdownFunc(func(ctx context.Context) error {
 					grpcServer.Stop()

@@ -65,14 +65,14 @@ func (val *Validator) IncSequence() {
 }
 
 ///---- Serialization methods
-var vc = amino.NewCodec()
+var cdc = amino.NewCodec()
 
 func (val Validator) Encode() ([]byte, error) {
-	return vc.MarshalBinary(val.data)
+	return cdc.MarshalBinary(val.data)
 }
 
 func (val *Validator) Decode(bs []byte) error {
-	err := vc.UnmarshalBinary(bs, &val.data)
+	err := cdc.UnmarshalBinary(bs, &val.data)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,6 @@ func (val *Validator) MarshalTo(data []byte) (int, error) {
 }
 
 func (val *Validator) Size() int {
-	/// TODO: maybe a better way?
 	bs, _ := val.Encode()
 	return len(bs)
 }
