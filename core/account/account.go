@@ -122,15 +122,15 @@ func (acc *Account) UnsetPermissions(perm Permissions) error {
 	return nil
 }
 
-///---- Serialization methods
-var ac = amino.NewCodec()
+//protobuf marshal,unmarshal and size
+var cdc = amino.NewCodec()
 
 func (acc *Account) Encode() ([]byte, error) {
-	return ac.MarshalBinary(&acc.data)
+	return cdc.MarshalBinary(&acc.data)
 }
 
 func (acc *Account) Decode(bs []byte) error {
-	err := ac.UnmarshalBinary(bs, &acc.data)
+	err := cdc.UnmarshalBinary(bs, &acc.data)
 	if err != nil {
 		return err
 	}
@@ -180,7 +180,6 @@ func (acc *Account) MarshalTo(data []byte) (int, error) {
 }
 
 func (acc *Account) Size() int {
-	/// TODO: maybe a better way?
 	bs, _ := acc.Encode()
 	return len(bs)
 }

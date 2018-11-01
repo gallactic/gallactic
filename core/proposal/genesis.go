@@ -173,16 +173,14 @@ func (gen *Genesis) UnmarshalJSON(bs []byte) error {
 }
 
 //protobuf marshal,unmrshal and size
-
-///---- Serialization methods
-var ge = amino.NewCodec()
+var cdc = amino.NewCodec()
 
 func (gen Genesis) Encode() ([]byte, error) {
-	return ge.MarshalBinary(&gen.data)
+	return cdc.MarshalBinary(&gen.data)
 }
 
 func (gen *Genesis) Decode(bs []byte) error {
-	err := ge.UnmarshalBinary(bs, &gen.data)
+	err := cdc.UnmarshalBinary(bs, &gen.data)
 	if err != nil {
 		return err
 	}
@@ -207,7 +205,6 @@ func (gen *Genesis) MarshalTo(data []byte) (int, error) {
 }
 
 func (gen *Genesis) Size() int {
-	/// TODO: maybe a better way?
 	bs, _ := gen.Encode()
 	return len(bs)
 }

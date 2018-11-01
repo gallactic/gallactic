@@ -205,7 +205,6 @@ func (env *Envelope) MarshalTo(data []byte) (int, error) {
 }
 
 func (env *Envelope) Size() int {
-	/// TODO: maybe a better way?
 	bs, _ := env.Encode()
 	return len(bs)
 }
@@ -241,7 +240,6 @@ func (r *Receipt) MarshalTo(data []byte) (int, error) {
 }
 
 func (r *Receipt) Size() int {
-	/// TODO: maybe a better way?
 	bs, _ := r.Encode()
 	return len(bs)
 }
