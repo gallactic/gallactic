@@ -12,8 +12,7 @@ option (gogoproto.sizer_all) = true;
 option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.protosizer_all) =false;
-
- option (gogoproto.testgen_all) = true;
+option (gogoproto.testgen_all) = true;
 
 
 // Account Service definition
@@ -51,6 +50,7 @@ message AddressRequest {
 message ValidatorResponse{
  bytes Validator  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
 }
+
 
 message ValidatorsResponse {
 uint64 BlockHeight  = 1 ; 
