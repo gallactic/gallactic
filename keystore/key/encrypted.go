@@ -38,7 +38,7 @@ const (
 	dirPath = "/tmp/"
 )
 
-type encryptedKeyJSONV3 struct {
+type encryptedKey struct {
 	Address    crypto.Address     `json:"address"`
 	Crypto     *cryptoJSON        `json:"crypto,omitempty"`
 	PrivateKey *crypto.PrivateKey `json:"privatekey,omitempty"`
@@ -58,6 +58,20 @@ type cipherparamsJSON struct {
 	IV string `json:"iv"`
 }
 
+func VerifyFile(filePath string) (crypto.Address, bool) {
+	kj := new(encryptedKey)
+	bs, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return kj.Address, false
+	}
+
+	if err := json.Unmarshal(bs, kj); err != nil {
+		return kj.Address, false
+	}
+
+	return kj.Address, true
+}
+
 // DecryptKeyFile decrypts the file and returns Key
 func DecryptKeyFile(filePath, auth string) (*Key, error) {
 	data, err := ioutil.ReadFile(filePath)
@@ -67,14 +81,13 @@ func DecryptKeyFile(filePath, auth string) (*Key, error) {
 	return DecryptKey(data, auth)
 }
 
-//DecryptKey decrypts the Key from a json blob and returns the plaintext of the private key
+// DecryptKey decrypts the Key from a json blob and returns the plaintext of the private key
 func DecryptKey(bs []byte, auth string) (*Key, error) {
-	kj := new(encryptedKeyJSONV3)
+	kj := new(encryptedKey)
 	if err := json.Unmarshal(bs, kj); err != nil {
 		return nil, err
 	}
 
-	fmt.Println(kj.PrivateKey)
 	if kj.PrivateKey != nil {
 		return NewKey(kj.Address, *kj.PrivateKey)
 	}
@@ -153,13 +166,13 @@ func EncryptKeyFile(key *Key, filePath, auth string) error {
 func EncryptKey(key *Key, auth string) ([]byte, error) {
 	if auth == "" {
 		pv := key.PrivateKey()
-		encryptedKeyJSONV3 := encryptedKeyJSONV3{
+		kj := encryptedKey{
 			Address:    key.data.Address,
 			PrivateKey: &pv,
 			Version:    version,
 		}
 
-		return json.Marshal(encryptedKeyJSONV3)
+		return json.Marshal(kj)
 	}
 
 	authArray := []byte(auth)
@@ -198,13 +211,13 @@ func EncryptKey(key *Key, auth string) ([]byte, error) {
 		MAC:          hex.EncodeToString(mac),
 	}
 
-	encryptedKeyJSONV3 := encryptedKeyJSONV3{
+	kj := encryptedKey{
 		Address: key.data.Address,
 		Crypto:  &cryptoStruct,
 		Version: version,
 	}
 
-	return json.Marshal(encryptedKeyJSONV3)
+	return json.Marshal(kj)
 }
 
 func getEntropyCSPRNG(n int) []byte {

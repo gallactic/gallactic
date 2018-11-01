@@ -7,7 +7,7 @@ import (
 	"github.com/jawher/mow.cli"
 )
 
-var ascii = `
+var title = `
    ____    _    _     _        _    ____ _____ ___ ____
   / ___|  / \  | |   | |      / \  / ___|_   _|_ _/ ___|
  | |  _  / _ \ | |   | |     / _ \| |     | |  | | |

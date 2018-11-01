@@ -30,7 +30,7 @@ func Init() func(cmd *cli.Cmd) {
 
 		cmd.Spec = "[--working-dir=<Working directory to save the configuration files>] " + "[--chain-name =<A name for the blockchain>]"
 		cmd.LongDesc = "Initializing working directory"
-		cmd.Before = func() { fmt.Println(ascii) }
+		cmd.Before = func() { fmt.Println(title) }
 		cmd.Action = func() {
 			workingDir := *workingDirOpts
 			chainName := *ChainNameOpts
