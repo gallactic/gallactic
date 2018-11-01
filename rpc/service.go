@@ -199,7 +199,7 @@ func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*Accounts
 func (s *Service) GetValidator(address crypto.Address) (*ValidatorOutput, error) {
 	val, err := s.state.GetValidator(address)
 	if err != nil {
-		return nil, nil //TODO we should return a proper error!
+		return nil,err
 	}
 	return &ValidatorOutput{Validator: val}, nil
 }
