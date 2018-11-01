@@ -179,17 +179,19 @@ service Network {
 }
 
 message Peer {
-	 bytes Peer = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/rpc.Peer"];
+bytes  NodeInfo     = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.NodeInfo",(gogoproto.nullable) = false];
+bool	IsOutbound = 2;
+
 }
 
 message PeerResponse {
-	 bytes Peer = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/rpc.Peer"];
+	repeated Peer Peer = 1;
 }
 
 message NetInfoResponse {
  bool  Listening =1;
  repeated string Listeners = 2;
- repeated bytes Peers = 3;
+ repeated Peer Peers = 3;
 
 }
 

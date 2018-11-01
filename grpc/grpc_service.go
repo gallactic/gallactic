@@ -77,7 +77,6 @@ func NetowrkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *n
 }
 
 // Account Service
-
 func (as *accountServer) GetAccount(ctx context.Context, param *AddressRequest) (*Account, error) {
 	acc, err := as.state.GetAccount(param.Address)
 	if err != nil {
@@ -172,8 +171,9 @@ func (s *BlockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusRes
 }
 
 // Blockchain Service
-
 func (s *BlockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*BlockResponse, error) {
+
+	//TODO changes to be made in vendor/tendermint for block and blockmeta.
 	Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
 	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
 	return &BlockResponse{
@@ -195,6 +195,7 @@ func (s *BlockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest)
 		blocks.MinHeight = blocks.MaxHeight - MaxBlockLookback
 	}
 
+	//TODO changes to be made in vendor/tendermint  blockmeta.
 	var blockMetas []tmTypes.BlockMeta
 	for height := blocks.MaxHeight; height >= blocks.MinHeight; height-- {
 		blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(height))
@@ -226,6 +227,7 @@ func (s *BlockchainServer) GetChainID(context.Context, *Empty) (*ChainResponse, 
 
 func (s *BlockchainServer) GetLatestBlock(context.Context, *BlockRequest) (*BlockResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
+	//TODO changes to be made in vendor/tendermint  blockmeta.
 	block := s.nodeview.BlockStore().LoadBlock(int64(latestHeight))
 	blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(latestHeight))
 	return &BlockResponse{
@@ -234,10 +236,9 @@ func (s *BlockchainServer) GetLatestBlock(context.Context, *BlockRequest) (*Bloc
 	}, nil
 }
 func (s *BlockchainServer) GetConsensusState(context.Context, *Empty) (*ConsensusResponse, error) {
-
 	peerRound := make([]consensusTypes.PeerRoundState, 0)
+	//TODO changes to be made in vendor/tendermint  for PeerRoundStates and RoundState.
 	peerRoundState, err := s.nodeview.PeerRoundStates()
-	fmt.Println("peerRoundState", peerRoundState)
 	for _, pr := range peerRoundState {
 		peerRound = append(peerRound, *pr)
 	}
@@ -252,7 +253,7 @@ func (s *BlockchainServer) GetConsensusState(context.Context, *Empty) (*Consensu
 }
 
 func (s *BlockchainServer) GetBlockTxs(ctx context.Context, block *BlockRequest) (*BlockTxsResponse, error) {
-
+	//TODO changes to be made in vendor/tendermint  for Block.
 	result, err := s.GetBlock(ctx, block)
 	if err != nil {
 		return nil, err
@@ -291,7 +292,7 @@ func (s *networkServer) GetNetworkInfo(context.Context, *Empty) (*NetInfoRespons
 	return &NetInfoResponse{
 		Listening: listening,
 		Listeners: listeners,
-		//Peers:     peers.Peer,
+		Peers:     peers.Peer,
 	}, nil
 }
 
@@ -299,14 +300,13 @@ func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error
 
 	peers := make([]*Peer, ns.nodeview.Peers().Size())
 	for i, peer := range ns.nodeview.Peers().List() {
-		fmt.Println("peers", peer)
 		peers[i] = &Peer{
-			// NodeInfo:  peer.NodeInfo(),
-			// IsOutbound: peer.IsOutbound(),
+			NodeInfo:   peer.NodeInfo(),
+			IsOutbound: peer.IsOutbound(),
 		}
 	}
 	return &PeerResponse{
-		//	 Peer: peers,
+		Peer: peers,
 	}, nil
 }
 
