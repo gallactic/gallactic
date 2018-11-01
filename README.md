@@ -48,7 +48,7 @@ docker run -it --rm -v "/tmp/chain1:/gallactic"  gallactic init -w=/gallactic
 
 
 ## Contribution
-Thanks for considering to contribute in Gallactic project! <TODO>
+Thanks for considering to contribute in Gallactic project!
 
 ## License
 The Gallactic blockchain is under MIT <TODO: link> license.

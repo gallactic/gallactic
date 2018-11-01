@@ -3,7 +3,6 @@ package account
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
@@ -123,15 +122,15 @@ func (acc *Account) UnsetPermissions(perm Permissions) error {
 	return nil
 }
 
-///---- Serialization methods
-var ac = amino.NewCodec()
+//protobuf marshal,unmarshal and size
+var cdc = amino.NewCodec()
 
-func (acc Account) Encode() ([]byte, error) {
-	return ac.MarshalBinary(&acc.data)
+func (acc *Account) Encode() ([]byte, error) {
+	return cdc.MarshalBinary(&acc.data)
 }
 
 func (acc *Account) Decode(bs []byte) error {
-	err := ac.UnmarshalBinary(bs, &acc.data)
+	err := cdc.UnmarshalBinary(bs, &acc.data)
 	if err != nil {
 		return err
 	}
@@ -139,7 +138,7 @@ func (acc *Account) Decode(bs []byte) error {
 
 }
 
-func (acc Account) MarshalJSON() ([]byte, error) {
+func (acc *Account) MarshalJSON() ([]byte, error) {
 	return json.Marshal(acc.data)
 }
 
@@ -162,4 +161,25 @@ func AccountFromJSON(bs []byte) (*Account, error) {
 func (acc Account) String() string {
 	b, _ := acc.MarshalJSON()
 	return fmt.Sprintf("Account%s", string(b))
+}
+
+func (acc *Account) Unmarshal(bs []byte) error {
+	return acc.Decode(bs)
+}
+
+func (acc *Account) Marshal() ([]byte, error) {
+	return acc.Encode()
+}
+
+func (acc *Account) MarshalTo(data []byte) (int, error) {
+	bs, err := acc.Encode()
+	if err != nil {
+		return -1, err
+	}
+	return copy(data, bs), nil
+}
+
+func (acc *Account) Size() int {
+	bs, _ := acc.Encode()
+	return len(bs)
 }

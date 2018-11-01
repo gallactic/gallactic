@@ -10,6 +10,7 @@ const (
 
 	GET_ACCOUNTS        = GALLACTIC + "getAccounts"
 	GET_ACCOUNT         = GALLACTIC + "getAccount"
+	GET_VALIDATOR       = GALLACTIC + "getValidator"
 	GET_STORAGE         = GALLACTIC + "getStorage"
 	GET_STORAGE_AT      = GALLACTIC + "getStorageAt"
 	GET_STATUS          = GALLACTIC + "getStatus"
@@ -79,6 +80,19 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 			return nil, RPCErrorInternalError, err
 		}
 		return acc, 0, nil
+	}
+
+	rpcServiceMap[GET_VALIDATOR] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &AddressInput{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, RPCErrorInvalidParams, err
+		}
+		val, err := service.GetValidator(input.Address)
+		if val == nil || err != nil {
+			return nil, RPCErrorInternalError, err
+		}
+		return val, 0, nil
 	}
 
 	rpcServiceMap[GET_STORAGE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {

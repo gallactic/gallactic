@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"net"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -23,11 +24,11 @@ import (
 	"github.com/gallactic/gallactic/rpc"
 	"github.com/gallactic/gallactic/txs"
 
+	grpc "github.com/gallactic/gallactic/grpc"
+	kitlog "github.com/go-kit/kit/log"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/lifecycle"
 	"github.com/hyperledger/burrow/logging/structure"
-
-	kitlog "github.com/go-kit/kit/log"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
@@ -143,6 +144,29 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 					return nil, err
 				}
 				return serveProcess, nil
+			},
+		},
+
+		{
+			Name:    "GRPC",
+			Enabled: conf.GRPC.Enabled,
+			Launch: func() (process.Process, error) {
+				listen, err := net.Listen("tcp", conf.GRPC.ListenAddress)
+				if err != nil {
+					return nil, err
+				}
+				listen.Addr()
+				grpcServer := grpc.NewGRPCServer(logger)
+				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(bc))
+				grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode, txCodec)))
+				grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode, txCodec)))
+				grpc.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))
+				grpcServer.Serve(listen)
+				return process.ShutdownFunc(func(ctx context.Context) error {
+					grpcServer.Stop()
+					// listener is closed for us
+					return nil
+				}), nil
 			},
 		},
 	}
