@@ -2,8 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -171,42 +169,44 @@ func (s *BlockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusRes
 }
 
 // Blockchain Service
+
 func (s *BlockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*BlockResponse, error) {
 
-	//TODO changes to be made in vendor/tendermint for block and blockmeta.
-	Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
-	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
-	return &BlockResponse{
-		Block:     Block,
-		BlockMeta: Blockmeta,
-	}, nil
+	// //TODO changes to be made in vendor/tendermint for block and blockmeta.
+	// Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
+	// Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
+	// return &BlockResponse{
+	// 	Block:     Block,
+	// 	BlockMeta: Blockmeta,
+	// }, nil
+	return nil,nil
 }
 
 func (s *BlockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest) (*BlocksResponse, error) {
 
-	latestHeight := s.blockchain.LastBlockHeight()
-	if blocks.MinHeight == 0 {
-		blocks.MinHeight = 1
-	}
-	if blocks.MaxHeight == 0 || latestHeight < blocks.MaxHeight {
-		blocks.MaxHeight = latestHeight
-	}
-	if blocks.MaxHeight > blocks.MinHeight && blocks.MaxHeight-blocks.MinHeight > MaxBlockLookback {
-		blocks.MinHeight = blocks.MaxHeight - MaxBlockLookback
-	}
+	//latestHeight := s.blockchain.LastBlockHeight()
+	// if blocks.MinHeight == 0 {
+	// 	blocks.MinHeight = 1
+	// }
+	// if blocks.MaxHeight == 0 || latestHeight < blocks.MaxHeight {
+	// 	blocks.MaxHeight = latestHeight
+	// }
+	// if blocks.MaxHeight > blocks.MinHeight && blocks.MaxHeight-blocks.MinHeight > MaxBlockLookback {
+	// 	blocks.MinHeight = blocks.MaxHeight - MaxBlockLookback
+	// }
 
 	//TODO changes to be made in vendor/tendermint  blockmeta.
-	var blockMetas []tmTypes.BlockMeta
-	for height := blocks.MaxHeight; height >= blocks.MinHeight; height-- {
-		blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(height))
-		blockMetas = append(blockMetas, *blockMeta)
-	}
+	// var blockMetas []tmTypes.BlockMeta
+	// for height := blocks.MaxHeight; height >= blocks.MinHeight; height-- {
+	// 	blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(height))
+	// 	blockMetas = append(blockMetas, *blockMeta)
+	// }
 
-	return &BlocksResponse{
-		LastHeight: latestHeight,
-		BlockMeta:  blockMetas,
-	}, nil
-
+	// return &BlocksResponse{
+	// 	LastHeight: latestHeight,
+	// 	BlockMeta:  blockMetas,
+	// }, nil
+     return nil,nil
 }
 
 func (s *BlockchainServer) GetGenesis(context.Context, *Empty) (*GenesisResponse, error) {
@@ -277,23 +277,25 @@ func (s *BlockchainServer) GetBlockTxs(ctx context.Context, block *BlockRequest)
 
 //Network service
 func (s *networkServer) GetNetworkInfo(context.Context, *Empty) (*NetInfoResponse, error) {
-	listening := s.nodeview.IsListening()
-	fmt.Println("is listening", listening)
-	var contexts context.Context
-	var listeners []string
-	for _, listener := range s.nodeview.Listeners() {
-		listeners = append(listeners, listener.String())
-	}
-	peers, err := s.GetPeers(contexts, nil)
-	fmt.Println("peers", peers)
-	if err != nil {
-		return nil, err
-	}
-	return &NetInfoResponse{
-		Listening: listening,
-		Listeners: listeners,
-		Peers:     peers.Peer,
-	}, nil
+	// listening := s.nodeview.IsListening()
+	// fmt.Println("is listening", listening)
+	// var contexts context.Context
+	// var listeners []string
+	// for _, listener := range s.nodeview.Listeners() {
+	// 	listeners = append(listeners, listener.String())
+	// }
+	// peers, err := s.GetPeers(contexts, nil)
+	// fmt.Println("peers", peers)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return &NetInfoResponse{
+	// 	Listening: listening,
+	// 	Listeners: listeners,
+	// 	Peers:     peers.Peer,
+	// }, nil
+
+	return nil,nil
 }
 
 func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error) {

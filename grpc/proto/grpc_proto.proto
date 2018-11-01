@@ -53,7 +53,7 @@ message ValidatorResponse{
 
 
 message ValidatorsResponse {
-uint64 BlockHeight  = 1 ; 
+uint64 BlockHeight  = 1 ;
 repeated bytes Validators  = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
 }
 
@@ -93,7 +93,7 @@ message ConsensusResponse{
 
 message ChainResponse{
   string ChainName = 1;
-  string ChainId  = 2  ; 
+  string ChainId  = 2  ;
   bytes	 GenesisHash = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
 }
 
@@ -152,7 +152,7 @@ message BlockTxsResponse {
 service Transaction {
 	rpc BroadcastTx(TransactRequest) returns(ReceiptResponse);
 	rpc GetUnconfirmedTxs(UnconfirmedTxsRequest) returns(UnconfirmTxsResponse);
-	
+
 }
 
 message TransactRequest {

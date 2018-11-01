@@ -2454,23 +2454,23 @@ func (m *ConsensusResponse) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	dAtA[i] = 0xa
 	i++
-	i = encodeVarintGrpcProto(dAtA, i, uint64(m.RoundState.Size()))
-	n8, err := m.RoundState.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n8
+	// i = encodeVarintGrpcProto(dAtA, i, uint64(m.RoundState.Size()))
+	// n8, err := m.RoundState.MarshalTo(dAtA[i:])
+	// if err != nil {
+	// 	return 0, err
+	// }
+	// i += n8
 	if len(m.PeerRoundStates) > 0 {
-		for _, msg := range m.PeerRoundStates {
-			dAtA[i] = 0x12
-			i++
-			i = encodeVarintGrpcProto(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
+		// for _, msg := range m.PeerRoundStates {
+		// 	dAtA[i] = 0x12
+		// 	i++
+			// i = encodeVarintGrpcProto(dAtA, i, uint64(msg.Size()))
+			// n, err := msg.MarshalTo(dAtA[i:])
+			// if err != nil {
+			// 	return 0, err
+			// }
+			// i += n
+		//}
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(dAtA[i:], m.XXX_unrecognized)
@@ -2536,12 +2536,12 @@ func (m *StatusResponse) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	dAtA[i] = 0xa
 	i++
-	i = encodeVarintGrpcProto(dAtA, i, uint64(m.NodeInfo.Size()))
-	n10, err := m.NodeInfo.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n10
+	// i = encodeVarintGrpcProto(dAtA, i, uint64(m.NodeInfo.Size()))
+	// n10, err := m.NodeInfo.MarshalTo(dAtA[i:])
+	// if err != nil {
+	// 	return 0, err
+	// }
+	// i += n10
 	dAtA[i] = 0x12
 	i++
 	i = encodeVarintGrpcProto(dAtA, i, uint64(m.GenesisHash.Size()))
@@ -2663,23 +2663,23 @@ func (m *BlockResponse) MarshalTo(dAtA []byte) (int, error) {
 	if m.BlockMeta != nil {
 		dAtA[i] = 0xa
 		i++
-		i = encodeVarintGrpcProto(dAtA, i, uint64(m.BlockMeta.Size()))
-		n14, err := m.BlockMeta.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n14
+		// i = encodeVarintGrpcProto(dAtA, i, uint64(m.BlockMeta.Size()))
+		// n14, err := m.BlockMeta.MarshalTo(dAtA[i:])
+		// if err != nil {
+		// 	return 0, err
+		// }
+		// i += n14
 	}
-	if m.Block != nil {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintGrpcProto(dAtA, i, uint64(m.Block.Size()))
-		n15, err := m.Block.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n15
-	}
+	// if m.Block != nil {
+	// 	dAtA[i] = 0x12
+	// 	i++
+	// 	i = encodeVarintGrpcProto(dAtA, i, uint64(m.Block.Size()))
+	// 	n15, err := m.Block.MarshalTo(dAtA[i:])
+	// 	if err != nil {
+	// 		return 0, err
+	// 	}
+	// 	i += n15
+	// }
 	if m.XXX_unrecognized != nil {
 		i += copy(dAtA[i:], m.XXX_unrecognized)
 	}
@@ -2707,16 +2707,16 @@ func (m *BlocksResponse) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintGrpcProto(dAtA, i, uint64(m.LastHeight))
 	}
 	if len(m.BlockMeta) > 0 {
-		for _, msg := range m.BlockMeta {
-			dAtA[i] = 0x12
-			i++
-			i = encodeVarintGrpcProto(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
+		// for _, msg := range m.BlockMeta {
+		// 	dAtA[i] = 0x12
+		// 	i++
+			// i = encodeVarintGrpcProto(dAtA, i, uint64(msg.Size()))
+			// n, err := msg.MarshalTo(dAtA[i:])
+			// if err != nil {
+			// 	return 0, err
+			// }
+			// i += n
+		//}
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(dAtA[i:], m.XXX_unrecognized)
@@ -2742,12 +2742,12 @@ func (m *BlockMeta) MarshalTo(dAtA []byte) (int, error) {
 	if m.BlockMeta != nil {
 		dAtA[i] = 0xa
 		i++
-		i = encodeVarintGrpcProto(dAtA, i, uint64(m.BlockMeta.Size()))
-		n16, err := m.BlockMeta.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n16
+		// i = encodeVarintGrpcProto(dAtA, i, uint64(m.BlockMeta.Size()))
+		// n16, err := m.BlockMeta.MarshalTo(dAtA[i:])
+		// if err != nil {
+		// 	return 0, err
+		// }
+		// i += n16
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(dAtA[i:], m.XXX_unrecognized)
@@ -2773,12 +2773,12 @@ func (m *Block) MarshalTo(dAtA []byte) (int, error) {
 	if m.Block != nil {
 		dAtA[i] = 0x12
 		i++
-		i = encodeVarintGrpcProto(dAtA, i, uint64(m.Block.Size()))
-		n17, err := m.Block.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n17
+		// i = encodeVarintGrpcProto(dAtA, i, uint64(m.Block.Size()))
+		// n17, err := m.Block.MarshalTo(dAtA[i:])
+		// if err != nil {
+		// 	return 0, err
+		// }
+		// i += n17
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(dAtA[i:], m.XXX_unrecognized)
@@ -2998,12 +2998,12 @@ func (m *Peer) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	dAtA[i] = 0xa
 	i++
-	i = encodeVarintGrpcProto(dAtA, i, uint64(m.NodeInfo.Size()))
-	n21, err := m.NodeInfo.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n21
+	// i = encodeVarintGrpcProto(dAtA, i, uint64(m.NodeInfo.Size()))
+	// n21, err := m.NodeInfo.MarshalTo(dAtA[i:])
+	// if err != nil {
+	// 	return 0, err
+	// }
+	// i += n21
 	if m.IsOutbound {
 		dAtA[i] = 0x10
 		i++
@@ -3274,13 +3274,13 @@ func (m *ConsensusResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = m.RoundState.Size()
+	// l = m.RoundState.Size()
 	n += 1 + l + sovGrpcProto(uint64(l))
 	if len(m.PeerRoundStates) > 0 {
-		for _, e := range m.PeerRoundStates {
-			l = e.Size()
-			n += 1 + l + sovGrpcProto(uint64(l))
-		}
+		// for _, e := range m.PeerRoundStates {
+		// 	// l = e.Size()
+		// 	n += 1 + l + sovGrpcProto(uint64(l))
+		// }
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -3316,7 +3316,7 @@ func (m *StatusResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = m.NodeInfo.Size()
+	// l = m.NodeInfo.Size()
 	n += 1 + l + sovGrpcProto(uint64(l))
 	l = m.GenesisHash.Size()
 	n += 1 + l + sovGrpcProto(uint64(l))
@@ -3380,7 +3380,7 @@ func (m *BlockResponse) Size() (n int) {
 	var l int
 	_ = l
 	if m.BlockMeta != nil {
-		l = m.BlockMeta.Size()
+		// l = m.BlockMeta.Size()
 		n += 1 + l + sovGrpcProto(uint64(l))
 	}
 	if m.Block != nil {
@@ -3402,12 +3402,13 @@ func (m *BlocksResponse) Size() (n int) {
 	if m.LastHeight != 0 {
 		n += 1 + sovGrpcProto(uint64(m.LastHeight))
 	}
-	if len(m.BlockMeta) > 0 {
-		for _, e := range m.BlockMeta {
-			l = e.Size()
-			n += 1 + l + sovGrpcProto(uint64(l))
-		}
-	}
+
+    // if len(m.BlockMeta) > 0 {
+	// 	for _, e := range m.BlockMeta {
+	// 		// l = e.Size()
+	// 		n += 1 + l + sovGrpcProto(uint64(l))
+	// 	}
+	// }
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
@@ -3421,7 +3422,7 @@ func (m *BlockMeta) Size() (n int) {
 	var l int
 	_ = l
 	if m.BlockMeta != nil {
-		l = m.BlockMeta.Size()
+		// l = m.BlockMeta.Size()
 		n += 1 + l + sovGrpcProto(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
@@ -3557,7 +3558,7 @@ func (m *Peer) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = m.NodeInfo.Size()
+	// l = m.NodeInfo.Size()
 	n += 1 + l + sovGrpcProto(uint64(l))
 	if m.IsOutbound {
 		n += 2
@@ -4485,9 +4486,9 @@ func (m *ConsensusResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.RoundState.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.RoundState.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -4516,9 +4517,9 @@ func (m *ConsensusResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.PeerRoundStates = append(m.PeerRoundStates, github_com_tendermint_tendermint_consensus_types.PeerRoundState{})
-			if err := m.PeerRoundStates[len(m.PeerRoundStates)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.PeerRoundStates[len(m.PeerRoundStates)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -4736,9 +4737,9 @@ func (m *StatusResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.NodeInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.NodeInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -5135,9 +5136,9 @@ func (m *BlockResponse) Unmarshal(dAtA []byte) error {
 			}
 			var v github_com_tendermint_tendermint_types.BlockMeta
 			m.BlockMeta = &v
-			if err := m.BlockMeta.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.BlockMeta.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -5167,9 +5168,9 @@ func (m *BlockResponse) Unmarshal(dAtA []byte) error {
 			}
 			var v github_com_tendermint_tendermint_types.Block
 			m.Block = &v
-			if err := m.Block.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.Block.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -5269,9 +5270,9 @@ func (m *BlocksResponse) Unmarshal(dAtA []byte) error {
 			}
 			var v github_com_tendermint_tendermint_types.BlockMeta
 			m.BlockMeta = append(m.BlockMeta, v)
-			if err := m.BlockMeta[len(m.BlockMeta)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.BlockMeta[len(m.BlockMeta)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -5352,9 +5353,9 @@ func (m *BlockMeta) Unmarshal(dAtA []byte) error {
 			}
 			var v github_com_tendermint_tendermint_types.BlockMeta
 			m.BlockMeta = &v
-			if err := m.BlockMeta.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.BlockMeta.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -5435,9 +5436,9 @@ func (m *Block) Unmarshal(dAtA []byte) error {
 			}
 			var v github_com_tendermint_tendermint_types.Block
 			m.Block = &v
-			if err := m.Block.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.Block.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -6039,9 +6040,9 @@ func (m *Peer) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.NodeInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			// if err := m.NodeInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			// 	return err
+			// }
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -6271,6 +6272,7 @@ func (m *NetInfoResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
+
 			m.Peers = append(m.Peers, &Peer{})
 			if err := m.Peers[len(m.Peers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
