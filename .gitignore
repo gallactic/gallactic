@@ -16,3 +16,6 @@ debug*
 vendor/*
 
 commit_hash.tx
+
+
+.DS_Store
