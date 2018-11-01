@@ -179,7 +179,7 @@ func (s *BlockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*
 	// 	Block:     Block,
 	// 	BlockMeta: Blockmeta,
 	// }, nil
-	return nil,nil
+	return nil, nil
 }
 
 func (s *BlockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest) (*BlocksResponse, error) {
@@ -206,7 +206,7 @@ func (s *BlockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest)
 	// 	LastHeight: latestHeight,
 	// 	BlockMeta:  blockMetas,
 	// }, nil
-     return nil,nil
+	return nil, nil
 }
 
 func (s *BlockchainServer) GetGenesis(context.Context, *Empty) (*GenesisResponse, error) {
@@ -295,7 +295,7 @@ func (s *networkServer) GetNetworkInfo(context.Context, *Empty) (*NetInfoRespons
 	// 	Peers:     peers.Peer,
 	// }, nil
 
-	return nil,nil
+	return nil, nil
 }
 
 func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error) {

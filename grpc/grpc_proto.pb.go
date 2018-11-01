@@ -2464,12 +2464,12 @@ func (m *ConsensusResponse) MarshalTo(dAtA []byte) (int, error) {
 		// for _, msg := range m.PeerRoundStates {
 		// 	dAtA[i] = 0x12
 		// 	i++
-			// i = encodeVarintGrpcProto(dAtA, i, uint64(msg.Size()))
-			// n, err := msg.MarshalTo(dAtA[i:])
-			// if err != nil {
-			// 	return 0, err
-			// }
-			// i += n
+		// i = encodeVarintGrpcProto(dAtA, i, uint64(msg.Size()))
+		// n, err := msg.MarshalTo(dAtA[i:])
+		// if err != nil {
+		// 	return 0, err
+		// }
+		// i += n
 		//}
 	}
 	if m.XXX_unrecognized != nil {
@@ -2710,12 +2710,12 @@ func (m *BlocksResponse) MarshalTo(dAtA []byte) (int, error) {
 		// for _, msg := range m.BlockMeta {
 		// 	dAtA[i] = 0x12
 		// 	i++
-			// i = encodeVarintGrpcProto(dAtA, i, uint64(msg.Size()))
-			// n, err := msg.MarshalTo(dAtA[i:])
-			// if err != nil {
-			// 	return 0, err
-			// }
-			// i += n
+		// i = encodeVarintGrpcProto(dAtA, i, uint64(msg.Size()))
+		// n, err := msg.MarshalTo(dAtA[i:])
+		// if err != nil {
+		// 	return 0, err
+		// }
+		// i += n
 		//}
 	}
 	if m.XXX_unrecognized != nil {
@@ -3403,7 +3403,7 @@ func (m *BlocksResponse) Size() (n int) {
 		n += 1 + sovGrpcProto(uint64(m.LastHeight))
 	}
 
-    // if len(m.BlockMeta) > 0 {
+	// if len(m.BlockMeta) > 0 {
 	// 	for _, e := range m.BlockMeta {
 	// 		// l = e.Size()
 	// 		n += 1 + l + sovGrpcProto(uint64(l))

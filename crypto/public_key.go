@@ -1,14 +1,14 @@
 package crypto
 
 import (
-	"unsafe"
-	amino "github.com/tendermint/go-amino"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/mr-tron/base58/base58"
+	amino "github.com/tendermint/go-amino"
 	tmABCI "github.com/tendermint/tendermint/abci/types"
 	tmCrypto "github.com/tendermint/tendermint/crypto"
 	tmCryptoED25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	"golang.org/x/crypto/ed25519"
+	"unsafe"
 )
 
 // PublicKey

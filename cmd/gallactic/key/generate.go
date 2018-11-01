@@ -31,7 +31,7 @@ func Generate() func(cmd *cli.Cmd) {
 				log.Fatalf("Failed to Encrypt: %v", err)
 			}
 			keyfilepath := defaultKeyfilePath + keyObj.Address().String() + ".json"
-			
+
 			// Store the file to disk.
 			if err := common.WriteFile(keyfilepath, keyjson); err != nil {
 				log.Fatalf("%v", err)
