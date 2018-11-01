@@ -35,10 +35,10 @@ func main() {
 	defer cancel()
 	fmt.Println("Address : ", address)
 	//f, ferr := c.GetAccount(ctx, &grpcode.AddressRequest{Address: address})
-	f, ferr := c.GetValidator(ctx, &grpcode.AddressRequest{Address:valaddress})
+	f, ferr := c.GetValidator(ctx, &grpcode.AddressRequest{Address: valaddress})
 	if ferr != nil {
 		log.Fatalf("could not greet: %v", ferr)
 	}
 	fmt.Printf("Greeting: %#v", f)
-	
+
 }
