@@ -8,8 +8,8 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/gallactic/gallactic/common"
 	tmConfig "github.com/gallactic/gallactic/core/consensus/tendermint/config"
-	grpcConfig "github.com/gallactic/gallactic/grpc/config"
 	rpcConfig "github.com/gallactic/gallactic/rpc/config"
+	grpcConfig "github.com/gallactic/gallactic/rpc/grpc/config"
 	logconfig "github.com/hyperledger/burrow/logging/logconfig"
 )
 

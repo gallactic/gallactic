@@ -22,9 +22,8 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/rpc"
+	"github.com/gallactic/gallactic/rpc/grpc"
 	"github.com/gallactic/gallactic/txs"
-
-	grpc "github.com/gallactic/gallactic/grpc"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/lifecycle"
@@ -146,7 +145,6 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				return serveProcess, nil
 			},
 		},
-
 		{
 			Name:    "GRPC",
 			Enabled: conf.GRPC.Enabled,
@@ -155,13 +153,13 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				if err != nil {
 					return nil, err
 				}
-				listen.Addr()
+
 				grpcServer := grpc.NewGRPCServer(logger)
 				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(bc))
 				grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode, txCodec)))
 				grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode, txCodec)))
 				grpc.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))
-				grpcServer.Serve(listen)
+				go grpcServer.Serve(listen)
 				return process.ShutdownFunc(func(ctx context.Context) error {
 					grpcServer.Stop()
 					// listener is closed for us
