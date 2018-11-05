@@ -71,6 +71,7 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 	for i := 0; i < len(accs); i++ {
 		k := key.GenAccountKey()
 		acc, _ := account.NewAccount(k.Address())
+		acc.AddToBalance(10000000000000000000)
 		accs[i] = acc
 	}
 
