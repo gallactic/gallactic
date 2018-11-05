@@ -227,6 +227,7 @@ func (s *BlockchainServer) GetChainID(context.Context, *Empty) (*ChainResponse, 
 
 func (s *BlockchainServer) GetLatestBlock(context.Context, *BlockRequest) (*BlockResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
+
 	//TODO changes to be made in vendor/tendermint  blockmeta.
 	block := s.nodeview.BlockStore().LoadBlock(int64(latestHeight))
 	blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(latestHeight))
