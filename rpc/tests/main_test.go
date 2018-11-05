@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -20,7 +19,7 @@ var tWorkingDir string
 var tGenesis *proposal.Genesis
 var tConfig *config.Config
 
-func startServer(wg *sync.WaitGroup) *exec.Cmd {
+func startServer(done chan struct{}) *exec.Cmd {
 	tChainName = "test-chain" + common.RandomHex(4)
 	tWorkingDir = "/tmp/" + tChainName
 
@@ -31,13 +30,13 @@ func startServer(wg *sync.WaitGroup) *exec.Cmd {
 	tConfig, _ = config.LoadFromFile(tWorkingDir + "/config.toml")
 
 	cmd = exec.Command("gallactic", "start", "-w", tWorkingDir)
-	wg.Add(1)
+
 	go func() {
 		err := cmd.Run()
 		if err != nil {
 			log.Fatal(err)
 		}
-		wg.Done()
+		done <- struct{}{}
 	}()
 
 	time.Sleep(time.Second * 1)
@@ -45,16 +44,16 @@ func startServer(wg *sync.WaitGroup) *exec.Cmd {
 }
 
 func TestMain(m *testing.M) {
-	var wg sync.WaitGroup
-	cmd := startServer(&wg)
+	done := make(chan struct{})
+	cmd := startServer(done)
 
 	exitCode := m.Run()
 
 	cmd.Process.Signal(syscall.SIGINT)
 
 	// waiting for gallactic to exit
-	wg.Wait()
 	cmd.Wait()
+	<-done
 
 	os.Exit(exitCode)
 }
