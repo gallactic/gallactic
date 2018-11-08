@@ -165,7 +165,7 @@ func (pv *PrivateKey) EnsureValid() error {
 
 func (pv PrivateKey) Sign(msg []byte) (Signature, error) {
 	privKey := ed25519.PrivateKey(pv.RawBytes())
-	return SignatureFromRawBytes(ed25519.Sign(privKey, msg))
+	return SignatureFromRawBytes(ed25519.Sign(privKey, Sha3(msg)))
 
 }
 
