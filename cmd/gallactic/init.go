@@ -16,49 +16,46 @@ import (
 )
 
 //initialize the gallactic
-func Init() func(cmd *cli.Cmd) {
-	return func(cmd *cli.Cmd) {
-		workingDirOpts := cmd.String(cli.StringOpt{
+func Init() func(c *cli.Cmd) {
+	return func(c *cli.Cmd) {
+		workingDir := c.String(cli.StringOpt{
 			Name: "w working-dir",
-			Desc: "working directory to save configuration and genesis files",
+			Desc: "Working directory to save configuration and genesis files",
 		})
-
-		ChainNameOpts := cmd.String(cli.StringOpt{
+		chainName := c.String(cli.StringOpt{
 			Name: "n chain-name",
 			Desc: "A name for the blockchain",
 		})
 
-		cmd.Spec = "[--working-dir=<Working directory to save the configuration files>] " + "[--chain-name =<A name for the blockchain>]"
-		cmd.LongDesc = "Initializing working directory"
-		cmd.Before = func() { fmt.Println(title) }
-		cmd.Action = func() {
-			workingDir := *workingDirOpts
-			chainName := *ChainNameOpts
+		c.Spec = "[-w=<Working directory>] [-n=<a name for the blockchain>]"
+		c.LongDesc = "Initializing the working directory"
+		c.Before = func() { fmt.Println(title) }
+		c.Action = func() {
 
 			// Check chain-name for genesis
-			if chainName == "" {
-				chainName = fmt.Sprintf("test-chain-%v", common.RandomHex(2))
+			if *chainName == "" {
+				*chainName = fmt.Sprintf("test-chain-%v", common.RandomHex(2))
 			}
 
 			// Check for working path
-			if workingDir == "" {
-				workingDir = "/tmp/" + chainName
+			if *workingDir == "" {
+				*workingDir = "/tmp/" + *chainName
 			}
 
-			gen := makeGenesis(workingDir, chainName)
+			gen := makeGenesis(*workingDir, *chainName)
 			conf := makeConfigfile()
 
 			// save genesis file to file system
-			if err := gen.SaveToFile(workingDir + "/genesis.json"); err != nil {
+			if err := gen.SaveToFile(*workingDir + "/genesis.json"); err != nil {
 				log.Fatalf("%v", err)
 			}
 
 			// save config file to file system
-			if err := conf.SaveToFile(workingDir + "/config.toml"); err != nil {
+			if err := conf.SaveToFile(*workingDir + "/config.toml"); err != nil {
 				log.Fatalf("%v", err)
 			}
 
-			log.Printf("A gallactic node is successfully initialized at %v.", workingDir)
+			log.Printf("A gallactic node is successfully initialized at %v.", *workingDir)
 		}
 	}
 }
@@ -77,7 +74,7 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 
 	// create validator account for genesis
 	k := key.GenValidatorKey()
-	key.EncryptKeyFile(k, workingDir+"/validator_key.json", "")
+	key.EncryptKeyFile(k, workingDir+"/validator_key.json", "", "")
 	val, _ := validator.NewValidator(k.PublicKey(), 0)
 	vals := []*validator.Validator{val}
 

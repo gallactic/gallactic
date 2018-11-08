@@ -9,11 +9,11 @@ import (
 )
 
 //Version prints the version of the Gallactic node
-func Version() func(cmd *cli.Cmd) {
-	return func(cmd *cli.Cmd) {
-		cmd.Before = func() { fmt.Println(title) }
-		cmd.Action = func() {
-			log.Printf("Version: " + version.Version)
+func Version() func(c *cli.Cmd) {
+	return func(c *cli.Cmd) {
+		c.Before = func() { fmt.Println(title) }
+		c.Action = func() {
+			log.Printf("Gallactic version: " + version.Version)
 		}
 	}
 }

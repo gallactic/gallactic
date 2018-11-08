@@ -5,40 +5,44 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/gallactic/gallactic/cmd"
 	"github.com/gallactic/gallactic/keystore/key"
 	"github.com/jawher/mow.cli"
 )
 
 //Inspect displays various information of the keyfile
-func Inspect() func(cmd *cli.Cmd) {
-	return func(cmd *cli.Cmd) {
-		keyfile := cmd.String(cli.StringArg{
-			Name: "KEYFILE",
-			Desc: "KEYFILE of the account",
+func Inspect() func(c *cli.Cmd) {
+	return func(c *cli.Cmd) {
+		keyFile := c.String(cli.StringOpt{
+			Name: "k keyfile",
+			Desc: "Path to the encrypted key file",
 		})
-		showPrivate := cmd.Bool(cli.BoolOpt{
-			Name: "p private",
-			Desc: "include the private key in the output",
+		showPrivate := c.Bool(cli.BoolOpt{
+			Name: "e expose-private-key",
+			Desc: "expose the private key in the output",
 		})
-		cmd.Spec = "KEYFILE [--private]"
-
-		cmd.Action = func() {
-			keyfilepath := defaultKeyfilePath + *keyfile //TODO include custom path as well
+		c.Spec = "[-k=<path to the key file>] [-e]"
+		c.Before = func() { fmt.Println(title) }
+		c.Action = func() {
+			if *keyFile == "" {
+				fmt.Println("Key file is not specified.")
+				return
+			}
 			// Read key from file.
-			keyjson, err := ioutil.ReadFile(keyfilepath)
+			keyjson, err := ioutil.ReadFile(*keyFile)
 			if err != nil {
-				log.Fatalf("Failed to read the keyfile at '%s': %v", keyfilepath, err)
+				log.Fatalf("Failed to read the keyfile at '%s': %v", *keyFile, err)
 			}
 			// Decrypt key with passphrase.
-			passphrase := PromptPassphrase(true)
+			passphrase := cmd.PromptPassphrase("Passphrase: ", false)
 			keyObj, err := key.DecryptKey(keyjson, passphrase)
 			if err != nil {
 				log.Fatalf("Error decrypting key: %v", err)
 			}
-			fmt.Println("Address: ", keyObj.Address().String())
-			fmt.Println("Public key: ", keyObj.PublicKey().String())
+			fmt.Println("Address: ", keyObj.Address())
+			fmt.Println("Public key: ", keyObj.PublicKey())
 			if *showPrivate {
-				fmt.Println("Private key: ", keyObj.PrivateKey().String())
+				fmt.Println("Private key: ", keyObj.PrivateKey())
 			}
 		}
 	}

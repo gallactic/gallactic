@@ -42,6 +42,7 @@ type encryptedKey struct {
 	Address    crypto.Address     `json:"address"`
 	Crypto     *cryptoJSON        `json:"crypto,omitempty"`
 	PrivateKey *crypto.PrivateKey `json:"privatekey,omitempty"`
+	Label      string             `json:"label,omitempty"`
 	Version    int                `json:"version"`
 }
 
@@ -154,8 +155,8 @@ func getKDFKey(cryptoJSON *cryptoJSON, auth string) ([]byte, error) {
 	return nil, fmt.Errorf("Unsupported KDF: %s", cryptoJSON.KDF)
 }
 
-func EncryptKeyFile(key *Key, filePath, auth string) error {
-	bs, err := EncryptKey(key, auth)
+func EncryptKeyFile(key *Key, filePath, auth, label string) error {
+	bs, err := EncryptKey(key, auth, label)
 	if err != nil {
 		return err
 	}
@@ -163,12 +164,13 @@ func EncryptKeyFile(key *Key, filePath, auth string) error {
 }
 
 // EncryptKey encrypts a key and returns the encrypted byte array
-func EncryptKey(key *Key, auth string) ([]byte, error) {
+func EncryptKey(key *Key, auth, label string) ([]byte, error) {
 	if auth == "" {
 		pv := key.PrivateKey()
 		kj := encryptedKey{
 			Address:    key.data.Address,
 			PrivateKey: &pv,
+			Label:      label,
 			Version:    version,
 		}
 
@@ -202,7 +204,7 @@ func EncryptKey(key *Key, auth string) ([]byte, error) {
 	cipherParamsJSON := cipherparamsJSON{
 		IV: hex.EncodeToString(iv),
 	}
-	cryptoStruct := cryptoJSON{
+	cryptoStruct := &cryptoJSON{
 		Cipher:       "aes-128-ctr",
 		CipherText:   hex.EncodeToString(cipherText),
 		CipherParams: cipherParamsJSON,
@@ -213,7 +215,8 @@ func EncryptKey(key *Key, auth string) ([]byte, error) {
 
 	kj := encryptedKey{
 		Address: key.data.Address,
-		Crypto:  &cryptoStruct,
+		Crypto:  cryptoStruct,
+		Label:   label,
 		Version: version,
 	}
 

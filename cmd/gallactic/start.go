@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 
-	gtxkey "github.com/gallactic/gallactic/cmd/gallactic/key"
+	"github.com/gallactic/gallactic/cmd"
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/proposal"
@@ -17,38 +18,32 @@ import (
 )
 
 //Start starts the gallactic node
-func Start() func(cmd *cli.Cmd) {
-	return func(cmd *cli.Cmd) {
+func Start() func(c *cli.Cmd) {
+	return func(c *cli.Cmd) {
 
-		workingDirOpt := cmd.String(cli.StringOpt{
+		workingDir := c.String(cli.StringOpt{
 			Name: "w working-dir",
-			Desc: "working directory of the configuration files",
+			Desc: "Working directory of the configuration and genesis files",
 		})
-
-		privatekeyOpt := cmd.String(cli.StringOpt{
+		privateKey := c.String(cli.StringOpt{
 			Name: "p privatekey",
-			Desc: "private key of the node's validator",
+			Desc: "Private key of the node's validator",
 		})
-
-		keystoreOpt := cmd.String(cli.StringOpt{
-			Name: "k key-file",
-			Desc: "path to the encrypted node's key file",
+		keyFile := c.String(cli.StringOpt{
+			Name: "k keyfile",
+			Desc: "Path to the encrypted key file contains validator's private key",
 		})
-
-		keyfileauthOpt := cmd.String(cli.StringOpt{
+		keyFileAuth := c.String(cli.StringOpt{
 			Name: "a auth",
-			Desc: "key file passphrase",
+			Desc: "Key file's passphrase",
 		})
 
-		cmd.Spec = "[--working-dir=<Working directory>] " +
-			"[--privatekey=<Validator's private key>]"
+		c.Spec = "[-w=<working directory>] [-p=<validator's private key>]"
+		c.LongDesc = "Starting the node"
+		c.Before = func() { fmt.Println(title) }
+		c.Action = func() {
 
-		cmd.LongDesc = "Starting the node"
-		cmd.Before = func() { fmt.Println(title) }
-		cmd.Action = func() {
-
-			workingDir := *workingDirOpt
-			if workingDir == "" {
+			if *workingDir == "" {
 				fmt.Println("working directory is not specified.")
 				fmt.Println("see 'gallactic start --help' for list of available commands to start gallactic node")
 				return
@@ -58,48 +53,51 @@ func Start() func(cmd *cli.Cmd) {
 			keyObj := new(key.Key)
 
 			switch {
-			case *keystoreOpt == "" && *privatekeyOpt == "":
-				kj, _ := key.DecryptKeyFile(workingDir+"/validator_key.json", "")
-				if kj != nil {
+			case *keyFile == "" && *privateKey == "":
+				f := *workingDir + "/validator_key.json"
+				if common.FileExists(f) {
+					kj, err := key.DecryptKeyFile(f, "")
+					if err != nil {
+						log.Fatalf("Aborted: %v", err)
+					}
 					keyObj = kj
 				} else {
 					// Creating KeyObject from Private Key
-					kj, err := gtxkey.PromptPrivateKey()
+					kj, err := cmd.PromptPrivateKey("Please enter the privateKey for the validator: ", false)
 					if err != nil {
 						log.Fatalf("Aborted: %v", err)
 					}
 					keyObj = kj
 				}
-			case *keystoreOpt != "" && *keyfileauthOpt != "":
+			case *keyFile != "" && *keyFileAuth != "":
 				//Creating KeyObject from keystore
-				passphrase := *keyfileauthOpt
-				kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
+				passphrase := *keyFileAuth
+				kj, err := key.DecryptKeyFile(*keyFile, passphrase)
 				if err != nil {
 					log.Fatalf("Could not decrypt file: %v", err)
 				}
 				keyObj = kj
-			case *keystoreOpt != "" && *keyfileauthOpt == "":
+			case *keyFile != "" && *keyFileAuth == "":
 				//Creating KeyObject from keystore
-				passphrase := gtxkey.PromptPassphrase(true)
-				kj, err := key.DecryptKeyFile(*keystoreOpt, passphrase)
+				passphrase := cmd.PromptPassphrase("Passphrase: ", false)
+				kj, err := key.DecryptKeyFile(*keyFile, passphrase)
 				if err != nil {
 					log.Fatalf("Could not decrypt file: %v", err)
 				}
 				keyObj = kj
-			case *privatekeyOpt != "":
+			case *privateKey != "":
 				// Creating KeyObject from Private Key
-				pv, err := crypto.PrivateKeyFromString(*privatekeyOpt)
+				pv, err := crypto.PrivateKeyFromString(*privateKey)
 				if err != nil {
 					log.Fatalf("Could not decrypt file: %v", err)
 				}
-				kj := gtxkey.CreateKey(pv)
-				keyObj = kj
+				keyObj, _ = key.NewKey(pv.PublicKey().ValidatorAddress(), pv)
 			}
 
 			fmt.Println("Validator address: ", keyObj.Address().String())
 
 			// change working directory
-			if err := os.Chdir(workingDir); err != nil {
+			if err := os.Chdir(*workingDir); err != nil {
 				log.Fatalf("Unable to changes working directory: %v", err)
 			}
 			configFile := "./config.toml"
