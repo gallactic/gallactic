@@ -25,7 +25,7 @@ RUN mkdir -p /go/src/github.com/gallactic/gallactic/ && \
     apk del build-base git rust
 
 
-EXPOSE 45566
+EXPOSE 46656
 EXPOSE 1337
 
 VOLUME $WORKING_DIR
