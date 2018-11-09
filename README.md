@@ -37,15 +37,17 @@ The Gallactic blockchain starts immediately, upon successful acceptance of the p
 ## Usage of Docker
 Install [Docker](https://www.docker.com/) and run the following commands to build the docker file:
 
-```
+```bash
 cd $GOPATH/src/github.com/gallactic/gallactic
 docker build . --tag gallactic
 ```
 Then you can execute the Gallactic blockchain, using the docker:
+```bash
+# Initializing the working directory
+docker run -it --rm -v "/tmp/chain1:/gallactic" gallactic init -w=/gallactic
+# Starting the blockchain
+docker run -it --rm -v "/tmp/chain1:/gallactic" -p 1337:1337 -p 46656:46656 gallactic start -w=/gallactic
 ```
-docker run -it --rm -v "/tmp/chain1:/gallactic"  gallactic init -w=/gallactic
-```
-
 
 ## Contribution
 Thanks for considering to contribute in Gallactic project!
