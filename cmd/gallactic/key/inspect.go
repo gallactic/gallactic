@@ -38,7 +38,7 @@ func Inspect() func(cmd *cli.Cmd) {
 			fmt.Println("Address: ", keyObj.Address().String())
 			fmt.Println("Public key: ", keyObj.PublicKey().String())
 			if *showPrivate {
-				fmt.Println("Private key: ", keyObj.PublicKey().String())
+				fmt.Println("Private key: ", keyObj.PrivateKey().String())
 			}
 		}
 	}
