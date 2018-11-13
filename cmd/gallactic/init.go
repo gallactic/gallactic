@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
+	"github.com/gallactic/gallactic/cmd"
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/config"
@@ -46,16 +46,21 @@ func Init() func(c *cli.Cmd) {
 			conf := makeConfigfile()
 
 			// save genesis file to file system
-			if err := gen.SaveToFile(*workingDir + "/genesis.json"); err != nil {
-				log.Fatalf("%v", err)
+			genFile := *workingDir + "/genesis.json"
+			if err := gen.SaveToFile(genFile); err != nil {
+				cmd.PrintErrorMsg("Failed to write genesis file: %v", err)
+				return
 			}
 
 			// save config file to file system
-			if err := conf.SaveToFile(*workingDir + "/config.toml"); err != nil {
-				log.Fatalf("%v", err)
+			confFile := *workingDir + "/config.toml"
+			if err := conf.SaveToFile(confFile); err != nil {
+				cmd.PrintErrorMsg("Failed to write config file: %v", err)
+				return
 			}
 
-			log.Printf("A gallactic node is successfully initialized at %v.", *workingDir)
+			fmt.Println()
+			cmd.PrintSuccessMsg("A gallactic node is successfully initialized at %v", *workingDir)
 		}
 	}
 }
@@ -90,9 +95,6 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 //make configuratin file
 func makeConfigfile() *config.Config {
 	conf := config.DefaultConfig()
-	conf.Tendermint.ListenAddress = "127.0.0.1:46656"
-	conf.Tendermint.Moniker = "moniker"
-	conf.Tendermint.TendermintRoot = "tendermint"
 	return conf
 
 }

@@ -313,7 +313,7 @@ func (gen *Genesis) SaveToFile(file string) error {
 
 	// write  dataContent to file
 	if err := ioutil.WriteFile(file, json, 0777); err != nil {
-		return fmt.Errorf("Failed to write genesis file to %s: %v", file, err)
+		return err
 	}
 
 	return nil

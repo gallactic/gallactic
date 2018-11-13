@@ -2,7 +2,6 @@ package config
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 
 	"github.com/BurntSushi/toml"
@@ -38,15 +37,15 @@ func FromTOML(t string) (*Config, error) {
 	return conf, nil
 }
 
-func (conf *Config) ToTOML() string {
+func (conf *Config) ToTOML() ([]byte, error) {
 	buf := new(bytes.Buffer)
 	encoder := toml.NewEncoder(buf)
 	err := encoder.Encode(conf)
 	if err != nil {
-		return fmt.Sprintf("Could not serialize config: %v", err)
+		return nil, err
 	}
 
-	return buf.String()
+	return buf.Bytes(), nil
 }
 
 func LoadFromFile(file string) (*Config, error) {
@@ -58,8 +57,11 @@ func LoadFromFile(file string) (*Config, error) {
 }
 
 func (conf *Config) SaveToFile(file string) error {
-	var toml = conf.ToTOML()
-	if err := common.WriteFile(file, []byte(toml)); err != nil {
+	toml, err := conf.ToTOML()
+	if err != nil {
+		return err
+	}
+	if err := common.WriteFile(file, toml); err != nil {
 		return err
 	}
 

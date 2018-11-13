@@ -55,5 +55,5 @@ func GallacticHomeDir() string {
 }
 
 func GallacticKeystoreDir() string {
-	return GallacticHomeDir() + "/keystore/"
+	return GallacticHomeDir() + "keystore/"
 }

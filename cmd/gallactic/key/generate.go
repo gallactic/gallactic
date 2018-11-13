@@ -2,7 +2,6 @@ package key
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/gallactic/gallactic/cmd"
 	"github.com/gallactic/gallactic/common"
@@ -41,19 +40,21 @@ func Generate() func(c *cli.Cmd) {
 			label := cmd.PromptInput("Label: ")
 			keyjson, err := key.EncryptKey(keyObj, passphrase, label)
 			if err != nil {
-				log.Fatalf("Failed to Encrypt: %v", err)
+				cmd.PrintErrorMsg("Failed to encrypt: %v", err)
+				return
 			}
 			keyfilepath := common.GallacticKeystoreDir() + keyObj.Address().String() + ".json"
 
 			// Store the file to disk.
 			if err := common.WriteFile(keyfilepath, keyjson); err != nil {
-				log.Fatalf("%v", err)
+				cmd.PrintErrorMsg("Failed to write the key file: %v", err)
+				return
 			}
 
 			fmt.Println()
-			fmt.Println("Key path: ", keyfilepath)
-			fmt.Println("Address: ", keyObj.Address())
-			fmt.Println("Public key: ", keyObj.PublicKey())
+			cmd.PrintInfoMsg("Key path: %v", keyfilepath)
+			cmd.PrintInfoMsg("Address: %v", keyObj.Address())
+			cmd.PrintInfoMsg("Public key: %v", keyObj.PublicKey())
 		}
 	}
 }

@@ -113,7 +113,7 @@ func DecryptKey(bs []byte, auth string) (*Key, error) {
 	}
 	calculatedMAC := crypto.Sha3(derivedKey[16:32], cipherText)
 	if !bytes.Equal(calculatedMAC, mac) {
-		return nil, fmt.Errorf("could not decrypt key with given passphrase")
+		return nil, fmt.Errorf("Could not decrypt key with given passphrase")
 	}
 	plainText, err := aesCTRXOR(derivedKey[:16], cipherText, iv)
 	if err != nil {

@@ -3,7 +3,6 @@ package key
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 
 	"github.com/gallactic/gallactic/cmd"
 	"github.com/gallactic/gallactic/crypto"
@@ -48,20 +47,28 @@ func Sign() func(c *cli.Cmd) {
 			} else if *messageFile != "" {
 				msg, err = ioutil.ReadFile(*messageFile)
 				if err != nil {
-					log.Fatalf("Can't read message file: %v", err)
+					cmd.PrintErrorMsg("Failed to read the file: %v", err)
+					return
 				}
+			} else {
+				cmd.PrintWarnMsg("Please enter a message to sign.")
+				c.PrintHelp()
+				return
 			}
+
 			var signature crypto.Signature
 			var pv crypto.PrivateKey
 			//Sign the message with the private key
 			if *privateKey != "" {
 				pv, err = crypto.PrivateKeyFromString(*privateKey)
 				if err != nil {
-					log.Fatalf("Could not obtain privateKey: %v", err)
+					cmd.PrintErrorMsg("%v", err)
+					return
 				}
 				signature, err = pv.Sign(msg)
 				if err != nil {
-					log.Fatalf("Error in signing: %v", err)
+					cmd.PrintErrorMsg("%v", err)
+					return
 				}
 			} else if *keyFile != "" {
 				var passphrase string
@@ -73,14 +80,20 @@ func Sign() func(c *cli.Cmd) {
 
 				kj, err := key.DecryptKeyFile(*keyFile, passphrase)
 				if err != nil {
-					log.Fatalf("Could not decrypt file: %v", err)
+					cmd.PrintErrorMsg("Failed to decrypt: %v", err)
+					return
 				}
 				pv = kj.PrivateKey()
 				signature, err = pv.Sign(msg)
+			} else {
+				cmd.PrintWarnMsg("Please specify a key file to sign.")
+				c.PrintHelp()
+				return
 			}
 
 			//display the signature
-			fmt.Println("Signature: ", signature)
+			fmt.Println()
+			cmd.PrintInfoMsg("Signature: %v", signature)
 		}
 	}
 }

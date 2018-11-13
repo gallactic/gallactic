@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/gallactic/gallactic/cmd"
@@ -38,34 +37,34 @@ func Start() func(c *cli.Cmd) {
 			Desc: "Key file's passphrase",
 		})
 
-		c.Spec = "[-w=<working directory>] [-p=<validator's private key>]"
+		c.Spec = "[-w=<working directory>] [-p=<validator's private key>] | [-k=<path to the key file>] [-a=<key file's password>]"
 		c.LongDesc = "Starting the node"
 		c.Before = func() { fmt.Println(title) }
 		c.Action = func() {
 
 			if *workingDir == "" {
-				fmt.Println("working directory is not specified.")
-				fmt.Println("see 'gallactic start --help' for list of available commands to start gallactic node")
+				cmd.PrintWarnMsg("working directory is not specified.")
+				c.PrintHelp()
 				return
 			}
 
-			fmt.Println("You are running a gallactic block chain node version: ", version.Version, ". Welcome!")
-			keyObj := new(key.Key)
-
+			var keyObj *key.Key
 			switch {
 			case *keyFile == "" && *privateKey == "":
 				f := *workingDir + "/validator_key.json"
 				if common.FileExists(f) {
 					kj, err := key.DecryptKeyFile(f, "")
 					if err != nil {
-						log.Fatalf("Aborted: %v", err)
+						cmd.PrintErrorMsg("Aborted! %v", err)
+						return
 					}
 					keyObj = kj
 				} else {
 					// Creating KeyObject from Private Key
 					kj, err := cmd.PromptPrivateKey("Please enter the privateKey for the validator: ", false)
 					if err != nil {
-						log.Fatalf("Aborted: %v", err)
+						cmd.PrintErrorMsg("Aborted! %v", err)
+						return
 					}
 					keyObj = kj
 				}
@@ -74,7 +73,8 @@ func Start() func(c *cli.Cmd) {
 				passphrase := *keyFileAuth
 				kj, err := key.DecryptKeyFile(*keyFile, passphrase)
 				if err != nil {
-					log.Fatalf("Could not decrypt file: %v", err)
+					cmd.PrintErrorMsg("Aborted! %v", err)
+					return
 				}
 				keyObj = kj
 			case *keyFile != "" && *keyFileAuth == "":
@@ -82,36 +82,43 @@ func Start() func(c *cli.Cmd) {
 				passphrase := cmd.PromptPassphrase("Passphrase: ", false)
 				kj, err := key.DecryptKeyFile(*keyFile, passphrase)
 				if err != nil {
-					log.Fatalf("Could not decrypt file: %v", err)
+					cmd.PrintErrorMsg("Aborted! %v", err)
+					return
 				}
 				keyObj = kj
 			case *privateKey != "":
 				// Creating KeyObject from Private Key
 				pv, err := crypto.PrivateKeyFromString(*privateKey)
 				if err != nil {
-					log.Fatalf("Could not decrypt file: %v", err)
+					cmd.PrintErrorMsg("Aborted! %v", err)
+					return
 				}
 				keyObj, _ = key.NewKey(pv.PublicKey().ValidatorAddress(), pv)
 			}
 
-			fmt.Println("Validator address: ", keyObj.Address().String())
+			cmd.PrintInfoMsg("Validator address: %v", keyObj.Address())
 
 			// change working directory
 			if err := os.Chdir(*workingDir); err != nil {
-				log.Fatalf("Unable to changes working directory: %v", err)
+				cmd.PrintErrorMsg("Unable to changes working directory. %v", err)
+				return
 			}
 			configFile := "./config.toml"
 			genesisFile := "./genesis.json"
 
 			gen, err := proposal.LoadFromFile(genesisFile)
 			if err != nil {
-				log.Fatalf("Could not obtain genesis from file: %v", err)
+				cmd.PrintErrorMsg("Could not obtain genesis. %v", err)
+				return
 			}
 
 			conf, err := config.LoadFromFile(configFile)
 			if err != nil {
-				log.Fatalf("Could not obtain config from file: %v", err)
+				cmd.PrintErrorMsg("Could not obtain config. %v", err)
+				return
 			}
+
+			cmd.PrintInfoMsg("You are running a gallactic block chain node version: %v. Welcome! ", version.Version)
 
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
@@ -119,12 +126,14 @@ func Start() func(c *cli.Cmd) {
 			signer := crypto.NewValidatorSigner(keyObj.PrivateKey())
 			kernel, err := core.NewKernel(ctx, gen, conf, signer)
 			if err != nil {
-				log.Fatalf("Could not create kernel: %v", err)
+				cmd.PrintErrorMsg("Could not create kernel. %v", err)
+				return
 			}
 
 			err = kernel.Boot()
 			if err != nil {
-				log.Fatalf("Could not boot kernel: %v", err)
+				cmd.PrintErrorMsg("Could not boot kernel. %v", err)
+				return
 			}
 
 			kernel.WaitForShutdown()

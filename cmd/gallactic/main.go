@@ -26,7 +26,7 @@ func gallactic() *cli.Cli {
 		k.Command("inspect", "Inspect a key file", key.Inspect())
 		k.Command("sign", "Sign a transaction or message with a key file", key.Sign())
 		k.Command("verify", "Verify a signature", key.Verify())
-		k.Command("change-auth", "Change the passphrase of a keyfile", key.ChangePassphrase())
+		k.Command("change-auth", "Change the passphrase of a keyfile", key.ChangeAuth())
 	})
 	app.Command("version", "Print the gallactic version", Version())
 	return app

@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"log"
+	"os"
 	"strings"
 
 	"github.com/gallactic/gallactic/crypto"
@@ -58,7 +60,7 @@ func (p *terminalPrompter) PromptPassword(prompt string) (string, error) {
 		return p.State.PasswordPrompt(prompt)
 	}
 	if !p.warned {
-		fmt.Println("!! Unsupported terminal, password will be echoed.")
+		PrintWarnMsg("!! Unsupported terminal, password will be echoed.")
 		p.warned = true
 	}
 	// Just as in Prompt, handle printing the prompt here instead of relying on liner.
@@ -106,16 +108,19 @@ func CreateKey(pv crypto.PrivateKey) *key.Key {
 func PromptPassphrase(prompt string, confirmation bool) string {
 	passphrase, err := Stdin.PromptPassword(prompt)
 	if err != nil {
-		log.Fatalf("Failed to read passphrase: %v", err)
+		PrintErrorMsg("Failed to read passphrase: %v", err)
+		os.Exit(1)
 	}
 
 	if confirmation {
 		confirm, err := Stdin.PromptPassword("Repeat passphrase: ")
 		if err != nil {
-			log.Fatalf("Failed to read passphrase confirmation: %v", err)
+			PrintErrorMsg("Failed to read passphrase confirmation: %v", err)
+			os.Exit(1)
 		}
 		if passphrase != confirm {
-			log.Fatalf("Passphrases do not match")
+			PrintErrorMsg("Passphrases do not match")
+			os.Exit(1)
 		}
 	}
 
@@ -126,7 +131,8 @@ func PromptPassphrase(prompt string, confirmation bool) string {
 func PromptInput(prompt string) string {
 	input, err := Stdin.PromptInput(prompt)
 	if err != nil {
-		log.Fatalf("Failed to read input: %v", err)
+		PrintErrorMsg("Failed to read input: %v", err)
+		os.Exit(1)
 	}
 	return input
 }
@@ -141,7 +147,7 @@ func PromptPrivateKey(promp string, accountKey bool) (*key.Key, error) {
 	}
 	pv, err := crypto.PrivateKeyFromString(privatekey)
 	if err != nil {
-		return nil, fmt.Errorf("This is not a valid private key: %v", err)
+		return nil, err
 	}
 
 	// Creat key object
@@ -154,17 +160,42 @@ func PromptPrivateKey(promp string, accountKey bool) (*key.Key, error) {
 	key, _ := key.NewKey(addr, pv)
 
 	return key, nil
-	/*
-		fmt.Println("The private key is assigned to validator address: ", (keyObj.Address().String()))
-		fmt.Println("press 'y' to proceed or 'n' to exit")
-		confirm, err := line.Prompt("y/n: ")
-		if err != nil {
-			return nil, fmt.Errorf("Failed to read confirmation: %v", err)
-		}
-		if confirm == "y" {
-			log.Print("Running Blockchain")
-			return keyObj, nil
-		}
-		return nil, fmt.Errorf("Abort")
-	*/
+}
+
+func PrintErrorMsg(format string, a ...interface{}) {
+	format = fmt.Sprintf("\033[31m[ERROR] %s\033[0m\n", format) //Print error msg with red color
+	fmt.Printf(format, a...)
+}
+
+func PrintSuccessMsg(format string, a ...interface{}) {
+	format = fmt.Sprintf("\033[32m%s\033[0m\n", format) //Print successfull msg with green color
+	fmt.Printf(format, a...)
+}
+
+func PrintWarnMsg(format string, a ...interface{}) {
+	format = fmt.Sprintf("\033[33m[WARN] %s\033[0m\n", format) //Print warning msg with yellow color
+	fmt.Printf(format, a...)
+}
+
+func PrintInfoMsg(format string, a ...interface{}) {
+	fmt.Printf(format+"\n", a...)
+}
+
+func PrintJsonData(data []byte) {
+	var out bytes.Buffer
+	err := json.Indent(&out, data, "", "   ")
+	if err != nil {
+		PrintErrorMsg("json.Indent error: %s", err)
+		return
+	}
+	PrintInfoMsg(out.String())
+}
+
+func PrintJsonObject(obj interface{}) {
+	data, err := json.Marshal(obj)
+	if err != nil {
+		PrintErrorMsg("json.Marshal error: %s", err)
+		return
+	}
+	PrintJsonData(data)
 }
