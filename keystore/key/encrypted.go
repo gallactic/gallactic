@@ -38,10 +38,11 @@ const (
 	dirPath = "/tmp/"
 )
 
-type encryptedKeyJSONV3 struct {
+type encryptedKey struct {
 	Address    crypto.Address     `json:"address"`
 	Crypto     *cryptoJSON        `json:"crypto,omitempty"`
 	PrivateKey *crypto.PrivateKey `json:"privatekey,omitempty"`
+	Label      string             `json:"label,omitempty"`
 	Version    int                `json:"version"`
 }
 
@@ -58,6 +59,20 @@ type cipherparamsJSON struct {
 	IV string `json:"iv"`
 }
 
+func VerifyFile(filePath string) (crypto.Address, bool) {
+	kj := new(encryptedKey)
+	bs, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return kj.Address, false
+	}
+
+	if err := json.Unmarshal(bs, kj); err != nil {
+		return kj.Address, false
+	}
+
+	return kj.Address, true
+}
+
 // DecryptKeyFile decrypts the file and returns Key
 func DecryptKeyFile(filePath, auth string) (*Key, error) {
 	data, err := ioutil.ReadFile(filePath)
@@ -67,14 +82,13 @@ func DecryptKeyFile(filePath, auth string) (*Key, error) {
 	return DecryptKey(data, auth)
 }
 
-//DecryptKey decrypts the Key from a json blob and returns the plaintext of the private key
+// DecryptKey decrypts the Key from a json blob and returns the plaintext of the private key
 func DecryptKey(bs []byte, auth string) (*Key, error) {
-	kj := new(encryptedKeyJSONV3)
+	kj := new(encryptedKey)
 	if err := json.Unmarshal(bs, kj); err != nil {
 		return nil, err
 	}
 
-	fmt.Println(kj.PrivateKey)
 	if kj.PrivateKey != nil {
 		return NewKey(kj.Address, *kj.PrivateKey)
 	}
@@ -99,7 +113,7 @@ func DecryptKey(bs []byte, auth string) (*Key, error) {
 	}
 	calculatedMAC := crypto.Sha3(derivedKey[16:32], cipherText)
 	if !bytes.Equal(calculatedMAC, mac) {
-		return nil, fmt.Errorf("could not decrypt key with given passphrase")
+		return nil, fmt.Errorf("Could not decrypt key with given passphrase")
 	}
 	plainText, err := aesCTRXOR(derivedKey[:16], cipherText, iv)
 	if err != nil {
@@ -141,8 +155,8 @@ func getKDFKey(cryptoJSON *cryptoJSON, auth string) ([]byte, error) {
 	return nil, fmt.Errorf("Unsupported KDF: %s", cryptoJSON.KDF)
 }
 
-func EncryptKeyFile(key *Key, filePath, auth string) error {
-	bs, err := EncryptKey(key, auth)
+func EncryptKeyFile(key *Key, filePath, auth, label string) error {
+	bs, err := EncryptKey(key, auth, label)
 	if err != nil {
 		return err
 	}
@@ -150,16 +164,17 @@ func EncryptKeyFile(key *Key, filePath, auth string) error {
 }
 
 // EncryptKey encrypts a key and returns the encrypted byte array
-func EncryptKey(key *Key, auth string) ([]byte, error) {
+func EncryptKey(key *Key, auth, label string) ([]byte, error) {
 	if auth == "" {
 		pv := key.PrivateKey()
-		encryptedKeyJSONV3 := encryptedKeyJSONV3{
+		kj := encryptedKey{
 			Address:    key.data.Address,
 			PrivateKey: &pv,
+			Label:      label,
 			Version:    version,
 		}
 
-		return json.Marshal(encryptedKeyJSONV3)
+		return json.Marshal(kj)
 	}
 
 	authArray := []byte(auth)
@@ -189,7 +204,7 @@ func EncryptKey(key *Key, auth string) ([]byte, error) {
 	cipherParamsJSON := cipherparamsJSON{
 		IV: hex.EncodeToString(iv),
 	}
-	cryptoStruct := cryptoJSON{
+	cryptoStruct := &cryptoJSON{
 		Cipher:       "aes-128-ctr",
 		CipherText:   hex.EncodeToString(cipherText),
 		CipherParams: cipherParamsJSON,
@@ -198,13 +213,14 @@ func EncryptKey(key *Key, auth string) ([]byte, error) {
 		MAC:          hex.EncodeToString(mac),
 	}
 
-	encryptedKeyJSONV3 := encryptedKeyJSONV3{
+	kj := encryptedKey{
 		Address: key.data.Address,
-		Crypto:  &cryptoStruct,
+		Crypto:  cryptoStruct,
+		Label:   label,
 		Version: version,
 	}
 
-	return json.Marshal(encryptedKeyJSONV3)
+	return json.Marshal(kj)
 }
 
 func getEntropyCSPRNG(n int) []byte {

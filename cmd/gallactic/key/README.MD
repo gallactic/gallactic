@@ -1,70 +1,59 @@
-gallactic key
-=============
+# gallactic key
 
-`gallactic key` is a simple command-line tool working with gallactic keyfiles
+`gallactic key` is a simple command-line tool to work with gallactic key files.
 
-# usage
+## Usage
 
 ### `gallactic key generate`
 
-Generate new keyfile. This keyfile is encrypted with the password you provide while creating a new account.
-You can specify the address type as 'ac' for accountAddress and 'va' for validatorAddress (By default account address [type: 'ac'] will be created)
+Generate new key file. This key file is encrypted with the password you provide while creating a new account.
+You can specify the address type as 'ac' for account address and 'va' for validator address (By default account address will be created)
 
 Example:
-```
+
+```bash
 gallactic key generate
-gallactic key generate -t=va
+gallactic key generate -t va
 ```
 
-### `gallactic key inspect <keyfile>`
+### `gallactic key inspect KEYFILE`
 
-Print various information about the keyfile.
-Private key information can be printed using the `--private` or `-p` flag;
-make sure you use this feature with great caution
+Print various information about the given key file.
+Private key information can be printed using the `-e` flag. make sure you use this feature with great caution.
 
 Example:
-```
-key inspect acTmhDf7AjbCcvhkUAH3HFzV2aJw1rdJPwv.json
-key inspect acTmhDf7AjbCcvhkUAH3HFzV2aJw1rdJPwv.json -p
-```
-*Note: By Default all your gallactic keys
-will be stored in /tmp/gtxkeys directory in Ubuntu.
 
-### `gallactic key sign <messagefile/message> <privatekey/keyfile-path>`
+```bash
+gallactic key inspect ~/gallactic/keystore/acLjwzaYPc8Nmbj5AKp2vMp3GQoGfHg1t3A.json
+gallactic key inspect ~/gallactic/keystore/acLjwzaYPc8Nmbj5AKp2vMp3GQoGfHg1t3A.json -e
+```
 
-Signs the message with the private key. User can directly specify the private key to sign the message or specify the keyfilepath and password to decrypt the private key and sign the message.
+### `gallactic key sign <file/message> <privatekey/keyfile>`
+
+Signs the message with the private key. User can directly specify the private key to sign the message or specify the a key file and password to decrypt the private key and sign the message.
 
 Example:
-```
-key signmessage -m=hi -k=/tmp/gtxkeys/acVqy3VvA9RdWZ43ggCCRegq8XP3V47t8uX.json -a=<auth>
-key signmessage -m=hi -k=/tmp/gtxkeys/acVqy3VvA9RdWZ43ggCCRegq8XP3V47t8uX.json
-Passphrase:
-key signmessage -f=/home/message/test1 -k=<keyfilepath>
-Passphrase:
+
+```bash
+gallactic key sign -m hello -k ~/gallactic/keystore/acLjwzaYPc8Nmbj5AKp2vMp3GQoGfHg1t3A.json
 ```
 
-### `gallactic key verify <publicKey> <signature> <message>`
+### `gallactic key verify PUBLICKEY SIGNATURE <file/message>`
 
-Verify the signature of the message.
+Verify the signature of a message.
 
 Example:
-```
-key verify eb6c89611b4fd043fe87877b8c61ce740495e5d950be58ca5cf27dd99a89280b 9ab5a81c24e272e2009718b8c13aeaca32ffcf74be31b573b90e5f28885a52543fb3ee3c5028f94b919059de6292572631239a6471d4d70db3ed69c7390ac90a -m=hi
-Signature Verification successfull!
 
-key verify eb6c89611b4fd043fe87877b8c61ce740495e5d950be58ca5cf27dd99a89280b 9ab5a81c24e272e2009718b8c13aeaca32ffcf74be31b573b90e5f28885a52543fb3ee3c5028f94b919059de6292572631239a6471d4d70db3ed69c7390ac90a -f=/home/message/test1
-Signature Verification successfull!
+```bash
+gallactic key verify pkwgaQWBM3oJ5mw2n4UT56teJqGX8jCie5UWiNKdHwXTPGiRWy3 94f32a20f649215d0f983ae1f6a6bde1cd49180bf24261385936e82c5fa54e830a489b80d718b1d470b19e35376b39286ccb72f8f8746fe7d728398951a8750a -m hello
 ```
 
-### `gallactic key changepassword <keyfile>`
+### `gallactic key change-auth KEYFILE`
 
-Change the password of the keyfile which is used for encrytption and decrytption.
+Change the password of the key file which is used for encryption and decryption.
 
-Example
+Example:
 
-```
-gallactic key changeauth acJyYHmi8EHjsADq3XwqWeVrgM7gw1nbr55.json
-Old Password:
-Passphrase:
-Repeat passphrase:
+```bash
+gallactic key change-auth ~/gallactic/keystore/acLjwzaYPc8Nmbj5AKp2vMp3GQoGfHg1t3A.json
 ```
