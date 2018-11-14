@@ -52,18 +52,18 @@ type cipherparamsJSON struct {
 	IV string `json:"iv"`
 }
 
-func VerifyFile(filePath string) (crypto.Address, bool) {
+func VerifyFile(filePath string) (crypto.Address, string, bool) {
 	kj := new(encryptedKey)
 	bs, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return kj.Address, false
+		return kj.Address, kj.Label, false
 	}
 
 	if err := json.Unmarshal(bs, kj); err != nil {
-		return kj.Address, false
+		return kj.Address, kj.Label, false
 	}
 
-	return kj.Address, true
+	return kj.Address, kj.Label, true
 }
 
 // DecryptKeyFile decrypts the file and returns Key
