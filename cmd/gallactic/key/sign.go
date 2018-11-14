@@ -10,7 +10,7 @@ import (
 	"github.com/jawher/mow.cli"
 )
 
-//Sign signs the message with the private key and returns the signature hash
+// Sign the message with the private key and returns the signature hash
 func Sign() func(c *cli.Cmd) {
 	return func(c *cli.Cmd) {
 		messageFile := c.String(cli.StringOpt{
