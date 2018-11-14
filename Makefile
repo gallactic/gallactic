@@ -54,8 +54,7 @@ test_race:
 ########################################
 ### Docker
 docker:
-	docker build . --tag gallactic
-
+	docker build ./containers --tag gallactic
 
 
 ########################################

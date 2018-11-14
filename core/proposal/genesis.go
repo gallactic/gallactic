@@ -9,6 +9,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
@@ -312,7 +313,7 @@ func (gen *Genesis) SaveToFile(file string) error {
 	}
 
 	// write  dataContent to file
-	if err := ioutil.WriteFile(file, json, 0777); err != nil {
+	if err := common.WriteFile(file, json); err != nil {
 		return err
 	}
 
