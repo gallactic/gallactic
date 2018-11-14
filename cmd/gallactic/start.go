@@ -21,8 +21,9 @@ func Start() func(c *cli.Cmd) {
 	return func(c *cli.Cmd) {
 
 		workingDir := c.String(cli.StringOpt{
-			Name: "w working-dir",
-			Desc: "Working directory of the configuration and genesis files",
+			Name:  "w working-dir",
+			Desc:  "Working directory of the configuration and genesis files",
+			Value: ".",
 		})
 		privateKey := c.String(cli.StringOpt{
 			Name: "p privatekey",
@@ -41,12 +42,6 @@ func Start() func(c *cli.Cmd) {
 		c.LongDesc = "Starting the node"
 		c.Before = func() { fmt.Println(title) }
 		c.Action = func() {
-
-			if *workingDir == "" {
-				cmd.PrintWarnMsg("working directory is not specified.")
-				c.PrintHelp()
-				return
-			}
 
 			var keyObj *key.Key
 			switch {

@@ -19,8 +19,9 @@ import (
 func Init() func(c *cli.Cmd) {
 	return func(c *cli.Cmd) {
 		workingDir := c.String(cli.StringOpt{
-			Name: "w working-dir",
-			Desc: "Working directory to save configuration and genesis files",
+			Name:  "w working-dir",
+			Desc:  "Working directory to save configuration and genesis files",
+			Value: ".",
 		})
 		chainName := c.String(cli.StringOpt{
 			Name: "n chain-name",
@@ -35,11 +36,6 @@ func Init() func(c *cli.Cmd) {
 			// Check chain-name for genesis
 			if *chainName == "" {
 				*chainName = fmt.Sprintf("test-chain-%v", common.RandomHex(2))
-			}
-
-			// Check for working path
-			if *workingDir == "" {
-				*workingDir = "/tmp/" + *chainName
 			}
 
 			gen := makeGenesis(*workingDir, *chainName)
