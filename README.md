@@ -53,7 +53,7 @@ Then you can execute the Gallactic blockchain, using the docker:
 # Initializing the working directory
 docker run -it --rm -v "/tmp/chain1:/gallactic" gallactic init
 # Starting the blockchain
-docker run -it --rm -v "/tmp/chain1:/gallactic" -p 1337:1337 -p 46656:46656 gallactic start
+docker run -it --rm -v "/tmp/chain1:/gallactic" -p 1337:1337 -p 50051:50051 -p 46656:46656 gallactic start
 ```
 
 ## Contribution
