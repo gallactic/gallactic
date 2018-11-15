@@ -20,8 +20,9 @@ RUN apk add --no-cache curl git go build-base rust cargo && \
     rm -rf /go /root/.cache /root/.cargo
 
 EXPOSE 46656
+EXPOSE 50051
 EXPOSE 1337
 
 VOLUME $WORKING_DIR
-
+WORKDIR $WORKING_DIR
 ENTRYPOINT ["gallactic"]

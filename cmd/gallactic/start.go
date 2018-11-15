@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/gallactic/gallactic/cmd"
 	"github.com/gallactic/gallactic/common"
@@ -43,10 +44,11 @@ func Start() func(c *cli.Cmd) {
 		c.Before = func() { fmt.Println(title) }
 		c.Action = func() {
 
+			path, _ := filepath.Abs(*workingDir)
 			var keyObj *key.Key
 			switch {
 			case *keyFile == "" && *privateKey == "":
-				f := *workingDir + "/validator_key.json"
+				f := path + "/validator_key.json"
 				if common.FileExists(f) {
 					kj, err := key.DecryptKeyFile(f, "")
 					if err != nil {
@@ -94,7 +96,7 @@ func Start() func(c *cli.Cmd) {
 			cmd.PrintInfoMsg("Validator address: %v", keyObj.Address())
 
 			// change working directory
-			if err := os.Chdir(*workingDir); err != nil {
+			if err := os.Chdir(path); err != nil {
 				cmd.PrintErrorMsg("Unable to changes working directory. %v", err)
 				return
 			}

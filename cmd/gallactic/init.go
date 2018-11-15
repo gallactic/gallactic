@@ -2,11 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gallactic/gallactic/cmd"
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/account"
+	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/config"
 	proposal "github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
@@ -15,7 +18,7 @@ import (
 	"github.com/jawher/mow.cli"
 )
 
-//initialize the gallactic
+// Init initializes the gallactic blockchain
 func Init() func(c *cli.Cmd) {
 	return func(c *cli.Cmd) {
 		workingDir := c.String(cli.StringOpt{
@@ -38,25 +41,27 @@ func Init() func(c *cli.Cmd) {
 				*chainName = fmt.Sprintf("test-chain-%v", common.RandomHex(2))
 			}
 
+			path, _ := filepath.Abs(*workingDir)
 			gen := makeGenesis(*workingDir, *chainName)
 			conf := makeConfigfile()
+			fmt.Println(os.Getwd())
 
 			// save genesis file to file system
-			genFile := *workingDir + "/genesis.json"
+			genFile := path + "/genesis.json"
 			if err := gen.SaveToFile(genFile); err != nil {
 				cmd.PrintErrorMsg("Failed to write genesis file: %v", err)
 				return
 			}
 
 			// save config file to file system
-			confFile := *workingDir + "/config.toml"
+			confFile := path + "/config.toml"
 			if err := conf.SaveToFile(confFile); err != nil {
 				cmd.PrintErrorMsg("Failed to write config file: %v", err)
 				return
 			}
 
 			fmt.Println()
-			cmd.PrintSuccessMsg("A gallactic node is successfully initialized at %v", *workingDir)
+			cmd.PrintSuccessMsg("A gallactic node is successfully initialized at %v", path)
 		}
 	}
 }
@@ -70,6 +75,7 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 		k := key.GenAccountKey()
 		acc, _ := account.NewAccount(k.Address())
 		acc.AddToBalance(10000000000000000000)
+		acc.SetPermissions(permission.AllPermissions)
 		accs[i] = acc
 	}
 
@@ -88,7 +94,7 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 
 }
 
-//make configuratin file
+//make configuration file
 func makeConfigfile() *config.Config {
 	conf := config.DefaultConfig()
 	return conf
