@@ -24,9 +24,9 @@ const (
 
 func voteToStep(vote *tmTypes.Vote) int8 {
 	switch vote.Type {
-	case tmTypes.VoteTypePrevote:
+	case tmTypes.PrevoteType:
 		return stepPrevote
-	case tmTypes.VoteTypePrecommit:
+	case tmTypes.PrecommitType:
 		return stepPrecommit
 	default:
 		cmn.PanicSanity("Unknown vote type")
@@ -205,7 +205,7 @@ func (lsi *LastSignedInfo) String() string {
 // returns the timestamp from the lastSignBytes.
 // returns true if the only difference in the votes is their timestamp.
 func checkVotesOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (time.Time, bool) {
-	var lastVote, newVote tmTypes.CanonicalJSONVote
+	var lastVote, newVote tmTypes.CanonicalVote
 	if err := cdc.UnmarshalJSON(lastSignBytes, &lastVote); err != nil {
 		panic(fmt.Sprintf("SignBytes cannot be unmarshalled into vote: %v", err))
 	}
@@ -213,13 +213,10 @@ func checkVotesOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (time.T
 		panic(fmt.Sprintf("signBytes cannot be unmarshalled into vote: %v", err))
 	}
 
-	lastTime, err := time.Parse(tmTypes.TimeFormat, lastVote.Timestamp)
-	if err != nil {
-		panic(err)
-	}
+	lastTime := lastVote.Timestamp
 
 	// set the times to the same value and check equality
-	now := tmTypes.CanonicalTime(time.Now())
+	now := time.Now()
 	lastVote.Timestamp = now
 	newVote.Timestamp = now
 	lastVoteBytes, _ := cdc.MarshalJSON(lastVote)
@@ -231,7 +228,7 @@ func checkVotesOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (time.T
 // returns the timestamp from the lastSignBytes.
 // returns true if the only difference in the proposals is their timestamp
 func checkProposalsOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (time.Time, bool) {
-	var lastProposal, newProposal tmTypes.CanonicalJSONProposal
+	var lastProposal, newProposal tmTypes.CanonicalProposal
 	if err := cdc.UnmarshalJSON(lastSignBytes, &lastProposal); err != nil {
 		panic(fmt.Sprintf("SignBytes cannot be unmarshalled into proposal: %v", err))
 	}
@@ -239,13 +236,10 @@ func checkProposalsOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (ti
 		panic(fmt.Sprintf("signBytes cannot be unmarshalled into proposal: %v", err))
 	}
 
-	lastTime, err := time.Parse(tmTypes.TimeFormat, lastProposal.Timestamp)
-	if err != nil {
-		panic(err)
-	}
+	lastTime := lastProposal.Timestamp
 
 	// set the times to the same value and check equality
-	now := tmTypes.CanonicalTime(time.Now())
+	now := time.Now()
 	lastProposal.Timestamp = now
 	newProposal.Timestamp = now
 	lastProposalBytes, _ := cdc.MarshalJSON(lastProposal)

@@ -2,6 +2,8 @@ package rpc
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/proposal"
@@ -13,7 +15,6 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
-	"time"
 )
 
 // When using Tendermint types like Block and Vote we are forced to wrap the outer object and use amino marshalling
@@ -161,11 +162,11 @@ type BlockTxsOutput struct {
 
 //protobuf marshal,unmarshal and size methods
 func (p *Peer) Encode() ([]byte, error) {
-	return aminoCodec.MarshalBinary(&p)
+	return aminoCodec.MarshalBinaryLengthPrefixed(&p)
 }
 
 func (p *Peer) Decode(bs []byte) error {
-	err := aminoCodec.UnmarshalBinary(bs, &p)
+	err := aminoCodec.UnmarshalBinaryLengthPrefixed(bs, &p)
 	if err != nil {
 		return err
 	}

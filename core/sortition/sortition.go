@@ -62,7 +62,7 @@ func (s *Sortition) Evaluate(blockHeight uint64, blockHash []byte) {
 
 		// TODO:: better way?????
 		codec := txs.NewAminoCodec()
-		bs, err := codec.MarshalBinary(txEnv)
+		bs, err := codec.MarshalBinaryLengthPrefixed(txEnv)
 		if err != nil {
 			return
 		}

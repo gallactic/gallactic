@@ -68,11 +68,11 @@ func (val *Validator) IncSequence() {
 var cdc = amino.NewCodec()
 
 func (val Validator) Encode() ([]byte, error) {
-	return cdc.MarshalBinary(val.data)
+	return cdc.MarshalBinaryLengthPrefixed(val.data)
 }
 
 func (val *Validator) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinary(bs, &val.data)
+	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &val.data)
 	if err != nil {
 		return err
 	}

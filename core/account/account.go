@@ -3,6 +3,7 @@ package account
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
@@ -126,16 +127,15 @@ func (acc *Account) UnsetPermissions(perm Permissions) error {
 var cdc = amino.NewCodec()
 
 func (acc *Account) Encode() ([]byte, error) {
-	return cdc.MarshalBinary(&acc.data)
+	return cdc.MarshalBinaryLengthPrefixed(&acc.data)
 }
 
 func (acc *Account) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinary(bs, &acc.data)
+	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &acc.data)
 	if err != nil {
 		return err
 	}
 	return nil
-
 }
 
 func (acc *Account) MarshalJSON() ([]byte, error) {

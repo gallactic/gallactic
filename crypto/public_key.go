@@ -1,6 +1,8 @@
 package crypto
 
 import (
+	"unsafe"
+
 	"github.com/gallactic/gallactic/errors"
 	"github.com/mr-tron/base58/base58"
 	amino "github.com/tendermint/go-amino"
@@ -8,7 +10,6 @@ import (
 	tmCrypto "github.com/tendermint/tendermint/crypto"
 	tmCryptoED25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	"golang.org/x/crypto/ed25519"
-	"unsafe"
 )
 
 // PublicKey
@@ -155,7 +156,7 @@ func (pb *PublicKey) Size() int {
 }
 
 func (pb *PublicKey) Encode() ([]byte, error) {
-	return cdc.MarshalBinary(&pb.data.PublicKey)
+	return cdc.MarshalBinaryLengthPrefixed(&pb.data.PublicKey)
 }
 func (pb *PublicKey) MarshalTo(data []byte) (int, error) {
 	return copy(data, pb.data.PublicKey[:]), nil
