@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"time"
 
@@ -44,7 +43,6 @@ func Init() func(c *cli.Cmd) {
 			path, _ := filepath.Abs(*workingDir)
 			gen := makeGenesis(*workingDir, *chainName)
 			conf := makeConfigfile()
-			fmt.Println(os.Getwd())
 
 			// save genesis file to file system
 			genFile := path + "/genesis.json"
