@@ -176,11 +176,11 @@ func (env *Envelope) GenerateReceipt() *Receipt {
 var cdc = amino.NewCodec()
 
 func (env *Envelope) Encode() ([]byte, error) {
-	return cdc.MarshalBinary(&env)
+	return cdc.MarshalBinaryLengthPrefixed(&env)
 }
 
 func (env *Envelope) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinary(bs, &env)
+	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &env)
 	if err != nil {
 		return err
 	}
@@ -211,11 +211,11 @@ func (env *Envelope) Size() int {
 
 //For Recipt
 func (r *Receipt) Encode() ([]byte, error) {
-	return cdc.MarshalBinary(&r)
+	return cdc.MarshalBinaryLengthPrefixed(&r)
 }
 
 func (r *Receipt) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinary(bs, &r)
+	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &r)
 	if err != nil {
 		return err
 	}

@@ -23,7 +23,7 @@
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
   pruneopts = "NUT"
-  revision = "2a560b2036bee5e3679ec2133eb6520b2f195213"
+  revision = "67e573d211ace594f1366b4ce9d39726c4b19bd0"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -58,19 +58,12 @@
   version = "v1.1.0"
 
 [[projects]]
-  digest = "1:294576320c5093015ca9130ed928c84b2fdc8b9db6d136505a513795f3a64e3e"
-  name = "github.com/ebuchman/fail-test"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "95f809107225be108efcf10a3509e4ea6ceef3c4"
-
-[[projects]]
   digest = "1:77acb9aff98e5dc372a28ac50ae62610ea5a4e627fa18084812e2907d04f0de8"
   name = "github.com/ethereumproject/go-ethereum"
   packages = ["common"]
   pruneopts = "NUT"
-  revision = "8a3bc2d4f050df752dc9d071c2ef416e035d0216"
-  version = "v5.5.1"
+  revision = "be4377404d9f318510e69d889e217a56040745d7"
+  version = "v5.5.2"
 
 [[projects]]
   branch = "master"
@@ -78,7 +71,7 @@
   name = "github.com/gallactic/sputnikvm-ffi"
   packages = ["go/sputnikvm"]
   pruneopts = "NT"
-  revision = "e326fbacfb18d0b77b6f6d7602d856fbb0707fbc"
+  revision = "f7a3724b2ed8d8dafa1d745080424d7b4f2858bf"
 
 [[projects]]
   branch = "master"
@@ -181,15 +174,9 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:1aee46b3b062402a6063c0a5f75587ada74a55037a55400cfdb23568e800af8b"
+  digest = "1:2f3631983055bb7fe8cd0a1bd407ab9e5f460e5ea1734f3845bd8ff2c4c370f1"
   name = "github.com/hyperledger/burrow"
   packages = [
-    "acm",
-    "binary",
-    "crypto",
-    "event/query",
-    "execution/evm/asm",
-    "execution/evm/asm/bc",
     "logging",
     "logging/adapters/stdlib",
     "logging/errors",
@@ -197,11 +184,10 @@
     "logging/logconfig",
     "logging/loggers",
     "logging/structure",
-    "permission",
   ]
   pruneopts = "NUT"
-  revision = "963fa22da0d5db6ce58bfc90252ba0bb04b47b16"
-  version = "v0.22.0"
+  revision = "4c4a833f4c59b67ed1b389a8e8961ee64100bb9b"
+  version = "v0.23.1"
 
 [[projects]]
   digest = "1:c7ef3ee638cc1e5d39c2b1d9874183ecc62e4822c9524360bc8fbdc3139ab4c3"
@@ -285,12 +271,12 @@
   version = "1.0.1"
 
 [[projects]]
-  branch = "master"
   digest = "1:b9b9f43a8a410d633e6547f89e830926741070941f2243d4d3a0bb154f565c9e"
   name = "github.com/mr-tron/base58"
   packages = ["base58"]
   pruneopts = "NUT"
-  revision = "9ad991d48a423a0e52c77eac173b1b589665492a"
+  revision = "89529c6904fcd077434931b4eac8b4b2f0991baf"
+  version = "v1.1.0"
 
 [[projects]]
   digest = "1:657ac55eff70ffd654b39f04bc3731105a3135a8f5529a7de5963ba03df5ef4f"
@@ -336,7 +322,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fad5a35eea6a1a33d6c8f949fbc146f24275ca809ece854248187683f52cc30b"
+  digest = "1:06375f3b602de9c99fa99b8484f0e949fd5273e6e9c6592b5a0dd4cd9085f3ea"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
@@ -344,11 +330,11 @@
     "model",
   ]
   pruneopts = "NUT"
-  revision = "c7de2306084e37d54b8be01f3541a8464345e9a5"
+  revision = "1f2c4f3cd6db5fd6f68f36af6b6d5d936fd93c4e"
 
 [[projects]]
   branch = "master"
-  digest = "1:26a2f5e891cc4d2321f18a0caa84c8e788663c17bed6a487f3cbe2c4295292d0"
+  digest = "1:102dea0c03a915acfc634b7c67f2662012b5483b56d9025e33f5188e112759b6"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -357,7 +343,15 @@
     "xfs",
   ]
   pruneopts = "NUT"
-  revision = "418d78d0b9a7b7de3a6bbc8a23def624cc977bb2"
+  revision = "185b4288413d2a0dd0806f78c90dde719829e5ae"
+
+[[projects]]
+  digest = "1:f250ca51e5b9215bc2df18f92060a9a835e9f85ab18ebbba0e1a6ef1f8fcdbfe"
+  name = "github.com/rs/cors"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "9a47f48565a795472d43519dd49aac781f3034fb"
+  version = "v1.6.0"
 
 [[projects]]
   digest = "1:0331452965d8695c0a5633e0f509012987681a654f388f2ad0c3b2d7f7004b1c"
@@ -372,7 +366,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f2ffd421680b0a3f7887501b3c6974bcf19217ecd301d0e2c9b681940ec363d5"
+  digest = "1:9ff9e1808adfc43f788f1c1e9fd2660c285b522243da985a4c043ec6f2a2d736"
   name = "github.com/syndtr/goleveldb"
   packages = [
     "leveldb",
@@ -389,7 +383,7 @@
     "leveldb/util",
   ]
   pruneopts = "NUT"
-  revision = "ae2bd5eed72d46b28834ec3f60db3a3ebedd8dbd"
+  revision = "f9080354173f192dfc8821931eacf9cfd6819253"
 
 [[projects]]
   digest = "1:0f300196893c040e7a5c6025051a696c068392fe2f836f2a7e8ab35d0af9cafa"
@@ -399,24 +393,12 @@
   revision = "e5840949ff4fff0c56f9b6a541e22b63581ea9df"
 
 [[projects]]
-  branch = "master"
-  digest = "1:087aaa7920e5d0bf79586feb57ce01c35c830396ab4392798112e8aae8c47722"
-  name = "github.com/tendermint/ed25519"
-  packages = [
-    ".",
-    "edwards25519",
-    "extra25519",
-  ]
-  pruneopts = "NUT"
-  revision = "d8387025d2b9d158cf4efb07e7ebf814bcce2057"
-
-[[projects]]
-  digest = "1:27a7f2bb9b1f91a843e3a16c30b6d2b4254025e78efe8a8e6ed65b6af69d48da"
+  digest = "1:cab51cbba1fe9bd667ccd5198911b306a4b551c8fb2be754daae5b748d806d12"
   name = "github.com/tendermint/go-amino"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "faa6e731944e2b7b6a46ad202902851e8ce85bee"
-  version = "v0.12.0"
+  revision = "dc14acf9ef15f85828bfbc561ed9dd9d2a284885"
+  version = "v0.14.1"
 
 [[projects]]
   digest = "1:95454de4bf99bf62e6e3b59724a712e954e1c8d9956e0bc098699179ad1168c6"
@@ -427,7 +409,7 @@
   version = "v0.11.0"
 
 [[projects]]
-  digest = "1:47b238b5b2ec7a2a165cde076ed0777c9876a7023eed5ecb200723e84cdbd018"
+  digest = "1:3aa3b117cc69473bf751ab0db25da5e972e0013657703ac2c9763192555ee563"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -453,6 +435,7 @@
     "libs/db",
     "libs/errors",
     "libs/events",
+    "libs/fail",
     "libs/flowrate",
     "libs/log",
     "libs/pubsub",
@@ -467,7 +450,6 @@
     "rpc/core",
     "rpc/core/types",
     "rpc/grpc",
-    "rpc/lib",
     "rpc/lib/server",
     "rpc/lib/types",
     "state",
@@ -479,8 +461,8 @@
     "version",
   ]
   pruneopts = "NUT"
-  revision = "0c9c3292c918617624f6f3fbcd95eceade18bcd5"
-  version = "v0.25.0"
+  revision = "d5a05eccba18b772439f57e91ddad54091aab952"
+  version = "v0.26.2"
 
 [[projects]]
   branch = "master"
@@ -492,11 +474,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:acef19f6a48ca48abc8c7213ebcdcccd98e644114ad644a4b91b9134fdbc3b41"
+  digest = "1:1c470465fb009d034f2cd68b1fb03e8e4c80696c4eb7437c3e7877cbc515db75"
   name = "github.com/tmthrgd/go-hex"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "d1fb3dbb16a1d00be1dec2027f83714c7bd920f1"
+  revision = "14226a535f434c12dbb6c0a0a59e40716f1534b4"
 
 [[projects]]
   branch = "master"
@@ -515,8 +497,7 @@
   version = "v1.1.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:b0cac4ed680ea657e1a4263f26f84dd25f0d7d862e3791f154fdf247e793d300"
+  digest = "1:973b43f9b15b8d2d69cf9623ec0eff3643c2f0dc0de72572201b328547a5308d"
   name = "golang.org/x/crypto"
   packages = [
     "chacha20poly1305",
@@ -536,7 +517,8 @@
     "sha3",
   ]
   pruneopts = "NUT"
-  revision = "5295e8364332db77d75fce11f1d19c053919a9c9"
+  revision = "3764759f34a542a3aef74d6b02e35be7ab893bba"
+  source = "github.com/tendermint/crypto"
 
 [[projects]]
   digest = "1:2822b75330f8a787dca2f7d861788811676b2c50cea125851bbe32e9fd31624c"
@@ -556,7 +538,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2550283508f3d5c24dae445108bd178f136b8041a4359de2c4dfbfaa45521c27"
+  digest = "1:a014af5b4062557d04391d4dffbcb75547f7e14886fb11224e2034f8aa08e149"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -565,7 +547,7 @@
     "windows/registry",
   ]
   pruneopts = "NUT"
-  revision = "e4b3c5e9061176387e7cea65e4dc5853801f3fb7"
+  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
 
 [[projects]]
   digest = "1:e7071ed636b5422cc51c0e3a6cebc229d6c9fffc528814b519a980641422d619"
@@ -670,14 +652,10 @@
     "github.com/gogo/protobuf/gogoproto",
     "github.com/golang/protobuf/proto",
     "github.com/golang/protobuf/ptypes/struct",
-    "github.com/hyperledger/burrow/acm",
-    "github.com/hyperledger/burrow/binary",
-    "github.com/hyperledger/burrow/crypto",
     "github.com/hyperledger/burrow/logging",
     "github.com/hyperledger/burrow/logging/lifecycle",
     "github.com/hyperledger/burrow/logging/logconfig",
     "github.com/hyperledger/burrow/logging/structure",
-    "github.com/hyperledger/burrow/permission",
     "github.com/jawher/mow.cli",
     "github.com/mr-tron/base58/base58",
     "github.com/peterh/liner",

@@ -67,11 +67,11 @@ func (tx *SortitionTx) EnsureValid() error {
 /// MARSHALING
 
 func (tx SortitionTx) MarshalAmino() ([]byte, error) {
-	return cdc.MarshalBinary(tx.data)
+	return cdc.MarshalBinaryLengthPrefixed(tx.data)
 }
 
 func (tx *SortitionTx) UnmarshalAmino(bs []byte) error {
-	return cdc.UnmarshalBinary(bs, &tx.data)
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &tx.data)
 }
 
 func (tx SortitionTx) MarshalJSON() ([]byte, error) {

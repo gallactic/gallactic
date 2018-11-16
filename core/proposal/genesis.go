@@ -177,11 +177,11 @@ func (gen *Genesis) UnmarshalJSON(bs []byte) error {
 var cdc = amino.NewCodec()
 
 func (gen Genesis) Encode() ([]byte, error) {
-	return cdc.MarshalBinary(&gen.data)
+	return cdc.MarshalBinaryLengthPrefixed(&gen.data)
 }
 
 func (gen *Genesis) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinary(bs, &gen.data)
+	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &gen.data)
 	if err != nil {
 		return err
 	}
