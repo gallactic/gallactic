@@ -180,12 +180,7 @@ func (env *Envelope) Encode() ([]byte, error) {
 }
 
 func (env *Envelope) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &env)
-	if err != nil {
-		return err
-	}
-	return nil
-
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &env)
 }
 
 func (env *Envelope) Unmarshal(bs []byte) error {
@@ -215,12 +210,7 @@ func (r *Receipt) Encode() ([]byte, error) {
 }
 
 func (r *Receipt) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &r)
-	if err != nil {
-		return err
-	}
-	return nil
-
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &r)
 }
 
 func (r *Receipt) Unmarshal(bs []byte) error {

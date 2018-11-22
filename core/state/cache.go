@@ -284,7 +284,7 @@ func (c *Cache) SetStorage(addr crypto.Address, key, value binary.Word256) error
 		c.accChanges[addr] = &accountInfo{
 			storages: make(map[binary.Word256]binary.Word256),
 		}
-		a, _ = c.accChanges[addr]
+		a = c.accChanges[addr]
 	}
 
 	a.storages[key] = value

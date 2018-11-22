@@ -81,13 +81,10 @@ func (s *Service) ListUnconfirmedTxs(maxTxs int) (*UnconfirmedTxsOutput, error) 
 	if err != nil {
 		return nil, err
 	}
-	wrappedTxs := make([]*txs.Envelope, len(transactions))
-	for i, tx := range transactions {
-		wrappedTxs[i] = tx
-	}
+
 	return &UnconfirmedTxsOutput{
 		Count: len(transactions),
-		Txs:   wrappedTxs,
+		Txs:   transactions,
 	}, nil
 }
 func (s *Service) ListBlockTxs(height uint64) (*BlockTxsOutput, error) {

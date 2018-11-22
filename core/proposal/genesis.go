@@ -166,11 +166,7 @@ func (gen Genesis) MarshalJSON() ([]byte, error) {
 }
 
 func (gen *Genesis) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &gen.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(bs, &gen.data)
 }
 
 //protobuf marshal,unmrshal and size
@@ -181,12 +177,7 @@ func (gen Genesis) Encode() ([]byte, error) {
 }
 
 func (gen *Genesis) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &gen.data)
-	if err != nil {
-		return err
-	}
-	return nil
-
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &gen.data)
 }
 
 func (gen *Genesis) Unmarshal(bs []byte) error {

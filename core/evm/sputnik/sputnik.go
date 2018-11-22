@@ -195,13 +195,6 @@ Loop:
 	return out, retError
 }
 
-func toWord256(inp *big.Int) binary.Word256 {
-	inpBytes := inp.Bytes()
-	var ret binary.Word256
-	copy(ret[:], inpBytes)
-	return ret
-}
-
 //GetAccount for getting account using Sputnik Address
 func GetAccount(cache *state.Cache, ethAddr common.Address) *account.Account {
 	converted, addr := fromEthAddress(ethAddr, false)
@@ -221,12 +214,6 @@ func GetAccount(cache *state.Cache, ethAddr common.Address) *account.Account {
 	}
 
 	return nil
-}
-
-func toEthAddress(addr crypto.Address) common.Address {
-	var ethAddr common.Address
-	ethAddr.SetBytes(addr.RawBytes()[2:22])
-	return ethAddr
 }
 
 func fromEthAddress(ethAdr common.Address, contract bool) (bool, crypto.Address) {

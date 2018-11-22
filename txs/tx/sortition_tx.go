@@ -79,9 +79,5 @@ func (tx SortitionTx) MarshalJSON() ([]byte, error) {
 }
 
 func (tx *SortitionTx) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(bs, &tx.data)
 }

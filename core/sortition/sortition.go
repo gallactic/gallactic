@@ -87,8 +87,7 @@ func (s *Sortition) Verify(blockHash []byte, pb crypto.PublicKey, index uint64, 
 	s.vrf.SetMax(totalStake)
 
 	index2, result := s.vrf.Verify(blockHash, pb, proof)
-
-	if result == false {
+	if !result {
 		return false
 	}
 

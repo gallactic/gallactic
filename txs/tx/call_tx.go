@@ -101,9 +101,5 @@ func (tx CallTx) MarshalJSON() ([]byte, error) {
 }
 
 func (tx *CallTx) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(bs, &tx.data)
 }

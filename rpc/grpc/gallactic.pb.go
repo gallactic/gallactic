@@ -3624,9 +3624,7 @@ func sovGrpcProto(x uint64) (n int) {
 	}
 	return n
 }
-func sozGrpcProto(x uint64) (n int) {
-	return sovGrpcProto(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
+
 func (m *Empty) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0

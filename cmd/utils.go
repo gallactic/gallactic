@@ -168,7 +168,7 @@ func PrintErrorMsg(format string, a ...interface{}) {
 }
 
 func PrintSuccessMsg(format string, a ...interface{}) {
-	format = fmt.Sprintf("\033[32m%s\033[0m\n", format) //Print successfull msg with green color
+	format = fmt.Sprintf("\033[32m%s\033[0m\n", format) //Print successful msg with green color
 	fmt.Printf(format, a...)
 }
 
