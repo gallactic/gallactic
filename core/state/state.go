@@ -25,7 +25,7 @@ const (
 	accountPrefix   = "a/"
 	storagePrefix   = "s/"
 	validatorPrefix = "i/"
-	eventPrefix     = "e/"
+	//eventPrefix     = "e/"
 )
 
 var (

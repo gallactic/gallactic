@@ -131,12 +131,7 @@ func adjustInputAccount(acc *account.Account, in tx.TxInput) error {
 }
 
 func adjustOutputAccount(acc *account.Account, out tx.TxOutput) error {
-	err := acc.AddToBalance(out.Amount)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return acc.AddToBalance(out.Amount)
 }
 
 func adjustInputValidator(val *validator.Validator, in tx.TxInput) error {
@@ -150,10 +145,5 @@ func adjustInputValidator(val *validator.Validator, in tx.TxInput) error {
 }
 
 func adjustOutputValidator(val *validator.Validator, out tx.TxOutput) error {
-	err := val.AddToStake(out.Amount)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return val.AddToStake(out.Amount)
 }

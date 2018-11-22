@@ -160,20 +160,15 @@ type BlockTxsOutput struct {
 	Txs   []txs.Envelope
 }
 
-//protobuf marshal,unmarshal and size methods
 func (p *Peer) Encode() ([]byte, error) {
 	return aminoCodec.MarshalBinaryLengthPrefixed(&p)
 }
 
 func (p *Peer) Decode(bs []byte) error {
-	err := aminoCodec.UnmarshalBinaryLengthPrefixed(bs, &p)
-	if err != nil {
-		return err
-	}
-	return nil
-
+	return aminoCodec.UnmarshalBinaryLengthPrefixed(bs, &p)
 }
 
+// protobuf marshal,unmarshal and size methods
 func (p *Peer) Unmarshal(bs []byte) error {
 	return p.Decode(bs)
 }

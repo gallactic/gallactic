@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"math/big"
 
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/crypto"
@@ -29,13 +28,7 @@ const (
 	scryptP = 1
 	scryptR = 8
 
-	// number of bits in a big.Word
-	wordBits = 32 << (uint64(^big.Word(0)) >> 63)
-	// number of bytes in a big.Word
-	wordBytes = wordBits / 8
-	version   = 3
-
-	dirPath = "/tmp/"
+	version = 3
 )
 
 type encryptedKey struct {

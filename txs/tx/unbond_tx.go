@@ -88,9 +88,5 @@ func (tx UnbondTx) MarshalJSON() ([]byte, error) {
 }
 
 func (tx *UnbondTx) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(bs, &tx.data)
 }

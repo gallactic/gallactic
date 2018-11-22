@@ -72,11 +72,7 @@ func (val Validator) Encode() ([]byte, error) {
 }
 
 func (val *Validator) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &val.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &val.data)
 }
 
 func ValidatorFromBytes(bs []byte) (*Validator, error) {
@@ -92,11 +88,7 @@ func (val Validator) MarshalJSON() ([]byte, error) {
 }
 
 func (val *Validator) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &val.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(bs, &val.data)
 }
 
 func ValidatorFromJSON(bs []byte) (*Validator, error) {

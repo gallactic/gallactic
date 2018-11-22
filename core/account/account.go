@@ -131,11 +131,7 @@ func (acc *Account) Encode() ([]byte, error) {
 }
 
 func (acc *Account) Decode(bs []byte) error {
-	err := cdc.UnmarshalBinaryLengthPrefixed(bs, &acc.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &acc.data)
 }
 
 func (acc *Account) MarshalJSON() ([]byte, error) {
@@ -143,11 +139,7 @@ func (acc *Account) MarshalJSON() ([]byte, error) {
 }
 
 func (acc *Account) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &acc.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(bs, &acc.data)
 }
 
 func AccountFromJSON(bs []byte) (*Account, error) {

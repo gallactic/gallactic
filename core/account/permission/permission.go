@@ -26,8 +26,5 @@ var (
 )
 
 func EnsureValid(perm account.Permissions) bool {
-	if (perm & ^AllPermissions) != 0 {
-		return false
-	}
-	return true
+	return (perm & ^AllPermissions) == 0
 }
