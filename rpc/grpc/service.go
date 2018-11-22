@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -18,9 +19,10 @@ import (
 // MaxBlockLookback constant
 const MaxBlockLookback = 1000
 
-type accountServer struct {
-	state      *state.State
+type blockchainServer struct {
+	nodeview   *query.NodeView
 	blockchain *blockchain.Blockchain
+	state      *state.State
 }
 
 type transcatorServer struct {
@@ -29,42 +31,28 @@ type transcatorServer struct {
 	transactor *execution.Transactor
 }
 
-type BlockchainServer struct {
-	nodeview   *query.NodeView
-	blockchain *blockchain.Blockchain
-}
-
 type networkServer struct {
 	nodeview   *query.NodeView
 	blockchain *blockchain.Blockchain
 }
 
-var _ AccountsServer = &accountServer{}
 var _ TransactionServer = &transcatorServer{}
-var _ BlockChainServer = &BlockchainServer{}
+var _ BlockChainServer = &blockchainServer{}
 var _ NetworkServer = &networkServer{}
 
-func (s *accountServer) State() *state.State {
+func (s *blockchainServer) State() *state.State {
 	return s.state
 }
-
-func AccountService(blockchain *blockchain.Blockchain) *accountServer {
-	return &accountServer{
+func BlockchainService(blockchain *blockchain.Blockchain, nview *query.NodeView) *blockchainServer {
+	return &blockchainServer{
 		blockchain: blockchain,
+		nodeview:   nview,
 		state:      blockchain.State(),
 	}
 }
-
 func TransactorService(transction *execution.Transactor) *transcatorServer {
 	return &transcatorServer{
 		transactor: transction,
-	}
-}
-
-func BlockchainService(blockchain *blockchain.Blockchain, nview *query.NodeView) *BlockchainServer {
-	return &BlockchainServer{
-		blockchain: blockchain,
-		nodeview:   nview,
 	}
 }
 func NetowrkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *networkServer {
@@ -74,59 +62,17 @@ func NetowrkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *n
 	}
 }
 
-// Account Service
-func (as *accountServer) GetAccount(ctx context.Context, param *AddressRequest) (*Account, error) {
+// Blockchain Service
+func (as *blockchainServer) GetAccount(ctx context.Context, param *AddressRequest) (*AccountResponse, error) {
 	acc, err := as.state.GetAccount(param.Address)
 	if err != nil {
 		return nil, err
 	}
-	return &Account{Account: acc}, nil
+	return &AccountResponse{Account: acc}, nil
 
 }
 
-func (as *accountServer) GetValidator(ctx context.Context, param *AddressRequest) (*ValidatorResponse, error) {
-	val, err := as.state.GetValidator(param.Address)
-	if err != nil {
-		return nil, err
-	}
-	return &ValidatorResponse{Validator: val}, nil
-
-}
-
-func (as *accountServer) GetValidators(context.Context, *Empty) (*ValidatorsResponse, error) {
-	validators := make([]validator.Validator, 0)
-	as.blockchain.State().IterateValidators(func(val *validator.Validator) (stop bool) {
-		validators = append(validators, *val)
-		return true
-	})
-	return &ValidatorsResponse{
-		Validators:  validators,
-		BlockHeight: as.blockchain.LastBlockHeight(),
-	}, nil
-
-}
-func (s *accountServer) GetStorage(ctx context.Context, storage *StorageAtRequest) (*StorageResponse, error) {
-	value, err := s.state.GetStorage(storage.Address, binary.LeftPadWord256(storage.Key))
-	if err != nil {
-		return nil, err
-	}
-	if value == binary.Zero256 {
-		return &StorageResponse{Key: storage.Key, Value: nil}, nil
-	}
-	return &StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
-}
-func (s *accountServer) GetStorageAt(ctx context.Context, storage *StorageAtRequest) (*StorageResponse, error) {
-	value, err := s.state.GetStorage(storage.Address, binary.LeftPadWord256(storage.Key))
-	if err != nil {
-		return nil, err
-	}
-	if value == binary.Zero256 {
-		return &StorageResponse{Key: storage.Key, Value: nil}, nil
-	}
-	return &StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
-}
-func (as *accountServer) GetAccounts(ctx context.Context, in *Empty) (*AccountsOutput, error) {
-
+func (as *blockchainServer) GetAccounts(ctx context.Context, in *Empty) (*AccountsResponse, error) {
 	accounts := make([]*Account, 0)
 	as.state.IterateAccounts(func(acc *account.Account) (stop bool) {
 		if acc != nil {
@@ -134,13 +80,54 @@ func (as *accountServer) GetAccounts(ctx context.Context, in *Empty) (*AccountsO
 		}
 		return
 	})
-	return &AccountsOutput{
+	return &AccountsResponse{
 		BlockHeight: as.blockchain.LastBlockHeight(),
 		Account:     accounts,
 	}, nil
 }
+func (vs *blockchainServer) GetValidator(ctx context.Context, param *AddressRequest) (*ValidatorResponse, error) {
+	val, err := vs.state.GetValidator(param.Address)
+	if err != nil {
+		return nil, err
+	}
+	return &ValidatorResponse{Validator: val}, nil
 
-func (s *BlockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusResponse, error) {
+}
+
+func (vs *blockchainServer) GetValidators(context.Context, *Empty) (*ValidatorsResponse, error) {
+	validators := make([]validator.Validator, 0)
+	vs.state.IterateValidators(func(val *validator.Validator) (stop bool) {
+		validators = append(validators, *val)
+		return true
+	})
+	return &ValidatorsResponse{
+		Validators:  validators,
+		BlockHeight: vs.blockchain.LastBlockHeight(),
+	}, nil
+
+}
+func (s *blockchainServer) GetStorage(ctx context.Context, storage *StorageAtRequest) (*StorageResponse, error) {
+	value, err := s.state.GetStorage(storage.Address, binary.LeftPadWord256(storage.Key))
+	if err != nil {
+		return nil, err
+	}
+	if value == binary.Zero256 {
+		return &StorageResponse{Key: storage.Key, Value: nil}, nil
+	}
+	return &StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
+}
+func (s *blockchainServer) GetStorageAt(ctx context.Context, storage *StorageAtRequest) (*StorageResponse, error) {
+	value, err := s.state.GetStorage(storage.Address, binary.LeftPadWord256(storage.Key))
+	if err != nil {
+		return nil, err
+	}
+	if value == binary.Zero256 {
+		return &StorageResponse{Key: storage.Key, Value: nil}, nil
+	}
+	return &StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
+}
+
+func (s *blockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
 
 	var latestBlockMeta *tmTypes.BlockMeta
@@ -168,9 +155,7 @@ func (s *BlockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusRes
 
 }
 
-// Blockchain Service
-
-func (s *BlockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*BlockResponse, error) {
+func (s *blockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*BlockResponse, error) {
 
 	// //TODO changes to be made in vendor/tendermint for block and blockmeta.
 	// Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
@@ -182,7 +167,7 @@ func (s *BlockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*
 	return nil, nil
 }
 
-func (s *BlockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest) (*BlocksResponse, error) {
+func (s *blockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest) (*BlocksResponse, error) {
 
 	//latestHeight := s.blockchain.LastBlockHeight()
 	// if blocks.MinHeight == 0 {
@@ -209,14 +194,14 @@ func (s *BlockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest)
 	return nil, nil
 }
 
-func (s *BlockchainServer) GetGenesis(context.Context, *Empty) (*GenesisResponse, error) {
+func (s *blockchainServer) GetGenesis(context.Context, *Empty) (*GenesisResponse, error) {
 	gen := s.blockchain.Genesis()
 	return &GenesisResponse{
 		Genesis: gen,
 	}, nil
 }
 
-func (s *BlockchainServer) GetChainID(context.Context, *Empty) (*ChainResponse, error) {
+func (s *blockchainServer) GetChainID(context.Context, *Empty) (*ChainResponse, error) {
 	return &ChainResponse{
 		ChainName:   s.blockchain.Genesis().ChainName(),
 		ChainId:     s.blockchain.ChainID(),
@@ -225,7 +210,7 @@ func (s *BlockchainServer) GetChainID(context.Context, *Empty) (*ChainResponse, 
 
 }
 
-func (s *BlockchainServer) GetLatestBlock(context.Context, *BlockRequest) (*BlockResponse, error) {
+func (s *blockchainServer) GetLatestBlock(context.Context, *BlockRequest) (*BlockResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
 	//TODO changes to be made in vendor/tendermint  blockmeta.
 	block := s.nodeview.BlockStore().LoadBlock(int64(latestHeight))
@@ -235,7 +220,7 @@ func (s *BlockchainServer) GetLatestBlock(context.Context, *BlockRequest) (*Bloc
 		Block:     block,
 	}, nil
 }
-func (s *BlockchainServer) GetConsensusState(context.Context, *Empty) (*ConsensusResponse, error) {
+func (s *blockchainServer) GetConsensusState(context.Context, *Empty) (*ConsensusResponse, error) {
 	peerRound := make([]consensusTypes.PeerRoundState, 0)
 	//TODO changes to be made in vendor/tendermint  for PeerRoundStates and RoundState.
 	peerRoundState, err := s.nodeview.PeerRoundStates()
@@ -252,7 +237,7 @@ func (s *BlockchainServer) GetConsensusState(context.Context, *Empty) (*Consensu
 
 }
 
-func (s *BlockchainServer) GetBlockTxs(ctx context.Context, block *BlockRequest) (*BlockTxsResponse, error) {
+func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *BlockRequest) (*BlockTxsResponse, error) {
 	//TODO changes to be made in vendor/tendermint  for Block.
 	result, err := s.GetBlock(ctx, block)
 	if err != nil {
@@ -312,7 +297,7 @@ func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error
 	}, nil
 }
 
-//transcation Service
+//Transcation Service
 func (tx *transcatorServer) BroadcastTx(ctx context.Context, txreq *TransactRequest) (*ReceiptResponse, error) {
 
 	txhash, err := tx.transactor.BroadcastTx(txreq.Txs)

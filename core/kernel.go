@@ -155,7 +155,6 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				}
 
 				grpcServer := grpc.NewGRPCServer(logger)
-				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(bc))
 				grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode, txCodec)))
 				grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode, txCodec)))
 				grpc.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))

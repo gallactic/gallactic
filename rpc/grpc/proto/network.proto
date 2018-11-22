@@ -1,0 +1,35 @@
+syntax = 'proto3';
+
+package grpc;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "blockchain.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.protosizer_all) =false;
+
+
+//Network Service definition
+service Network {
+  rpc GetNetworkInfo(Empty) returns(NetInfoResponse);
+  rpc GetPeers(Empty) returns (PeerResponse);
+}
+
+message Peer {
+  bytes  NodeInfo     = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.NodeInfo",(gogoproto.nullable) = false];
+  bool	IsOutbound = 2;
+}
+
+message PeerResponse {
+	repeated Peer Peer = 1;
+}
+
+message NetInfoResponse {
+  bool  Listening =1;
+  repeated string Listeners = 2;
+  repeated Peer Peers = 3;
+}

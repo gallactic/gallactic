@@ -176,7 +176,7 @@ func (s *Service) Genesis() *GenesisOutput {
 func (s *Service) GetAccount(address crypto.Address) (*AccountOutput, error) {
 	acc, err := s.state.GetAccount(address)
 	if err != nil {
-		return nil, nil //TODO we should return a proper error!
+		return nil, err
 	}
 	return &AccountOutput{Account: acc}, nil
 }

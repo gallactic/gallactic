@@ -12,17 +12,26 @@ option (gogoproto.sizer_all) = true;
 option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.protosizer_all) =false;
-option (gogoproto.testgen_all) = true;
 
 
-// Account Service definition
-service Accounts {
+
+// BlockChain  Service definition
+service BlockChain{
   rpc GetAccount(AddressRequest) returns (AccountResponse);
+  rpc GetAccounts(Empty) returns (AccountsResponse);
   rpc GetStorage(StorageAtRequest) returns (StorageResponse);
   rpc GetStorageAt(StorageAtRequest) returns(StorageResponse);
-  rpc GetAccounts(Empty) returns (AccountsResponse);
   rpc GetValidator(AddressRequest) returns (ValidatorResponse);
   rpc GetValidators(Empty) returns (ValidatorsResponse);
+  rpc Getstatus(Empty) returns(StatusResponse);
+  rpc GetBlock(BlockRequest) returns(BlockResponse);
+  rpc GetBlocks(BlocksRequest) returns (BlocksResponse);
+  rpc GetGenesis(Empty) returns(GenesisResponse);
+  rpc GetChainID(Empty) returns(ChainResponse);
+  rpc GetLatestBlock(BlockRequest) returns(BlockResponse);
+  rpc GetConsensusState(Empty) returns (ConsensusResponse);
+  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse);
+
 }
 
 message Empty {
@@ -30,11 +39,15 @@ message Empty {
 
 message AccountsResponse{
 	uint64 BlockHeight = 1;
-	repeated AccountResponse Account = 2;
+	repeated Account Account = 2;
 }
 
 message AccountResponse {
-    AccountResponse Account  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/account.Account"];
+  AccountResponse Account  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/account.Account"];
+}
+
+message Account {
+  Account Account = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/account.Account"];
 }
 
 message ListAccountsParam {
@@ -42,15 +55,6 @@ message ListAccountsParam {
 }
 message AddressRequest {
 	bytes Address = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/crypto.Address",(gogoproto.nullable) = false];
-}
-
-message ValidatorResponse{
-  bytes Validator  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
-}
-
-message ValidatorsResponse {
-  uint64 BlockHeight  = 1 ;
-  repeated bytes Validators  = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
 }
 
 
@@ -63,19 +67,6 @@ message StorageResponse {
   bytes	Key = 1   [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
   bytes	Value = 2    [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
 }
-
-// BlockChain  Service definition
-service BlockChain{
-  rpc Getstatus(Empty) returns(StatusResponse);
-  rpc GetBlock(BlockRequest) returns(BlockResponse);
-  rpc GetBlocks(BlocksRequest) returns (BlocksResponse);
-  rpc GetGenesis(Empty) returns(GenesisResponse);
-  rpc GetChainID(Empty) returns(ChainResponse);
-  rpc GetLatestBlock(BlockRequest) returns(BlockResponse);
-  rpc GetConsensusState(Empty) returns (ConsensusResponse);
-  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse);
-}
-
 
 
 message ConsensusResponse{
@@ -91,21 +82,21 @@ message ChainResponse{
 
 message StatusResponse {
   bytes  NodeInfo     = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.NodeInfo",(gogoproto.nullable) = false];
-  bytes	GenesisHash  = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
-  bytes	PubKey       = 3  [(gogoproto.customtype) =   "github.com/gallactic/gallactic/crypto.PublicKey",(gogoproto.nullable) = false];
-  bytes	LatestBlockHash = 4 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
-  uint64	LatestBlockHeight = 5;
-  int64	LatestBlockTime  = 6;
-  string	NodeVersion      = 7;
+  bytes	 GenesisHash  = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
+  bytes	 PubKey       = 3  [(gogoproto.customtype) =   "github.com/gallactic/gallactic/crypto.PublicKey",(gogoproto.nullable) = false];
+  bytes	 LatestBlockHash = 4 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+  uint64 LatestBlockHeight = 5;
+  int64	 LatestBlockTime  = 6;
+  string NodeVersion      = 7;
 }
 
 message BlockRequest {
-	uint64 height = 1;
+  uint64 height = 1;
 }
 
 message BlocksRequest {
-	uint64 minHeight = 1;
-	uint64 maxHeight = 2;
+  uint64 minHeight = 1;
+  uint64 maxHeight = 2;
 }
 
 message BlockResponse {
@@ -123,7 +114,6 @@ message BlockMeta {
 }
 
 
-
 message Block {
   bytes  Block  = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.Block"];
 }
@@ -137,48 +127,11 @@ message BlockTxsResponse {
   repeated google.protobuf.ListValue  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 
-// Transaction Service definition
-service Transaction {
-	rpc BroadcastTx(TransactRequest) returns(ReceiptResponse);
-	rpc GetUnconfirmedTxs(UnconfirmedTxsRequest) returns(UnconfirmTxsResponse);
-
+message ValidatorResponse{
+  bytes Validator  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
 }
 
-message TransactRequest {
-  TransactRequest txs = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
+message ValidatorsResponse {
+  uint64 BlockHeight  = 1 ;
+  repeated bytes Validators  = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
 }
-
-message ReceiptResponse {
-  bytes  TxHash = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Receipt"];
-}
-
-message UnconfirmedTxsRequest {
-  int32 maxTxs = 1;
-}
-
-message UnconfirmTxsResponse {
-  int32 Count = 1;
-	repeated google.protobuf.ListValue  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
-}
-
-//Network Service definition
-service Network {
-  rpc GetNetworkInfo(Empty) returns(NetInfoResponse);
-  rpc GetPeers(Empty) returns (PeerResponse);
-}
-
-message Peer {
-  bytes  NodeInfo     = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.NodeInfo",(gogoproto.nullable) = false];
-  bool	IsOutbound = 2;
-}
-
-message PeerResponse {
-	repeated Peer Peer = 1;
-}
-
-message NetInfoResponse {
-  bool  Listening =1;
-  repeated string Listeners = 2;
-  repeated Peer Peers = 3;
-}
-
