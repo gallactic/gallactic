@@ -67,11 +67,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:39ce64b2ae6b41d87a0ea58638e0824d71ad7ded27d4ed2e34c683f05d4d8479"
+  digest = "1:1095cce6419e511a07e0ff74d5dfaca1876773c1dcebbd109ff6645d239eccfe"
   name = "github.com/gallactic/sputnikvm-ffi"
   packages = ["go/sputnikvm"]
   pruneopts = "NT"
-  revision = "f7a3724b2ed8d8dafa1d745080424d7b4f2858bf"
+  revision = "2b88e33c5179a76f95f6a35a48d56bc2e7b4aee8"
 
 [[projects]]
   branch = "master"
@@ -111,12 +111,12 @@
   version = "v0.6.0"
 
 [[projects]]
-  digest = "1:341a7df38da99fe91ed40e4008c13cc5d02dcc98ed1a094360cb7d5df26d6d26"
+  digest = "1:738c75300725db7262825a96ba5b6a8a737f0faa93d9dadcf3977504034877e0"
   name = "github.com/go-logfmt/logfmt"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "390ab7935ee28ec6b286364bba9b4dd6410cb3d5"
-  version = "v0.3.0"
+  revision = "07c9b44f60d7ffdfb7d8efe1ad539965737836dc"
+  version = "v0.4.0"
 
 [[projects]]
   digest = "1:91358b3a314c1ddfd4d6445ca9c1fb846842c31c153e626730594b3c95f73f4a"
@@ -166,12 +166,12 @@
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
-  digest = "1:3b708ebf63bfa9ba3313bedb8526bc0bb284e51474e65e958481476a9d4a12aa"
+  digest = "1:4a0c072e44da763409da72d41492373a034baf2e6d849c76d239b4abdfbb6c49"
   name = "github.com/gorilla/websocket"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
-  version = "v1.2.0"
+  revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
+  version = "v1.4.0"
 
 [[projects]]
   digest = "1:2f3631983055bb7fe8cd0a1bd407ab9e5f460e5ea1734f3845bd8ff2c4c370f1"
@@ -330,7 +330,7 @@
     "model",
   ]
   pruneopts = "NUT"
-  revision = "1f2c4f3cd6db5fd6f68f36af6b6d5d936fd93c4e"
+  revision = "aeab699e26f4d4089dba5e522e5d9babd2adbaf7"
 
 [[projects]]
   branch = "master"
@@ -537,7 +537,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a014af5b4062557d04391d4dffbcb75547f7e14886fb11224e2034f8aa08e149"
+  digest = "1:f12d50d0f9e150929a0665135b1958c32dddfa9aa0aff8fe802e89c708c93c29"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -546,7 +546,7 @@
     "windows/registry",
   ]
   pruneopts = "NUT"
-  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
+  revision = "0cf1ed9e522b7dbb416f080a5c8003de9b702bf4"
 
 [[projects]]
   digest = "1:e7071ed636b5422cc51c0e3a6cebc229d6c9fffc528814b519a980641422d619"
