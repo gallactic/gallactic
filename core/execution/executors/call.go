@@ -39,13 +39,11 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 			return e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", caller.Address(), caller.Permissions(), permission.CreateContract)
 		}
 
-		callee, err = deriveNewAccount(caller)
-		if err != nil {
-			return err
-		}
-		callee.SetCode(tx.Data())
+		// In case of create contract we must pass nil as callee
+		// sputnik vm will create the account and returns the code
+		callee = nil
+
 		ctx.Logger.TraceMsg("Creating new contract",
-			"contract_address", callee.Address(),
 			"init_code", tx.Data())
 	} else {
 		/// TODO : write test for this case: create and call in same block
@@ -59,7 +57,7 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 	}
 
 	if ctx.Committing {
-		err := ctx.Deliver(tx, caller, callee)
+		err := ctx.Deliver(tx, caller, callee,tx.Data())
 		if err != nil {
 			return err
 		}
@@ -77,44 +75,19 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 	return nil
 }
 
-func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) error {
+func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account,code []byte ) error {
 
-	if callee == nil || len(callee.Code()) == 0 {
-		// if you call an account that doesn't exist
-		// or an account with no code then we take fees (sorry pal)
-		// NOTE: it's fine to create a contract and call it within one
-		// block (sequence number will prevent re-ordering of those txs)
-		// but to create with one contract and call with another
-		// you have to wait a block to avoid a re-ordering attack
-		// that will take your fees
-		if callee == nil {
-			panic("panic_test")
-			ctx.Logger.InfoMsg("Execute to address that does not exist",
-				"caller_address", tx.Caller(),
-				"callee_address", tx.Callee())
-		} else {
-			ctx.Logger.InfoMsg("Execute to address that holds no code",
-				"caller_address", tx.Caller(),
-				"callee_address", tx.Callee())
-		}
-
-		return nil
-	}
-
-	var gas uint64
-	ret, err := sputnik.Execute(ctx.BC, ctx.Cache, caller, callee, tx, &gas, false)
+	adapter := sputnik.GallacticAdapter{ctx.BC, ctx.Cache, caller,
+		callee,  tx.GasLimit(), tx.Amount(), code,  caller.Sequence()}
+	ret, err := sputnik.Execute(&adapter)
 
 	if err != nil {
 		return err
 	}
-	if tx.CreateContract() {
-		callee.SetCode(ret)
-	}
-	code := callee.Code()
 	ctx.Logger.TraceMsg("Calling existing contract",
 		"contract_address", callee.Address(),
 		"input", tx.Data(),
-		"contract_code", code)
+		"contract_code", callee.Code())
 
 	ctx.Logger.Trace.Log("callee", callee.Address().String())
 	// Create a receipt from the ret and whether it erred.
