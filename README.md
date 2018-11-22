@@ -8,7 +8,7 @@ You need to make sure you have install [Go](https://golang.org/) (version 1.10.1
 
 ```bash
 mkdir -p $GOPATH/src/github.com/gallactic/gallactic
-cd $GOPATH/src/github.com/gallactic
+cd $GOPATH/src/github.com/gallactic/gallactic
 git clone https://github.com/gallactic/gallactic.git .
 make
 ```
