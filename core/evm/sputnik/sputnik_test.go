@@ -17,6 +17,12 @@ import (
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
+func TestSputnikVM_100(t *testing.T) {
+	for i := 0; i < 100; i++ {
+		TestSputnikVM(t)
+	}
+}
+
 func TestSputnikVM(t *testing.T) {
 	//Create blockchain
 	pk, _ := crypto.GenerateKey(nil)
@@ -91,7 +97,7 @@ func TestSputnikVM(t *testing.T) {
 		Callee: callee, GasLimit: 1000000, Amount: 0, Data: getOwnerMethod, Nonce: 7}
 	outW, errGetW := Execute(&adapter7)
 	require.NoError(t, errGetW)
-	require.Equal(t, ToEthAddress(caller.Address()).Bytes(), outW.Output[12:])
+	require.Equal(t, toEthAddress(caller.Address()).Bytes(), outW.Output[12:])
 
 	//Call kill() Method...
 	killMethod, _ := hex.DecodeString("41c0e1b5")

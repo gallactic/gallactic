@@ -6,14 +6,22 @@ import (
 	"math/big"
 
 	"github.com/ethereumproject/go-ethereum/common"
+	///e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
 )
 
+/// TODO: Gheis
+/// Please look here as an example of implementing the SputnikVM
+/// https://github.com/ethereumproject/go-ethereum/blob/master/core/multivm_processor.go
+/// Fix all TODOs and also create a `receipt` object
 func Execute(adapter Adapter) (Output, error) {
 	var out Output
 	var retError error
 
 	if adapter.calleeAddress() == nil && len(adapter.GetData()) == 0 {
+		// TODO: Returning without calling vm.Free()
+		// TODO: use ErrInternalEvm as an error code
+		///return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
 		return out, errors.New("Zero Bytes of Codes")
 	}
 
@@ -35,7 +43,7 @@ func Execute(adapter Adapter) (Output, error) {
 		GasLimit:    new(big.Int).SetUint64(adapter.GetGasLimit()),
 	}
 
-	vm := sputnikvm.NewFrontier(&transaction, &header)
+	vm := sputnikvm.NewGallactic(&transaction, &header)
 
 Loop:
 	for {
@@ -54,8 +62,9 @@ Loop:
 				if acc != nil {
 					vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()), new(big.Int).SetUint64(acc.Balance()), acc.Code())
 				} else {
-					adapter.createContractAccount(require.Address())
-					vm.CommitAccount(require.Address(), new(big.Int).SetUint64(0), new(big.Int).SetUint64(0), adapter.GetData())
+					//adapter.createContractAccount(require.Address())
+					//vm.CommitAccount(require.Address(), new(big.Int).SetUint64(0), new(big.Int).SetUint64(0), adapter.GetData())
+					vm.CommitNonexist(require.Address())
 				}
 			}
 
@@ -77,36 +86,30 @@ Loop:
 
 		case sputnikvm.RequireBlockhash:
 			//Require Blockhash
+			// TODO: get block nuber
+			//blockNumber := require.BlockNumber()
 			blockNumber := new(big.Int).SetUint64(adapter.LastBlockNumber())
 			var blockHash common.Hash
+			// TODO: Get block hash and check if the block exists....
+			// (!Not only last block number)
 			blockHash.SetBytes(adapter.LastBlockHash())
 			vm.CommitBlockhash(blockNumber, blockHash)
 
 		default:
+			// TODO: Returning without calling vm.Free()
+			///return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
 			return out, errors.New("Not Supperted Requirement by Sputnik")
 		}
 	}
 
-	if vm.Failed() {
-		out.Failed = true
-		return out, fmt.Errorf("VM Failed")
-	}
-
 	changedAccs := vm.AccountChanges()
 	accLen := len(changedAccs)
-	contractAddressIsSet := false
 
 	for i := 0; i < accLen; i++ {
 		changedAcc := changedAccs[i]
 
 		if changedAcc.Address().IsEmpty() {
 			continue
-		}
-
-		if !contractAddressIsSet && adapter.calleeAddress() == nil {
-			out.ContractAddress.SetBytes(changedAcc.Address().Bytes())
-			adapter.setCalleeAddress(changedAcc.Address())
-			contractAddressIsSet = true
 		}
 
 		switch changedAcc.Typ() {
@@ -126,31 +129,39 @@ Loop:
 			adapter.removeAccount(changedAcc.Address())
 			//TODO: removeAccount(changedAcc.Address())
 
-		case sputnikvm.AccountChangeFull, sputnikvm.AccountChangeCreate:
-			// Change or Create Account
-			if changedAcc.Typ() == sputnikvm.AccountChangeFull {
-				changeStorage := changedAcc.ChangedStorage()
-				if len(changeStorage) > 0 {
-					for i := 0; i < len(changeStorage); i++ {
-						key := changeStorage[i].Key
-						value := changeStorage[i].Value
-						adapter.updateStorage(changedAcc.Address(), key, value)
-					}
+		case sputnikvm.AccountChangeFull:
+			// TODO: Update balance, nonce, code
+			changeStorage := changedAcc.ChangedStorage()
+			if len(changeStorage) > 0 {
+				for i := 0; i < len(changeStorage); i++ {
+					key := changeStorage[i].Key
+					value := changeStorage[i].Value
+					adapter.updateStorage(changedAcc.Address(), key, value)
 				}
-			} else {
-				changeStorage := changedAcc.Storage()
-				if len(changeStorage) > 0 {
-					for i := 0; i < len(changeStorage); i++ {
-						key := changeStorage[i].Key
-						value := changeStorage[i].Value
-						adapter.updateStorage(changedAcc.Address(), key, value)
-					}
+			}
+
+		case sputnikvm.AccountChangeCreate:
+			// TODO: Update balance, nonce, code
+			adapter.createContractAccount(changedAcc.Address())
+
+			changeStorage := changedAcc.Storage()
+			if len(changeStorage) > 0 {
+				for i := 0; i < len(changeStorage); i++ {
+					key := changeStorage[i].Key
+					value := changeStorage[i].Value
+					adapter.updateStorage(changedAcc.Address(), key, value)
 				}
-				adapter.setCode(changedAcc.Address(), changedAcc.Code())
+			}
+			adapter.setCode(changedAcc.Address(), changedAcc.Code())
+
+			if adapter.calleeAddress() == nil {
+				adapter.setCalleeAddress(changedAcc.Address())
 			}
 
 		default:
 			//Return error :unreachable!
+			// TODO: Returning without calling vm.Free()
+			///return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
 			return out, errors.New("unreachable")
 		}
 
@@ -161,6 +172,12 @@ Loop:
 		adapter.log(log.Address, log.Topics, log.Data)
 	}
 
+	if vm.Failed() {
+		out.Failed = true
+		// TODO: Returning without calling vm.Free()
+		///return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
+		return out, fmt.Errorf("VM Failed")
+	}
 	out.UsedGas = vm.UsedGas().Uint64()
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())
@@ -168,4 +185,3 @@ Loop:
 	vm.Free()
 	return out, retError
 }
-

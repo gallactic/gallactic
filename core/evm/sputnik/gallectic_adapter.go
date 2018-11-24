@@ -28,7 +28,7 @@ func (ga *GallacticAdapter) calleeAddress() *common.Address {
 	var addr *common.Address
 	if ga.Callee != nil {
 		addr = new(common.Address)
-		addr.SetBytes(ToEthAddress(ga.Callee.Address()).Bytes())
+		addr.SetBytes(toEthAddress(ga.Callee.Address()).Bytes())
 	}
 	return addr
 }
@@ -37,7 +37,7 @@ func (ga *GallacticAdapter) callerAddress() common.Address {
 	if ga.Caller == nil {
 		return common.Address{}
 	}
-	return ToEthAddress(ga.Caller.Address())
+	return toEthAddress(ga.Caller.Address())
 }
 
 func (ga *GallacticAdapter) GetGasLimit() uint64 {
@@ -64,20 +64,19 @@ func (ga *GallacticAdapter) GetCaller() *account.Account {
 	return ga.Caller
 }
 
-func (ga *GallacticAdapter) updateAccount(address common.Address) {
-	acc := ga.getAccount(address)
+func (ga *GallacticAdapter) updateAccount(acc *account.Account) {
 	ga.Cache.UpdateAccount(acc)
 }
 
 func (ga *GallacticAdapter) updateStorage(address common.Address, key *big.Int, value *big.Int) {
-	_, addr := FromEthAddress(address, true)
+	_, addr := fromEthAddress(address, true)
 	wKey := binary.LeftPadWord256(key.Bytes())
 	wValue := binary.LeftPadWord256(value.Bytes())
 	ga.Cache.SetStorage(addr, wKey, wValue)
 }
 
 func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*big.Int, error) {
-	_, addr := FromEthAddress(address, true)
+	_, addr := fromEthAddress(address, true)
 	wKey := binary.LeftPadWord256(key.Bytes())
 	wValue, err := ga.Cache.GetStorage(addr, wKey)
 	var value big.Int
@@ -90,7 +89,7 @@ func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*b
 }
 
 func (ga *GallacticAdapter) createContractAccount(address common.Address) {
-	_, addr := FromEthAddress(address, true)
+	_, addr := fromEthAddress(address, true)
 	acc, _ := account.NewContractAccount(addr)
 	ga.Cache.UpdateAccount(acc)
 }
@@ -128,7 +127,7 @@ func (ga *GallacticAdapter) log(address common.Address, topics []common.Hash, da
 }
 
 func (ga *GallacticAdapter) getAccount(ethAddr common.Address) *account.Account {
-	converted, addr := FromEthAddress(ethAddr, false)
+	converted, addr := fromEthAddress(ethAddr, false)
 
 	if converted {
 		acc, _ := ga.Cache.GetAccount(addr)
@@ -137,7 +136,7 @@ func (ga *GallacticAdapter) getAccount(ethAddr common.Address) *account.Account 
 		}
 	}
 
-	converted, addr = FromEthAddress(ethAddr, true)
+	converted, addr = fromEthAddress(ethAddr, true)
 
 	if converted {
 		acc, _ := ga.Cache.GetAccount(addr)
@@ -159,13 +158,13 @@ func (ga *GallacticAdapter) TimeStamp() uint64 {
 	return uint64(ga.BlockChain.LastBlockTime().Unix())
 }
 
-func ToEthAddress(addr crypto.Address) common.Address {
+func toEthAddress(addr crypto.Address) common.Address {
 	var ethAddr common.Address
 	ethAddr.SetBytes(addr.RawBytes()[2:22])
 	return ethAddr
 }
 
-func FromEthAddress(ethAdr common.Address, contract bool) (bool, crypto.Address) {
+func fromEthAddress(ethAdr common.Address, contract bool) (bool, crypto.Address) {
 
 	var addr crypto.Address
 	var err error
