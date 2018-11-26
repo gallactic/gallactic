@@ -6,7 +6,6 @@ import (
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/evm/sputnik"
 	"github.com/gallactic/gallactic/core/state"
-	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
@@ -57,7 +56,7 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 	}
 
 	if ctx.Committing {
-		err := ctx.Deliver(tx, caller, callee,tx.Data())
+		err := ctx.Deliver(tx, caller, callee, tx.Data())
 		if err != nil {
 			return err
 		}
@@ -75,10 +74,10 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 	return nil
 }
 
-func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account,code []byte ) error {
+func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account, code []byte) error {
 
 	adapter := sputnik.GallacticAdapter{ctx.BC, ctx.Cache, caller,
-		callee,  tx.GasLimit(), tx.Amount(), code,  caller.Sequence()}
+		callee, tx.GasLimit(), tx.Amount(), code, caller.Sequence()}
 	ret, err := sputnik.Execute(&adapter)
 
 	if err != nil {
@@ -98,22 +97,4 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account,c
 		structure.ErrorKey, err)
 
 	return nil
-}
-
-// Create a new account from a parent 'creator' account. The creator account will have its
-// sequence number incremented
-func deriveNewAccount(creator *account.Account) (*account.Account, error) {
-	// Generate an address
-	seq := creator.Sequence()
-	creator.IncSequence()
-
-	addr := crypto.DeriveContractAddress(creator.Address(), seq)
-
-	// Create account from address.
-	acc, err := account.NewAccount(addr)
-	if err != nil {
-		return nil, err
-	}
-
-	return acc, nil
 }

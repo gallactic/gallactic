@@ -1,15 +1,15 @@
 package sputnik
 
 import (
+	"math/big"
+
 	"github.com/ethereumproject/go-ethereum/common"
 	"github.com/gallactic/gallactic/core/account"
-	"math/big"
 )
 
 type Output struct {
 	Failed          bool
 	UsedGas         uint64
-	ContractAddress common.Address
 	Output          []uint8
 }
 
@@ -24,7 +24,7 @@ type Adapter interface {
 
 	setCalleeAddress(address common.Address)
 
-	updateAccount(address common.Address)
+	updateAccount(account *account.Account)
 
 	updateStorage(address common.Address, key *big.Int, value *big.Int)
 	getStorage(address common.Address, key *big.Int) (*big.Int, error)

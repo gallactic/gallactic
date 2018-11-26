@@ -23,7 +23,7 @@ deps:
 	@echo "Cleaning vendors..."
 	rm -rf vendor/
 	@echo "Running dep..."
-	dep ensure
+	dep ensure -v
 	@echo "Building Sputnikvm Library..."
 	rm -rf $(SPUTNIKVM_PATH) && mkdir $(SPUTNIKVM_PATH)
 	cd $(SPUTNIKVM_PATH) && git clone https://github.com/gallactic/sputnikvm-ffi.git .
