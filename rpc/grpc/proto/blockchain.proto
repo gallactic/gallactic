@@ -39,16 +39,22 @@ message Empty {
 
 message AccountsResponse{
 	uint64 BlockHeight = 1;
-	repeated Account Account = 2;
+	repeated AccountResponse Account = 2;
 }
 
 message AccountResponse {
   AccountResponse Account  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/account.Account"];
 }
 
-message Account {
-  Account Account = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/account.Account"];
+message ValidatorResponse{
+  ValidatorResponse Validator  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
 }
+
+message ValidatorsResponse {
+  uint64 BlockHeight  = 1 ;
+  repeated ValidatorResponse Validators  = 2;
+}
+
 
 message ListAccountsParam {
   string Query = 1;
@@ -127,11 +133,3 @@ message BlockTxsResponse {
   repeated google.protobuf.ListValue  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 
-message ValidatorResponse{
-  bytes Validator  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
-}
-
-message ValidatorsResponse {
-  uint64 BlockHeight  = 1 ;
-  repeated bytes Validators  = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
-}

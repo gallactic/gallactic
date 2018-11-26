@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -14,6 +13,7 @@ import (
 	"github.com/gallactic/gallactic/version"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
 	tmTypes "github.com/tendermint/tendermint/types"
+
 )
 
 // MaxBlockLookback constant
@@ -73,18 +73,19 @@ func (as *blockchainServer) GetAccount(ctx context.Context, param *AddressReques
 }
 
 func (as *blockchainServer) GetAccounts(ctx context.Context, in *Empty) (*AccountsResponse, error) {
-	accounts := make([]*Account, 0)
+	accounts := make([]*AccountResponse, 0)
 	as.state.IterateAccounts(func(acc *account.Account) (stop bool) {
 		if acc != nil {
-			accounts = append(accounts, &Account{Account: acc})
+			accounts = append(accounts, &AccountResponse{Account: acc})
 		}
 		return
 	})
 	return &AccountsResponse{
 		BlockHeight: as.blockchain.LastBlockHeight(),
-		Account:     accounts,
+		Accounts:     accounts,
 	}, nil
 }
+
 func (vs *blockchainServer) GetValidator(ctx context.Context, param *AddressRequest) (*ValidatorResponse, error) {
 	val, err := vs.state.GetValidator(param.Address)
 	if err != nil {
@@ -95,9 +96,11 @@ func (vs *blockchainServer) GetValidator(ctx context.Context, param *AddressRequ
 }
 
 func (vs *blockchainServer) GetValidators(context.Context, *Empty) (*ValidatorsResponse, error) {
-	validators := make([]validator.Validator, 0)
+	validators := make([]*ValidatorResponse, 0)
 	vs.state.IterateValidators(func(val *validator.Validator) (stop bool) {
-		validators = append(validators, *val)
+		if val != nil {
+			validators = append(validators, &ValidatorResponse{Validator: val})
+		}
 		return true
 	})
 	return &ValidatorsResponse{
