@@ -2,7 +2,7 @@ GOTOOLS = \
 	github.com/golang/dep/cmd/dep \
 	gopkg.in/alecthomas/gometalinter.v2 \
 	google.golang.org/grpc \
-    github.com/golang/protobuf/proto \
+        github.com/golang/protobuf/proto \
 	github.com/gogo/protobuf/protoc-gen-gofast
 
 
@@ -64,9 +64,9 @@ docker:
 ### Protobuf
 proto:
 
-	#--protoc $(INCLUDE) --gofast_out=plugins=grpc:. ./rpc/grpc/proto/blockchain.proto
-    #--protoc $(INCLUDE) --gofast_out=plugins=grpc:/grpc ./rpc/grpc/proto/network.proto
-	#--protoc $(INCLUDE) --gofast_out=plugins=grpc:/grpc ./rpc/grpc/proto/transaction.proto
+      #--protoc $(INCLUDE) --gofast_out=plugins=grpc:. ./rpc/grpc/proto/blockchain.proto
+      #--protoc $(INCLUDE) --gofast_out=plugins=grpc:/grpc ./rpc/grpc/proto/network.proto
+      #--protoc $(INCLUDE) --gofast_out=plugins=grpc:/grpc ./rpc/grpc/proto/transaction.proto
 
 ########################################
 ### Formatting, linting, and vetting
