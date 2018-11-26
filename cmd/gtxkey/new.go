@@ -26,7 +26,7 @@ func New() func(c *ishell.Context) {
 		auth := cmd.PromptPassphrase("Passphrase: ", true)
 		label := cmd.PromptInput("label: ")
 
-		kd, err := ks.New(auth, label, valAddr)
+		kd, err := ks.New(label, auth, valAddr)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
