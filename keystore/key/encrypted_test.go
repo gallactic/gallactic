@@ -13,7 +13,7 @@ func TestEncryption(t *testing.T) {
 	k1 := GenAccountKey()
 	filePath := fmt.Sprintf("/tmp/%s.key", k1.Address().String())
 	//Encrypts the key json blob
-	err := EncryptKeyFile(k1, filePath, auth)
+	err := EncryptKeyFile(k1, filePath, auth, "")
 	assert.NoError(t, err)
 	//Decrypts Json Object
 	k2, err := DecryptKeyFile(filePath, auth)
@@ -36,7 +36,7 @@ func TestEncryptionData(t *testing.T) {
 	//Generates
 	k1 := GenValidatorKey()
 	//Encrypts the key json blob
-	bs, err := EncryptKey(k1, auth)
+	bs, err := EncryptKey(k1, auth, "")
 	fmt.Printf(string(bs))
 	assert.NoError(t, err)
 	//Decrypts Json Object
@@ -56,7 +56,7 @@ func TestEncryptionData(t *testing.T) {
 
 func TestNonEncryptied(t *testing.T) {
 	k1 := GenValidatorKey()
-	bs, _ := EncryptKey(k1, "")
+	bs, _ := EncryptKey(k1, "", "")
 	fmt.Printf(string(bs))
 	k2, _ := DecryptKey(bs, "")
 	assert.Equal(t, k1, k2)

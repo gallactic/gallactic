@@ -50,7 +50,7 @@ func (pvm *privValidatorMemory) SignHeartbeat(chainID string, heartbeat *tmTypes
 
 func asTendermintSigner(signer crypto.Signer) tmSigner {
 	return func(msg []byte) []byte {
-		sig, err := signer.Sign(msg)
+		sig, err := signer.SignWithoutHash(msg)
 		if err != nil {
 			return nil
 		}

@@ -65,18 +65,14 @@ func (val *Validator) IncSequence() {
 }
 
 ///---- Serialization methods
-var vc = amino.NewCodec()
+var cdc = amino.NewCodec()
 
 func (val Validator) Encode() ([]byte, error) {
-	return vc.MarshalBinary(val.data)
+	return cdc.MarshalBinaryLengthPrefixed(val.data)
 }
 
 func (val *Validator) Decode(bs []byte) error {
-	err := vc.UnmarshalBinary(bs, &val.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &val.data)
 }
 
 func ValidatorFromBytes(bs []byte) (*Validator, error) {
@@ -92,11 +88,7 @@ func (val Validator) MarshalJSON() ([]byte, error) {
 }
 
 func (val *Validator) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &val.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(bs, &val.data)
 }
 
 func ValidatorFromJSON(bs []byte) (*Validator, error) {
@@ -110,4 +102,25 @@ func ValidatorFromJSON(bs []byte) (*Validator, error) {
 func (val Validator) String() string {
 	b, _ := val.MarshalJSON()
 	return fmt.Sprintf("Validator%s", string(b))
+}
+
+func (val *Validator) Unmarshal(bs []byte) error {
+	return val.Decode(bs)
+}
+
+func (val *Validator) Marshal() ([]byte, error) {
+	return val.Encode()
+}
+
+func (val *Validator) MarshalTo(data []byte) (int, error) {
+	bs, err := val.Encode()
+	if err != nil {
+		return -1, err
+	}
+	return copy(data, bs), nil
+}
+
+func (val *Validator) Size() int {
+	bs, _ := val.Encode()
+	return len(bs)
 }

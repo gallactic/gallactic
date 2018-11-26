@@ -9,9 +9,11 @@ import (
 	"sort"
 	"time"
 
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
+	amino "github.com/tendermint/go-amino"
 )
 
 // How many bytes to take from the front of the Genesis hash to append
@@ -164,11 +166,39 @@ func (gen Genesis) MarshalJSON() ([]byte, error) {
 }
 
 func (gen *Genesis) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &gen.data)
+	return json.Unmarshal(bs, &gen.data)
+}
+
+//protobuf marshal,unmrshal and size
+var cdc = amino.NewCodec()
+
+func (gen Genesis) Encode() ([]byte, error) {
+	return cdc.MarshalBinaryLengthPrefixed(&gen.data)
+}
+
+func (gen *Genesis) Decode(bs []byte) error {
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &gen.data)
+}
+
+func (gen *Genesis) Unmarshal(bs []byte) error {
+	return gen.Decode(bs)
+}
+
+func (gen *Genesis) Marshal() ([]byte, error) {
+	return gen.Encode()
+}
+
+func (gen *Genesis) MarshalTo(data []byte) (int, error) {
+	bs, err := gen.Encode()
 	if err != nil {
-		return err
+		return -1, err
 	}
-	return nil
+	return copy(data, bs), nil
+}
+
+func (gen *Genesis) Size() int {
+	bs, _ := gen.Encode()
+	return len(bs)
 }
 
 func makeGenesisAccount(acc *account.Account) genAccount {
@@ -274,8 +304,8 @@ func (gen *Genesis) SaveToFile(file string) error {
 	}
 
 	// write  dataContent to file
-	if err := ioutil.WriteFile(file, json, 0777); err != nil {
-		return fmt.Errorf("Failed to write genesis file to %s: %v", file, err)
+	if err := common.WriteFile(file, json); err != nil {
+		return err
 	}
 
 	return nil

@@ -50,9 +50,7 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 	bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter,
 	txDecoder txs.Decoder, logger *logging.Logger) (*Node, error) {
 
-	var err error
-
-	err = common.Mkdir(path.Dir(conf.NodeKeyFile()))
+	err := common.Mkdir(path.Dir(conf.NodeKeyFile()))
 	if err != nil {
 		return nil, err
 	}

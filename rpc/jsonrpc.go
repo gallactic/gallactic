@@ -52,14 +52,14 @@ type (
 		JSONRPC string      `json:"jsonrpc"`
 	}
 
-	// RPCErrorResponse MUST NOT contain the result member if an error occured
+	// RPCErrorResponse MUST NOT contain the result member if an error occurred
 	RPCErrorResponse struct {
 		Error   *RPCError `json:"error"`
 		Id      string    `json:"id"`
 		JSONRPC string    `json:"jsonrpc"`
 	}
 
-	// RPCError MUST be included in the Response object if an error occured
+	// RPCError MUST be included in the Response object if an error occurred
 	RPCError struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`

@@ -81,13 +81,10 @@ func (s *Service) ListUnconfirmedTxs(maxTxs int) (*UnconfirmedTxsOutput, error) 
 	if err != nil {
 		return nil, err
 	}
-	wrappedTxs := make([]*txs.Envelope, len(transactions))
-	for i, tx := range transactions {
-		wrappedTxs[i] = tx
-	}
+
 	return &UnconfirmedTxsOutput{
 		Count: len(transactions),
-		Txs:   wrappedTxs,
+		Txs:   transactions,
 	}, nil
 }
 func (s *Service) ListBlockTxs(height uint64) (*BlockTxsOutput, error) {
@@ -194,6 +191,14 @@ func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*Accounts
 		BlockHeight: s.blockchain.LastBlockHeight(),
 		Accounts:    accounts,
 	}, nil
+}
+
+func (s *Service) GetValidator(address crypto.Address) (*ValidatorOutput, error) {
+	val, err := s.state.GetValidator(address)
+	if err != nil {
+		return nil, err
+	}
+	return &ValidatorOutput{Validator: val}, nil
 }
 
 func (s *Service) GetStorage(address crypto.Address, key []byte) (*StorageOutput, error) {

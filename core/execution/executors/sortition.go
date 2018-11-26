@@ -45,7 +45,7 @@ func (ctx *SortitionContext) Execute(txEnv *txs.Envelope) error {
 	}
 
 	isInSet := ctx.BC.ValidatorSet().Contains(tx.Validator().Address)
-	if isInSet == true {
+	if isInSet {
 		return errors.New("This validator is already in set")
 	}
 
@@ -58,7 +58,7 @@ func (ctx *SortitionContext) Execute(txEnv *txs.Envelope) error {
 
 	blockHash := result.Block.Hash()
 	isValid := ctx.BC.VerifySortition(blockHash, txEnv.Signatories[0].PublicKey, tx.Index(), tx.Proof())
-	if isValid == false {
+	if !isValid {
 		return errors.New("Sortition transaction is invalid")
 	}
 

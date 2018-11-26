@@ -123,7 +123,7 @@ func TestValidity(t *testing.T) {
 	_, err = AddressFromString("AC9E2cyNA5UfB8pUpqzEz4QCcBpp8sxnEaN")
 	assert.Error(t, err)
 
-	_, err = AddressFromString("invalid_addres")
+	_, err = AddressFromString("invalid_address")
 	assert.Error(t, err)
 
 	_, err = AddressFromRawBytes([]byte{0, 1, 2, 3, 4, 5, 6})
