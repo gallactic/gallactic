@@ -12,14 +12,19 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/txs/tx"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
+func TestSputnikVM_100(t *testing.T) {
+	for i := 0; i < 100; i++ {
+		TestSputnikVM(t)
+	}
+}
+
 func TestSputnikVM(t *testing.T) {
-	//create block chain
+	//Create blockchain
 	pk, _ := crypto.GenerateKey(nil)
 	val1, _ := validator.NewValidator(pk, 0)
 	vals := []*validator.Validator{val1}
@@ -31,96 +36,124 @@ func TestSputnikVM(t *testing.T) {
 
 	require.NoError(t, err)
 
-	//create caller address
-	callerAddr := convertEthAddress("a54fc84e16b4af78e7d1288114e7dcb9397daac8")
-	//create callee address
-	tmpAddr := convertEthAddress("4acb57e88f38dceecf8d2ac1b13ec2a397d88491")
-	calleeAddr := crypto.DeriveContractAddress(tmpAddr, 0)
-
-	//create caller and callee test accounts
+	callerAddr := toGallecticAddress("6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0")
 	caller, _ := account.NewAccount(callerAddr)
-	callee, _ := account.NewContractAccount(calleeAddr)
+	caller.AddToBalance(1000000)
+	caller.SetCode([]byte{})
 
-	//create sample smart contract code
-	testCode := createContractCode()
-
-	//create transaction structure
-	txDep, _ := tx.NewCallTx(callerAddr, calleeAddr, 1, testCode, 10000000, 0, 1)
-
-	var gas uint64
-
-	//create new state and cache
 	st := state.NewState(db, logging.NewNoopLogger())
 	cache := state.NewCache(st)
-
-	//update test accounts
-	caller.AddToBalance(1000000)
-	callee.AddToBalance(2000000)
-	caller.SetCode([]byte{})
-	callee.SetCode(testCode)
-
 	cache.UpdateAccount(caller)
 
-	//Execute a non-exist Account...
-	outC, err := Execute(bc, cache, caller, callee, txDep, &gas, false)
-	require.Error(t, err)
-	require.Equal(t, outC, []byte{})
+	adapter1 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
+		Callee: nil, GasLimit: 1000000, Amount: 0, Data: []byte{}, Nonce: 1}
+	_, errDeployZ := Execute(&adapter1)
+	require.Error(t, errDeployZ)
 
-	//Now we add callee address and execute vm again
-	cache.UpdateAccount(callee)
+	//Deploy a random contract.
+	adapter2 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
+		Callee: nil, GasLimit: 1000000, Amount: 0, Data: []byte{60, 80, 120, 48, 22, 8, 0, 0, 34}, Nonce: 2}
+	_, errDeployE := Execute(&adapter2)
+	require.Error(t, errDeployE)
 
-	//Deploy Contract...
-	outD, errDeploy := Execute(bc, cache, caller, callee, txDep, &gas, true)
+	//Deploy a valid contract
+	testCode := createContractCode()
+	adapter3 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
+		Callee: nil, GasLimit: 1000000, Amount: 0, Data: testCode, Nonce: 3}
+	outD, errDeploy := Execute(&adapter3)
 	require.NoError(t, errDeploy)
-	require.Equal(t, hex.EncodeToString(outD), getContractCodeAfterDeploy())
+	require.Equal(t, getContractCodeAfterDeploy(), hex.EncodeToString(outD.Output))
 
-	//Call Set Method by 1234567...
+	callee, _ := cache.GetAccount(adapter3.Callee.Address())
+
+	//Call none exist method
+	noneMethod, _ := hex.DecodeString("c0ae47d2")
+	adapter4 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
+		Callee: callee, GasLimit: 1000000, Amount: 0, Data: noneMethod, Nonce: 4}
+	outN, errNone := Execute(&adapter4)
+
+	require.Error(t, errNone)
+	require.Equal(t, 0, len(outN.Output))
+
+	//Call SetMethod() by 1234567 as parameter
 	setMethod, _ := hex.DecodeString("60fe47b100000000000000000000000000000000000000000000000000000000000001c8")
-	txSet, _ := tx.NewCallTx(caller.Address(), callee.Address(), 1, setMethod, 10000000, 10, 1)
-	outS, errSet := Execute(bc, cache, caller, callee, txSet, &gas, false)
+	adapter5 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
+		Callee: callee, GasLimit: 1000000, Amount: 0, Data: setMethod, Nonce: 5}
+	outS, errSet := Execute(&adapter5)
 	require.NoError(t, errSet)
-	require.Equal(t, outS, []byte{})
+	require.Equal(t, 0, len(outS.Output))
 
-	//Call Get Method...
+	//Call Get() Method...
 	getMethod, _ := hex.DecodeString("6d4ce63c")
-	txGet, _ := tx.NewCallTx(caller.Address(), callee.Address(), 1, getMethod, 10000000, 0, 1)
-	outG, errGet := Execute(bc, cache, caller, callee, txGet, &gas, false)
-	require.NoError(t, errGet)
-	require.Equal(t, hex.EncodeToString(outG), "00000000000000000000000000000000000000000000000000000000000001c8")
+	adapter6 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
+		Callee: callee, GasLimit: 1000000, Amount: 0, Data: getMethod, Nonce: 6}
+	outG, errGetG := Execute(&adapter6)
+	require.NoError(t, errGetG)
+	require.Equal(t, "00000000000000000000000000000000000000000000000000000000000001c8", hex.EncodeToString(outG.Output))
+
+	//Call GetOwner() Method...
+	getOwnerMethod, _ := hex.DecodeString("893d20e8")
+	adapter7 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
+		Callee: callee, GasLimit: 1000000, Amount: 0, Data: getOwnerMethod, Nonce: 7}
+	outW, errGetW := Execute(&adapter7)
+	require.NoError(t, errGetW)
+	require.Equal(t, toEthAddress(caller.Address()).Bytes(), outW.Output[12:])
+
+	//Call kill() Method...
+	killMethod, _ := hex.DecodeString("41c0e1b5")
+	adapter8 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
+		Callee: callee, GasLimit: 1000000, Amount: 0, Data: killMethod, Nonce: 7}
+	_, errK := Execute(&adapter8)
+	require.NoError(t, errK)
+
 }
 
 func createContractCode() []byte {
 	//Test Smart Contract
 	/*
 		pragma solidity ^0.4.24;
+
 		contract SimpleStorage {
 			uint private _balance;
 			uint private _storedData;
+			address private owner;
+
 			event notifyStorage(uint x);
-			constructor() public payable {
-				_storedData = 0x12d687;
-				_balance = 1500000;
+
+			constructor() public {
+				owner = msg.sender;
 			}
+
 			function set(uint x) public payable {
 				_storedData = x;
 				emit notifyStorage(x);
 			}
+
 			function get() public view returns (uint) {
 				return _storedData;
 			}
+
+			function getOwner() public view returns (address){
+				return owner;
+			}
+
+			function kill() public{
+				selfdestruct(owner);
+			}
 		}
 	*/
-	deployCode, _ := hex.DecodeString("60806040526212d6876001556216e36060005560e9806100206000396000f30060806040526004361060485763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166360fe47b18114604d5780636d4ce63c146058575b600080fd5b6056600435607c565b005b348015606357600080fd5b50606a60b7565b60408051918252519081900360200190f35b60018190556040805182815290517f23f9887eb044d32dba99d7b0b753c61c3c3b72d70ff0addb9a843542fd7642129181900360200190a150565b600154905600a165627a7a7230582013452558cc58a514b8056c0b45a3f1ab8c5f736b2e087c65e615650b562415ff0029")
+	deployCode, _ := hex.DecodeString("608060405234801561001057600080fd5b5033600260006101000a815481600160a060020a030219169083600160a060020a031602179055506101be806100476000396000f3006080604052600436106100615763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166341c0e1b5811461006657806360fe47b11461007d5780636d4ce63c14610088578063893d20e8146100b0575b600080fd5b34801561007257600080fd5b5061007b610107565b005b61007b60043561012d565b34801561009457600080fd5b5061009d610168565b6040805191825251602090910181900390f35b3480156100bc57600080fd5b506100c561016e565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60025473ffffffffffffffffffffffffffffffffffffffff60006101000a909104811616ff5b60018190556040805182815290517f23f9887eb044d32dba99d7b0b753c61c3c3b72d70ff0addb9a843542fd7642129160200181900390a150565b60015490565b60025460006101000a900473ffffffffffffffffffffffffffffffffffffffff16905600a165627a7a7230582001a5bb7dbc53c4e0e7acc1b23010f4dd1415e0b440e8784ac8ce8d0696c841720029")
 	return deployCode
 }
 func getContractCodeAfterDeploy() string {
-	return "60806040526004361060485763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166360fe47b18114604d5780636d4ce63c146058575b600080fd5b6056600435607c565b005b348015606357600080fd5b50606a60b7565b60408051918252519081900360200190f35b60018190556040805182815290517f23f9887eb044d32dba99d7b0b753c61c3c3b72d70ff0addb9a843542fd7642129181900360200190a150565b600154905600a165627a7a7230582013452558cc58a514b8056c0b45a3f1ab8c5f736b2e087c65e615650b562415ff0029"
+	return "6080604052600436106100615763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166341c0e1b5811461006657806360fe47b11461007d5780636d4ce63c14610088578063893d20e8146100b0575b600080fd5b34801561007257600080fd5b5061007b610107565b005b61007b60043561012d565b34801561009457600080fd5b5061009d610168565b6040805191825251602090910181900390f35b3480156100bc57600080fd5b506100c561016e565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60025473ffffffffffffffffffffffffffffffffffffffff60006101000a909104811616ff5b60018190556040805182815290517f23f9887eb044d32dba99d7b0b753c61c3c3b72d70ff0addb9a843542fd7642129160200181900390a150565b60015490565b60025460006101000a900473ffffffffffffffffffffffffffffffffffffffff16905600a165627a7a7230582001a5bb7dbc53c4e0e7acc1b23010f4dd1415e0b440e8784ac8ce8d0696c841720029"
 }
 
-func convertEthAddress(ethAddr string) crypto.Address {
+func toGallecticAddress(ethAddr string) crypto.Address {
 
 	var addr common.Address
-	addr.SetString(ethAddr)
+	sss, _ := hex.DecodeString(ethAddr)
+	addr.SetBytes(sss) //SetString(ethAddr)
 	sputnikAddr, err := crypto.AccountAddress(addr.Bytes())
 	if err != nil {
 		return sputnikAddr

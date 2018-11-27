@@ -117,7 +117,7 @@ func (set *ValidatorSet) AdjustPower(height int64) error {
 			})
 		} else {
 			/// genesis validators
-			vals2 = vals2[1:len(vals2)]
+			vals2 = vals2[1:]
 		}
 
 		r := make([]int, 0)
@@ -185,7 +185,7 @@ func (set *ValidatorSet) Leavers() map[crypto.Address]*Validator {
 }
 
 func (set *ValidatorSet) Join(val *Validator) error {
-	if true == set.Contains(val.Address()) {
+	if set.Contains(val.Address()) {
 		return fmt.Errorf("This validator currently is in the set: %v", val.Address())
 	}
 
@@ -195,7 +195,7 @@ func (set *ValidatorSet) Join(val *Validator) error {
 }
 
 func (set *ValidatorSet) ForceLeave(addr crypto.Address) error {
-	if false == set.Contains(addr) {
+	if !set.Contains(addr) {
 		return fmt.Errorf("This validator currently is not in the set: %v", addr)
 	}
 

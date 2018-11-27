@@ -20,10 +20,9 @@ const (
 	ErrInsufficientGas
 	ErrPermInvalid
 	ErrPermDenied
-	ErrNativeFunction
 	ErrInternalEvm
 
-	errCount
+	ErrCount
 )
 
 var messages = map[int]string{
@@ -42,7 +41,6 @@ var messages = map[int]string{
 	ErrInsufficientGas:   "Insufficient Gas",
 	ErrPermInvalid:       "Invalid permission",
 	ErrPermDenied:        "Permission denied",
-	ErrNativeFunction:    "Error on calling native contracts",
 	ErrInternalEvm:       "Internal EVM error",
 }
 

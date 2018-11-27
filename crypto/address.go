@@ -137,6 +137,23 @@ func (addr *Address) UnmarshalText(text []byte) error {
 	return nil
 }
 
+// Gogo proto support
+func (addr *Address) Marshal() ([]byte, error) {
+	return addr.MarshalAmino()
+}
+
+func (addr *Address) Unmarshal(bs []byte) error {
+	return addr.UnmarshalAmino(bs)
+}
+
+func (addr *Address) MarshalTo(data []byte) (int, error) {
+	return copy(data, addr.data.Address[:]), nil
+}
+
+func (addr *Address) Size() int {
+	return AddressSize
+}
+
 /// -------
 /// METHODS
 

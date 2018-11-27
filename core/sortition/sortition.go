@@ -62,7 +62,7 @@ func (s *Sortition) Evaluate(blockHeight uint64, blockHash []byte) {
 
 		// TODO:: better way?????
 		codec := txs.NewAminoCodec()
-		bs, err := codec.MarshalBinary(txEnv)
+		bs, err := codec.MarshalBinaryLengthPrefixed(txEnv)
 		if err != nil {
 			return
 		}
@@ -87,8 +87,7 @@ func (s *Sortition) Verify(blockHash []byte, pb crypto.PublicKey, index uint64, 
 	s.vrf.SetMax(totalStake)
 
 	index2, result := s.vrf.Verify(blockHash, pb, proof)
-
-	if result == false {
+	if !result {
 		return false
 	}
 

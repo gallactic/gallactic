@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"encoding/json"
-
 	"time"
 
 	"github.com/gallactic/gallactic/common/binary"
@@ -131,6 +130,10 @@ type AccountOutput struct {
 	Account *account.Account
 }
 
+type ValidatorOutput struct {
+	Validator *validator.Validator
+}
+
 type BroadcastTxOutput struct {
 	txs.Receipt
 }
@@ -155,4 +158,34 @@ type GenesisOutput struct {
 type BlockTxsOutput struct {
 	Count int
 	Txs   []txs.Envelope
+}
+
+func (p *Peer) Encode() ([]byte, error) {
+	return aminoCodec.MarshalBinaryLengthPrefixed(&p)
+}
+
+func (p *Peer) Decode(bs []byte) error {
+	return aminoCodec.UnmarshalBinaryLengthPrefixed(bs, &p)
+}
+
+// protobuf marshal,unmarshal and size methods
+func (p *Peer) Unmarshal(bs []byte) error {
+	return p.Decode(bs)
+}
+
+func (p *Peer) Marshal() ([]byte, error) {
+	return p.Encode()
+}
+
+func (p *Peer) MarshalTo(data []byte) (int, error) {
+	bs, err := p.Encode()
+	if err != nil {
+		return -1, err
+	}
+	return copy(data, bs), nil
+}
+
+func (p Peer) Size() int {
+	bs, _ := p.Encode()
+	return len(bs)
 }

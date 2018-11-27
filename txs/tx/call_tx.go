@@ -89,11 +89,11 @@ func (tx *CallTx) CreateContract() bool {
 /// MARSHALING
 
 func (tx CallTx) MarshalAmino() ([]byte, error) {
-	return cdc.MarshalBinary(tx.data)
+	return cdc.MarshalBinaryLengthPrefixed(tx.data)
 }
 
 func (tx *CallTx) UnmarshalAmino(bs []byte) error {
-	return cdc.UnmarshalBinary(bs, &tx.data)
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, &tx.data)
 }
 
 func (tx CallTx) MarshalJSON() ([]byte, error) {
@@ -101,9 +101,5 @@ func (tx CallTx) MarshalJSON() ([]byte, error) {
 }
 
 func (tx *CallTx) UnmarshalJSON(bs []byte) error {
-	err := json.Unmarshal(bs, &tx.data)
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(bs, &tx.data)
 }

@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"path/filepath"
 	"time"
 
+	"github.com/gallactic/gallactic/cmd"
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/account"
+	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/config"
 	proposal "github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
@@ -15,50 +17,49 @@ import (
 	"github.com/jawher/mow.cli"
 )
 
-//initialize the gallactic
-func Init() func(cmd *cli.Cmd) {
-	return func(cmd *cli.Cmd) {
-		workingDirOpts := cmd.String(cli.StringOpt{
-			Name: "w working-dir",
-			Desc: "working directory to save configuration and genesis files",
+// Init initializes the gallactic blockchain
+func Init() func(c *cli.Cmd) {
+	return func(c *cli.Cmd) {
+		workingDir := c.String(cli.StringOpt{
+			Name:  "w working-dir",
+			Desc:  "Working directory to save configuration and genesis files",
+			Value: ".",
 		})
-
-		ChainNameOpts := cmd.String(cli.StringOpt{
+		chainName := c.String(cli.StringOpt{
 			Name: "n chain-name",
 			Desc: "A name for the blockchain",
 		})
 
-		cmd.Spec = "[--working-dir=<Working directory to save the configuration files>] " + "[--chain-name =<A name for the blockchain>]"
-		cmd.LongDesc = "Initializing working directory"
-		cmd.Before = func() { fmt.Println(ascii) }
-		cmd.Action = func() {
-			workingDir := *workingDirOpts
-			chainName := *ChainNameOpts
+		c.Spec = "[-w=<Working directory>] [-n=<a name for the blockchain>]"
+		c.LongDesc = "Initializing the working directory"
+		c.Before = func() { fmt.Println(title) }
+		c.Action = func() {
 
 			// Check chain-name for genesis
-			if chainName == "" {
-				chainName = fmt.Sprintf("test-chain-%v", common.RandomHex(2))
+			if *chainName == "" {
+				*chainName = fmt.Sprintf("test-chain-%v", common.RandomHex(2))
 			}
 
-			// Check for working path
-			if workingDir == "" {
-				workingDir = "/tmp/" + chainName
-			}
-
-			gen := makeGenesis(workingDir, chainName)
+			path, _ := filepath.Abs(*workingDir)
+			gen := makeGenesis(*workingDir, *chainName)
 			conf := makeConfigfile()
 
 			// save genesis file to file system
-			if err := gen.SaveToFile(workingDir + "/genesis.json"); err != nil {
-				log.Fatalf("%v", err)
+			genFile := path + "/genesis.json"
+			if err := gen.SaveToFile(genFile); err != nil {
+				cmd.PrintErrorMsg("Failed to write genesis file: %v", err)
+				return
 			}
 
 			// save config file to file system
-			if err := conf.SaveToFile(workingDir + "/config.toml"); err != nil {
-				log.Fatalf("%v", err)
+			confFile := path + "/config.toml"
+			if err := conf.SaveToFile(confFile); err != nil {
+				cmd.PrintErrorMsg("Failed to write config file: %v", err)
+				return
 			}
 
-			log.Printf("A gallactic node is successfully initialized at %v.", workingDir)
+			fmt.Println()
+			cmd.PrintSuccessMsg("A gallactic node is successfully initialized at %v", path)
 		}
 	}
 }
@@ -71,12 +72,14 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 	for i := 0; i < len(accs); i++ {
 		k := key.GenAccountKey()
 		acc, _ := account.NewAccount(k.Address())
+		acc.AddToBalance(10000000000000000000)
+		acc.SetPermissions(permission.AllPermissions)
 		accs[i] = acc
 	}
 
 	// create validator account for genesis
 	k := key.GenValidatorKey()
-	key.EncryptKeyFile(k, workingDir+"/validator_key.json", "")
+	key.EncryptKeyFile(k, workingDir+"/validator_key.json", "", "")
 	val, _ := validator.NewValidator(k.PublicKey(), 0)
 	vals := []*validator.Validator{val}
 
@@ -89,12 +92,9 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 
 }
 
-//make configuratin file
+//make configuration file
 func makeConfigfile() *config.Config {
 	conf := config.DefaultConfig()
-	conf.Tendermint.ListenAddress = "127.0.0.1:46656"
-	conf.Tendermint.Moniker = "moniker"
-	conf.Tendermint.TendermintRoot = "tendermint"
 	return conf
 
 }

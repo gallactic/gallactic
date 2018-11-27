@@ -4,6 +4,7 @@ type Signer interface {
 	Address() Address
 	PublicKey() PublicKey
 	Sign(msg []byte) (Signature, error)
+	SignWithoutHash(msg []byte) (Signature, error) // Sign the message without hashing it
 }
 
 type signer struct {
@@ -38,4 +39,8 @@ func (s *signer) PublicKey() PublicKey {
 
 func (s *signer) Sign(msg []byte) (Signature, error) {
 	return s.privateKey.Sign(msg)
+}
+
+func (s *signer) SignWithoutHash(msg []byte) (Signature, error) {
+	return s.privateKey.SignWithoutHash(msg)
 }

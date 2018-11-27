@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 )
 
@@ -34,4 +35,25 @@ func Mkdir(dir string) error {
 		return fmt.Errorf("Could not create directory %s", dir)
 	}
 	return nil
+}
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return err == nil
+}
+
+func GallacticHomeDir() string {
+	home := ""
+	usr, err := user.Current()
+	if err == nil {
+		home = usr.HomeDir + "/gallactic/"
+	}
+	return home
+}
+
+func GallacticKeystoreDir() string {
+	return GallacticHomeDir() + "keystore/"
 }

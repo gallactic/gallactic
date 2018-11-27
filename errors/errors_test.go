@@ -18,7 +18,7 @@ func TestCode(t *testing.T) {
 }
 
 func TestMessages(t *testing.T) {
-	for i := 0; i < errCount; i++ {
+	for i := 0; i < ErrCount; i++ {
 		assert.NotEmpty(t, messages[i], "Error code %v", i)
 	}
 }
