@@ -19,11 +19,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f10ee3c00a8a100d742d787adb726ea057193539e084984d582619b006dcb178"
+  digest = "1:d9043cacf637538c6d9df546f256173ce78b1ff10f42fba7a22ba72fb13b7837"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
   pruneopts = "NUT"
-  revision = "67e573d211ace594f1366b4ce9d39726c4b19bd0"
+  revision = "3dcf298fed2d5fd65918dc560b3942b2aa0629e8"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -330,7 +330,7 @@
     "model",
   ]
   pruneopts = "NUT"
-  revision = "aeab699e26f4d4089dba5e522e5d9babd2adbaf7"
+  revision = "4724e9255275ce38f7179b2478abeae4e28c904f"
 
 [[projects]]
   branch = "master"
@@ -343,7 +343,7 @@
     "xfs",
   ]
   pruneopts = "NUT"
-  revision = "185b4288413d2a0dd0806f78c90dde719829e5ae"
+  revision = "619930b0b4713cc1280189bf0a4c54b3fb506f60"
 
 [[projects]]
   digest = "1:f250ca51e5b9215bc2df18f92060a9a835e9f85ab18ebbba0e1a6ef1f8fcdbfe"
@@ -366,7 +366,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9ff9e1808adfc43f788f1c1e9fd2660c285b522243da985a4c043ec6f2a2d736"
+  digest = "1:786c36d675e2f6f2462e9f853aba754ae8f84fed6c103732aac697a666a70ae3"
   name = "github.com/syndtr/goleveldb"
   packages = [
     "leveldb",
@@ -383,7 +383,7 @@
     "leveldb/util",
   ]
   pruneopts = "NUT"
-  revision = "f9080354173f192dfc8821931eacf9cfd6819253"
+  revision = "353a9fca669c44dedb58d5a074f6d052fb0f58e0"
 
 [[projects]]
   digest = "1:0f300196893c040e7a5c6025051a696c068392fe2f836f2a7e8ab35d0af9cafa"
@@ -409,7 +409,7 @@
   version = "v0.11.0"
 
 [[projects]]
-  digest = "1:cabc825f239957f0c0368daf5b10b38383243081a918f2315226e1a090a22e44"
+  digest = "1:10e435e6b4ffb396c4570d58ecd440bc4febeef36dd90b00ad156f92b062ddab"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -460,8 +460,8 @@
     "version",
   ]
   pruneopts = "NUT"
-  revision = "22dcc92232cd04ce7381043e09d85dd536ae3b96"
-  version = "v0.26.3"
+  revision = "b771798d48c27630fb37b74c8e229da5a8b2042c"
+  version = "v0.26.4"
 
 [[projects]]
   branch = "master"
@@ -546,7 +546,7 @@
     "windows/registry",
   ]
   pruneopts = "NUT"
-  revision = "0cf1ed9e522b7dbb416f080a5c8003de9b702bf4"
+  revision = "62eef0e2fa9b2c385f7b2778e763486da6880d37"
 
 [[projects]]
   digest = "1:e7071ed636b5422cc51c0e3a6cebc229d6c9fffc528814b519a980641422d619"

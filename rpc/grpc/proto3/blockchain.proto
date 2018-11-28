@@ -1,9 +1,8 @@
 syntax = 'proto3';
 
-package grpc;
+package proto3;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "google/api/annotations.proto";
 import "google/protobuf/struct.proto";
 
 option (gogoproto.marshaler_all) = true;
@@ -39,7 +38,7 @@ message Empty {
 
 message AccountsResponse{
 	uint64 BlockHeight = 1;
-	repeated AccountResponse Account = 2;
+	repeated AccountResponse Accounts = 2;
 }
 
 message AccountResponse {
@@ -87,7 +86,7 @@ message ChainResponse{
 }
 
 message StatusResponse {
-  bytes  NodeInfo     = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.NodeInfo",(gogoproto.nullable) = false];
+  bytes  NodeInfo     = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.DefaultNodeInfo",(gogoproto.nullable) = false];
   bytes	 GenesisHash  = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
   bytes	 PubKey       = 3  [(gogoproto.customtype) =   "github.com/gallactic/gallactic/crypto.PublicKey",(gogoproto.nullable) = false];
   bytes	 LatestBlockHash = 4 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];

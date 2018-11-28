@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/proposal"
-     "github.com/gallactic/gallactic/common"
 )
 
 var tChainName string

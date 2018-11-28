@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -9,11 +10,11 @@ import (
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
+	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
 	tmTypes "github.com/tendermint/tendermint/types"
-
 )
 
 // MaxBlockLookback constant
@@ -36,9 +37,9 @@ type networkServer struct {
 	blockchain *blockchain.Blockchain
 }
 
-var _ TransactionServer = &transcatorServer{}
-var _ BlockChainServer = &blockchainServer{}
-var _ NetworkServer = &networkServer{}
+var _ pb.TransactionServer = &transcatorServer{}
+var _ pb.BlockChainServer = &blockchainServer{}
+var _ pb.NetworkServer = &networkServer{}
 
 func (s *blockchainServer) State() *state.State {
 	return s.state
@@ -63,80 +64,76 @@ func NetowrkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *n
 }
 
 // Blockchain Service
-func (as *blockchainServer) GetAccount(ctx context.Context, param *AddressRequest) (*AccountResponse, error) {
+func (as *blockchainServer) GetAccount(ctx context.Context, param *pb.AddressRequest) (*pb.AccountResponse, error) {
 	acc, err := as.state.GetAccount(param.Address)
 	if err != nil {
 		return nil, err
 	}
-	return &AccountResponse{Account: acc}, nil
-
+	return &pb.AccountResponse{Account: acc}, nil
 }
 
-func (as *blockchainServer) GetAccounts(ctx context.Context, in *Empty) (*AccountsResponse, error) {
-	accounts := make([]*AccountResponse, 0)
+func (as *blockchainServer) GetAccounts(ctx context.Context, in *pb.Empty) (*pb.AccountsResponse, error) {
+	accounts := make([]*pb.AccountResponse, 0)
 	as.state.IterateAccounts(func(acc *account.Account) (stop bool) {
 		if acc != nil {
-			accounts = append(accounts, &AccountResponse{Account: acc})
+			accounts = append(accounts, &pb.AccountResponse{Account: acc})
 		}
 		return
 	})
-	return &AccountsResponse{
+	return &pb.AccountsResponse{
 		BlockHeight: as.blockchain.LastBlockHeight(),
-		Accounts:     accounts,
+		Accounts:    accounts,
 	}, nil
 }
 
-func (vs *blockchainServer) GetValidator(ctx context.Context, param *AddressRequest) (*ValidatorResponse, error) {
+func (vs *blockchainServer) GetValidator(ctx context.Context, param *pb.AddressRequest) (*pb.ValidatorResponse, error) {
 	val, err := vs.state.GetValidator(param.Address)
 	if err != nil {
 		return nil, err
 	}
-	return &ValidatorResponse{Validator: val}, nil
-
+	return &pb.ValidatorResponse{Validator: val}, nil
 }
 
-func (vs *blockchainServer) GetValidators(context.Context, *Empty) (*ValidatorsResponse, error) {
-	validators := make([]*ValidatorResponse, 0)
+func (vs *blockchainServer) GetValidators(context.Context, *pb.Empty) (*pb.ValidatorsResponse, error) {
+	validators := make([]*pb.ValidatorResponse, 0)
 	vs.state.IterateValidators(func(val *validator.Validator) (stop bool) {
 		if val != nil {
-			validators = append(validators, &ValidatorResponse{Validator: val})
+			validators = append(validators, &pb.ValidatorResponse{Validator: val})
 		}
 		return true
 	})
-	return &ValidatorsResponse{
+	return &pb.ValidatorsResponse{
 		Validators:  validators,
 		BlockHeight: vs.blockchain.LastBlockHeight(),
 	}, nil
-
 }
-func (s *blockchainServer) GetStorage(ctx context.Context, storage *StorageAtRequest) (*StorageResponse, error) {
+func (s *blockchainServer) GetStorage(ctx context.Context, storage *pb.StorageAtRequest) (*pb.StorageResponse, error) {
 	value, err := s.state.GetStorage(storage.Address, binary.LeftPadWord256(storage.Key))
 	if err != nil {
 		return nil, err
 	}
 	if value == binary.Zero256 {
-		return &StorageResponse{Key: storage.Key, Value: nil}, nil
+		return &pb.StorageResponse{Key: storage.Key, Value: nil}, nil
 	}
-	return &StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
+	return &pb.StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
 }
-func (s *blockchainServer) GetStorageAt(ctx context.Context, storage *StorageAtRequest) (*StorageResponse, error) {
+
+func (s *blockchainServer) GetStorageAt(ctx context.Context, storage *pb.StorageAtRequest) (*pb.StorageResponse, error) {
 	value, err := s.state.GetStorage(storage.Address, binary.LeftPadWord256(storage.Key))
 	if err != nil {
 		return nil, err
 	}
 	if value == binary.Zero256 {
-		return &StorageResponse{Key: storage.Key, Value: nil}, nil
+		return &pb.StorageResponse{Key: storage.Key, Value: nil}, nil
 	}
-	return &StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
+	return &pb.StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
 }
 
-func (s *blockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusResponse, error) {
+func (s *blockchainServer) Getstatus(ctx context.Context, in *pb.Empty) (*pb.StatusResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
-
 	var latestBlockMeta *tmTypes.BlockMeta
 	var latestBlockHash []byte
 	var latestBlockTime int64
-
 	if latestHeight != 0 {
 		latestBlockMeta = s.nodeview.BlockStore().LoadBlockMeta(int64(latestHeight))
 		latestBlockHash = latestBlockMeta.Header.Hash()
@@ -146,8 +143,8 @@ func (s *blockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusRes
 	if err != nil {
 		return nil, err
 	}
-	return &StatusResponse{
-		NodeInfo:          s.nodeview.NodeInfo(),
+	return &pb.StatusResponse{
+		//NodeInfo:          s.nodeview.deo,
 		GenesisHash:       s.blockchain.GenesisHash(),
 		PubKey:            publicKey,
 		LatestBlockHash:   latestBlockHash,
@@ -155,57 +152,51 @@ func (s *blockchainServer) Getstatus(ctx context.Context, in *Empty) (*StatusRes
 		LatestBlockTime:   latestBlockTime,
 		NodeVersion:       version.Version,
 	}, err
+}
+
+func (s *blockchainServer) GetBlock(ctx context.Context, block *pb.BlockRequest) (*pb.BlockResponse, error) {
+	Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
+	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
+	return &pb.BlockResponse{
+		Block:     Block,
+		BlockMeta: Blockmeta,
+	}, nil
 
 }
 
-func (s *blockchainServer) GetBlock(ctx context.Context, block *BlockRequest) (*BlockResponse, error) {
+func (s *blockchainServer) GetBlocks(ctx context.Context, blocks *pb.BlocksRequest) (*pb.BlocksResponse, error) {
+	latestHeight := s.blockchain.LastBlockHeight()
+	if blocks.MinHeight == 0 {
+		blocks.MinHeight = 1
+	}
+	if blocks.MaxHeight == 0 || latestHeight < blocks.MaxHeight {
+		blocks.MaxHeight = latestHeight
+	}
+	if blocks.MaxHeight > blocks.MinHeight && blocks.MaxHeight-blocks.MinHeight > MaxBlockLookback {
+		blocks.MinHeight = blocks.MaxHeight - MaxBlockLookback
+	}
+	var blockMetas []tmTypes.BlockMeta
+	for height := blocks.MaxHeight; height >= blocks.MinHeight; height-- {
+		blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(height))
+		blockMetas = append(blockMetas, *blockMeta)
+	}
 
-	// //TODO changes to be made in vendor/tendermint for block and blockmeta.
-	// Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
-	// Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
-	// return &BlockResponse{
-	// 	Block:     Block,
-	// 	BlockMeta: Blockmeta,
-	// }, nil
-	return nil, nil
+	return &pb.BlocksResponse{
+		LastHeight: latestHeight,
+		BlockMeta:  blockMetas,
+	}, nil
+
 }
 
-func (s *blockchainServer) GetBlocks(ctx context.Context, blocks *BlocksRequest) (*BlocksResponse, error) {
-
-	//latestHeight := s.blockchain.LastBlockHeight()
-	// if blocks.MinHeight == 0 {
-	// 	blocks.MinHeight = 1
-	// }
-	// if blocks.MaxHeight == 0 || latestHeight < blocks.MaxHeight {
-	// 	blocks.MaxHeight = latestHeight
-	// }
-	// if blocks.MaxHeight > blocks.MinHeight && blocks.MaxHeight-blocks.MinHeight > MaxBlockLookback {
-	// 	blocks.MinHeight = blocks.MaxHeight - MaxBlockLookback
-	// }
-
-	//TODO changes to be made in vendor/tendermint  blockmeta.
-	// var blockMetas []tmTypes.BlockMeta
-	// for height := blocks.MaxHeight; height >= blocks.MinHeight; height-- {
-	// 	blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(height))
-	// 	blockMetas = append(blockMetas, *blockMeta)
-	// }
-
-	// return &BlocksResponse{
-	// 	LastHeight: latestHeight,
-	// 	BlockMeta:  blockMetas,
-	// }, nil
-	return nil, nil
-}
-
-func (s *blockchainServer) GetGenesis(context.Context, *Empty) (*GenesisResponse, error) {
+func (s *blockchainServer) GetGenesis(context.Context, *pb.Empty) (*pb.GenesisResponse, error) {
 	gen := s.blockchain.Genesis()
-	return &GenesisResponse{
+	return &pb.GenesisResponse{
 		Genesis: gen,
 	}, nil
 }
 
-func (s *blockchainServer) GetChainID(context.Context, *Empty) (*ChainResponse, error) {
-	return &ChainResponse{
+func (s *blockchainServer) GetChainID(context.Context, *pb.Empty) (*pb.ChainResponse, error) {
+	return &pb.ChainResponse{
 		ChainName:   s.blockchain.Genesis().ChainName(),
 		ChainId:     s.blockchain.ChainID(),
 		GenesisHash: s.blockchain.GenesisHash(),
@@ -213,20 +204,18 @@ func (s *blockchainServer) GetChainID(context.Context, *Empty) (*ChainResponse, 
 
 }
 
-func (s *blockchainServer) GetLatestBlock(context.Context, *BlockRequest) (*BlockResponse, error) {
+func (s *blockchainServer) GetLatestBlock(context.Context, *pb.BlockRequest) (*pb.BlockResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
-
-	//TODO changes to be made in vendor/tendermint  blockmeta.
 	block := s.nodeview.BlockStore().LoadBlock(int64(latestHeight))
 	blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(latestHeight))
-	return &BlockResponse{
+	return &pb.BlockResponse{
 		BlockMeta: blockMeta,
 		Block:     block,
 	}, nil
 }
-func (s *blockchainServer) GetConsensusState(context.Context, *Empty) (*ConsensusResponse, error) {
+
+func (s *blockchainServer) GetConsensusState(context.Context, *pb.Empty) (*pb.ConsensusResponse, error) {
 	peerRound := make([]consensusTypes.PeerRoundState, 0)
-	//TODO changes to be made in vendor/tendermint  for PeerRoundStates and RoundState.
 	peerRoundState, err := s.nodeview.PeerRoundStates()
 	for _, pr := range peerRoundState {
 		peerRound = append(peerRound, *pr)
@@ -234,15 +223,14 @@ func (s *blockchainServer) GetConsensusState(context.Context, *Empty) (*Consensu
 	if err != nil {
 		return nil, err
 	}
-	return &ConsensusResponse{
+	return &pb.ConsensusResponse{
 		RoundState:      s.nodeview.RoundState().RoundStateSimple(),
 		PeerRoundStates: peerRound,
 	}, nil
 
 }
 
-func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *BlockRequest) (*BlockTxsResponse, error) {
-	//TODO changes to be made in vendor/tendermint  for Block.
+func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *pb.BlockRequest) (*pb.BlockTxsResponse, error) {
 	result, err := s.GetBlock(ctx, block)
 	if err != nil {
 		return nil, err
@@ -256,8 +244,7 @@ func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *BlockRequest)
 		}
 		txList[i] = *tx
 	}
-
-	return &BlockTxsResponse{
+	return &pb.BlockTxsResponse{
 		Count: int32(len(txsBuff)),
 		Txs:   txList,
 	}, nil
@@ -265,56 +252,54 @@ func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *BlockRequest)
 }
 
 //Network service
-func (s *networkServer) GetNetworkInfo(context.Context, *Empty) (*NetInfoResponse, error) {
-	// listening := s.nodeview.IsListening()
-	// fmt.Println("is listening", listening)
-	// var contexts context.Context
-	// var listeners []string
+func (s *networkServer) GetNetworkInfo(context.Context, *pb.Empty1) (*pb.NetInfoResponse, error) {
+	//listening := s.blockchain.IsListening()
+
+	var contexts context.Context
+	//var listeners []string
 	// for _, listener := range s.nodeview.Listeners() {
 	// 	listeners = append(listeners, listener.String())
 	// }
-	// peers, err := s.GetPeers(contexts, nil)
-	// fmt.Println("peers", peers)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return &NetInfoResponse{
-	// 	Listening: listening,
-	// 	Listeners: listeners,
-	// 	Peers:     peers.Peer,
-	// }, nil
+	peers, err := s.GetPeers(contexts, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.NetInfoResponse{
+		// Listening: listening,
+		// Listeners: listeners,
+		Peers: peers.Peer,
+	}, nil
 
 	return nil, nil
 }
 
-func (ns *networkServer) GetPeers(context.Context, *Empty) (*PeerResponse, error) {
-
-	peers := make([]*Peer, ns.nodeview.Peers().Size())
+func (ns *networkServer) GetPeers(context.Context, *pb.Empty1) (*pb.PeerResponse, error) {
+	peers := make([]*pb.Peer, ns.nodeview.Peers().Size())
 	for i, peer := range ns.nodeview.Peers().List() {
-		peers[i] = &Peer{
-			NodeInfo:   peer.NodeInfo(),
+		peers[i] = &pb.Peer{
+			//NodeInfo:   peer.NodeInfo(),
 			IsOutbound: peer.IsOutbound(),
 		}
 	}
-	return &PeerResponse{
+
+	return &pb.PeerResponse{
 		Peer: peers,
 	}, nil
 }
 
 //Transcation Service
-func (tx *transcatorServer) BroadcastTx(ctx context.Context, txreq *TransactRequest) (*ReceiptResponse, error) {
-
+func (tx *transcatorServer) BroadcastTx(ctx context.Context, txreq *pb.TransactRequest) (*pb.ReceiptResponse, error) {
 	txhash, err := tx.transactor.BroadcastTx(txreq.Txs)
 	if err != nil {
 		return nil, err
 	}
-	return &ReceiptResponse{
+
+	return &pb.ReceiptResponse{
 		TxHash: txhash,
 	}, nil
 }
 
-func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq *UnconfirmedTxsRequest) (*UnconfirmTxsResponse, error) {
-	// Get all transactions for now
+func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq *pb.UnconfirmedTxsRequest) (*pb.UnconfirmTxsResponse, error) {
 	transactions, err := tx.nodeview.MempoolTransactions(int(unconfirmreq.MaxTxs))
 	if err != nil {
 		return nil, err
@@ -325,9 +310,8 @@ func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq 
 		wrappedTxs[i] = *tx
 	}
 
-	return &UnconfirmTxsResponse{
+	return &pb.UnconfirmTxsResponse{
 		Count: int32(len(transactions)),
 		Txs:   wrappedTxs,
 	}, nil
-
 }

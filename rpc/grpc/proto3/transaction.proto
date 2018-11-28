@@ -1,10 +1,9 @@
 syntax = 'proto3';
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "google/api/annotations.proto";
 import "google/protobuf/struct.proto";
 
-package grpc;
+package proto3;
 
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.unmarshaler_all) = true;
