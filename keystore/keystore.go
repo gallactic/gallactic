@@ -43,7 +43,7 @@ func Open(path string) *Keystore {
 	return ks
 }
 
-func (ks *Keystore) New(label, auth string, valAddr bool) (*KeyData, error) {
+func (ks *Keystore) New(auth, label string, valAddr bool) (*KeyData, error) {
 
 	var keyObj *key.Key
 
