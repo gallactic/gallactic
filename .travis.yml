@@ -7,23 +7,23 @@ matrix:
     - os: linux
       dist: trusty
       go: 1.10.x
-      script: make && make docker
-
     - os: linux
       dist: trusty
       go: master
-      script: make && make docker
-
     - os: osx
       go: 1.10.x
-      script: make
-
     - os: osx
       go: master
-      script: make
+
+script: make && make docker
 
 before_install:
   # installing rust and cargo
   - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
   - sh rustup-install.sh -y
   - source $HOME/.cargo/env
+
+deploy:
+  - echo "deployed"
+  on:
+    condition: $TRAVIS_GO_VERSION =~ ^1\.10
