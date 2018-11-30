@@ -253,8 +253,7 @@ func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *pb.BlockReque
 
 //Network service
 func (s *networkServer) GetNetworkInfo(context.Context, *pb.Empty1) (*pb.NetInfoResponse, error) {
-	//listening := s.blockchain.IsListening()
-
+	//listening := s.nodeview.IsListening()
 	var contexts context.Context
 	//var listeners []string
 	// for _, listener := range s.nodeview.Listeners() {
@@ -265,23 +264,21 @@ func (s *networkServer) GetNetworkInfo(context.Context, *pb.Empty1) (*pb.NetInfo
 		return nil, err
 	}
 	return &pb.NetInfoResponse{
-		// Listening: listening,
-		// Listeners: listeners,
+		//Listening: listening,
+		//Listeners: listeners,
 		Peers: peers.Peer,
 	}, nil
-
-	return nil, nil
 }
 
 func (ns *networkServer) GetPeers(context.Context, *pb.Empty1) (*pb.PeerResponse, error) {
 	peers := make([]*pb.Peer, ns.nodeview.Peers().Size())
 	for i, peer := range ns.nodeview.Peers().List() {
+		peer.NodeInfo()
 		peers[i] = &pb.Peer{
-			//NodeInfo:   peer.NodeInfo(),
+			// NodeInfo:   peer.NodeInfo(),
 			IsOutbound: peer.IsOutbound(),
 		}
 	}
-
 	return &pb.PeerResponse{
 		Peer: peers,
 	}, nil

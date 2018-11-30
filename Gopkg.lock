@@ -142,11 +142,10 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:b708de52c2859bedb7de68d2fa54672782e0e24c38c088839e83cd54490ebcdc"
+  digest = "1:c36841934bd4ddd27923a28cd956a72b1082e84855453c0ac3f9d67eb476d085"
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
-    "protoc-gen-go/descriptor",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
@@ -572,12 +571,9 @@
   version = "v0.3.0"
 
 [[projects]]
-  digest = "1:c2dee8dbcc504d1a7858f5dbaed7c8b256c512c5e9e81480158c30185bbd2792"
+  digest = "1:cd018653a358d4b743a9d3bee89e825521f2ab2f2ec0770164bf7632d8d73ab7"
   name = "google.golang.org/genproto"
-  packages = [
-    "googleapis/api/annotations",
-    "googleapis/rpc/status",
-  ]
+  packages = ["googleapis/rpc/status"]
   pruneopts = "NUT"
   revision = "7fd901a49ba6a7f87732eb344f6e3c5b19d1b200"
 
@@ -687,7 +683,6 @@
     "golang.org/x/crypto/scrypt",
     "golang.org/x/crypto/sha3",
     "golang.org/x/net/context",
-    "google.golang.org/genproto/googleapis/api/annotations",
     "google.golang.org/grpc",
     "gopkg.in/tylerb/graceful.v1",
   ]

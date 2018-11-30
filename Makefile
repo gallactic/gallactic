@@ -2,7 +2,7 @@ GOTOOLS = \
 	github.com/golang/dep/cmd/dep \
 	gopkg.in/alecthomas/gometalinter.v2 \
 	google.golang.org/grpc \
-        github.com/golang/protobuf/proto \
+	github.com/golang/protobuf/proto \
 	github.com/gogo/protobuf/protoc-gen-gofast
 
 

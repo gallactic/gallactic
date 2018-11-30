@@ -38,7 +38,7 @@ func (m *Empty1) Reset()         { *m = Empty1{} }
 func (m *Empty1) String() string { return proto.CompactTextString(m) }
 func (*Empty1) ProtoMessage()    {}
 func (*Empty1) Descriptor() ([]byte, []int) {
-	return fileDescriptor_network_5b8383947e2ad5bd, []int{0}
+	return fileDescriptor_network_8d833252a1306f2b, []int{0}
 }
 func (m *Empty1) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -83,7 +83,7 @@ func (m *Peer) Reset()         { *m = Peer{} }
 func (m *Peer) String() string { return proto.CompactTextString(m) }
 func (*Peer) ProtoMessage()    {}
 func (*Peer) Descriptor() ([]byte, []int) {
-	return fileDescriptor_network_5b8383947e2ad5bd, []int{1}
+	return fileDescriptor_network_8d833252a1306f2b, []int{1}
 }
 func (m *Peer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -134,7 +134,7 @@ func (m *PeerResponse) Reset()         { *m = PeerResponse{} }
 func (m *PeerResponse) String() string { return proto.CompactTextString(m) }
 func (*PeerResponse) ProtoMessage()    {}
 func (*PeerResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_network_5b8383947e2ad5bd, []int{2}
+	return fileDescriptor_network_8d833252a1306f2b, []int{2}
 }
 func (m *PeerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -187,7 +187,7 @@ func (m *NetInfoResponse) Reset()         { *m = NetInfoResponse{} }
 func (m *NetInfoResponse) String() string { return proto.CompactTextString(m) }
 func (*NetInfoResponse) ProtoMessage()    {}
 func (*NetInfoResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_network_5b8383947e2ad5bd, []int{3}
+	return fileDescriptor_network_8d833252a1306f2b, []int{3}
 }
 func (m *NetInfoResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1070,10 +1070,10 @@ var (
 )
 
 func init() {
-	proto.RegisterFile("rpc/grpc/proto3/network.proto", fileDescriptor_network_5b8383947e2ad5bd)
+	proto.RegisterFile("rpc/grpc/proto3/network.proto", fileDescriptor_network_8d833252a1306f2b)
 }
 
-var fileDescriptor_network_5b8383947e2ad5bd = []byte{
+var fileDescriptor_network_8d833252a1306f2b = []byte{
 	// 350 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x51, 0x4d, 0x4f, 0xc2, 0x40,
 	0x10, 0x65, 0x41, 0xb1, 0x8c, 0x04, 0x93, 0xc6, 0xc4, 0x86, 0xe0, 0xd2, 0xf4, 0xd4, 0x8b, 0x05,

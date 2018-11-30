@@ -42,15 +42,15 @@ message AccountsResponse{
 }
 
 message AccountResponse {
-  AccountResponse Account  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/account.Account"];
+  AccountResponse Account = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/account.Account"];
 }
 
 message ValidatorResponse{
-  ValidatorResponse Validator  = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
+  ValidatorResponse Validator = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
 }
 
 message ValidatorsResponse {
-  uint64 BlockHeight  = 1 ;
+  uint64 BlockHeight = 1 ;
   repeated ValidatorResponse Validators  = 2;
 }
 
@@ -65,34 +65,34 @@ message AddressRequest {
 
 message StorageAtRequest {
   bytes Address = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/crypto.Address",(gogoproto.nullable) = false];
-  bytes	Key = 2    [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
+  bytes	Key = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
 }
 
 message StorageResponse {
-  bytes	Key = 1   [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
-  bytes	Value = 2    [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+  bytes	Key = 1  [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+  bytes	Value = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
 }
 
 
 message ConsensusResponse{
-  bytes RoundState = 1  [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.RoundStateSimple",(gogoproto.nullable) = false];
+  bytes RoundState = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.RoundStateSimple",(gogoproto.nullable) = false];
   repeated google.protobuf.ListValue PeerRoundStates = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.PeerRoundState",(gogoproto.nullable) = false];
 }
 
 message ChainResponse{
   string ChainName = 1;
-  string ChainId  = 2  ;
+  string ChainId =  2;
   bytes	 GenesisHash = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
 }
 
 message StatusResponse {
-  bytes  NodeInfo     = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.DefaultNodeInfo",(gogoproto.nullable) = false];
-  bytes	 GenesisHash  = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
-  bytes	 PubKey       = 3  [(gogoproto.customtype) =   "github.com/gallactic/gallactic/crypto.PublicKey",(gogoproto.nullable) = false];
-  bytes	 LatestBlockHash = 4 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+  bytes  NodeInfo          = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.DefaultNodeInfo",(gogoproto.nullable) = false];
+  bytes	 GenesisHash       = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
+  bytes	 PubKey            = 3  [(gogoproto.customtype) =   "github.com/gallactic/gallactic/crypto.PublicKey",(gogoproto.nullable) = false];
+  bytes	 LatestBlockHash   = 4 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
   uint64 LatestBlockHeight = 5;
-  int64	 LatestBlockTime  = 6;
-  string NodeVersion      = 7;
+  int64	 LatestBlockTime   = 6;
+  string NodeVersion       = 7;
 }
 
 message BlockRequest {
@@ -105,8 +105,8 @@ message BlocksRequest {
 }
 
 message BlockResponse {
-  bytes  BlockMeta  = 1  [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
-  bytes Block  = 2  [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.Block"];
+  bytes  BlockMeta  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
+  bytes Block  = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.Block"];
 }
 
 message BlocksResponse {
@@ -115,7 +115,7 @@ message BlocksResponse {
 }
 
 message BlockMeta {
-  bytes BlockMeta  = 1  [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
+  bytes BlockMeta  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
 }
 
 
