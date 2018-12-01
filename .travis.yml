@@ -10,26 +10,29 @@ matrix:
     - os: linux
       dist: trusty
       go: 1.10.x
+      script: make && macke docker
+      
     - os: linux
       dist: trusty
       go: master
+      script: make
       
     - os: osx
       go: 1.10.x
+      script: make
+      
     - os: osx
       go: master
+      script: make
       
     - os: windows
       go: 1.10.x
+      script: mingw32-make
+      
     - os: windows
       go: master
+      script: mingw32-make 
 
-script: 
-  - if [[ ( "$TRAVIS_OS_NAME" == "windows" ) ]]; then 
-      mingw32-make && mingw32-make docker;
-    else
-      make && make docker;
-    fi
 
 before_install:
   # installing rust and cargo
