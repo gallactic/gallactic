@@ -2,6 +2,9 @@ language: go
 go_import_path: github.com/gallactic/gallactic
 sudo: false
 
+services:
+  - docker
+
 matrix:
   include:
     - os: linux
@@ -21,7 +24,12 @@ matrix:
     - os: windows
       go: master
 
-script: make && make docker
+script: 
+  - if [[ ( "$TRAVIS_OS_NAME" == "windows" ) ]]; then 
+      mingw32-make && mingw32-make docker;
+    else
+      make && make docker;
+    fi
 
 before_install:
   # installing rust and cargo
