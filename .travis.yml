@@ -27,7 +27,7 @@ before_install:
   # installing rust and cargo
   - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
   - sh rustup-install.sh -y
-  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; source $HOME/.cargo/env; fi;
+  - export PATH="$HOME/.cargo/bin:$PATH"
 
 deploy:
   provider: releases
