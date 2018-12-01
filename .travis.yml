@@ -30,6 +30,6 @@ before_install:
   - source $HOME/.cargo/env
 
 deploy:
-  - echo "deployed"
+  provider: releases
   on:
     condition: $TRAVIS_GO_VERSION =~ ^1\.10
