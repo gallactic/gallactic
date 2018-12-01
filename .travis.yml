@@ -10,7 +10,7 @@ matrix:
     - os: linux
       dist: trusty
       go: 1.10.x
-      script: make && macke docker
+      script: make && make docker
       
     - os: linux
       dist: trusty
