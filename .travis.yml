@@ -39,7 +39,7 @@ install:
   - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
   - sh rustup-install.sh -y
   - export PATH="$HOME/.cargo/bin:$PATH"
-  - if [[ ( "$TRAVIS_OS_NAME" == "windows" ) ]]; then copy mingw32-make make; fi;
+  - if [[ ( "$TRAVIS_OS_NAME" == "windows" ) ]]; then cp mingw32-make.exe make.exe; fi;
 
 deploy:
   provider: releases
