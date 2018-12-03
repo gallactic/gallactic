@@ -8,9 +8,9 @@ import (
 )
 
 type Output struct {
-	Failed          bool
-	UsedGas         uint64
-	Output          []uint8
+	Failed  bool
+	UsedGas uint64
+	Output  []uint8
 }
 
 type Adapter interface {
