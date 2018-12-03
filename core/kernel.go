@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gallactic/gallactic/rpc/grpc"
+
 	"github.com/gallactic/gallactic/common/process"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/config"
@@ -22,7 +24,7 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/rpc"
-	"github.com/gallactic/gallactic/rpc/grpc"
+	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/gallactic/gallactic/txs"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/hyperledger/burrow/logging"
@@ -153,12 +155,10 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				if err != nil {
 					return nil, err
 				}
-
 				grpcServer := grpc.NewGRPCServer(logger)
-				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(bc))
-				grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode, txCodec)))
-				grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode, txCodec)))
-				grpc.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))
+				pb.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode, txCodec)))
+				pb.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode, txCodec)))
+				pb.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))
 				go grpcServer.Serve(listen)
 				return process.ShutdownFunc(func(ctx context.Context) error {
 					grpcServer.Stop()
