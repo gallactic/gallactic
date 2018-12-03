@@ -101,12 +101,12 @@ func (ks *Keystore) Lock(indexOrAddress string) error {
 	return nil
 }
 
-func (ks *Keystore) Delete(addrress crypto.Address, auth string) error {
+func (ks *Keystore) Delete(address crypto.Address, auth string) error {
 	/// check passsword. and them remove
 	return nil
 }
 
-func (ks *Keystore) Update(addrress crypto.Address, oldAuth, newAuth, label string) error {
+func (ks *Keystore) Update(address crypto.Address, oldAuth, newAuth, label string) error {
 	/// update the key data
 	return nil
 }
