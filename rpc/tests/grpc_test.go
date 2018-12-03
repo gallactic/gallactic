@@ -64,7 +64,6 @@ func TestGetBlocks(t *testing.T) {
 	fmt.Println("BlocksDetials", ret)
 }
 
-
 func TestGetChainID(t *testing.T) {
 	ret, err := grpcBlockchainClient().GetChainID(context.Background(), &pb.Empty{})
 	require.NoError(t, err)
@@ -82,8 +81,3 @@ func TestGetConsensusState(t *testing.T) {
 	require.NoError(t, err)
 	fmt.Println("GetConsensusState", ret)
 }
-
-
-
-
-
