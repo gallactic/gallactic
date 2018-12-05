@@ -4,26 +4,37 @@ sudo: false
 
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      go: 1.10.x
-      script: make && make docker
+  - os: linux
+    dist: trusty
+    go: 1.10.x
+    script: make && make proto && make docker
+  - os: linux
+    dist: trusty
+    go: master
+    script: make
+  - os: osx
+    go: 1.10.x
+    script: make
+  - os: osx
+    go: master
+    script: make
 
-    - os: linux
-      dist: trusty
-      go: master
-      script: make && make docker
+install:
+- curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
+- sh rustup-install.sh -y
+- export PATH="$HOME/.cargo/bin:$PATH"
 
-    - os: osx
-      go: 1.10.x
-      script: make
+before_deploy:
+- mv build gallactic
+- zip -r gallactic-${TRAVIS_TAG}-${TRAVIS_OS_NAME}.zip gallactic
 
-    - os: osx
-      go: master
-      script: make
-
-before_install:
-  # installing rust and cargo
-  - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
-  - sh rustup-install.sh -y
-  - source $HOME/.cargo/env
+deploy:
+  provider: releases
+  api_key:
+    secure: IJ4kqKNMSgLy8GQNd7rA5D4yGucE37BA++UdgECK2pcS+iXwvW4ICX0kWb3IW2Eo/ndE+KPVDdNoTA2dhA3LXRNIO9ewhWx8hmZ3Pohe3YJMOroS6uCM9S+X1nI26v7Al75H7aechsphCcztPI8pdKwBLeEw/COIpdvy685utYFg4/qw3lWUgQ8we8dbAuL5jRi0NlMMhZtcWBsV9RUNnlnqvxairgYK4LdbfJNLXavzoiNdD7/L31xiRdSkinhHm8BffUxsVVJv9bK6J8EECj15lt7JnHNV6SzoZC1ioSwHS/ikauGGsjRicQ2kCE+3UDDP4VqaM/Bf3OTYsPJ1sBai7igBl+KzYJJtwvDBDA744+1RNfDTWnXIcgULoILbGnFbNIZ9ZVTlbd1EPzP4bHsUdkhb5uDw1RnP7N8B0hAptMNOJnGgwp8Ct0zj2480eoDHHm1UKk1UdESDfQ0WLvyMtXMTT9wH4kHiollBXGIFvi39llGJoCCjDamPHf/uGckBj0yuKDxBt2n+yKTJadhHhv1GCrOWXP+K5uvVodmcCEVtwkuTAg/plNbR9NzY/YvXw6XzJ9rLOOCHWnEBl9LUOQTk5083ZBDOdtnr0dHgCCzswa9z7dYMgW5zp9IV4EKiJLJj3Erv1UMHgbWVhk/OGmVSxsZgI6AcJjkjLRs=
+  file: gallactic-${TRAVIS_TAG}-${TRAVIS_OS_NAME}.zip
+  skip_cleanup: true
+  on:
+    tags: true
+    branch: master
+    condition: ${TRAVIS_GO_VERSION} =~ ^1\.10

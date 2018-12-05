@@ -3,7 +3,7 @@ GOTOOLS = \
 	gopkg.in/alecthomas/gometalinter.v2 \
 	google.golang.org/grpc \
 	github.com/golang/protobuf/proto \
-	github.com/gogo/protobuf/protoc-gen-gofast
+	github.com/gogo/protobuf/gogoproto
 
 
 PACKAGES=$(shell go list ./... | grep -v '/vendor/')
@@ -11,7 +11,7 @@ SPUTNIKVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
 TAGS=-tags 'gallactic'
 LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
 CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lm"
-INCLUDE = -I=. -I=${GOPATH}src -I=${GOPATH}src/github.com/gogo/protobuf/protoc-gen-gofast -I=${GOPATH}src/github.com/gallactic/gallactic/rpc/grpc/proto3
+INCLUDE = -I=. -I=${GOPATH}/src -I=${GOPATH}/src/github.com/gallactic/gallactic/rpc/grpc/proto3
 
 all: tools deps build install test test_release proto
 
@@ -64,9 +64,9 @@ docker:
 ### Protobuf
 proto:
 
-	--protoc $(INCLUDE) --gofast_out=plugins=grpc:. ./rpc/grpc/proto3/blockchain.proto
-	--protoc $(INCLUDE) --gofast_out=plugins=grpc:. ./rpc/grpc/proto3/network.proto
-	--protoc $(INCLUDE) --gofast_out=plugins=grpc:. ./rpc/grpc/proto3/transaction.proto
+	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/blockchain.proto
+	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/network.proto
+	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/transaction.proto
 
 ########################################
 ### Formatting, linting, and vetting
