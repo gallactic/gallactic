@@ -21,3 +21,17 @@ func TestLoading(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, conf1, conf2)
 }
+
+func TestCheck(t *testing.T) {
+	conf1 := DefaultConfig()
+	err := conf1.Check()
+	require.NoError(t, err)
+
+	conf1.Sputnikvm.Web3Address = "https://google.com"
+	err = conf1.Check()
+	require.Error(t, err)
+
+	conf1.Sputnikvm.Web3Address = ""
+	err = conf1.Check()
+	require.Error(t, err)
+}

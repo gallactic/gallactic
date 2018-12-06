@@ -4,7 +4,7 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/blockchain"
-	"github.com/gallactic/gallactic/core/evm/sputnik"
+	"github.com/gallactic/gallactic/core/evm/sputnikvm"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
@@ -76,9 +76,9 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 
 func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account, code []byte) error {
 
-	adapter := sputnik.GallacticAdapter{ctx.BC, ctx.Cache, caller,
+	adapter := sputnikvm.GallacticAdapter{ctx.BC, ctx.Cache, caller,
 		callee, tx.GasLimit(), tx.Amount(), code, caller.Sequence()}
-	ret, err := sputnik.Execute(&adapter)
+	ret, err := sputnikvm.Execute(&adapter)
 
 	if err != nil {
 		return err
