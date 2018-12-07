@@ -117,7 +117,7 @@ func Start() func(c *cli.Cmd) {
 
 			err = conf.Check()
 			if err != nil {
-				cmd.PrintErrorMsg("Config is invalid: %v", err)
+				cmd.PrintErrorMsg("Config is invalid - %v", err)
 				return
 			}
 
@@ -126,6 +126,7 @@ func Start() func(c *cli.Cmd) {
 				cmd.PrintErrorMsg("Failed to set environment variable: %v", err)
 				return
 			}
+			cmd.PrintSuccessMsg("Gallactic successfully connected to Ethereum Network")
 
 			cmd.PrintInfoMsg("You are running a gallactic block chain node version: %v. Welcome! ", version.Version)
 

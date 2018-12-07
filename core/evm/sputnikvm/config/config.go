@@ -19,7 +19,7 @@ func (conf *SputnikvmConfig) Check() error {
 	// Make connection to the RPC client
 	newRpcClient, err := rpc.Dial(conf.Web3Address)
 	if err != nil {
-		return fmt.Errorf("Failed to connect to the Ethereum network: %v", err)
+		return fmt.Errorf("Failed to connect to the Ethereum network at '%v': %v", conf.Web3Address, err)
 	}
 	var output string
 	err = newRpcClient.Call(&output, "web3_clientVersion")
