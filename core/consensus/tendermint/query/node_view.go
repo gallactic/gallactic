@@ -15,14 +15,12 @@ import (
 )
 
 type NodeView struct {
-	tmNode    *tendermint.Node
-	txDecoder txs.Decoder
+	tmNode *tendermint.Node
 }
 
-func NewNodeView(tmNode *tendermint.Node, txDecoder txs.Decoder) *NodeView {
+func NewNodeView(tmNode *tendermint.Node) *NodeView {
 	return &NodeView{
-		tmNode:    tmNode,
-		txDecoder: txDecoder,
+		tmNode: tmNode,
 	}
 }
 
@@ -42,8 +40,8 @@ func (nv *NodeView) BlockStore() state.BlockStoreRPC {
 func (nv *NodeView) MempoolTransactions(maxTxs int) ([]*txs.Envelope, error) {
 	var transactions []*txs.Envelope
 	for _, txBytes := range nv.tmNode.MempoolReactor().Mempool.ReapMaxTxs(maxTxs) {
-		txEnv, err := nv.txDecoder.DecodeTx(txBytes)
-		if err != nil {
+		txEnv := new(txs.Envelope)
+		if err := txEnv.Decode(txBytes); err != nil {
 			return nil, err
 		}
 		transactions = append(transactions, txEnv)

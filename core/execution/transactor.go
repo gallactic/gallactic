@@ -16,16 +16,14 @@ import (
 // Transactor is the controller/middleware for the v0 RPC
 type Transactor struct {
 	broadcastTxAsync func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error
-	txEncoder        txs.Encoder
 	logger           *logging.Logger
 }
 
-func NewTransactor(broadcastTxAsync func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error, txEncoder txs.Encoder,
+func NewTransactor(broadcastTxAsync func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error,
 	logger *logging.Logger) *Transactor {
 
 	return &Transactor{
 		broadcastTxAsync: broadcastTxAsync,
-		txEncoder:        txEncoder,
 		logger:           logger.With(structure.ComponentKey, "Transactor"),
 	}
 }
@@ -35,7 +33,7 @@ func (trans *Transactor) BroadcastTxAsyncRaw(txBytes []byte, callback func(res *
 }
 
 func (trans *Transactor) BroadcastTxAsync(txEnv *txs.Envelope, callback func(res *abciTypes.Response)) error {
-	txBytes, err := trans.txEncoder.EncodeTx(txEnv)
+	txBytes, err := txEnv.Encode()
 	if err != nil {
 		return fmt.Errorf("error encoding transaction: %v", err)
 	}
@@ -49,7 +47,7 @@ func (trans *Transactor) BroadcastTx(txEnv *txs.Envelope) (*txs.Receipt, error) 
 		"tx_hash", txEnv.Hash(),
 		"tx", txEnv.String())
 
-	txBytes, err := trans.txEncoder.EncodeTx(txEnv)
+	txBytes, err := txEnv.Encode()
 	if err != nil {
 		return nil, err
 	}

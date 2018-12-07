@@ -22,7 +22,7 @@ service BlockChain{
   rpc GetStorageAt(StorageAtRequest) returns(StorageResponse);
   rpc GetValidator(AddressRequest) returns (ValidatorResponse);
   rpc GetValidators(Empty) returns (ValidatorsResponse);
-  rpc Getstatus(Empty) returns(StatusResponse);
+  rpc GetStatus(Empty) returns(StatusResponse);
   rpc GetBlock(BlockRequest) returns(BlockResponse);
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse);
   rpc GetGenesis(Empty) returns(GenesisResponse);

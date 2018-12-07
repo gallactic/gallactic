@@ -73,7 +73,6 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 		k := key.GenAccountKey()
 		acc, _ := account.NewAccount(k.Address())
 		acc.AddToBalance(10000000000000000000)
-		acc.SetPermissions(permission.AllPermissions)
 		accs[i] = acc
 	}
 
@@ -85,9 +84,12 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 
 	// create global account
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
+	gAcc.SetPermissions(permission.AllPermissions)
 
-	/* create genesis */
-	gen := proposal.MakeGenesis(chainName, time.Now(), gAcc, accs, nil, vals)
+	tm := time.Now().Truncate(0).UTC()
+
+	// create genesis
+	gen := proposal.MakeGenesis(chainName, tm, gAcc, accs, nil, vals)
 	return gen
 
 }

@@ -129,7 +129,7 @@ func (s *blockchainServer) GetStorageAt(ctx context.Context, storage *pb.Storage
 	return &pb.StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
 }
 
-func (s *blockchainServer) Getstatus(ctx context.Context, in *pb.Empty) (*pb.StatusResponse, error) {
+func (s *blockchainServer) GetStatus(ctx context.Context, in *pb.Empty) (*pb.StatusResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
 	var latestBlockMeta *tmTypes.BlockMeta
 	var latestBlockHash []byte
@@ -238,11 +238,12 @@ func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *pb.BlockReque
 	txsBuff := result.Block.Txs
 	txList := make([]txs.Envelope, len(txsBuff))
 	for i, txBuff := range txsBuff {
-		tx, err := txs.NewAminoCodec().DecodeTx(txBuff)
-		if err != nil {
+		txEnv := new(txs.Envelope)
+
+		if err := txEnv.Decode(txBuff); err != nil {
 			return nil, err
 		}
-		txList[i] = *tx
+		txList[i] = *txEnv
 	}
 	return &pb.BlockTxsResponse{
 		Count: int32(len(txsBuff)),
@@ -285,14 +286,14 @@ func (ns *networkServer) GetPeers(context.Context, *pb.Empty1) (*pb.PeerResponse
 }
 
 //Transcation Service
-func (tx *transcatorServer) BroadcastTx(ctx context.Context, txreq *pb.TransactRequest) (*pb.ReceiptResponse, error) {
-	txhash, err := tx.transactor.BroadcastTx(txreq.Txs)
+func (tx *transcatorServer) BroadcastTx(ctx context.Context, txReq *pb.TransactRequest) (*pb.ReceiptResponse, error) {
+	receipt, err := tx.transactor.BroadcastTx(txReq.TxEnvelope)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.ReceiptResponse{
-		TxHash: txhash,
+		TxReceipt: receipt,
 	}, nil
 }
 
@@ -308,7 +309,7 @@ func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq 
 	}
 
 	return &pb.UnconfirmTxsResponse{
-		Count: int32(len(transactions)),
-		Txs:   wrappedTxs,
+		Count:       int32(len(transactions)),
+		TxEnvelopes: wrappedTxs,
 	}, nil
 }
