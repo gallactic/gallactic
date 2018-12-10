@@ -1,4 +1,4 @@
-package sputnik
+package sputnikvm
 
 import (
 	"errors"
