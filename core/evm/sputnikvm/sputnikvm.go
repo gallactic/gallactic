@@ -45,6 +45,8 @@ func Execute(adapter Adapter) (Output, error) {
 
 	vm := sputnikvm.NewGallactic(&transaction, &header)
 
+	defer vm.Free()
+
 Loop:
 	for {
 		require := vm.Fire()
@@ -182,6 +184,6 @@ Loop:
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())
 
-	vm.Free()
+	//vm.Free()
 	return out, retError
 }
