@@ -126,13 +126,15 @@ func (ks *Keystore) getKeyObject(indexOrAddress string) (*KeyData, error) {
 				index = i
 			}
 		}
+	} else {
+		// reduce index by 1 as keystore listing always start from 1
+		index = index - 1
 	}
+
 	// if index is out of range
 	if index >= len(ks.Keys) || index <= 0 {
 		return nil, fmt.Errorf("Index is out of range")
 	}
 
-	// reduce index by 1 as keystore listing always start from 1
-	index = index - 1
 	return ks.Keys[index], nil
 }
