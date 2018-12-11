@@ -21,7 +21,7 @@ func main() {
 
 	path := common.GallacticKeystoreDir()
 	ks := keystore.Open(path)
-	
+
 	shell.Set("path", path)
 	shell.Set("keystore", ks)
 
@@ -39,6 +39,18 @@ func main() {
 		Name: "list",
 		Help: "List all existing account",
 		Func: List(),
+	})
+
+	shell.AddCmd(&ishell.Cmd{
+		Name: "unlock",
+		Help: "Unlock an account",
+		Func: Unlock(),
+	})
+
+	shell.AddCmd(&ishell.Cmd{
+		Name: "lock",
+		Help: "Lock an existing account",
+		Func: Lock(),
 	})
 
 	shell.AddCmd(&ishell.Cmd{
