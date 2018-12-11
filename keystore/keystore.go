@@ -84,7 +84,7 @@ func (ks *Keystore) Unlock(auth, indexOrAddress string) error {
 	// do decrypt and return the data
 	key, err := key.DecryptKeyFile(keyObject.Filename, auth)
 	if err != nil {
-		return fmt.Errorf("Decryption process fail")
+		return err
 	}
 
 	keyObject.Key = key
