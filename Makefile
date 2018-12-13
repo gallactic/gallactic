@@ -17,7 +17,7 @@ ifeq ($(UNAME), Linux)
 CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm"
 endif
 ifeq ($(UNAME), Darwin)
-CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lssl -lpthread -lm"
+CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm -lresolv"
 endif
 
 all: tools deps build install test test_release proto
