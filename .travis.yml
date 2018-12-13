@@ -14,14 +14,12 @@ matrix:
     script: make
   - os: osx
     go: 1.10.x
-    install: brew install openssl
     script: make
   - os: osx
-    install: brew install openssl
     go: master
     script: make
 
-before_install:
+install:
 - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
 - sh rustup-install.sh -y
 - export PATH="$HOME/.cargo/bin:$PATH"
