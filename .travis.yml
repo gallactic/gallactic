@@ -14,13 +14,14 @@ matrix:
     script: make
   - os: osx
     go: 1.10.x
+    before_install: brew install gcc10
     script: make
   - os: osx
     go: master
+    before_install: brew install gcc10
     script: make
 
 install:
-- ls /System/Library/Frameworks
 - curl -sSf rustup-install.sh https://sh.rustup.rs > rustup-install.sh
 - sh rustup-install.sh -y
 - export PATH="$HOME/.cargo/bin:$PATH"
