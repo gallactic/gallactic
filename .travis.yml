@@ -14,11 +14,11 @@ matrix:
     script: make
   - os: osx
     go: 1.10.x
-    before_install: brew install gcc10
+    before_install: brew install gcc
     script: make
   - os: osx
     go: master
-    before_install: brew install gcc10
+    before_install: brew install gcc
     script: make
 
 install:
