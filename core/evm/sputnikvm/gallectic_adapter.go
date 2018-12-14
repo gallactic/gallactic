@@ -116,8 +116,28 @@ func (ga *GallacticAdapter) subBalance(address common.Address, amount uint64) {
 	ga.Cache.UpdateAccount(acc)
 }
 
+func (ga *GallacticAdapter) setBalance(address common.Address, amount uint64) {
+	acc := ga.getAccount(address)
+	acc.SetBalance(amount)
+	ga.Cache.UpdateAccount(acc)
+}
+
+func (ga *GallacticAdapter) setNonce(address common.Address, nonce uint64) {
+	acc := ga.getAccount(address)
+	acc.SetSequence(nonce)
+	ga.Cache.UpdateAccount(acc)
+}
+
 func (ga *GallacticAdapter) setCode(address common.Address, code []byte) {
 	acc := ga.getAccount(address)
+	acc.SetCode(code)
+	ga.Cache.UpdateAccount(acc)
+}
+
+func (ga *GallacticAdapter) setAccount(address common.Address, balance uint64, code []byte, nonce uint64) {
+	acc := ga.getAccount(address)
+	acc.SetBalance(balance)
+	acc.SetSequence(nonce)
 	acc.SetCode(code)
 	ga.Cache.UpdateAccount(acc)
 }
