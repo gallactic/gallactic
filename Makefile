@@ -10,7 +10,7 @@ GOTOOLS = \
 PACKAGES=$(shell go list ./... | grep -v '/vendor/')
 SPUTNIKVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
 TAGS=-tags 'gallactic'
-LDFLAGS=-ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`" "-framework CoreServices -framework Foundation -framework Security"
+LDFLAGS=-ldflags "-framework CoreServices -framework Foundation -framework Security" "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
 CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm"
 INCLUDE = -I=. -I=${GOPATH}/src -I=${GOPATH}/src/github.com/gallactic/gallactic/rpc/grpc/proto3
 
