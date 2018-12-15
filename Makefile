@@ -20,7 +20,7 @@ ifeq ($(UNAME), Darwin)
 CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -framework CoreFoundation -framework Security"
 endif
 
-all: tools deps build install test test_release proto
+all: tools deps build install test test_release
 
 ########################################
 ### Tools & dependencies
