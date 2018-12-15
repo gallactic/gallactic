@@ -14,7 +14,10 @@ matrix:
     script: make
   - os: osx
     go: 1.10.x
-    before_install: brew install gcc && gcc --version && brew install llvm
+    before_install:
+      - brew install gcc
+      - gcc --version
+      - brew install llvm
     script: make
   - os: osx
     go: master
