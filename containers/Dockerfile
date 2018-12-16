@@ -1,5 +1,5 @@
 
-FROM alpine:3.8
+FROM alpine:edge
 
 ENV WORKING_DIR /gallactic
 
@@ -9,7 +9,7 @@ RUN apk add --no-cache bash libgcc
 
 ENV GOPATH /go
 ENV PATH "$PATH:/go/bin"
-RUN apk add --no-cache curl git go build-base rust cargo openssl-dev && \
+RUN apk add --no-cache curl git go build-base rust cargo musl-dev openssl-dev && \
     mkdir -p /go/src/github.com/gallactic/gallactic/ && \
     cd /go/src/github.com/gallactic/gallactic/ && \
     git clone https://github.com/gallactic/gallactic/ . && \
