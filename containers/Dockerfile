@@ -12,8 +12,8 @@ ENV PATH "$PATH:/go/bin"
 RUN apk add --no-cache curl git go build-base rust cargo musl-dev openssl-dev && \
     mkdir -p /go/src/github.com/gallactic/gallactic/ && \
     cd /go/src/github.com/gallactic/gallactic/ && \
-    git clone https://github.com/harishbm34/gallactic . && \
-    git checkout master && \
+    git clone https://github.com/gallactic/gallactic . && \
+    git checkout develop && \
     make tools deps build && \
     cp ./build/gallactic /usr/bin && \
     apk del curl git go build-base rust cargo && \
