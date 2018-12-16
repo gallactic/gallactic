@@ -6,7 +6,7 @@ PACKAGES=$(shell go list ./... | grep -v '/vendor/')
 SPUTNIKVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
 TAGS=-tags 'gallactic'
 LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
-CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm -framework CoreFoundation -framework Security"
+CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm"
 
 
 all: tools deps build install test test_release
