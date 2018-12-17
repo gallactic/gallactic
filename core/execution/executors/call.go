@@ -4,14 +4,13 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/blockchain"
-	"github.com/gallactic/gallactic/core/evm/sputnik"
+	"github.com/gallactic/gallactic/core/evm/sputnikvm"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
 	"github.com/hyperledger/burrow/logging"
-	"github.com/hyperledger/burrow/logging/structure"
 )
 
 type CallContext struct {
@@ -69,25 +68,33 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 
 	/// Update state cache
 	ctx.Cache.UpdateAccount(caller)
-	ctx.Cache.UpdateAccount(callee)
 
 	return nil
 }
 
 func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account, code []byte) error {
 
-	adapter := sputnik.GallacticAdapter{ctx.BC, ctx.Cache, caller,
+	adapter := sputnikvm.GallacticAdapter{ctx.BC, ctx.Cache, caller,
 		callee, tx.GasLimit(), tx.Amount(), code, caller.Sequence()}
-	ret, err := sputnik.Execute(&adapter)
+	ret, err := sputnikvm.Execute(&adapter)
 
 	if err != nil {
 		return err
 	}
+
+	caller.IncSequence()
+
+	//Here we can acquire sputnik VM result
+	//SPUTNIK USED GAS -> ret.UsedGas
+	//SPUTNIK RESULT -> !ret.Failed
+	//SPUTNIK OUT -> ret.Output
+
+	ctx.Logger.TraceMsg("Calling existing contract",ret.Output)
+	/*
 	ctx.Logger.TraceMsg("Calling existing contract",
 		"contract_address", callee.Address(),
 		"input", tx.Data(),
 		"contract_code", callee.Code())
-
 	ctx.Logger.Trace.Log("callee", callee.Address().String())
 	// Create a receipt from the ret and whether it erred.
 	ctx.Logger.TraceMsg("VM call complete",
@@ -95,6 +102,8 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account, 
 		"callee", callee,
 		"return", ret,
 		structure.ErrorKey, err)
+	*/
+
 
 	return nil
 }
