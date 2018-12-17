@@ -38,7 +38,7 @@ func startServer(done chan struct{}) *exec.Cmd {
 		done <- struct{}{}
 	}()
 
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 2) /// wait until gallactic starts
 	return cmd
 }
 
