@@ -1,18 +1,18 @@
 package tests
 
 import (
-	"github.com/gallactic/gallactic/vendor/golang.org/x/net/context"
-	"github.com/gallactic/gallactic/vendor/google.golang.org/grpc"
+	"context"
 	"log"
 	"os"
 	"os/exec"
 	"syscall"
 	"testing"
 	"time"
-
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/proposal"
+	 pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	"google.golang.org/grpc"
 )
 
 var tChainName string
@@ -40,7 +40,21 @@ func startServer(done chan struct{}) *exec.Cmd {
 		done <- struct{}{}
 	}()
 
-	time.Sleep(time.Second * 2)
+	//Just for wait to ensure command executed and instance object is ready
+	addr := tConfig.GRPC.ListenAddress
+	conn, errIns := grpc.Dial(addr, grpc.WithInsecure())
+	if errIns != nil {
+		panic(errIns)
+	}
+	grpcBCClient:= pb.NewBlockChainClient(conn)
+
+	for{
+		_, getchain_err := grpcBCClient.GetChainID(context.Background(), &pb.Empty{})
+		if getchain_err==nil {
+			break
+		}
+		time.Sleep(100)
+	}
 	return cmd
 }
 
