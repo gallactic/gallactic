@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/stretchr/testify/require"
@@ -28,56 +29,86 @@ func grpcTransactionClient() pb.TransactionClient {
 	return pb.NewTransactionClient(conn)
 }
 
-func TestGetAccount(t *testing.T) {
-	addr := tGenesis.Accounts()[0].Address()
-	ret, err := grpcBlockchainClient().GetAccount(context.Background(), &pb.AddressRequest{Address: addr})
+func TestBlockchainMethods(t *testing.T) {
+	client := grpcBlockchainClient()
+
+	//
+	addr := tGenesis.Accounts()[1].Address()
+	ret1, err := client.GetAccount(context.Background(), &pb.AddressRequest{Address: addr})
 	require.NoError(t, err)
-	require.Equal(t, ret.Account, tGenesis.Accounts()[0])
-}
-func TestGetValidator(t *testing.T) {
+	require.Equal(t, ret1.Account, tGenesis.Accounts()[1])
+
+	//
 	valaddr := tGenesis.Validators()[0].Address()
-	ret, err := grpcBlockchainClient().GetValidator(context.Background(), &pb.AddressRequest{Address: valaddr})
+	ret2, err := client.GetValidator(context.Background(), &pb.AddressRequest{Address: valaddr})
 	require.NoError(t, err)
-	require.Equal(t, ret.Validator, tGenesis.Validators()[0])
-}
-func TestGetAccounts(t *testing.T) {
-	ret, err := grpcBlockchainClient().GetAccounts(context.Background(), &pb.Empty{})
+	require.Equal(t, ret2.Validator, tGenesis.Validators()[0])
+
+	//
+	ret3, err := client.GetAccounts(context.Background(), &pb.Empty{})
 	require.NoError(t, err)
-	require.Equal(t, ret.Accounts[0].Account, tGenesis.Accounts()[1])
+	require.Equal(t, ret3.Accounts[0].Account, tGenesis.Accounts()[1])
+
+	//
+	ret4, err := client.GetValidators(context.Background(), &pb.Empty{})
+	require.NoError(t, err)
+	require.Equal(t, ret4.Validators[0].Validator, tGenesis.Validators()[0])
+
+	//
+	ret5, err := client.GetGenesis(context.Background(), &pb.Empty{})
+	require.NoError(t, err)
+	require.Equal(t, ret5.Genesis, tGenesis)
+
+	//
+	ret6, err := client.GetChainID(context.Background(), &pb.Empty{})
+	require.NoError(t, err)
+	require.Equal(t, ret6.ChainId, tGenesis.ChainID())
+
+	//
+	ret7, err := client.GetConsensusState(context.Background(), &pb.Empty{})
+	require.NoError(t, err)
+	fmt.Println("GetConsensusState", ret7)
+
+	// wait until blockchain starts...
+	for {
+		status, err := client.GetStatus(context.Background(), &pb.Empty{})
+		require.NoError(t, err)
+		if status.LatestBlockHeight > 2 {
+			break
+		}
+		time.Sleep(100)
+	}
+
+	//
+	ret8, err := client.GetLatestBlock(context.Background(), &pb.BlockRequest{Height: 1000})
+	require.NoError(t, err)
+	fmt.Println("GetLatestBlock", ret8)
+
+	//
+	ret9, err := client.GetBlock(context.Background(), &pb.BlockRequest{Height: uint64(ret8.Block.Height)})
+	require.NoError(t, err)
+	require.Equal(t, ret9, ret8)
+
+	ret10, err := client.GetBlocks(context.Background(), &pb.BlocksRequest{MinHeight: 1, MaxHeight: 10})
+	require.NoError(t, err)
+	//require.Equal(t, ret10[0], ret8)
+	fmt.Println("GetLatestBlock", ret10)
 }
 
-func TestGetValidators(t *testing.T) {
-	ret, err := grpcBlockchainClient().GetValidators(context.Background(), &pb.Empty{})
-	require.NoError(t, err)
-	require.Equal(t, ret.Validators[0].Validator, tGenesis.Validators()[0])
-}
+/*
+TODO:::
+func TestTransactionMethods(t *testing.T) {
+	client := grpcTransactionClient()
 
-func TestGetBlock(t *testing.T) {
-	ret, err := grpcBlockchainClient().GetBlock(context.Background(), &pb.BlockRequest{Height: 20})
-	require.NoError(t, err)
-	fmt.Println("BlockDetials", ret)
-}
+	_, pv := crypto.GenerateKey(nil)
+	signer := crypto.NewAccountSigner(pv)
+	sender := signer.Address()
+	tx, _ := tx.NewUnbondTx(sender, crypto.GlobalAddress, 1, 100, 200)
+	env := txs.Enclose(tGenesis.ChainName(), tx)
+	require.NoError(t, env.Sign(signer))
 
-func TestGetBlocks(t *testing.T) {
-	ret, err := grpcBlockchainClient().GetBlocks(context.Background(), &pb.BlocksRequest{MinHeight: 20, MaxHeight: 40})
+	ret1, err := client.BroadcastTx(context.Background(), &pb.TransactRequest{TxEnvelope: env})
 	require.NoError(t, err)
-	fmt.Println("BlocksDetials", ret)
+	require.Equal(t, env.Hash, ret1.TxReceipt.TxHash)
 }
-
-func TestGetChainID(t *testing.T) {
-	ret, err := grpcBlockchainClient().GetChainID(context.Background(), &pb.Empty{})
-	require.NoError(t, err)
-	fmt.Println("GetChainID", ret)
-}
-
-func TestGetLatestBlock(t *testing.T) {
-	ret, err := grpcBlockchainClient().GetLatestBlock(context.Background(), &pb.BlockRequest{Height: 1000})
-	require.NoError(t, err)
-	fmt.Println("GetLatestBlock", ret)
-}
-
-func TestGetConsensusState(t *testing.T) {
-	ret, err := grpcBlockchainClient().GetConsensusState(context.Background(), &pb.Empty{})
-	require.NoError(t, err)
-	fmt.Println("GetConsensusState", ret)
-}
+*/

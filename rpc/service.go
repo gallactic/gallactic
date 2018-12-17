@@ -95,11 +95,12 @@ func (s *Service) ListBlockTxs(height uint64) (*BlockTxsOutput, error) {
 	txsBuff := result.Block.Txs
 	txList := make([]txs.Envelope, len(txsBuff))
 	for i, txBuff := range txsBuff {
-		tx, err := txs.NewAminoCodec().DecodeTx(txBuff)
-		if err != nil {
+		txEnv := new(txs.Envelope)
+
+		if err := txEnv.Decode(txBuff); err != nil {
 			return nil, err
 		}
-		txList[i] = *tx
+		txList[i] = *txEnv
 	}
 	return &BlockTxsOutput{
 		Count: len(txsBuff),

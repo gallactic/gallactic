@@ -79,22 +79,21 @@ func TestSortitionMarshaling(t *testing.T) {
 }
 
 func testMarshaling(t *testing.T, tx tx.Tx, signer crypto.Signer) {
-	ac := NewAminoCodec()
-	jc := NewJSONCodec()
-
 	env1 := Enclose("test-chain", tx)
 	var bs []byte
 
 	/// test marshaling without signature
-	bs, err := ac.EncodeTx(env1)
+	bs, err := env1.Encode()
 	require.NoError(t, err)
-	env2, err := ac.DecodeTx(bs)
+	env2 := new(Envelope)
+	err = env2.Decode(bs)
 	assert.NoError(t, err, "DecodeTx error")
 	assert.Equal(t, env1, env2)
 
-	bs, err = jc.EncodeTx(env1)
+	bs, err = json.Marshal(env1)
 	require.NoError(t, err)
-	env3, err := jc.DecodeTx(bs)
+	env3 := new(Envelope)
+	err = json.Unmarshal(bs, env3)
 	assert.NoError(t, err, "DecodeTx error")
 	assert.Equal(t, env1, env3)
 
@@ -106,15 +105,17 @@ func testMarshaling(t *testing.T, tx tx.Tx, signer crypto.Signer) {
 	fmt.Println("Sign bytes: " + string(sb))
 	fmt.Println("Tx JSON: " + string(js))
 
-	bs, err = ac.EncodeTx(env1)
+	bs, err = env1.Encode()
 	require.NoError(t, err)
-	env4, err := ac.DecodeTx(bs)
+	env4 := new(Envelope)
+	err = env4.Decode(bs)
 	assert.NoError(t, err, "DecodeTx error")
 	assert.Equal(t, env1, env4)
 
-	bs, err = jc.EncodeTx(env1)
+	bs, err = json.Marshal(env1)
 	require.NoError(t, err)
-	env5, err := jc.DecodeTx(bs)
+	env5 := new(Envelope)
+	err = json.Unmarshal(bs, env5)
 	assert.NoError(t, err, "DecodeTx error")
 	assert.Equal(t, env1, env5)
 

@@ -21,11 +21,11 @@ service Transaction {
 }
 
 message TransactRequest {
-  TransactRequest txs = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
+  TransactRequest txEnvelope = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 
 message ReceiptResponse {
-  bytes  TxHash = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Receipt"];
+  bytes  TxReceipt = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Receipt"];
 }
 
 message UnconfirmedTxsRequest {
@@ -34,5 +34,5 @@ message UnconfirmedTxsRequest {
 
 message UnconfirmTxsResponse {
   int32 Count = 1;
-	repeated google.protobuf.ListValue  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
+	repeated google.protobuf.ListValue txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
 }
