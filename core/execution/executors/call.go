@@ -11,7 +11,6 @@ import (
 	"github.com/gallactic/gallactic/txs/tx"
 
 	"github.com/hyperledger/burrow/logging"
-	"github.com/hyperledger/burrow/logging/structure"
 )
 
 type CallContext struct {
@@ -69,7 +68,6 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope) error {
 
 	/// Update state cache
 	ctx.Cache.UpdateAccount(caller)
-	ctx.Cache.UpdateAccount(callee)
 
 	return nil
 }
@@ -83,11 +81,20 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account, 
 	if err != nil {
 		return err
 	}
+
+	caller.IncSequence()
+
+	//Here we can acquire sputnik VM result
+	//SPUTNIK USED GAS -> ret.UsedGas
+	//SPUTNIK RESULT -> !ret.Failed
+	//SPUTNIK OUT -> ret.Output
+
+	ctx.Logger.TraceMsg("Calling existing contract",ret.Output)
+	/*
 	ctx.Logger.TraceMsg("Calling existing contract",
 		"contract_address", callee.Address(),
 		"input", tx.Data(),
 		"contract_code", callee.Code())
-
 	ctx.Logger.Trace.Log("callee", callee.Address().String())
 	// Create a receipt from the ret and whether it erred.
 	ctx.Logger.TraceMsg("VM call complete",
@@ -95,6 +102,8 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account, 
 		"callee", callee,
 		"return", ret,
 		structure.ErrorKey, err)
+	*/
+
 
 	return nil
 }
