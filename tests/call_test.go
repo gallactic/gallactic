@@ -137,3 +137,4 @@ func TestCallContract(t *testing.T) {
 		t.Fatalf("contract does not have correct code. Got %X, expected %X", contractAcc.Code(), code)
 	}*/
 }
+
