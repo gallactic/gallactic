@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"github.com/gallactic/gallactic/vendor/golang.org/x/net/context"
+	"github.com/gallactic/gallactic/vendor/google.golang.org/grpc"
 	"log"
 	"os"
 	"os/exec"
@@ -38,7 +40,7 @@ func startServer(done chan struct{}) *exec.Cmd {
 		done <- struct{}{}
 	}()
 
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 2)
 	return cmd
 }
 
