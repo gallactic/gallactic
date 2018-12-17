@@ -88,10 +88,11 @@ func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*b
 	return &value, err
 }
 
-func (ga *GallacticAdapter) createContractAccount(address common.Address) {
+func (ga *GallacticAdapter) createContractAccount(address common.Address) *account.Account {
 	_, addr := fromEthAddress(address, true)
 	acc, _ := account.NewContractAccount(addr)
 	ga.Cache.UpdateAccount(acc)
+	return acc
 }
 
 func (ga *GallacticAdapter) setCalleeAddress(address common.Address) {

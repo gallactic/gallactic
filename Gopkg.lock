@@ -11,6 +11,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:7d191fd0c54ff370eaf6116a14dafe2a328df487baea280699f597aae858d00d"
+  name = "github.com/aristanetworks/goarista"
+  packages = ["monotime"]
+  pruneopts = "NUT"
+  revision = "aa2a42e13be68c4a95fe9e58003adaf63fe6476f"
+
+[[projects]]
+  branch = "master"
   digest = "1:707ebe952a8b3d00b343c01536c79c73771d100f63ec6babeaed5c79e2b8a8dd"
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
@@ -32,6 +40,14 @@
   pruneopts = "NUT"
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
+
+[[projects]]
+  digest = "1:8bd557621150427d0e57981be07aeaa9dd0f884a27d448b00381a52b5826269d"
+  name = "github.com/deckarep/golang-set"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "cbaa98ba5575e67703b32b4b19f73c91f3c4159e"
+  version = "v1.7.1"
 
 [[projects]]
   digest = "1:f4249e337f7dc58aca2bdb7daa261ebb0f3c399e1b78fc02e213fcc1f16973ab"
@@ -58,55 +74,26 @@
   version = "v1.1.0"
 
 [[projects]]
+  digest = "1:0445ee535d41fba125f7b1081a707f129ccdfe728b98195620401f351d5450be"
+  name = "github.com/ethereum/go-ethereum"
+  packages = [
+    "common/hexutil",
+    "common/mclock",
+    "log",
+    "p2p/netutil",
+    "rpc",
+  ]
+  pruneopts = "NUT"
+  revision = "24d727b6d6e2c0cde222fa12155c4a6db5caaf2e"
+  version = "v1.8.20"
+
+[[projects]]
   digest = "1:77acb9aff98e5dc372a28ac50ae62610ea5a4e627fa18084812e2907d04f0de8"
   name = "github.com/ethereumproject/go-ethereum"
   packages = ["common"]
   pruneopts = "NUT"
   revision = "be4377404d9f318510e69d889e217a56040745d7"
   version = "v5.5.2"
-
-[[projects]]
-  branch = "call_test"
-  digest = "1:c8f4c8e65eb01955a64926ade2122704e5f679ec7ee077fab98e927bef173b3e"
-  name = "github.com/gallactic/gallactic"
-  packages = [
-    "cmd",
-    "cmd/gallactic/key",
-    "common",
-    "common/binary",
-    "common/process",
-    "core",
-    "core/account",
-    "core/account/permission",
-    "core/blockchain",
-    "core/config",
-    "core/consensus/tendermint",
-    "core/consensus/tendermint/abci",
-    "core/consensus/tendermint/codes",
-    "core/consensus/tendermint/config",
-    "core/consensus/tendermint/query",
-    "core/consensus/tendermint/validator",
-    "core/evm/sputnik",
-    "core/execution",
-    "core/execution/executors",
-    "core/proposal",
-    "core/sortition",
-    "core/state",
-    "core/validator",
-    "crypto",
-    "errors",
-    "keystore/key",
-    "rpc",
-    "rpc/config",
-    "rpc/grpc",
-    "rpc/grpc/config",
-    "rpc/grpc/proto3",
-    "txs",
-    "txs/tx",
-    "version",
-  ]
-  pruneopts = "NUT"
-  revision = "5fd5bbc3b8635a1bd201a2ce0ed82bd75892c5a4"
 
 [[projects]]
   branch = "master"
@@ -562,7 +549,7 @@
   source = "github.com/tendermint/crypto"
 
 [[projects]]
-  digest = "1:2822b75330f8a787dca2f7d861788811676b2c50cea125851bbe32e9fd31624c"
+  digest = "1:4f8e07a87f56b1c16842f3a49ccc80c1d801c92e498207f3befd14fee2ab9f43"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -573,6 +560,7 @@
     "internal/timeseries",
     "netutil",
     "trace",
+    "websocket",
   ]
   pruneopts = "NUT"
   revision = "292b43bbf7cb8d35ddf40f8d5100ef3837cced3f"
@@ -663,6 +651,14 @@
   version = "v8.18.2"
 
 [[projects]]
+  branch = "v2"
+  digest = "1:85815bf6f46dc1855ae4e236b496bfa463f04fce83f700d74357ef220476abb7"
+  name = "gopkg.in/natefinch/npipe.v2"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6"
+
+[[projects]]
   digest = "1:df3d534f7b987f63a7076f86d9a2abd1c3f10d0236245405ba5cbb376511f80e"
   name = "gopkg.in/tylerb/graceful.v1"
   packages = ["."]
@@ -683,41 +679,8 @@
   analyzer-version = 1
   input-imports = [
     "github.com/BurntSushi/toml",
+    "github.com/ethereum/go-ethereum/rpc",
     "github.com/ethereumproject/go-ethereum/common",
-    "github.com/gallactic/gallactic/cmd",
-    "github.com/gallactic/gallactic/cmd/gallactic/key",
-    "github.com/gallactic/gallactic/common",
-    "github.com/gallactic/gallactic/common/binary",
-    "github.com/gallactic/gallactic/common/process",
-    "github.com/gallactic/gallactic/core",
-    "github.com/gallactic/gallactic/core/account",
-    "github.com/gallactic/gallactic/core/account/permission",
-    "github.com/gallactic/gallactic/core/blockchain",
-    "github.com/gallactic/gallactic/core/config",
-    "github.com/gallactic/gallactic/core/consensus/tendermint",
-    "github.com/gallactic/gallactic/core/consensus/tendermint/abci",
-    "github.com/gallactic/gallactic/core/consensus/tendermint/codes",
-    "github.com/gallactic/gallactic/core/consensus/tendermint/config",
-    "github.com/gallactic/gallactic/core/consensus/tendermint/query",
-    "github.com/gallactic/gallactic/core/consensus/tendermint/validator",
-    "github.com/gallactic/gallactic/core/evm/sputnik",
-    "github.com/gallactic/gallactic/core/execution",
-    "github.com/gallactic/gallactic/core/execution/executors",
-    "github.com/gallactic/gallactic/core/proposal",
-    "github.com/gallactic/gallactic/core/sortition",
-    "github.com/gallactic/gallactic/core/state",
-    "github.com/gallactic/gallactic/core/validator",
-    "github.com/gallactic/gallactic/crypto",
-    "github.com/gallactic/gallactic/errors",
-    "github.com/gallactic/gallactic/keystore/key",
-    "github.com/gallactic/gallactic/rpc",
-    "github.com/gallactic/gallactic/rpc/config",
-    "github.com/gallactic/gallactic/rpc/grpc",
-    "github.com/gallactic/gallactic/rpc/grpc/config",
-    "github.com/gallactic/gallactic/rpc/grpc/proto3",
-    "github.com/gallactic/gallactic/txs",
-    "github.com/gallactic/gallactic/txs/tx",
-    "github.com/gallactic/gallactic/version",
     "github.com/gallactic/sputnikvm-ffi/go/sputnikvm",
     "github.com/gin-gonic/gin",
     "github.com/go-kit/kit/log",
