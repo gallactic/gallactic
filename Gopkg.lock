@@ -172,15 +172,29 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:c36841934bd4ddd27923a28cd956a72b1082e84855453c0ac3f9d67eb476d085"
+  branch = "master"
+  digest = "1:e2b86e41f3d669fc36b50d31d32d22c8ac656c75aa5ea89717ce7177e134ff2a"
+  name = "github.com/golang/glog"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+
+[[projects]]
+  digest = "1:636a9b466dc9718000d40cee990ad052506b23c66db1b2f5ca58287e4ce9983e"
   name = "github.com/golang/protobuf"
   packages = [
+    "jsonpb",
     "proto",
+    "protoc-gen-go/descriptor",
+    "protoc-gen-go/generator",
+    "protoc-gen-go/generator/internal/remap",
+    "protoc-gen-go/plugin",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
     "ptypes/struct",
     "ptypes/timestamp",
+    "ptypes/wrappers",
   ]
   pruneopts = "NUT"
   revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
@@ -201,6 +215,18 @@
   pruneopts = "NUT"
   revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
   version = "v1.4.0"
+
+[[projects]]
+  digest = "1:b4d7e7e84ca235ba894c7296177287a1f2901459c88d5cf27f7cce7a66011278"
+  name = "github.com/grpc-ecosystem/grpc-gateway"
+  packages = [
+    "runtime",
+    "runtime/internal",
+    "utilities",
+  ]
+  pruneopts = "NUT"
+  revision = "01c07cdabb480b6d67b5c5586ae3b66e806de513"
+  version = "v1.6.2"
 
 [[projects]]
   digest = "1:2f3631983055bb7fe8cd0a1bd407ab9e5f460e5ea1734f3845bd8ff2c4c370f1"
@@ -602,9 +628,13 @@
   version = "v0.3.0"
 
 [[projects]]
-  digest = "1:cd018653a358d4b743a9d3bee89e825521f2ab2f2ec0770164bf7632d8d73ab7"
+  digest = "1:122e2fc3ad7aa5db3aa0ab69f428c4a6aa75ff3fc756fb0a8c468a43fdda601d"
   name = "google.golang.org/genproto"
-  packages = ["googleapis/rpc/status"]
+  packages = [
+    "googleapis/api/annotations",
+    "googleapis/rpc/status",
+    "protobuf/field_mask",
+  ]
   pruneopts = "NUT"
   revision = "7fd901a49ba6a7f87732eb344f6e3c5b19d1b200"
 
@@ -685,8 +715,12 @@
     "github.com/gin-gonic/gin",
     "github.com/go-kit/kit/log",
     "github.com/gogo/protobuf/gogoproto",
+    "github.com/gogo/protobuf/proto",
+    "github.com/golang/glog",
     "github.com/golang/protobuf/proto",
     "github.com/golang/protobuf/ptypes/struct",
+    "github.com/grpc-ecosystem/grpc-gateway/runtime",
+    "github.com/grpc-ecosystem/grpc-gateway/utilities",
     "github.com/hyperledger/burrow/logging",
     "github.com/hyperledger/burrow/logging/lifecycle",
     "github.com/hyperledger/burrow/logging/logconfig",
@@ -723,7 +757,11 @@
     "golang.org/x/crypto/scrypt",
     "golang.org/x/crypto/sha3",
     "golang.org/x/net/context",
+    "google.golang.org/genproto/googleapis/api/annotations",
     "google.golang.org/grpc",
+    "google.golang.org/grpc/codes",
+    "google.golang.org/grpc/grpclog",
+    "google.golang.org/grpc/status",
     "gopkg.in/tylerb/graceful.v1",
   ]
   solver-name = "gps-cdcl"

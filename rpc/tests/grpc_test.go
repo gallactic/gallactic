@@ -34,13 +34,13 @@ func TestBlockchainMethods(t *testing.T) {
 
 	//
 	addr := tGenesis.Accounts()[1].Address()
-	ret1, err := client.GetAccount(context.Background(), &pb.AddressRequest{Address: addr})
+	ret1, err := client.GetAccount(context.Background(), &pb.AddressRequest{Address: addr.String()})
 	require.NoError(t, err)
 	require.Equal(t, ret1.Account, tGenesis.Accounts()[1])
 
 	//
-	valaddr := tGenesis.Validators()[0].Address()
-	ret2, err := client.GetValidator(context.Background(), &pb.AddressRequest{Address: valaddr})
+	valAddr := tGenesis.Validators()[0].Address()
+	ret2, err := client.GetValidator(context.Background(), &pb.AddressRequest{Address: valAddr.String()})
 	require.NoError(t, err)
 	require.Equal(t, ret2.Validator, tGenesis.Validators()[0])
 

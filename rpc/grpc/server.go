@@ -3,15 +3,22 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"net"
+	"runtime/debug"
+
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 	"google.golang.org/grpc"
-	"runtime/debug"
 )
 
-func NewGRPCServer(logger *logging.Logger) *grpc.Server {
-	return grpc.NewServer(grpc.UnaryInterceptor(unaryInterceptor(logger)),
-		grpc.StreamInterceptor(streamInterceptor(logger.WithScope("NewGRPCServer"))))
+type Server struct {
+	*grpc.Server
+}
+
+func NewGRPCServer(logger *logging.Logger) *Server {
+	return &Server{
+		grpc.NewServer(grpc.UnaryInterceptor(unaryInterceptor(logger)),
+			grpc.StreamInterceptor(streamInterceptor(logger.WithScope("NewGRPCServer"))))}
 }
 
 func unaryInterceptor(logger *logging.Logger) grpc.UnaryServerInterceptor {
@@ -44,4 +51,19 @@ func streamInterceptor(logger *logging.Logger) grpc.StreamServerInterceptor {
 		logger.TraceMsg("GRPC stream call")
 		return handler(srv, ss)
 	}
+}
+
+func (s *Server) Start(addr string) error {
+	lis, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+
+	go s.Server.Serve(lis) /// TODO: check error with channels
+
+	return nil
+}
+
+func (s *Server) Stop() {
+	s.Server.Stop()
 }

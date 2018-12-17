@@ -8,16 +8,16 @@ GOTOOLS = \
 
 
 PACKAGES=$(shell go list ./... | grep -v '/vendor/')
-SPUTNIKVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
+SVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
 TAGS=-tags 'gallactic'
 LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
-INCLUDE = -I=. -I=${GOPATH}/src -I=${GOPATH}/src/github.com/gallactic/gallactic/rpc/grpc/proto3
+PROTO_INC = -I=. -I=${GOPATH}/src -I=${GOPATH}/src/github.com/gallactic/gallactic/rpc/grpc/proto3 -I=${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
 
 ifeq ($(UNAME), Linux)
-CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm"
+CFLAGS=CGO_LDFLAGS="$(SVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm"
 endif
 ifeq ($(UNAME), Darwin)
-CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -framework CoreFoundation -framework Security"
+CFLAGS=CGO_LDFLAGS="$(SVM_PATH)/c/libsputnikvm.a -framework CoreFoundation -framework Security"
 endif
 
 all: tools deps build install test test_release
@@ -36,9 +36,9 @@ deps:
 	@echo "Running dep..."
 	dep ensure -v
 	@echo "Building Sputnikvm Library..."
-	rm -rf $(SPUTNIKVM_PATH) && mkdir $(SPUTNIKVM_PATH)
-	cd $(SPUTNIKVM_PATH) && git clone https://github.com/gallactic/sputnikvm-ffi.git .
-	cd $(SPUTNIKVM_PATH)/c && make build
+	rm -rf $(SVM_PATH) && mkdir $(SVM_PATH)
+	cd $(SVM_PATH) && git clone https://github.com/gallactic/sputnikvm-ffi.git .
+	cd $(SVM_PATH)/c && make build
 
 ########################################
 ### Build Gallactic
@@ -69,11 +69,12 @@ docker:
 
 ########################################
 ### Protobuf
-proto:
+%.pb.go: %.proto
+	protoc $(PROTO_INC) $< --gogo_out=plugins=grpc:.
+	protoc $(PROTO_INC) $< --grpc-gateway_out=logtostderr=true:.
+	##protoc $(PROTO_INC) $< --swagger_out=logtostderr=true:.
 
-	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/blockchain.proto
-	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/network.proto
-	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/transaction.proto
+proto: ./rpc/grpc/proto3/blockchain.pb.go ./rpc/grpc/proto3/network.pb.go ./rpc/grpc/proto3/transaction.pb.go
 
 ########################################
 ### Formatting, linting, and vetting

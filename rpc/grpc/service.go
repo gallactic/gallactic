@@ -10,6 +10,7 @@ import (
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
+	"github.com/gallactic/gallactic/crypto"
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
@@ -56,7 +57,7 @@ func TransactorService(transction *execution.Transactor) *transcatorServer {
 		transactor: transction,
 	}
 }
-func NetowrkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *networkServer {
+func NetworkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *networkServer {
 	return &networkServer{
 		blockchain: blockchain,
 		nodeview:   nView,
@@ -65,7 +66,11 @@ func NetowrkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *n
 
 // Blockchain Service
 func (as *blockchainServer) GetAccount(ctx context.Context, param *pb.AddressRequest) (*pb.AccountResponse, error) {
-	acc, err := as.state.GetAccount(param.Address)
+	addr, err := crypto.AddressFromString(param.Address)
+	if err != nil {
+		return nil, err
+	}
+	acc, err := as.state.GetAccount(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +92,11 @@ func (as *blockchainServer) GetAccounts(ctx context.Context, in *pb.Empty) (*pb.
 }
 
 func (vs *blockchainServer) GetValidator(ctx context.Context, param *pb.AddressRequest) (*pb.ValidatorResponse, error) {
-	val, err := vs.state.GetValidator(param.Address)
+	addr, err := crypto.AddressFromString(param.Address)
+	if err != nil {
+		return nil, err
+	}
+	val, err := vs.state.GetValidator(addr)
 	if err != nil {
 		return nil, err
 	}
