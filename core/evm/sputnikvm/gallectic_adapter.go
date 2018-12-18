@@ -1,4 +1,4 @@
-package sputnik
+package sputnikvm
 
 import (
 	"bytes"
@@ -88,10 +88,11 @@ func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*b
 	return &value, err
 }
 
-func (ga *GallacticAdapter) createContractAccount(address common.Address) {
+func (ga *GallacticAdapter) createContractAccount(address common.Address) *account.Account {
 	_, addr := fromEthAddress(address, true)
 	acc, _ := account.NewContractAccount(addr)
 	ga.Cache.UpdateAccount(acc)
+	return acc
 }
 
 func (ga *GallacticAdapter) setCalleeAddress(address common.Address) {
@@ -116,8 +117,28 @@ func (ga *GallacticAdapter) subBalance(address common.Address, amount uint64) {
 	ga.Cache.UpdateAccount(acc)
 }
 
+func (ga *GallacticAdapter) setBalance(address common.Address, amount uint64) {
+	acc := ga.getAccount(address)
+	acc.SetBalance(amount)
+	ga.Cache.UpdateAccount(acc)
+}
+
+func (ga *GallacticAdapter) setNonce(address common.Address, nonce uint64) {
+	acc := ga.getAccount(address)
+	acc.SetSequence(nonce)
+	ga.Cache.UpdateAccount(acc)
+}
+
 func (ga *GallacticAdapter) setCode(address common.Address, code []byte) {
 	acc := ga.getAccount(address)
+	acc.SetCode(code)
+	ga.Cache.UpdateAccount(acc)
+}
+
+func (ga *GallacticAdapter) setAccount(address common.Address, balance uint64, code []byte, nonce uint64) {
+	acc := ga.getAccount(address)
+	acc.SetBalance(balance)
+	acc.SetSequence(nonce)
 	acc.SetCode(code)
 	ga.Cache.UpdateAccount(acc)
 }

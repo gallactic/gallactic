@@ -11,6 +11,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:7d191fd0c54ff370eaf6116a14dafe2a328df487baea280699f597aae858d00d"
+  name = "github.com/aristanetworks/goarista"
+  packages = ["monotime"]
+  pruneopts = "NUT"
+  revision = "aa2a42e13be68c4a95fe9e58003adaf63fe6476f"
+
+[[projects]]
+  branch = "master"
   digest = "1:707ebe952a8b3d00b343c01536c79c73771d100f63ec6babeaed5c79e2b8a8dd"
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
@@ -19,11 +27,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f10ee3c00a8a100d742d787adb726ea057193539e084984d582619b006dcb178"
+  digest = "1:d9043cacf637538c6d9df546f256173ce78b1ff10f42fba7a22ba72fb13b7837"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
   pruneopts = "NUT"
-  revision = "67e573d211ace594f1366b4ce9d39726c4b19bd0"
+  revision = "3dcf298fed2d5fd65918dc560b3942b2aa0629e8"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -32,6 +40,14 @@
   pruneopts = "NUT"
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
+
+[[projects]]
+  digest = "1:8bd557621150427d0e57981be07aeaa9dd0f884a27d448b00381a52b5826269d"
+  name = "github.com/deckarep/golang-set"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "cbaa98ba5575e67703b32b4b19f73c91f3c4159e"
+  version = "v1.7.1"
 
 [[projects]]
   digest = "1:f4249e337f7dc58aca2bdb7daa261ebb0f3c399e1b78fc02e213fcc1f16973ab"
@@ -56,6 +72,20 @@
   pruneopts = "NUT"
   revision = "44cc805cf13205b55f69e14bcb69867d1ae92f98"
   version = "v1.1.0"
+
+[[projects]]
+  digest = "1:0445ee535d41fba125f7b1081a707f129ccdfe728b98195620401f351d5450be"
+  name = "github.com/ethereum/go-ethereum"
+  packages = [
+    "common/hexutil",
+    "common/mclock",
+    "log",
+    "p2p/netutil",
+    "rpc",
+  ]
+  pruneopts = "NUT"
+  revision = "24d727b6d6e2c0cde222fa12155c4a6db5caaf2e"
+  version = "v1.8.20"
 
 [[projects]]
   digest = "1:77acb9aff98e5dc372a28ac50ae62610ea5a4e627fa18084812e2907d04f0de8"
@@ -142,11 +172,10 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:b708de52c2859bedb7de68d2fa54672782e0e24c38c088839e83cd54490ebcdc"
+  digest = "1:c36841934bd4ddd27923a28cd956a72b1082e84855453c0ac3f9d67eb476d085"
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
-    "protoc-gen-go/descriptor",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
@@ -330,7 +359,7 @@
     "model",
   ]
   pruneopts = "NUT"
-  revision = "aeab699e26f4d4089dba5e522e5d9babd2adbaf7"
+  revision = "4724e9255275ce38f7179b2478abeae4e28c904f"
 
 [[projects]]
   branch = "master"
@@ -343,7 +372,7 @@
     "xfs",
   ]
   pruneopts = "NUT"
-  revision = "185b4288413d2a0dd0806f78c90dde719829e5ae"
+  revision = "619930b0b4713cc1280189bf0a4c54b3fb506f60"
 
 [[projects]]
   digest = "1:f250ca51e5b9215bc2df18f92060a9a835e9f85ab18ebbba0e1a6ef1f8fcdbfe"
@@ -366,7 +395,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9ff9e1808adfc43f788f1c1e9fd2660c285b522243da985a4c043ec6f2a2d736"
+  digest = "1:786c36d675e2f6f2462e9f853aba754ae8f84fed6c103732aac697a666a70ae3"
   name = "github.com/syndtr/goleveldb"
   packages = [
     "leveldb",
@@ -383,7 +412,7 @@
     "leveldb/util",
   ]
   pruneopts = "NUT"
-  revision = "f9080354173f192dfc8821931eacf9cfd6819253"
+  revision = "353a9fca669c44dedb58d5a074f6d052fb0f58e0"
 
 [[projects]]
   digest = "1:0f300196893c040e7a5c6025051a696c068392fe2f836f2a7e8ab35d0af9cafa"
@@ -409,7 +438,7 @@
   version = "v0.11.0"
 
 [[projects]]
-  digest = "1:cabc825f239957f0c0368daf5b10b38383243081a918f2315226e1a090a22e44"
+  digest = "1:10e435e6b4ffb396c4570d58ecd440bc4febeef36dd90b00ad156f92b062ddab"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -460,8 +489,8 @@
     "version",
   ]
   pruneopts = "NUT"
-  revision = "22dcc92232cd04ce7381043e09d85dd536ae3b96"
-  version = "v0.26.3"
+  revision = "b771798d48c27630fb37b74c8e229da5a8b2042c"
+  version = "v0.26.4"
 
 [[projects]]
   branch = "master"
@@ -520,7 +549,7 @@
   source = "github.com/tendermint/crypto"
 
 [[projects]]
-  digest = "1:2822b75330f8a787dca2f7d861788811676b2c50cea125851bbe32e9fd31624c"
+  digest = "1:4f8e07a87f56b1c16842f3a49ccc80c1d801c92e498207f3befd14fee2ab9f43"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -531,6 +560,7 @@
     "internal/timeseries",
     "netutil",
     "trace",
+    "websocket",
   ]
   pruneopts = "NUT"
   revision = "292b43bbf7cb8d35ddf40f8d5100ef3837cced3f"
@@ -546,7 +576,7 @@
     "windows/registry",
   ]
   pruneopts = "NUT"
-  revision = "0cf1ed9e522b7dbb416f080a5c8003de9b702bf4"
+  revision = "62eef0e2fa9b2c385f7b2778e763486da6880d37"
 
 [[projects]]
   digest = "1:e7071ed636b5422cc51c0e3a6cebc229d6c9fffc528814b519a980641422d619"
@@ -572,12 +602,9 @@
   version = "v0.3.0"
 
 [[projects]]
-  digest = "1:c2dee8dbcc504d1a7858f5dbaed7c8b256c512c5e9e81480158c30185bbd2792"
+  digest = "1:cd018653a358d4b743a9d3bee89e825521f2ab2f2ec0770164bf7632d8d73ab7"
   name = "google.golang.org/genproto"
-  packages = [
-    "googleapis/api/annotations",
-    "googleapis/rpc/status",
-  ]
+  packages = ["googleapis/rpc/status"]
   pruneopts = "NUT"
   revision = "7fd901a49ba6a7f87732eb344f6e3c5b19d1b200"
 
@@ -624,6 +651,14 @@
   version = "v8.18.2"
 
 [[projects]]
+  branch = "v2"
+  digest = "1:85815bf6f46dc1855ae4e236b496bfa463f04fce83f700d74357ef220476abb7"
+  name = "gopkg.in/natefinch/npipe.v2"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6"
+
+[[projects]]
   digest = "1:df3d534f7b987f63a7076f86d9a2abd1c3f10d0236245405ba5cbb376511f80e"
   name = "gopkg.in/tylerb/graceful.v1"
   packages = ["."]
@@ -644,6 +679,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/BurntSushi/toml",
+    "github.com/ethereum/go-ethereum/rpc",
     "github.com/ethereumproject/go-ethereum/common",
     "github.com/gallactic/sputnikvm-ffi/go/sputnikvm",
     "github.com/gin-gonic/gin",
@@ -687,7 +723,6 @@
     "golang.org/x/crypto/scrypt",
     "golang.org/x/crypto/sha3",
     "golang.org/x/net/context",
-    "google.golang.org/genproto/googleapis/api/annotations",
     "google.golang.org/grpc",
     "gopkg.in/tylerb/graceful.v1",
   ]

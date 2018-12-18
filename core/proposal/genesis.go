@@ -271,6 +271,11 @@ func MakeGenesis(chainName string, genesisTime time.Time,
 		Permissions: globAccount.Permissions(),
 	}
 
+	// NOTE: Empty slices unmarshal to the nil.
+	if len(genCts) == 0 {
+		genCts = nil
+	}
+
 	return &Genesis{
 		data: genesisData{
 			ChainName:     chainName,

@@ -1,4 +1,4 @@
-package sputnik
+package sputnikvm
 
 import (
 	"math/big"
@@ -8,9 +8,9 @@ import (
 )
 
 type Output struct {
-	Failed          bool
-	UsedGas         uint64
-	Output          []uint8
+	Failed  bool
+	UsedGas uint64
+	Output  []uint8
 }
 
 type Adapter interface {
@@ -25,19 +25,20 @@ type Adapter interface {
 	setCalleeAddress(address common.Address)
 
 	updateAccount(account *account.Account)
+	getAccount(address common.Address) *account.Account
+
+	removeAccount(address common.Address)
+	createContractAccount(address common.Address) *account.Account
 
 	updateStorage(address common.Address, key *big.Int, value *big.Int)
 	getStorage(address common.Address, key *big.Int) (*big.Int, error)
 
-	createContractAccount(address common.Address)
-	removeAccount(address common.Address)
-
-	getAccount(address common.Address) *account.Account
-
 	addBalance(address common.Address, amount uint64)
 	subBalance(address common.Address, amount uint64)
-
+	setBalance(address common.Address, amount uint64)
+	setNonce(address common.Address, nonce uint64)
 	setCode(address common.Address, code []byte)
+	setAccount(address common.Address, balance uint64, code []byte, nonce uint64)
 
 	log(address common.Address, topics []common.Hash, data []byte)
 

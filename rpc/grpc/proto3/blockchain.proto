@@ -1,0 +1,134 @@
+syntax = 'proto3';
+
+package proto3;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/struct.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.protosizer_all) =false;
+
+
+
+// BlockChain  Service definition
+service BlockChain{
+  rpc GetAccount(AddressRequest) returns (AccountResponse);
+  rpc GetAccounts(Empty) returns (AccountsResponse);
+  rpc GetStorage(StorageAtRequest) returns (StorageResponse);
+  rpc GetStorageAt(StorageAtRequest) returns(StorageResponse);
+  rpc GetValidator(AddressRequest) returns (ValidatorResponse);
+  rpc GetValidators(Empty) returns (ValidatorsResponse);
+  rpc GetStatus(Empty) returns(StatusResponse);
+  rpc GetBlock(BlockRequest) returns(BlockResponse);
+  rpc GetBlocks(BlocksRequest) returns (BlocksResponse);
+  rpc GetGenesis(Empty) returns(GenesisResponse);
+  rpc GetChainID(Empty) returns(ChainResponse);
+  rpc GetLatestBlock(BlockRequest) returns(BlockResponse);
+  rpc GetConsensusState(Empty) returns (ConsensusResponse);
+  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse);
+
+}
+
+message Empty {
+}
+
+message AccountsResponse{
+	uint64 BlockHeight = 1;
+	repeated AccountResponse Accounts = 2;
+}
+
+message AccountResponse {
+  AccountResponse Account = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/account.Account"];
+}
+
+message ValidatorResponse{
+  ValidatorResponse Validator = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/validator.Validator"];
+}
+
+message ValidatorsResponse {
+  uint64 BlockHeight = 1 ;
+  repeated ValidatorResponse Validators  = 2;
+}
+
+
+message ListAccountsParam {
+  string Query = 1;
+}
+message AddressRequest {
+	bytes Address = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/crypto.Address",(gogoproto.nullable) = false];
+}
+
+
+message StorageAtRequest {
+  bytes Address = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/crypto.Address",(gogoproto.nullable) = false];
+  bytes	Key = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
+}
+
+message StorageResponse {
+  bytes	Key = 1  [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+  bytes	Value = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+}
+
+
+message ConsensusResponse{
+  bytes RoundState = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.RoundStateSimple",(gogoproto.nullable) = false];
+  repeated google.protobuf.ListValue PeerRoundStates = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.PeerRoundState",(gogoproto.nullable) = false];
+}
+
+message ChainResponse{
+  string ChainName = 1;
+  string ChainId =  2;
+  bytes	 GenesisHash = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+}
+
+message StatusResponse {
+  bytes  NodeInfo          = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.DefaultNodeInfo",(gogoproto.nullable) = false];
+  bytes	 GenesisHash       = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
+  bytes	 PubKey            = 3  [(gogoproto.customtype) =   "github.com/gallactic/gallactic/crypto.PublicKey",(gogoproto.nullable) = false];
+  bytes	 LatestBlockHash   = 4 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+  uint64 LatestBlockHeight = 5;
+  int64	 LatestBlockTime   = 6;
+  string NodeVersion       = 7;
+}
+
+message BlockRequest {
+  uint64 height = 1;
+}
+
+message BlocksRequest {
+  uint64 minHeight = 1;
+  uint64 maxHeight = 2;
+}
+
+message BlockResponse {
+  bytes  BlockMeta  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
+  bytes Block  = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.Block"];
+}
+
+message BlocksResponse {
+  uint64  LastHeight = 1;
+  repeated bytes BlockMeta = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
+}
+
+message BlockMeta {
+  bytes BlockMeta  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
+}
+
+
+message Block {
+  bytes  Block  = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.Block"];
+}
+
+message GenesisResponse {
+  GenesisResponse Genesis = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/proposal.Genesis"];
+}
+
+message BlockTxsResponse {
+  int32 Count = 1;
+  repeated google.protobuf.ListValue  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
+}
+

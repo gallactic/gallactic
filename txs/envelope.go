@@ -11,19 +11,6 @@ import (
 	"golang.org/x/crypto/ripemd160"
 )
 
-type Codec interface {
-	Encoder
-	Decoder
-}
-
-type Encoder interface {
-	EncodeTx(envelope *Envelope) ([]byte, error)
-}
-
-type Decoder interface {
-	DecodeTx(txBytes []byte) (*Envelope, error)
-}
-
 // Envelope contains both the signable Tx and the signatures for each input (in signatories)
 type Envelope struct {
 	ChainID     string             `json:"chainId"`
@@ -39,27 +26,6 @@ func Enclose(chainId string, tx tx.Tx) *Envelope {
 		Type:    tx.Type(),
 		Tx:      tx,
 	}
-}
-
-func (env *Envelope) UnmarshalJSON(data []byte) error {
-	type _envelope struct {
-		ChainID     string             `json:"chainId"`
-		Type        tx.Type            `json:"type"`
-		Tx          json.RawMessage    `json:"tx"`
-		Signatories []crypto.Signatory `json:"signatories,omitempty"`
-	}
-
-	w := new(_envelope)
-	err := json.Unmarshal(data, w)
-	if err != nil {
-		return err
-	}
-	env.ChainID = w.ChainID
-	env.Type = w.Type
-	env.Signatories = w.Signatories
-	// Now we know the Type we can deserialise tx
-	env.Tx = tx.New(w.Type)
-	return json.Unmarshal(w.Tx, env.Tx)
 }
 
 // SignBytes produces the canonical SignBytes for a Tx
@@ -171,16 +137,52 @@ func (env *Envelope) GenerateReceipt() *Receipt {
 	return receipt
 }
 
-//Protobuf Marshal,Unmarshal and size
+// Marshaling/Unmarshaling methods
+func (env *Envelope) UnmarshalJSON(data []byte) error {
+	type _envelope struct {
+		ChainID     string             `json:"chainId"`
+		Type        tx.Type            `json:"type"`
+		Tx          json.RawMessage    `json:"tx"`
+		Signatories []crypto.Signatory `json:"signatories,omitempty"`
+	}
 
-var cdc = amino.NewCodec()
+	w := new(_envelope)
+	err := json.Unmarshal(data, w)
+	if err != nil {
+		return err
+	}
+	env.ChainID = w.ChainID
+	env.Type = w.Type
+	env.Signatories = w.Signatories
+	// Now we know the Type we can de-serialize tx
+	env.Tx = tx.New(w.Type)
+	return json.Unmarshal(w.Tx, env.Tx)
+}
+
+func NewAminoCodec() *amino.Codec {
+	cdc := amino.NewCodec()
+	cdc.RegisterInterface((*tx.Tx)(nil), nil)
+	registerTx(cdc, &tx.SendTx{})
+	registerTx(cdc, &tx.CallTx{})
+	registerTx(cdc, &tx.BondTx{})
+	registerTx(cdc, &tx.UnbondTx{})
+	registerTx(cdc, &tx.PermissionsTx{})
+	registerTx(cdc, &tx.SortitionTx{})
+	return cdc
+}
+
+func registerTx(cdc *amino.Codec, tx tx.Tx) {
+	cdc.RegisterConcrete(tx, fmt.Sprintf("gallactic/txs/tx/%v", tx.Type()), nil)
+}
+
+var cdc = NewAminoCodec()
 
 func (env *Envelope) Encode() ([]byte, error) {
-	return cdc.MarshalBinaryLengthPrefixed(&env)
+	return cdc.MarshalBinaryLengthPrefixed(env)
 }
 
 func (env *Envelope) Decode(bs []byte) error {
-	return cdc.UnmarshalBinaryLengthPrefixed(bs, &env)
+	return cdc.UnmarshalBinaryLengthPrefixed(bs, env)
 }
 
 func (env *Envelope) Unmarshal(bs []byte) error {
@@ -204,7 +206,7 @@ func (env *Envelope) Size() int {
 	return len(bs)
 }
 
-//For Recipt
+// For Recipt
 func (r *Receipt) Encode() ([]byte, error) {
 	return cdc.MarshalBinaryLengthPrefixed(&r)
 }

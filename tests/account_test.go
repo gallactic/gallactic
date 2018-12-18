@@ -63,7 +63,7 @@ func makeAccount(t *testing.T, bal uint64, perm account.Permissions) (*account.A
 func makeContractAccount(t *testing.T, code []byte, bal uint64, perm account.Permissions) (*account.Account, crypto.Address) {
 	deriveFrom := getAccountByName(t, "b00f")
 	ctrAddr := crypto.DeriveContractAddress(deriveFrom.Address(), deriveFrom.Sequence())
-	acc, err := account.NewAccount(ctrAddr)
+	acc, err := account.NewContractAccount(ctrAddr)
 	require.NoError(t, err)
 	acc.SetCode(code)
 	acc.SetPermissions(perm)

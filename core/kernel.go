@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gallactic/gallactic/rpc/grpc"
+
 	"github.com/gallactic/gallactic/common/process"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/config"
@@ -22,8 +24,7 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/rpc"
-	"github.com/gallactic/gallactic/rpc/grpc"
-	"github.com/gallactic/gallactic/txs"
+	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/lifecycle"
@@ -74,18 +75,17 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	}
 
 	privVal := tmv.NewPrivValidatorMemory(myVal)
-	txCodec := txs.NewAminoCodec()
 	checker := execution.NewBatchChecker(bc, logger)
 	committer := execution.NewBatchCommitter(bc, logger)
 	tmGenesis := tendermint.DeriveGenesisDoc(gen)
 
-	tmNode, err := tendermint.NewNode(tmConfig, privVal, tmGenesis, bc, checker, committer, txCodec, tmLogger)
+	tmNode, err := tendermint.NewNode(tmConfig, privVal, tmGenesis, bc, checker, committer, tmLogger)
 	if err != nil {
 		return nil, err
 	}
 
-	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, txCodec, logger)
-	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode, txCodec), logger)
+	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, logger)
+	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode), logger)
 
 	launchers := []process.Launcher{
 		{
@@ -153,12 +153,10 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				if err != nil {
 					return nil, err
 				}
-
 				grpcServer := grpc.NewGRPCServer(logger)
-				grpc.RegisterAccountsServer(grpcServer, grpc.AccountService(bc))
-				grpc.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode, txCodec)))
-				grpc.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode, txCodec)))
-				grpc.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))
+				pb.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode)))
+				pb.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode)))
+				pb.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))
 				go grpcServer.Serve(listen)
 				return process.ShutdownFunc(func(ctx context.Context) error {
 					grpcServer.Stop()

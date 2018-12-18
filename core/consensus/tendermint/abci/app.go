@@ -27,21 +27,17 @@ type App struct {
 	mempoolLocker sync.Locker
 	// We need to cache these from BeginBlock for when we need actually need it in Commit
 	block *abciTypes.RequestBeginBlock
-	// Utility
-	txDecoder txs.Decoder
 	// Logging
 	logger *logging.Logger
 }
 
 var _ abciTypes.Application = &App{}
 
-func NewApp(bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter,
-	txDecoder txs.Decoder, logger *logging.Logger) *App {
+func NewApp(bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter, logger *logging.Logger) *App {
 	return &App{
 		bc:        bc,
 		checker:   checker,
 		committer: committer,
-		txDecoder: txDecoder,
 		logger:    logger.WithScope("abci.NewApp").With(structure.ComponentKey, "ABCI_App"),
 	}
 }
@@ -75,8 +71,8 @@ func (app *App) Query(reqQuery abciTypes.RequestQuery) (respQuery abciTypes.Resp
 }
 
 func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
-	txEnv, err := app.txDecoder.DecodeTx(txBytes)
-	if err != nil {
+	txEnv := new(txs.Envelope)
+	if err := txEnv.Decode(txBytes); err != nil {
 		app.logger.TraceMsg("CheckTx decoding error",
 			"tag", "CheckTx",
 			structure.ErrorKey, err)
@@ -86,9 +82,7 @@ func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 		}
 	}
 	receipt := txEnv.GenerateReceipt()
-
-	err = app.checker.Execute(txEnv)
-	if err != nil {
+	if err := app.checker.Execute(txEnv); err != nil {
 		app.logger.TraceMsg("CheckTx execution error",
 			structure.ErrorKey, err,
 			"tag", "CheckTx",
@@ -145,8 +139,8 @@ func (app *App) BeginBlock(block abciTypes.RequestBeginBlock) (respBeginBlock ab
 }
 
 func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
-	txEnv, err := app.txDecoder.DecodeTx(txBytes)
-	if err != nil {
+	txEnv := new(txs.Envelope)
+	if err := txEnv.Decode(txBytes); err != nil {
 		app.logger.TraceMsg("DeliverTx decoding error",
 			"tag", "DeliverTx",
 			structure.ErrorKey, err)
@@ -159,8 +153,7 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 	}
 
 	receipt := txEnv.GenerateReceipt()
-	err = app.committer.Execute(txEnv)
-	if err != nil {
+	if err := app.committer.Execute(txEnv); err != nil {
 		app.logger.TraceMsg("DeliverTx execution error",
 			structure.ErrorKey, err,
 			"tag", "DeliverTx",

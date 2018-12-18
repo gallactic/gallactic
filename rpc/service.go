@@ -95,11 +95,12 @@ func (s *Service) ListBlockTxs(height uint64) (*BlockTxsOutput, error) {
 	txsBuff := result.Block.Txs
 	txList := make([]txs.Envelope, len(txsBuff))
 	for i, txBuff := range txsBuff {
-		tx, err := txs.NewAminoCodec().DecodeTx(txBuff)
-		if err != nil {
+		txEnv := new(txs.Envelope)
+
+		if err := txEnv.Decode(txBuff); err != nil {
 			return nil, err
 		}
-		txList[i] = *tx
+		txList[i] = *txEnv
 	}
 	return &BlockTxsOutput{
 		Count: len(txsBuff),
@@ -173,7 +174,7 @@ func (s *Service) Genesis() *GenesisOutput {
 func (s *Service) GetAccount(address crypto.Address) (*AccountOutput, error) {
 	acc, err := s.state.GetAccount(address)
 	if err != nil {
-		return nil, nil //TODO we should return a proper error!
+		return nil, err
 	}
 	return &AccountOutput{Account: acc}, nil
 }

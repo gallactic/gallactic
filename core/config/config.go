@@ -7,16 +7,18 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/gallactic/gallactic/common"
 	tmConfig "github.com/gallactic/gallactic/core/consensus/tendermint/config"
+	sputnikvmConfig "github.com/gallactic/gallactic/core/evm/sputnikvm/config"
 	rpcConfig "github.com/gallactic/gallactic/rpc/config"
 	grpcConfig "github.com/gallactic/gallactic/rpc/grpc/config"
 	logconfig "github.com/hyperledger/burrow/logging/logconfig"
 )
 
 type Config struct {
-	Tendermint *tmConfig.TendermintConfig `toml:"tendermint"`
-	RPC        *rpcConfig.RPCConfig       `toml:"rpc"`
-	GRPC       *grpcConfig.GRPCConfig     `toml:"grpc"`
-	Logging    *logconfig.LoggingConfig   `toml:"logging,omitempty"`
+	Tendermint *tmConfig.TendermintConfig       `toml:"tendermint"`
+	RPC        *rpcConfig.RPCConfig             `toml:"rpc"`
+	GRPC       *grpcConfig.GRPCConfig           `toml:"grpc"`
+	Logging    *logconfig.LoggingConfig         `toml:"logging,omitempty"`
+	Sputnikvm  *sputnikvmConfig.SputnikvmConfig `toml:"sputnikvm"`
 }
 
 func DefaultConfig() *Config {
@@ -25,6 +27,7 @@ func DefaultConfig() *Config {
 		RPC:        rpcConfig.DefaultRPCConfig(),
 		GRPC:       grpcConfig.DefaultGRPCConfig(),
 		Logging:    logconfig.DefaultNodeLoggingConfig(),
+		Sputnikvm:  sputnikvmConfig.DefaultSputnikvmConfig(),
 	}
 }
 
@@ -65,5 +68,13 @@ func (conf *Config) SaveToFile(file string) error {
 		return err
 	}
 
+	return nil
+}
+
+// Verify web3 connection - to use it in interChainTrx precompiled contract to connect
+func (conf *Config) Check() error {
+	if err := conf.Sputnikvm.Check(); err != nil {
+		return err
+	}
 	return nil
 }

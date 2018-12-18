@@ -1,13 +1,24 @@
+UNAME := $(shell uname)
 GOTOOLS = \
 	github.com/golang/dep/cmd/dep \
-	gopkg.in/alecthomas/gometalinter.v2
+	gopkg.in/alecthomas/gometalinter.v2 \
+	google.golang.org/grpc \
+	github.com/golang/protobuf/proto \
+	github.com/gogo/protobuf/gogoproto
+
 
 PACKAGES=$(shell go list ./... | grep -v '/vendor/')
 SPUTNIKVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
 TAGS=-tags 'gallactic'
 LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
-CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lm"
+INCLUDE = -I=. -I=${GOPATH}/src -I=${GOPATH}/src/github.com/gallactic/gallactic/rpc/grpc/proto3
 
+ifeq ($(UNAME), Linux)
+CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm"
+endif
+ifeq ($(UNAME), Darwin)
+CFLAGS=CGO_LDFLAGS="$(SPUTNIKVM_PATH)/c/libsputnikvm.a -framework CoreFoundation -framework Security"
+endif
 
 all: tools deps build install test test_release
 
@@ -55,6 +66,14 @@ test_race:
 docker:
 	docker build ./containers --tag gallactic
 
+
+########################################
+### Protobuf
+proto:
+
+	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/blockchain.proto
+	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/network.proto
+	--protoc $(INCLUDE) --gogo_out=plugins=grpc:. ./rpc/grpc/proto3/transaction.proto
 
 ########################################
 ### Formatting, linting, and vetting

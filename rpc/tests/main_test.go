@@ -8,10 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/proposal"
-
-	"github.com/gallactic/gallactic/common"
 )
 
 var tChainName string
@@ -39,7 +38,7 @@ func startServer(done chan struct{}) *exec.Cmd {
 		done <- struct{}{}
 	}()
 
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 2) /// wait until gallactic starts
 	return cmd
 }
 

@@ -1,0 +1,38 @@
+syntax = 'proto3';
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/struct.proto";
+
+package proto3;
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.protosizer_all) =false;
+
+
+// Transaction Service definition
+service Transaction {
+	rpc BroadcastTx(TransactRequest) returns(ReceiptResponse);
+	rpc GetUnconfirmedTxs(UnconfirmedTxsRequest) returns(UnconfirmTxsResponse);
+
+}
+
+message TransactRequest {
+  TransactRequest txEnvelope = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
+}
+
+message ReceiptResponse {
+  bytes  TxReceipt = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Receipt"];
+}
+
+message UnconfirmedTxsRequest {
+  int32 maxTxs = 1;
+}
+
+message UnconfirmTxsResponse {
+  int32 Count = 1;
+	repeated google.protobuf.ListValue txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
+}

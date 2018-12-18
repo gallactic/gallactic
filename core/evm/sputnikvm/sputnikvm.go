@@ -1,28 +1,22 @@
-package sputnik
+package sputnikvm
 
 import (
 	"errors"
-	"fmt"
 	"math/big"
 
 	"github.com/ethereumproject/go-ethereum/common"
-	///e "github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
+
+	tmRPC "github.com/tendermint/tendermint/rpc/core"
 )
 
-/// TODO: Gheis
-/// Please look here as an example of implementing the SputnikVM
-/// https://github.com/ethereumproject/go-ethereum/blob/master/core/multivm_processor.go
-/// Fix all TODOs and also create a `receipt` object
 func Execute(adapter Adapter) (Output, error) {
 	var out Output
 	var retError error
 
 	if adapter.calleeAddress() == nil && len(adapter.GetData()) == 0 {
-		// TODO: Returning without calling vm.Free()
-		// TODO: use ErrInternalEvm as an error code
-		///return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
-		return out, errors.New("Zero Bytes of Codes")
+		return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
 	}
 
 	transaction := sputnikvm.Transaction{
@@ -44,6 +38,7 @@ func Execute(adapter Adapter) (Output, error) {
 	}
 
 	vm := sputnikvm.NewGallactic(&transaction, &header)
+	defer vm.Free()
 
 Loop:
 	for {
@@ -62,8 +57,6 @@ Loop:
 				if acc != nil {
 					vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()), new(big.Int).SetUint64(acc.Balance()), acc.Code())
 				} else {
-					//adapter.createContractAccount(require.Address())
-					//vm.CommitAccount(require.Address(), new(big.Int).SetUint64(0), new(big.Int).SetUint64(0), adapter.GetData())
 					vm.CommitNonexist(require.Address())
 				}
 			}
@@ -86,20 +79,28 @@ Loop:
 
 		case sputnikvm.RequireBlockhash:
 			//Require Blockhash
-			// TODO: get block nuber
-			//blockNumber := require.BlockNumber()
-			blockNumber := new(big.Int).SetUint64(adapter.LastBlockNumber())
+			reqblockNumber := require.BlockNumber().Int64()
+
+			block, err := tmRPC.Block(&reqblockNumber)
+
+			if err != nil {
+				return out, e.Errorf(e.ErrInternalEvm, "Not Exist Block!")
+			}
+
+			hash := block.Block.Hash().Bytes()
 			var blockHash common.Hash
-			// TODO: Get block hash and check if the block exists....
-			// (!Not only last block number)
-			blockHash.SetBytes(adapter.LastBlockHash())
-			vm.CommitBlockhash(blockNumber, blockHash)
+			blockHash.SetBytes(hash)
+			vm.CommitBlockhash(require.BlockNumber(), blockHash)
 
 		default:
-			// TODO: Returning without calling vm.Free()
-			///return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
-			return out, errors.New("Not Supperted Requirement by Sputnik")
+			return out, e.Errorf(e.ErrInternalEvm, "Not Supperted Requirement by Sputnik!")
 		}
+	}
+
+	if vm.Failed() {
+		out.Failed = true
+		out.UsedGas = vm.UsedGas().Uint64()
+		return out, e.Errorf(e.ErrInternalEvm, "VM Failed")
 	}
 
 	changedAccs := vm.AccountChanges()
@@ -127,10 +128,8 @@ Loop:
 		case sputnikvm.AccountChangeRemoved:
 			//Removing Account
 			adapter.removeAccount(changedAcc.Address())
-			//TODO: removeAccount(changedAcc.Address())
 
 		case sputnikvm.AccountChangeFull:
-			// TODO: Update balance, nonce, code
 			changeStorage := changedAcc.ChangedStorage()
 			if len(changeStorage) > 0 {
 				for i := 0; i < len(changeStorage); i++ {
@@ -139,10 +138,10 @@ Loop:
 					adapter.updateStorage(changedAcc.Address(), key, value)
 				}
 			}
+			adapter.setAccount(changedAcc.Address(), changedAcc.Balance().Uint64(), changedAcc.Code(), changedAcc.Nonce().Uint64())
 
 		case sputnikvm.AccountChangeCreate:
-			// TODO: Update balance, nonce, code
-			adapter.createContractAccount(changedAcc.Address())
+			acc := adapter.createContractAccount(changedAcc.Address())
 
 			changeStorage := changedAcc.Storage()
 			if len(changeStorage) > 0 {
@@ -152,7 +151,11 @@ Loop:
 					adapter.updateStorage(changedAcc.Address(), key, value)
 				}
 			}
-			adapter.setCode(changedAcc.Address(), changedAcc.Code())
+			acc.SetBalance(changedAcc.Balance().Uint64())
+			acc.SetSequence(changedAcc.Nonce().Uint64())
+			acc.SetCode(changedAcc.Code())
+
+			adapter.updateAccount(acc)
 
 			if adapter.calleeAddress() == nil {
 				adapter.setCalleeAddress(changedAcc.Address())
@@ -160,8 +163,6 @@ Loop:
 
 		default:
 			//Return error :unreachable!
-			// TODO: Returning without calling vm.Free()
-			///return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
 			return out, errors.New("unreachable")
 		}
 
@@ -172,16 +173,9 @@ Loop:
 		adapter.log(log.Address, log.Topics, log.Data)
 	}
 
-	if vm.Failed() {
-		out.Failed = true
-		// TODO: Returning without calling vm.Free()
-		///return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
-		return out, fmt.Errorf("VM Failed")
-	}
 	out.UsedGas = vm.UsedGas().Uint64()
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())
 
-	vm.Free()
 	return out, retError
 }
