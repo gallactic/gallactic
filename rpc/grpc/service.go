@@ -117,7 +117,11 @@ func (vs *blockchainServer) GetValidators(context.Context, *pb.Empty) (*pb.Valid
 	}, nil
 }
 func (s *blockchainServer) GetStorage(ctx context.Context, storage *pb.StorageAtRequest) (*pb.StorageResponse, error) {
-	value, err := s.state.GetStorage(storage.Address, binary.LeftPadWord256(storage.Key))
+	storageaddr, err := crypto.AddressFromString(storage.Address)
+	if err != nil {
+		return nil, err
+	}
+	value, err := s.state.GetStorage(storageaddr, binary.LeftPadWord256(storage.Key))
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +132,11 @@ func (s *blockchainServer) GetStorage(ctx context.Context, storage *pb.StorageAt
 }
 
 func (s *blockchainServer) GetStorageAt(ctx context.Context, storage *pb.StorageAtRequest) (*pb.StorageResponse, error) {
-	value, err := s.state.GetStorage(storage.Address, binary.LeftPadWord256(storage.Key))
+	storageaddr, err := crypto.AddressFromString(storage.Address)
+	if err != nil {
+		return nil, err
+	}
+	value, err := s.state.GetStorage(storageaddr, binary.LeftPadWord256(storage.Key))
 	if err != nil {
 		return nil, err
 	}

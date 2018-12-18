@@ -19,18 +19,18 @@ option (gogoproto.protosizer_all) =false;
 service BlockChain {
   rpc GetAccount(AddressRequest) returns (AccountResponse)      { option (google.api.http).get = "/Account/{Address}";}
   rpc GetAccounts(Empty) returns (AccountsResponse)             { option (google.api.http).get = "/Accounts";}
-  rpc GetStorage(StorageAtRequest) returns (StorageResponse);
-  rpc GetStorageAt(StorageAtRequest) returns(StorageResponse);
-  rpc GetValidator(AddressRequest) returns (ValidatorResponse);
+  rpc GetStorage(StorageAtRequest) returns (StorageResponse)    { option (google.api.http).get = "/Storage/{Address}/{Key}";}
+  rpc GetStorageAt(StorageAtRequest) returns(StorageResponse)   { option (google.api.http).get = "/StorageAt/{Address}/{Key}";}
+  rpc GetValidator(AddressRequest) returns (ValidatorResponse)  { option (google.api.http).get = "/Validator/{Address}";}
   rpc GetValidators(Empty) returns (ValidatorsResponse)         { option (google.api.http).get = "/Validators";}
   rpc GetStatus(Empty) returns(StatusResponse)                  { option (google.api.http).get = "/Status";}
-  rpc GetBlock(BlockRequest) returns(BlockResponse);
-  rpc GetBlocks(BlocksRequest) returns (BlocksResponse);
+  rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
+  rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetGenesis(Empty) returns(GenesisResponse)                { option (google.api.http).get = "/Genesis";}
   rpc GetChainID(Empty) returns(ChainResponse)                  { option (google.api.http).get = "/ChainID";}
-  rpc GetLatestBlock(BlockRequest) returns(BlockResponse);
-  rpc GetConsensusState(Empty) returns (ConsensusResponse);
-  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse);
+  rpc GetLatestBlock(BlockRequest) returns(BlockResponse)       { option (google.api.http).get = "/LatestBlock/{height}";}
+  rpc GetConsensusState(Empty) returns (ConsensusResponse)      { option (google.api.http).get = "/ConsensusState";}
+  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http).get = "/BlockTxs/{height}";}
 
 }
 
@@ -64,8 +64,7 @@ message ListAccountsParam {
 }
 
 message StorageAtRequest {
-  /// TODO: Address is string...
-  bytes Address = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/crypto.Address",(gogoproto.nullable) = false];
+  string Address = 1;
   bytes	Key = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
 }
 

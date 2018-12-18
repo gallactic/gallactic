@@ -16,6 +16,6 @@ func DefaultGRPCConfig() *GRPCConfig {
 	return &GRPCConfig{
 		Enabled:       true,
 		ListenAddress: fmt.Sprintf("%s:50051", localhost),
-		HTTPAddress: fmt.Sprintf("%s:50052", localhost),
+		HTTPAddress:   fmt.Sprintf("%s:50052", localhost),
 	}
 }
