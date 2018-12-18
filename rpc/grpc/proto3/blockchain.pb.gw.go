@@ -64,6 +64,109 @@ func request_BlockChain_GetAccounts_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
+func request_BlockChain_GetStorage_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq StorageAtRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["Address"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Address")
+	}
+
+	protoReq.Address, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Address", err)
+	}
+
+	val, ok = pathParams["Key"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Key")
+	}
+
+	protoReq.Key, err = runtime.Bytes(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Key", err)
+	}
+
+	msg, err := client.GetStorage(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func request_BlockChain_GetStorageAt_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq StorageAtRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["Address"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Address")
+	}
+
+	protoReq.Address, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Address", err)
+	}
+
+	val, ok = pathParams["Key"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Key")
+	}
+
+	protoReq.Key, err = runtime.Bytes(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Key", err)
+	}
+
+	msg, err := client.GetStorageAt(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func request_BlockChain_GetValidator_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq AddressRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["Address"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Address")
+	}
+
+	protoReq.Address, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Address", err)
+	}
+
+	msg, err := client.GetValidator(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
 func request_BlockChain_GetValidators_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq Empty
 	var metadata runtime.ServerMetadata
@@ -82,6 +185,71 @@ func request_BlockChain_GetStatus_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
+func request_BlockChain_GetBlock_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq BlockRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["height"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "height")
+	}
+
+	protoReq.Height, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "height", err)
+	}
+
+	msg, err := client.GetBlock(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func request_BlockChain_GetBlocks_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq BlocksRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["minHeight"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "minHeight")
+	}
+
+	protoReq.MinHeight, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "minHeight", err)
+	}
+
+	val, ok = pathParams["maxHeight"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "maxHeight")
+	}
+
+	protoReq.MaxHeight, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "maxHeight", err)
+	}
+
+	msg, err := client.GetBlocks(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
 func request_BlockChain_GetGenesis_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq Empty
 	var metadata runtime.ServerMetadata
@@ -96,6 +264,69 @@ func request_BlockChain_GetChainID_0(ctx context.Context, marshaler runtime.Mars
 	var metadata runtime.ServerMetadata
 
 	msg, err := client.GetChainID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func request_BlockChain_GetLatestBlock_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq BlockRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["height"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "height")
+	}
+
+	protoReq.Height, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "height", err)
+	}
+
+	msg, err := client.GetLatestBlock(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func request_BlockChain_GetConsensusState_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq Empty
+	var metadata runtime.ServerMetadata
+
+	msg, err := client.GetConsensusState(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func request_BlockChain_GetBlockTxs_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq BlockRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["height"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "height")
+	}
+
+	protoReq.Height, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "height", err)
+	}
+
+	msg, err := client.GetBlockTxs(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -178,6 +409,66 @@ func RegisterBlockChainHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
+	mux.Handle("GET", pattern_BlockChain_GetStorage_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_BlockChain_GetStorage_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_BlockChain_GetStorage_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_BlockChain_GetStorageAt_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_BlockChain_GetStorageAt_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_BlockChain_GetStorageAt_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_BlockChain_GetValidator_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_BlockChain_GetValidator_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_BlockChain_GetValidator_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	mux.Handle("GET", pattern_BlockChain_GetValidators_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -215,6 +506,46 @@ func RegisterBlockChainHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		}
 
 		forward_BlockChain_GetStatus_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_BlockChain_GetBlock_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_BlockChain_GetBlock_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_BlockChain_GetBlock_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_BlockChain_GetBlocks_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_BlockChain_GetBlocks_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_BlockChain_GetBlocks_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -258,6 +589,66 @@ func RegisterBlockChainHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
+	mux.Handle("GET", pattern_BlockChain_GetLatestBlock_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_BlockChain_GetLatestBlock_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_BlockChain_GetLatestBlock_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_BlockChain_GetConsensusState_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_BlockChain_GetConsensusState_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_BlockChain_GetConsensusState_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_BlockChain_GetBlockTxs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_BlockChain_GetBlockTxs_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_BlockChain_GetBlockTxs_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	return nil
 }
 
@@ -266,13 +657,29 @@ var (
 
 	pattern_BlockChain_GetAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"Accounts"}, ""))
 
+	pattern_BlockChain_GetStorage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"Storage", "Address", "Key"}, ""))
+
+	pattern_BlockChain_GetStorageAt_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"StorageAt", "Address", "Key"}, ""))
+
+	pattern_BlockChain_GetValidator_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"Validator", "Address"}, ""))
+
 	pattern_BlockChain_GetValidators_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"Validators"}, ""))
 
 	pattern_BlockChain_GetStatus_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"Status"}, ""))
 
+	pattern_BlockChain_GetBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"Block", "height"}, ""))
+
+	pattern_BlockChain_GetBlocks_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"Blocks", "minHeight", "maxHeight"}, ""))
+
 	pattern_BlockChain_GetGenesis_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"Genesis"}, ""))
 
 	pattern_BlockChain_GetChainID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ChainID"}, ""))
+
+	pattern_BlockChain_GetLatestBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"LatestBlock", "height"}, ""))
+
+	pattern_BlockChain_GetConsensusState_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ConsensusState"}, ""))
+
+	pattern_BlockChain_GetBlockTxs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"BlockTxs", "height"}, ""))
 )
 
 var (
@@ -280,11 +687,27 @@ var (
 
 	forward_BlockChain_GetAccounts_0 = runtime.ForwardResponseMessage
 
+	forward_BlockChain_GetStorage_0 = runtime.ForwardResponseMessage
+
+	forward_BlockChain_GetStorageAt_0 = runtime.ForwardResponseMessage
+
+	forward_BlockChain_GetValidator_0 = runtime.ForwardResponseMessage
+
 	forward_BlockChain_GetValidators_0 = runtime.ForwardResponseMessage
 
 	forward_BlockChain_GetStatus_0 = runtime.ForwardResponseMessage
 
+	forward_BlockChain_GetBlock_0 = runtime.ForwardResponseMessage
+
+	forward_BlockChain_GetBlocks_0 = runtime.ForwardResponseMessage
+
 	forward_BlockChain_GetGenesis_0 = runtime.ForwardResponseMessage
 
 	forward_BlockChain_GetChainID_0 = runtime.ForwardResponseMessage
+
+	forward_BlockChain_GetLatestBlock_0 = runtime.ForwardResponseMessage
+
+	forward_BlockChain_GetConsensusState_0 = runtime.ForwardResponseMessage
+
+	forward_BlockChain_GetBlockTxs_0 = runtime.ForwardResponseMessage
 )

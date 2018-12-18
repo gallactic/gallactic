@@ -3,6 +3,7 @@ syntax = 'proto3';
 package proto3;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/api/annotations.proto";
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.sizer_all) = true;
@@ -13,8 +14,8 @@ option (gogoproto.protosizer_all) =false;
 
 //Network Service definition
 service Network {
-  rpc GetNetworkInfo(Empty1) returns(NetInfoResponse);
-  rpc GetPeers(Empty1) returns (PeerResponse);
+  rpc GetNetworkInfo(Empty1) returns(NetInfoResponse)  { option (google.api.http).get = "/NetworkInfo";}
+  rpc GetPeers(Empty1) returns (PeerResponse)        { option (google.api.http).get = "/Peers";}
 }
 
 message Empty1{
