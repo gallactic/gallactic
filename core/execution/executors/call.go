@@ -89,21 +89,20 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account, 
 	//SPUTNIK RESULT -> !ret.Failed
 	//SPUTNIK OUT -> ret.Output
 
-	ctx.Logger.TraceMsg("Calling existing contract",ret.Output)
+	ctx.Logger.TraceMsg("Calling existing contract", ret.Output)
 	/*
-	ctx.Logger.TraceMsg("Calling existing contract",
-		"contract_address", callee.Address(),
-		"input", tx.Data(),
-		"contract_code", callee.Code())
-	ctx.Logger.Trace.Log("callee", callee.Address().String())
-	// Create a receipt from the ret and whether it erred.
-	ctx.Logger.TraceMsg("VM call complete",
-		"caller", caller,
-		"callee", callee,
-		"return", ret,
-		structure.ErrorKey, err)
+		ctx.Logger.TraceMsg("Calling existing contract",
+			"contract_address", callee.Address(),
+			"input", tx.Data(),
+			"contract_code", callee.Code())
+		ctx.Logger.Trace.Log("callee", callee.Address().String())
+		// Create a receipt from the ret and whether it erred.
+		ctx.Logger.TraceMsg("VM call complete",
+			"caller", caller,
+			"callee", callee,
+			"return", ret,
+			structure.ErrorKey, err)
 	*/
-
 
 	return nil
 }
