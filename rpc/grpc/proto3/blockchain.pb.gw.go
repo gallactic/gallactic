@@ -64,10 +64,15 @@ func request_BlockChain_GetAccounts_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
+var (
+	filter_BlockChain_GetStorage_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
 func request_BlockChain_GetStorage_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq StorageRequest
 	var metadata runtime.ServerMetadata
 
+<<<<<<< refs/remotes/gallactic/develop
 	var (
 		val string
 		ok  bool
@@ -84,6 +89,10 @@ func request_BlockChain_GetStorage_0(ctx context.Context, marshaler runtime.Mars
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Address", err)
+=======
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_BlockChain_GetStorage_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+>>>>>>> changes in get_stroage method
 	}
 
 	msg, err := client.GetStorage(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -694,7 +703,11 @@ var (
 
 	pattern_BlockChain_GetAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"Accounts"}, ""))
 
+<<<<<<< refs/remotes/gallactic/develop
 	pattern_BlockChain_GetStorage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"Storage", "Address"}, ""))
+=======
+	pattern_BlockChain_GetStorage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"Storage"}, ""))
+>>>>>>> changes in get_stroage method
 
 	pattern_BlockChain_GetStorageAt_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"StorageAt", "Address", "Key"}, ""))
 
