@@ -258,26 +258,8 @@ func request_BlockChain_GetChainID_0(ctx context.Context, marshaler runtime.Mars
 }
 
 func request_BlockChain_GetLatestBlock_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq BlockRequest
+	var protoReq Empty
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["height"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "height")
-	}
-
-	protoReq.Height, err = runtime.Uint64(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "height", err)
-	}
 
 	msg, err := client.GetLatestBlock(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -664,7 +646,7 @@ var (
 
 	pattern_BlockChain_GetChainID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ChainID"}, ""))
 
-	pattern_BlockChain_GetLatestBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"LatestBlock", "height"}, ""))
+	pattern_BlockChain_GetLatestBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"LatestBlock"}, ""))
 
 	pattern_BlockChain_GetConsensusState_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ConsensusState"}, ""))
 

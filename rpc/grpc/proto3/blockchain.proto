@@ -28,7 +28,7 @@ service BlockChain {
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetGenesis(Empty) returns(GenesisResponse)                { option (google.api.http).get = "/Genesis";}
   rpc GetChainID(Empty) returns(ChainResponse)                  { option (google.api.http).get = "/ChainID";}
-  rpc GetLatestBlock(BlockRequest) returns(BlockResponse)       { option (google.api.http).get = "/LatestBlock/{height}";}
+  rpc GetLatestBlock(Empty) returns(BlockResponse)              { option (google.api.http).get = "/LatestBlock";}
   rpc GetConsensusState(Empty) returns (ConsensusResponse)      { option (google.api.http).get = "/ConsensusState";}
   rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http).get = "/BlockTxs/{height}";}
 

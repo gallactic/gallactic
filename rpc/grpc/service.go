@@ -225,7 +225,7 @@ func (s *blockchainServer) GetChainID(context.Context, *pb.Empty) (*pb.ChainResp
 
 }
 
-func (s *blockchainServer) GetLatestBlock(context.Context, *pb.BlockRequest) (*pb.BlockResponse, error) {
+func (s *blockchainServer) GetLatestBlock(context.Context, *pb.Empty) (*pb.BlockResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
 	block := s.nodeview.BlockStore().LoadBlock(int64(latestHeight))
 	blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(latestHeight))
