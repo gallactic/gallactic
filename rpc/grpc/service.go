@@ -2,6 +2,9 @@ package grpc
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
@@ -235,6 +238,37 @@ func (s *blockchainServer) GetLatestBlock(context.Context, *pb.Empty) (*pb.Block
 	}, nil
 }
 
+func (s *blockchainServer) GetBlockchainInfo(ctx context.Context, blockinfo *pb.BlockchainInfoRequest) (*pb.BlockchainInfoResponse, error) {
+	res := &pb.BlockchainInfoResponse{
+		LastBlockHeight: s.blockchain.LastBlockHeight(),
+		LastBlockHash:   s.blockchain.LastBlockHash(),
+		LastBlockTime:   s.blockchain.LastBlockTime(),
+	}
+	if blockinfo.Blockwithin == "" {
+		return res, nil
+	}
+	duration, err := time.ParseDuration(blockinfo.Blockwithin)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse blockWithin duration to determine whether to throw error: %v", err)
+	}
+	// Take neg abs in case caller is counting backwards (not we add later)
+	if duration > 0 {
+		duration = -duration
+	}
+	blockTimeThreshold := time.Now().Add(duration)
+	if res.LastBlockTime.After(blockTimeThreshold) {
+		// We've created blocks recently enough
+		return res, nil
+	}
+	resJSON, err := json.Marshal(res)
+	if err != nil {
+		resJSON = []byte("<error: could not marshal last block info>")
+	}
+	return nil, fmt.Errorf("no block committed within the last %s (cutoff: %s), last block info: %s",
+	blockinfo.Blockwithin, blockTimeThreshold.Format(time.RFC3339), string(resJSON))
+
+}
+
 func (s *blockchainServer) GetConsensusState(context.Context, *pb.Empty) (*pb.ConsensusResponse, error) {
 	peerRound := make([]consensusTypes.PeerRoundState, 0)
 	peerRoundState, err := s.nodeview.PeerRoundStates()
@@ -334,3 +368,6 @@ func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq 
 		TxEnvelopes: wrappedTxs,
 	}, nil
 }
+
+
+

@@ -5,6 +5,7 @@ package proto3;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/protobuf/struct.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.unmarshaler_all) = true;
@@ -12,7 +13,6 @@ option (gogoproto.sizer_all) = true;
 option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.protosizer_all) =false;
-
 
 
 // BlockChain  Service definition
@@ -31,7 +31,7 @@ service BlockChain {
   rpc GetLatestBlock(Empty) returns(BlockResponse)              { option (google.api.http).get = "/LatestBlock";}
   rpc GetConsensusState(Empty) returns (ConsensusResponse)      { option (google.api.http).get = "/ConsensusState";}
   rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http).get = "/BlockTxs/{height}";}
-
+  rpc GetBlockchainInfo(BlockchainInfoRequest) returns (BlockchainInfoResponse)  { option (google.api.http).get = "/BlockchainInfo/{Blockwithin}";}
 }
 
 message Empty {
@@ -117,7 +117,7 @@ message BlocksRequest {
 }
 
 message BlockResponse {
-  bytes  BlockMeta  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
+  bytes BlockMeta  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
   bytes Block  = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.Block"];
 }
 
@@ -143,3 +143,12 @@ message BlockTxsResponse {
   repeated google.protobuf.ListValue  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 
+message BlockchainInfoRequest{
+  string Blockwithin =1;
+}
+
+message BlockchainInfoResponse {
+  uint64  LastBlockHeight = 1;
+  google.protobuf.Timestamp LastBlockTime = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  bytes  LastBlockHash  = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+}

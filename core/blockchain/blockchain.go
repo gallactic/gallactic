@@ -235,3 +235,4 @@ func (bc *Blockchain) EvaluateSortition(blockHeight uint64, blockHash []byte) {
 func (bc *Blockchain) VerifySortition(blockHash []byte, publicKey crypto.PublicKey, info uint64, proof []byte) bool {
 	return bc.sortition.Verify(blockHash, publicKey, info, proof)
 }
+

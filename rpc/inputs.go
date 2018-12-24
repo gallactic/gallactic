@@ -31,4 +31,8 @@ type (
 	PeersInput struct {
 		Address crypto.Address `json:"address"`
 	}
+
+    BlockInfoInput struct {
+		BlockWithin string    `json:"blockWithin"`
+	}
 )
