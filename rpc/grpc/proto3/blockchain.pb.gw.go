@@ -356,6 +356,33 @@ func request_BlockChain_GetBlockTxs_1(ctx context.Context, marshaler runtime.Mar
 
 }
 
+func request_BlockChain_GetBlockchainInfo_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq BlockchainInfoRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["Blockwithin"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Blockwithin")
+	}
+
+	protoReq.Blockwithin, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Blockwithin", err)
+	}
+
+	msg, err := client.GetBlockchainInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
 // RegisterBlockChainHandlerFromEndpoint is same as RegisterBlockChainHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterBlockChainHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
