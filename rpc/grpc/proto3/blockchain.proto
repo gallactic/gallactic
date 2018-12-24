@@ -37,6 +37,7 @@ service BlockChain {
   rpc GetChainID(Empty) returns(ChainResponse)                  { option (google.api.http).get = "/ChainID";}
   rpc GetLatestBlock(Empty) returns(BlockResponse)              { option (google.api.http).get = "/LatestBlock";}
   rpc GetConsensusState(Empty) returns (ConsensusResponse)      { option (google.api.http).get = "/ConsensusState";}
+<<<<<<< refs/remotes/gallactic/develop
   rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetBlockchainInfo(Empty) returns (BlockchainInfoResponse) { option (google.api.http).get = "/GetBlockchainInfo";}
@@ -48,6 +49,10 @@ service BlockChain {
       }
     };
   }
+=======
+  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http).get = "/BlockTxs/{height}";}
+  rpc GetBlockchainInfo(BlockchainInfoRequest) returns (BlockchainInfoResponse)  { option (google.api.http).get = "/BlockchainInfo/{Blockwithin}";}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 
 message Empty {
@@ -163,10 +168,21 @@ message BlockchainInfoRequest{
   string Blockwithin =1;
 }
 
+<<<<<<< refs/remotes/gallactic/develop
+=======
+message BlockchainInfoRequest{
+  string Blockwithin =1;
+}
+
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 message BlockchainInfoResponse {
   uint64  LastBlockHeight = 1;
   google.protobuf.Timestamp LastBlockTime = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   bytes  LastBlockHash  = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+<<<<<<< refs/remotes/gallactic/develop
 }
 
 
+=======
+}
+>>>>>>> =added getlastblockinfo method for grpc and rpc

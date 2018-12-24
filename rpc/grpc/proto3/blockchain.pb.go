@@ -8,6 +8,10 @@ import golang_proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
+<<<<<<< refs/remotes/gallactic/develop
+=======
+import _ "github.com/golang/protobuf/ptypes/struct"
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 import _ "github.com/golang/protobuf/ptypes/timestamp"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 
@@ -57,6 +61,7 @@ func (*Empty) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{0}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{0}
@@ -67,6 +72,9 @@ func (*Empty) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{0}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{0}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -113,6 +121,7 @@ func (*AddressRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{1}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{1}
@@ -123,6 +132,9 @@ func (*AddressRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{1}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{1}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *AddressRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -176,6 +188,7 @@ func (*AccountResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{2}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{2}
@@ -186,6 +199,9 @@ func (*AccountResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{2}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{2}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *AccountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -233,6 +249,7 @@ func (*AccountsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{3}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{3}
@@ -243,6 +260,9 @@ func (*AccountsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{3}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{3}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *AccountsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -303,6 +323,7 @@ func (*ValidatorResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{4}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{4}
@@ -313,6 +334,9 @@ func (*ValidatorResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{4}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{4}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *ValidatorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -360,6 +384,7 @@ func (*ValidatorsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{5}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{5}
@@ -370,6 +395,9 @@ func (*ValidatorsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{5}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{5}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *ValidatorsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -430,6 +458,7 @@ func (*ListAccountsParam) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{6}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{6}
@@ -440,6 +469,9 @@ func (*ListAccountsParam) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{6}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{6}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *ListAccountsParam) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -493,6 +525,7 @@ func (*StorageRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{7}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{7}
@@ -503,6 +536,9 @@ func (*StorageRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{7}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{7}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *StorageRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -556,6 +592,7 @@ func (*StorageResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{8}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{8}
@@ -566,6 +603,9 @@ func (*StorageResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{8}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{8}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *StorageResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -620,6 +660,7 @@ func (*StorageItem) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{9}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{9}
@@ -630,6 +671,9 @@ func (*StorageItem) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{9}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{9}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *StorageItem) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -677,6 +721,7 @@ func (*StorageAtRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{10}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{10}
@@ -687,6 +732,9 @@ func (*StorageAtRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{10}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{10}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *StorageAtRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -741,6 +789,7 @@ func (*StorageAtResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{11}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{11}
@@ -751,6 +800,9 @@ func (*StorageAtResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{11}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{11}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *StorageAtResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -798,6 +850,7 @@ func (*ConsensusResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{12}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{12}
@@ -808,6 +861,9 @@ func (*ConsensusResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{12}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{12}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *ConsensusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -856,6 +912,7 @@ func (*ChainResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{13}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{13}
@@ -866,6 +923,9 @@ func (*ChainResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{13}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{13}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *ChainResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -932,6 +992,7 @@ func (*StatusResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{14}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{14}
@@ -942,6 +1003,9 @@ func (*StatusResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{14}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{14}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *StatusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1009,6 +1073,7 @@ func (*BlockRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{15}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{15}
@@ -1019,6 +1084,9 @@ func (*BlockRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{15}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{15}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *BlockRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1073,6 +1141,7 @@ func (*BlocksRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{16}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{16}
@@ -1083,6 +1152,9 @@ func (*BlocksRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{16}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{16}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *BlocksRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1144,6 +1216,7 @@ func (*BlockResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{17}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{17}
@@ -1154,6 +1227,9 @@ func (*BlockResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{17}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{17}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *BlockResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1201,6 +1277,7 @@ func (*BlocksResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{18}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{18}
@@ -1211,6 +1288,9 @@ func (*BlocksResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{18}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{18}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *BlocksResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1264,6 +1344,7 @@ func (*BlockMeta) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{19}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{19}
@@ -1274,6 +1355,9 @@ func (*BlockMeta) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{19}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{19}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *BlockMeta) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1320,6 +1404,7 @@ func (*Block) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{20}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{20}
@@ -1330,6 +1415,9 @@ func (*Block) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{20}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{20}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *Block) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1376,6 +1464,7 @@ func (*GenesisResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{21}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{21}
@@ -1386,6 +1475,9 @@ func (*GenesisResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{21}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{21}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *GenesisResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1433,6 +1525,7 @@ func (*BlockTxsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{22}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{22}
@@ -1443,6 +1536,9 @@ func (*BlockTxsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_a622e7ea671262a7, []int{22}
 >>>>>>> updated the getlatestblock issue
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{22}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *BlockTxsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1493,7 +1589,11 @@ func (m *BlockchainInfoRequest) Reset()         { *m = BlockchainInfoRequest{} }
 func (m *BlockchainInfoRequest) String() string { return proto.CompactTextString(m) }
 func (*BlockchainInfoRequest) ProtoMessage()    {}
 func (*BlockchainInfoRequest) Descriptor() ([]byte, []int) {
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{23}
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{23}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *BlockchainInfoRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1546,7 +1646,11 @@ func (m *BlockchainInfoResponse) Reset()         { *m = BlockchainInfoResponse{}
 func (m *BlockchainInfoResponse) String() string { return proto.CompactTextString(m) }
 func (*BlockchainInfoResponse) ProtoMessage()    {}
 func (*BlockchainInfoResponse) Descriptor() ([]byte, []int) {
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{24}
+=======
+	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{24}
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func (m *BlockchainInfoResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1672,6 +1776,7 @@ type BlockChainClient interface {
 	GetBlocks(ctx context.Context, in *BlocksRequest, opts ...grpc.CallOption) (*BlocksResponse, error)
 	GetBlockchainInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*BlockchainInfoResponse, error)
 	GetBlockTxs(ctx context.Context, in *BlockRequest, opts ...grpc.CallOption) (*BlockTxsResponse, error)
+	GetBlockchainInfo(ctx context.Context, in *BlockchainInfoRequest, opts ...grpc.CallOption) (*BlockchainInfoResponse, error)
 }
 
 type blockChainClient struct {
@@ -1821,6 +1926,15 @@ func (c *blockChainClient) GetBlockTxs(ctx context.Context, in *BlockRequest, op
 	return out, nil
 }
 
+func (c *blockChainClient) GetBlockchainInfo(ctx context.Context, in *BlockchainInfoRequest, opts ...grpc.CallOption) (*BlockchainInfoResponse, error) {
+	out := new(BlockchainInfoResponse)
+	err := c.cc.Invoke(ctx, "/proto3.BlockChain/GetBlockchainInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BlockChainServer is the server API for BlockChain service.
 type BlockChainServer interface {
 	GetAccount(context.Context, *AddressRequest) (*AccountResponse, error)
@@ -1838,6 +1952,7 @@ type BlockChainServer interface {
 	GetBlocks(context.Context, *BlocksRequest) (*BlocksResponse, error)
 	GetBlockchainInfo(context.Context, *Empty) (*BlockchainInfoResponse, error)
 	GetBlockTxs(context.Context, *BlockRequest) (*BlockTxsResponse, error)
+	GetBlockchainInfo(context.Context, *BlockchainInfoRequest) (*BlockchainInfoResponse, error)
 }
 
 func RegisterBlockChainServer(s *grpc.Server, srv BlockChainServer) {
@@ -2123,6 +2238,24 @@ func _BlockChain_GetBlockTxs_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BlockChain_GetBlockchainInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockchainInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlockChainServer).GetBlockchainInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto3.BlockChain/GetBlockchainInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlockChainServer).GetBlockchainInfo(ctx, req.(*BlockchainInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _BlockChain_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto3.BlockChain",
 	HandlerType: (*BlockChainServer)(nil),
@@ -2186,6 +2319,10 @@ var _BlockChain_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBlockTxs",
 			Handler:    _BlockChain_GetBlockTxs_Handler,
+		},
+		{
+			MethodName: "GetBlockchainInfo",
+			Handler:    _BlockChain_GetBlockchainInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -6471,6 +6608,7 @@ func init() {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_8a9a6751828348c4)
 }
 func init() {
@@ -6758,14 +6896,18 @@ var fileDescriptor_blockchain_d2ab152b07bb0536 = []byte{
 >>>>>>> changes in blockchain_proto GetStorage
 =======
 	proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_a622e7ea671262a7)
+=======
+	proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_07905e9213a8e6ed)
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 func init() {
-	golang_proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_a622e7ea671262a7)
+	golang_proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_07905e9213a8e6ed)
 }
 
-var fileDescriptor_blockchain_a622e7ea671262a7 = []byte{
-	// 1372 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_blockchain_07905e9213a8e6ed = []byte{
+	// 1495 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0x4f, 0x6f, 0x1b, 0x45,
+<<<<<<< refs/remotes/gallactic/develop
 	0x14, 0xef, 0xda, 0x75, 0x12, 0xbf, 0xfc, 0x71, 0x3c, 0x0d, 0xa9, 0x6b, 0x45, 0x76, 0x98, 0x03,
 	0x14, 0x28, 0xde, 0xaa, 0x29, 0x2a, 0x08, 0x2a, 0x14, 0xa7, 0x6d, 0x1a, 0x25, 0x34, 0x61, 0x53,
 	0x45, 0xf4, 0x80, 0xaa, 0xf5, 0x7a, 0xea, 0x2c, 0xb5, 0x77, 0xb7, 0xbb, 0xe3, 0x2a, 0x56, 0x64,
@@ -6852,4 +6994,99 @@ var fileDescriptor_blockchain_a622e7ea671262a7 = []byte{
 	0x59, 0x39, 0xf7, 0xf3, 0xcb, 0x8a, 0xf1, 0xfc, 0x65, 0xc5, 0x68, 0x88, 0x9f, 0x47, 0xfe, 0x0c,
 	0x00, 0x00, 0xff, 0xff, 0xe9, 0x58, 0xf4, 0x46, 0x49, 0x11, 0x00, 0x00,
 >>>>>>> updated the getlatestblock issue
+=======
+	0x14, 0xef, 0xda, 0x75, 0x12, 0xbf, 0xfc, 0x71, 0x3c, 0x4d, 0x53, 0xd7, 0x4a, 0xed, 0x30, 0x12,
+	0x50, 0xa0, 0x78, 0xab, 0xa6, 0xa8, 0x54, 0x50, 0xa1, 0x38, 0x6d, 0xd3, 0x90, 0xd0, 0x84, 0x4d,
+	0x15, 0xd1, 0x03, 0xaa, 0xd6, 0xeb, 0xa9, 0xb3, 0xd4, 0xde, 0xdd, 0xee, 0x8e, 0x4b, 0xac, 0xc8,
+	0x1c, 0x10, 0x12, 0xe2, 0x00, 0x42, 0xe2, 0x0b, 0x70, 0x44, 0x42, 0xe2, 0xc2, 0x89, 0x1b, 0xc7,
+	0x1e, 0x91, 0xb8, 0xe5, 0x60, 0x50, 0xcb, 0x37, 0xe0, 0x03, 0x80, 0x76, 0x76, 0x66, 0x76, 0x76,
+	0x83, 0x31, 0x15, 0xe6, 0xc0, 0xc5, 0xda, 0x79, 0x6f, 0xde, 0xef, 0xfd, 0x99, 0x37, 0xef, 0xbd,
+	0x31, 0x2c, 0xfb, 0x9e, 0xa5, 0xb7, 0xc2, 0x1f, 0xcf, 0x77, 0xa9, 0xbb, 0xa2, 0x37, 0xda, 0xae,
+	0xf5, 0xc0, 0xda, 0x37, 0x6d, 0xa7, 0xc6, 0x28, 0x68, 0x22, 0x62, 0x94, 0x5f, 0x6d, 0xd9, 0x74,
+	0xbf, 0xdb, 0xa8, 0x59, 0x6e, 0x47, 0x6f, 0xb9, 0x2d, 0x37, 0x12, 0x68, 0x74, 0xef, 0xb3, 0x15,
+	0x5b, 0xb0, 0xaf, 0x48, 0xac, 0xbc, 0xd4, 0x72, 0xdd, 0x56, 0x9b, 0xc4, 0xbb, 0x02, 0xea, 0x77,
+	0x2d, 0x9a, 0xe2, 0x9a, 0x9e, 0xad, 0x9b, 0x8e, 0xe3, 0x52, 0x93, 0xda, 0xae, 0x13, 0x70, 0x6e,
+	0x35, 0x2d, 0x4b, 0xed, 0x0e, 0x09, 0xa8, 0xd9, 0xf1, 0xa2, 0x0d, 0x78, 0x12, 0x72, 0x37, 0x3a,
+	0x1e, 0xed, 0xe1, 0x97, 0x61, 0x6e, 0xb5, 0xd9, 0xf4, 0x49, 0x10, 0x18, 0xe4, 0x61, 0x97, 0x04,
+	0x14, 0x95, 0x60, 0x92, 0x53, 0x4a, 0xda, 0xb2, 0x76, 0x3e, 0x6f, 0x88, 0x25, 0xee, 0x43, 0x61,
+	0xd5, 0xb2, 0xdc, 0xae, 0x43, 0x0d, 0x12, 0x78, 0xae, 0x13, 0x10, 0xf4, 0x01, 0x4c, 0x72, 0x12,
+	0xdb, 0x3c, 0x7d, 0xe9, 0x4c, 0xa4, 0x60, 0xa5, 0x96, 0xda, 0x59, 0xbf, 0x72, 0x34, 0xa8, 0xae,
+	0xa8, 0x11, 0x30, 0xdb, 0x6d, 0xd3, 0xa2, 0xb6, 0xa5, 0x7c, 0x59, 0xae, 0x4f, 0x74, 0x33, 0x12,
+	0x94, 0x00, 0x42, 0x01, 0xb6, 0x61, 0x9e, 0x7f, 0x06, 0x52, 0xff, 0x32, 0x4c, 0xd7, 0xc3, 0x78,
+	0xdf, 0x22, 0x76, 0x6b, 0x3f, 0xb2, 0xe1, 0xa4, 0xa1, 0x92, 0xd0, 0x0a, 0x4c, 0x09, 0xa9, 0x52,
+	0x66, 0x39, 0xfb, 0x37, 0x26, 0x1a, 0x72, 0x23, 0xfe, 0x4c, 0x83, 0xe2, 0x9e, 0xd9, 0xb6, 0x9b,
+	0x26, 0x75, 0x7d, 0xa9, 0x8c, 0x42, 0x5e, 0x12, 0xb9, 0xbb, 0x67, 0x05, 0xd6, 0xb1, 0xdd, 0xf5,
+	0x37, 0x8e, 0x06, 0xd5, 0x2b, 0xff, 0xc4, 0xe1, 0x47, 0x42, 0x54, 0x01, 0x89, 0x15, 0xe1, 0x87,
+	0x80, 0xe4, 0xe2, 0x59, 0x1c, 0xbf, 0x0a, 0x10, 0xcb, 0x71, 0xd7, 0x87, 0x9b, 0x6b, 0x28, 0x9b,
+	0xf1, 0x4b, 0x50, 0xdc, 0xb2, 0x03, 0x2a, 0xc2, 0xb1, 0x63, 0xfa, 0x66, 0x07, 0x2d, 0x40, 0xee,
+	0xdd, 0x2e, 0xf1, 0x7b, 0x3c, 0x2b, 0xa2, 0x45, 0x98, 0x3f, 0xbb, 0xd4, 0xf5, 0xcd, 0x16, 0x19,
+	0x9d, 0x3f, 0x3b, 0x50, 0x90, 0x7b, 0xb9, 0x1b, 0xd7, 0x60, 0x86, 0x93, 0x36, 0x28, 0xe9, 0x84,
+	0x12, 0xa1, 0x99, 0xa7, 0x84, 0x99, 0x0a, 0xaf, 0x7e, 0xf2, 0xf1, 0xa0, 0x7a, 0xc2, 0x48, 0x6c,
+	0xc7, 0xdf, 0x6b, 0x30, 0xad, 0x10, 0xd0, 0x36, 0x64, 0x37, 0x49, 0x64, 0xe1, 0x4c, 0xfd, 0x5a,
+	0x28, 0x70, 0x34, 0xa8, 0xbe, 0x36, 0xf2, 0x10, 0x3a, 0x1d, 0xd7, 0xd1, 0x1b, 0xb6, 0x63, 0xfa,
+	0xbd, 0xda, 0x2d, 0x72, 0x50, 0xef, 0x51, 0x12, 0x18, 0x21, 0x12, 0xda, 0x85, 0xdc, 0x9e, 0xd9,
+	0xee, 0x92, 0x52, 0x66, 0x1c, 0x90, 0x11, 0x16, 0xee, 0xc3, 0x3c, 0x37, 0x7a, 0x95, 0x8e, 0x8c,
+	0x9a, 0xf0, 0x29, 0x33, 0x2e, 0x9f, 0xf0, 0x0f, 0x1a, 0x14, 0x15, 0xfd, 0xfc, 0x24, 0xfe, 0x1f,
+	0xa1, 0xfb, 0x22, 0x03, 0xc5, 0xb5, 0xd0, 0x5e, 0x27, 0xe8, 0xc6, 0x97, 0xc1, 0x06, 0x30, 0xdc,
+	0xae, 0xd3, 0xdc, 0xa5, 0x26, 0x25, 0xdc, 0x85, 0x0d, 0xae, 0x6f, 0x55, 0xd1, 0x47, 0x89, 0xd3,
+	0x24, 0x7e, 0xc7, 0x76, 0xa8, 0xfa, 0x69, 0x09, 0x3c, 0x9d, 0xf6, 0x3c, 0x12, 0xd4, 0x62, 0xa8,
+	0x5d, 0xbb, 0xe3, 0xb5, 0x89, 0xa1, 0x80, 0xa3, 0xcf, 0x35, 0x28, 0xec, 0x10, 0xe2, 0xc7, 0x24,
+	0x71, 0xb7, 0xca, 0xb5, 0xa8, 0xe8, 0xd6, 0x44, 0xd1, 0xad, 0x85, 0x77, 0x88, 0x99, 0x5d, 0x5f,
+	0xe7, 0xc6, 0xbc, 0xf5, 0xcc, 0xc6, 0x24, 0x75, 0x19, 0x69, 0xdd, 0xf8, 0x1b, 0x0d, 0x66, 0xd7,
+	0xc2, 0x66, 0x23, 0x83, 0xb1, 0x04, 0x79, 0x46, 0xb8, 0x6d, 0x76, 0x08, 0xcf, 0xa5, 0x98, 0x10,
+	0xe6, 0x19, 0x5b, 0x6c, 0x34, 0xd9, 0xb9, 0xe4, 0x0d, 0xb1, 0x44, 0xf7, 0x60, 0x7a, 0x9d, 0x38,
+	0x24, 0xb0, 0x83, 0x5b, 0x66, 0xb0, 0x5f, 0xca, 0x8e, 0xe3, 0xd4, 0x54, 0x44, 0xfc, 0x47, 0x36,
+	0xac, 0x15, 0x26, 0x55, 0x0e, 0xee, 0x3d, 0x98, 0xba, 0xed, 0x36, 0xc9, 0x86, 0x73, 0xdf, 0xe5,
+	0xc7, 0xf6, 0x26, 0x57, 0x78, 0x79, 0x64, 0xa4, 0xbc, 0x4b, 0x5e, 0xed, 0x3a, 0xb9, 0x6f, 0x76,
+	0xdb, 0x54, 0x60, 0x18, 0x12, 0x2d, 0xed, 0x4d, 0x66, 0xdc, 0xde, 0xa0, 0x6d, 0x98, 0xd8, 0xe9,
+	0x36, 0xc2, 0x2b, 0x13, 0x45, 0xea, 0x0a, 0xc7, 0xd6, 0x47, 0x61, 0xfb, 0x3d, 0x8f, 0xba, 0xb5,
+	0x9d, 0x6e, 0xa3, 0x6d, 0x5b, 0x9b, 0xa4, 0x67, 0x70, 0x18, 0xd4, 0x82, 0xc2, 0x56, 0x78, 0xa4,
+	0x34, 0x2a, 0xe2, 0xa1, 0xd5, 0x27, 0xc7, 0x61, 0x75, 0x1a, 0x15, 0x5d, 0x80, 0xa2, 0x4a, 0x8a,
+	0x1a, 0x48, 0x8e, 0x35, 0x90, 0xe3, 0x0c, 0x74, 0x3e, 0x61, 0xd6, 0x1d, 0xbb, 0x43, 0x4a, 0x13,
+	0xcb, 0xda, 0xf9, 0xac, 0x91, 0x26, 0x87, 0x2d, 0x29, 0x0c, 0xff, 0x1e, 0xf1, 0x03, 0xdb, 0x75,
+	0x4a, 0x93, 0x2c, 0xbd, 0x54, 0x12, 0x7e, 0x01, 0x66, 0xd8, 0x76, 0x51, 0xf4, 0x16, 0x61, 0x62,
+	0x5f, 0xed, 0x5f, 0x7c, 0x85, 0x37, 0x61, 0x96, 0xed, 0x93, 0x33, 0xc9, 0x12, 0xe4, 0x3b, 0xb6,
+	0x93, 0xe8, 0x75, 0x31, 0x81, 0x71, 0xcd, 0x03, 0xce, 0xcd, 0x70, 0xae, 0x20, 0xe0, 0x6f, 0x35,
+	0x8e, 0x26, 0xb3, 0xce, 0x80, 0x3c, 0x23, 0xbc, 0x43, 0xa8, 0xc9, 0xd3, 0xee, 0xf2, 0xd1, 0xa0,
+	0x7a, 0x71, 0x64, 0xca, 0x45, 0x57, 0x52, 0xca, 0x1a, 0x31, 0x0c, 0xba, 0x09, 0x39, 0xb6, 0xe0,
+	0x99, 0x76, 0xf1, 0x68, 0x50, 0xbd, 0xf0, 0x2c, 0x78, 0x46, 0x24, 0x8e, 0x3f, 0xd1, 0x60, 0x4e,
+	0xf8, 0xce, 0xcd, 0xad, 0x00, 0x6c, 0x99, 0x01, 0x4d, 0x78, 0xaf, 0x50, 0x92, 0xee, 0x84, 0xb5,
+	0xe8, 0xdf, 0xbb, 0x83, 0xef, 0x29, 0x98, 0xff, 0x45, 0xbc, 0xf0, 0x36, 0x8f, 0xd7, 0xd8, 0x02,
+	0xf7, 0x11, 0x14, 0xf8, 0xf5, 0x94, 0x81, 0x7b, 0x00, 0x93, 0x9c, 0x94, 0x1e, 0x4e, 0x53, 0x3b,
+	0xeb, 0xaf, 0xa7, 0x2a, 0xce, 0xd0, 0x59, 0xcd, 0xf3, 0x5d, 0xcf, 0x0d, 0xcc, 0xb6, 0x44, 0x10,
+	0x1a, 0xf0, 0xa7, 0x1a, 0xcc, 0x47, 0x77, 0xe1, 0x20, 0xb6, 0x60, 0x01, 0x72, 0x6b, 0x72, 0x38,
+	0xce, 0x19, 0xd1, 0x02, 0xbd, 0x0f, 0xd9, 0x3b, 0x07, 0x41, 0x29, 0x3b, 0xb2, 0x6d, 0xe8, 0x47,
+	0x83, 0xea, 0x2b, 0x23, 0xcc, 0xa2, 0x07, 0x41, 0xed, 0x86, 0xf3, 0x88, 0xb4, 0x5d, 0x8f, 0x18,
+	0x21, 0x2e, 0xbe, 0x0a, 0xa7, 0xeb, 0xf2, 0x0d, 0xc2, 0xca, 0x22, 0xbf, 0x45, 0x62, 0x66, 0xfc,
+	0xd0, 0xa6, 0xfb, 0xb6, 0xc3, 0x7b, 0x83, 0x4a, 0xc2, 0xbf, 0x6b, 0xb0, 0x98, 0x96, 0xe5, 0xae,
+	0xb0, 0x3a, 0x90, 0xac, 0x19, 0x51, 0x2a, 0xa6, 0xc9, 0xe8, 0x6d, 0x98, 0x95, 0x24, 0x56, 0x2f,
+	0x32, 0x2c, 0xf8, 0xc7, 0x1d, 0xbd, 0x23, 0x1e, 0x25, 0xf5, 0xa9, 0xb0, 0xc4, 0x7d, 0xf9, 0x4b,
+	0x55, 0x33, 0x92, 0xa2, 0xc8, 0x52, 0xb0, 0xc6, 0xd7, 0x96, 0x92, 0x98, 0x97, 0xbe, 0x03, 0x00,
+	0xb6, 0x62, 0xad, 0x10, 0xdd, 0x05, 0x58, 0x27, 0x62, 0xf8, 0x45, 0x8b, 0xf2, 0xb5, 0x90, 0x78,
+	0x26, 0x95, 0x87, 0xbd, 0x22, 0x70, 0xf9, 0xe3, 0x9f, 0x7f, 0xfb, 0x2a, 0xb3, 0x80, 0x90, 0xce,
+	0x39, 0xfa, 0x21, 0x17, 0xed, 0xa3, 0x8d, 0xb0, 0x2b, 0xc9, 0xb9, 0x1a, 0xcd, 0x0a, 0x0c, 0xf6,
+	0x16, 0x2b, 0x97, 0x52, 0x90, 0x32, 0x8f, 0x70, 0x91, 0x61, 0x4e, 0xa3, 0xbc, 0x2e, 0x65, 0x23,
+	0x2b, 0xf9, 0x1c, 0x17, 0x5b, 0x99, 0x1c, 0xc6, 0x63, 0x2b, 0x53, 0x83, 0xb7, 0x62, 0x25, 0xe7,
+	0x28, 0x56, 0xb6, 0x60, 0x26, 0x86, 0x5e, 0xa5, 0xa8, 0x94, 0x02, 0x91, 0x53, 0x6b, 0xf9, 0xec,
+	0x5f, 0x70, 0xb8, 0x02, 0xcc, 0x14, 0x2c, 0xa1, 0xb2, 0x2e, 0x79, 0xb1, 0x0a, 0xfd, 0x70, 0x93,
+	0xf4, 0xfa, 0xe8, 0x1e, 0x53, 0x24, 0x1f, 0x1e, 0x43, 0x63, 0x3d, 0xfc, 0xd9, 0x82, 0x97, 0x98,
+	0x9a, 0x45, 0xb4, 0xa0, 0x4b, 0x9e, 0xe2, 0xc9, 0x36, 0xcc, 0xaa, 0x0a, 0x8e, 0x45, 0xbc, 0x7c,
+	0x0c, 0x38, 0x8e, 0xf9, 0x29, 0x86, 0x3c, 0x8b, 0xa6, 0x75, 0x45, 0x7e, 0x0d, 0xf2, 0x2c, 0x34,
+	0xe1, 0x14, 0x93, 0x06, 0x53, 0xce, 0x40, 0x1d, 0x72, 0x70, 0x81, 0x01, 0xe5, 0xd1, 0xa4, 0xce,
+	0xe5, 0x76, 0x60, 0x6a, 0x9d, 0x44, 0xf9, 0x87, 0x16, 0x84, 0x90, 0xda, 0x18, 0xcb, 0xa7, 0x53,
+	0x54, 0x8e, 0x74, 0x86, 0x21, 0x15, 0x51, 0x41, 0x67, 0x74, 0xfd, 0x30, 0xea, 0x97, 0x7d, 0x64,
+	0x31, 0xb3, 0xa2, 0xbe, 0x81, 0x92, 0xc2, 0x32, 0x88, 0x8b, 0x69, 0x32, 0x07, 0x7d, 0x91, 0x81,
+	0x3e, 0x87, 0xaa, 0x11, 0x68, 0xa0, 0x1f, 0xca, 0xce, 0xda, 0xd7, 0x0f, 0x65, 0x1f, 0xed, 0xa3,
+	0x9b, 0x2c, 0xe3, 0x78, 0xbd, 0x4b, 0x3b, 0x3f, 0xac, 0xb4, 0xe2, 0x79, 0x06, 0x0f, 0x68, 0x4a,
+	0x17, 0x92, 0xd7, 0x19, 0x4e, 0x34, 0x76, 0x5e, 0x4f, 0xe3, 0x48, 0xe3, 0x13, 0x43, 0xad, 0x82,
+	0x22, 0xe4, 0xb6, 0x60, 0x6e, 0x9d, 0x50, 0x65, 0x06, 0x19, 0x8a, 0x94, 0x8c, 0xe1, 0x02, 0x43,
+	0x9a, 0x43, 0x33, 0xba, 0x2a, 0xbb, 0x07, 0xc5, 0xd0, 0x26, 0x31, 0x7c, 0x47, 0xb3, 0x7e, 0x0a,
+	0x50, 0x66, 0xe1, 0xb1, 0x07, 0x88, 0x72, 0x30, 0x29, 0x88, 0xbb, 0xec, 0xc2, 0x8b, 0xbe, 0x30,
+	0xe4, 0xb4, 0x4b, 0x09, 0xaa, 0xd2, 0x3f, 0x94, 0x5b, 0x2a, 0x58, 0xf1, 0x99, 0xf7, 0x98, 0xc9,
+	0xc9, 0x6a, 0x8d, 0xce, 0x25, 0xa0, 0xd2, 0x1d, 0xa0, 0x5c, 0x19, 0xc6, 0xe6, 0xfa, 0x9e, 0x67,
+	0xfa, 0xaa, 0xe8, 0x9c, 0x9e, 0xdc, 0xa0, 0x1f, 0x2a, 0x5d, 0xa2, 0x5f, 0x2f, 0x3d, 0x7e, 0x52,
+	0xd1, 0x7e, 0x7a, 0x52, 0xd1, 0x7e, 0x7d, 0x52, 0xd1, 0xbe, 0x7e, 0x5a, 0x39, 0xf1, 0xe3, 0xd3,
+	0x8a, 0xf6, 0xf8, 0x69, 0x45, 0x6b, 0xf0, 0xff, 0xba, 0xfe, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x37,
+	0x12, 0x2d, 0x9f, 0x16, 0x13, 0x00, 0x00,
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }

@@ -2,6 +2,13 @@ package grpc
 
 import (
 	"context"
+<<<<<<< refs/remotes/gallactic/develop
+=======
+	"encoding/json"
+	"fmt"
+	"time"
+
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -242,13 +249,44 @@ func (s *blockchainServer) GetLatestBlock(context.Context, *pb.Empty) (*pb.Block
 	}, nil
 }
 
+<<<<<<< refs/remotes/gallactic/develop
 func (s *blockchainServer) GetBlockchainInfo(ctx context.Context, blockinfo *pb.Empty) (*pb.BlockchainInfoResponse, error) {
 	 res := &pb.BlockchainInfoResponse{
+=======
+func (s *blockchainServer) GetBlockchainInfo(ctx context.Context, blockinfo *pb.BlockchainInfoRequest) (*pb.BlockchainInfoResponse, error) {
+	res := &pb.BlockchainInfoResponse{
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 		LastBlockHeight: s.blockchain.LastBlockHeight(),
 		LastBlockHash:   s.blockchain.LastBlockHash(),
 		LastBlockTime:   s.blockchain.LastBlockTime(),
 	}
+<<<<<<< refs/remotes/gallactic/develop
 	return res,nil
+=======
+	if blockinfo.Blockwithin == "" {
+		return res, nil
+	}
+	duration, err := time.ParseDuration(blockinfo.Blockwithin)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse blockWithin duration to determine whether to throw error: %v", err)
+	}
+	// Take neg abs in case caller is counting backwards (not we add later)
+	if duration > 0 {
+		duration = -duration
+	}
+	blockTimeThreshold := time.Now().Add(duration)
+	if res.LastBlockTime.After(blockTimeThreshold) {
+		// We've created blocks recently enough
+		return res, nil
+	}
+	resJSON, err := json.Marshal(res)
+	if err != nil {
+		resJSON = []byte("<error: could not marshal last block info>")
+	}
+	return nil, fmt.Errorf("no block committed within the last %s (cutoff: %s), last block info: %s",
+	blockinfo.Blockwithin, blockTimeThreshold.Format(time.RFC3339), string(resJSON))
+
+>>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 
 func (s *blockchainServer) GetConsensusState(context.Context, *pb.Empty) (*pb.ConsensusResponse, error) {
