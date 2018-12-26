@@ -80,7 +80,7 @@ func TestBlockchainMethods(t *testing.T) {
 	}
 
 	//
-	ret8, err := client.GetLatestBlock(context.Background(), &pb.BlockRequest{Height: 1000})
+	ret8, err := client.GetLatestBlock(context.Background(), &pb.Empty{})
 	require.NoError(t, err)
 	fmt.Println("GetLatestBlock", ret8)
 
