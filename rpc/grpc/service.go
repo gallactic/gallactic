@@ -116,22 +116,26 @@ func (vs *blockchainServer) GetValidators(context.Context, *pb.Empty) (*pb.Valid
 		BlockHeight: vs.blockchain.LastBlockHeight(),
 	}, nil
 }
-func (s *blockchainServer) GetStorage(ctx context.Context, storage *pb.StorageAtRequest) (*pb.StorageResponse, error) {
+
+func (s *blockchainServer) GetStorage(ctx context.Context, storage *pb.StorageRequest) (*pb.StorageResponse, error) {
+	var storageItems []pb.StorageItem
+
 	storageaddr, err := crypto.AddressFromString(storage.Address)
 	if err != nil {
 		return nil, err
 	}
-	value, err := s.state.GetStorage(storageaddr, binary.LeftPadWord256(storage.Key))
-	if err != nil {
-		return nil, err
-	}
-	if value == binary.Zero256 {
-		return &pb.StorageResponse{Key: storage.Key, Value: nil}, nil
-	}
-	return &pb.StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
+
+	s.state.IterateStorage(storageaddr, func(key, value binary.Word256) (stop bool) {
+		storageItems = append(storageItems, pb.StorageItem{Key: key.UnpadLeft(), Value: value.UnpadLeft()})
+		return
+	})
+	return &pb.StorageResponse{
+		StorageItems: storageItems,
+	}, nil
+
 }
 
-func (s *blockchainServer) GetStorageAt(ctx context.Context, storage *pb.StorageAtRequest) (*pb.StorageResponse, error) {
+func (s *blockchainServer) GetStorageAt(ctx context.Context, storage *pb.StorageAtRequest) (*pb.StorageAtResponse, error) {
 	storageaddr, err := crypto.AddressFromString(storage.Address)
 	if err != nil {
 		return nil, err
@@ -141,9 +145,9 @@ func (s *blockchainServer) GetStorageAt(ctx context.Context, storage *pb.Storage
 		return nil, err
 	}
 	if value == binary.Zero256 {
-		return &pb.StorageResponse{Key: storage.Key, Value: nil}, nil
+		return &pb.StorageAtResponse{Key: storage.Key, Value: nil}, nil
 	}
-	return &pb.StorageResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
+	return &pb.StorageAtResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
 }
 
 func (s *blockchainServer) GetStatus(ctx context.Context, in *pb.Empty) (*pb.StatusResponse, error) {
@@ -221,7 +225,7 @@ func (s *blockchainServer) GetChainID(context.Context, *pb.Empty) (*pb.ChainResp
 
 }
 
-func (s *blockchainServer) GetLatestBlock(context.Context, *pb.BlockRequest) (*pb.BlockResponse, error) {
+func (s *blockchainServer) GetLatestBlock(context.Context, *pb.Empty) (*pb.BlockResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
 	block := s.nodeview.BlockStore().LoadBlock(int64(latestHeight))
 	blockMeta := s.nodeview.BlockStore().LoadBlockMeta(int64(latestHeight))

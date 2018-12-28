@@ -65,7 +65,7 @@ func request_BlockChain_GetAccounts_0(ctx context.Context, marshaler runtime.Mar
 }
 
 func request_BlockChain_GetStorage_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq StorageAtRequest
+	var protoReq StorageRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -84,17 +84,6 @@ func request_BlockChain_GetStorage_0(ctx context.Context, marshaler runtime.Mars
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Address", err)
-	}
-
-	val, ok = pathParams["Key"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Key")
-	}
-
-	protoReq.Key, err = runtime.Bytes(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Key", err)
 	}
 
 	msg, err := client.GetStorage(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -269,26 +258,8 @@ func request_BlockChain_GetChainID_0(ctx context.Context, marshaler runtime.Mars
 }
 
 func request_BlockChain_GetLatestBlock_0(ctx context.Context, marshaler runtime.Marshaler, client BlockChainClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq BlockRequest
+	var protoReq Empty
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["height"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "height")
-	}
-
-	protoReq.Height, err = runtime.Uint64(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "height", err)
-	}
 
 	msg, err := client.GetLatestBlock(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -657,7 +628,7 @@ var (
 
 	pattern_BlockChain_GetAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"Accounts"}, ""))
 
-	pattern_BlockChain_GetStorage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"Storage", "Address", "Key"}, ""))
+	pattern_BlockChain_GetStorage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"Storage", "Address"}, ""))
 
 	pattern_BlockChain_GetStorageAt_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 1, 0, 4, 1, 5, 2}, []string{"StorageAt", "Address", "Key"}, ""))
 
@@ -675,7 +646,7 @@ var (
 
 	pattern_BlockChain_GetChainID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ChainID"}, ""))
 
-	pattern_BlockChain_GetLatestBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"LatestBlock", "height"}, ""))
+	pattern_BlockChain_GetLatestBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"LatestBlock"}, ""))
 
 	pattern_BlockChain_GetConsensusState_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ConsensusState"}, ""))
 

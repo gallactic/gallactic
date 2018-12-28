@@ -50,7 +50,7 @@ func startServer(done chan struct{}) *exec.Cmd {
 		time.Sleep(100)
 	}
 
-  return cmd
+	return cmd
 }
 
 func TestMain(m *testing.M) {
