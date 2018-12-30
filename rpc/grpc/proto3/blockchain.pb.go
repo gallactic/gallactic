@@ -1273,7 +1273,7 @@ type BlockChainClient interface {
 	GetBlocks(ctx context.Context, in *BlocksRequest, opts ...grpc.CallOption) (*BlocksResponse, error)
 	GetGenesis(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GenesisResponse, error)
 	GetChainID(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ChainResponse, error)
-	GetLatestBlock(ctx context.Context, in *BlockRequest, opts ...grpc.CallOption) (*BlockResponse, error)
+	GetLatestBlock(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*BlockResponse, error)
 	GetConsensusState(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ConsensusResponse, error)
 	GetBlockTxs(ctx context.Context, in *BlockRequest, opts ...grpc.CallOption) (*BlockTxsResponse, error)
 }
@@ -1385,7 +1385,7 @@ func (c *blockChainClient) GetChainID(ctx context.Context, in *Empty, opts ...gr
 	return out, nil
 }
 
-func (c *blockChainClient) GetLatestBlock(ctx context.Context, in *BlockRequest, opts ...grpc.CallOption) (*BlockResponse, error) {
+func (c *blockChainClient) GetLatestBlock(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*BlockResponse, error) {
 	out := new(BlockResponse)
 	err := c.cc.Invoke(ctx, "/proto3.BlockChain/GetLatestBlock", in, out, opts...)
 	if err != nil {
@@ -1425,7 +1425,7 @@ type BlockChainServer interface {
 	GetBlocks(context.Context, *BlocksRequest) (*BlocksResponse, error)
 	GetGenesis(context.Context, *Empty) (*GenesisResponse, error)
 	GetChainID(context.Context, *Empty) (*ChainResponse, error)
-	GetLatestBlock(context.Context, *BlockRequest) (*BlockResponse, error)
+	GetLatestBlock(context.Context, *Empty) (*BlockResponse, error)
 	GetConsensusState(context.Context, *Empty) (*ConsensusResponse, error)
 	GetBlockTxs(context.Context, *BlockRequest) (*BlockTxsResponse, error)
 }
@@ -1633,7 +1633,7 @@ func _BlockChain_GetChainID_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _BlockChain_GetLatestBlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BlockRequest)
+	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1645,7 +1645,7 @@ func _BlockChain_GetLatestBlock_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/proto3.BlockChain/GetLatestBlock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BlockChainServer).GetLatestBlock(ctx, req.(*BlockRequest))
+		return srv.(BlockChainServer).GetLatestBlock(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
