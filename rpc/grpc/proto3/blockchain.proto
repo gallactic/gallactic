@@ -3,7 +3,6 @@ syntax = 'proto3';
 package proto3;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "google/protobuf/struct.proto";
 import "google/api/annotations.proto";
 
 option (gogoproto.marshaler_all) = true;
@@ -88,7 +87,7 @@ message StorageAtResponse {
 
 message ConsensusResponse{
   bytes RoundState = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.RoundStateSimple",(gogoproto.nullable) = false];
-  repeated google.protobuf.ListValue PeerRoundStates = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.PeerRoundState",(gogoproto.nullable) = false];
+  repeated ConsensusResponse PeerRoundStates = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.PeerRoundState",(gogoproto.nullable) = false];
 }
 
 message ChainResponse{
@@ -140,6 +139,6 @@ message GenesisResponse {
 
 message BlockTxsResponse {
   int32 Count = 1;
-  repeated google.protobuf.ListValue  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
+  repeated BlockTxsResponse  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 

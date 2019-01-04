@@ -2,7 +2,7 @@ syntax = 'proto3';
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "google/protobuf/struct.proto";
+
 
 package proto3;
 
@@ -35,5 +35,5 @@ message UnconfirmedTxsRequest {
 
 message UnconfirmTxsResponse {
   int32 Count = 1;
-	repeated google.protobuf.ListValue txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
+	repeated UnconfirmTxsResponse txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
 }
