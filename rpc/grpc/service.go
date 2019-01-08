@@ -176,8 +176,12 @@ func (s *blockchainServer) GetStatus(ctx context.Context, in *pb.Empty) (*pb.Sta
 }
 
 func (s *blockchainServer) GetBlock(ctx context.Context, block *pb.BlockRequest) (*pb.BlockResponse, error) {
-	Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
-	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
+	height := int64(block.Height)
+	if height == 0 {
+		height = s.nodeview.BlockStore().Height()
+	}
+	Block := s.nodeview.BlockStore().LoadBlock(height)
+	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(height)
 	return &pb.BlockResponse{
 		Block:     Block,
 		BlockMeta: Blockmeta,

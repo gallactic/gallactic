@@ -54,7 +54,7 @@ func (s *Server) handleEntryPoint(mux *runtime.ServeMux, addr string) {
 			for _, m := range v.Methods {
 				/// Show only get methods
 				if strings.HasPrefix(m.Name, "Get") {
-					link := fmt.Sprintf("//%s/%s", addr, strings.TrimLeft(m.Name, "Get"))
+					link := fmt.Sprintf("//%s/%s", addr, m.Name[3:])
 					buf.WriteString(fmt.Sprintf("<a href=\"%s\">%s</a></br>", link, link))
 				}
 			}
