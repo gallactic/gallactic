@@ -185,7 +185,7 @@ func (s *Service) ListAccounts(predicate func(*account.Account) bool) (*Accounts
 		if predicate(acc) {
 			accounts = append(accounts, acc)
 		}
-		return
+		return false
 	})
 
 	return &AccountsOutput{
@@ -218,7 +218,7 @@ func (s *Service) DumpStorage(address crypto.Address) (*DumpstorageOutput, error
 	var storageItems []StorageItem
 	s.state.IterateStorage(address, func(key, value binary.Word256) (stop bool) {
 		storageItems = append(storageItems, StorageItem{Key: key.UnpadLeft(), Value: value.UnpadLeft()})
-		return
+		return false
 	})
 	return &DumpstorageOutput{
 		StorageItems: storageItems,

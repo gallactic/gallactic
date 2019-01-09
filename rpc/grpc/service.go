@@ -83,7 +83,7 @@ func (as *blockchainServer) GetAccounts(ctx context.Context, in *pb.Empty) (*pb.
 		if acc != nil {
 			accounts = append(accounts, &pb.AccountResponse{Account: acc})
 		}
-		return
+		return false
 	})
 	return &pb.AccountsResponse{
 		BlockHeight: as.blockchain.LastBlockHeight(),
@@ -109,7 +109,7 @@ func (vs *blockchainServer) GetValidators(context.Context, *pb.Empty) (*pb.Valid
 		if val != nil {
 			validators = append(validators, &pb.ValidatorResponse{Validator: val})
 		}
-		return true
+		return false
 	})
 	return &pb.ValidatorsResponse{
 		Validators:  validators,
@@ -127,7 +127,7 @@ func (s *blockchainServer) GetStorage(ctx context.Context, storage *pb.StorageRe
 
 	s.state.IterateStorage(storageaddr, func(key, value binary.Word256) (stop bool) {
 		storageItems = append(storageItems, pb.StorageItem{Key: key.UnpadLeft(), Value: value.UnpadLeft()})
-		return
+		return false
 	})
 	return &pb.StorageResponse{
 		StorageItems: storageItems,
@@ -176,8 +176,12 @@ func (s *blockchainServer) GetStatus(ctx context.Context, in *pb.Empty) (*pb.Sta
 }
 
 func (s *blockchainServer) GetBlock(ctx context.Context, block *pb.BlockRequest) (*pb.BlockResponse, error) {
-	Block := s.nodeview.BlockStore().LoadBlock(int64(block.Height))
-	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(int64(block.Height))
+	height := int64(block.Height)
+	if height == 0 {
+		height = s.nodeview.BlockStore().Height()
+	}
+	Block := s.nodeview.BlockStore().LoadBlock(height)
+	Blockmeta := s.nodeview.BlockStore().LoadBlockMeta(height)
 	return &pb.BlockResponse{
 		Block:     Block,
 		BlockMeta: Blockmeta,
