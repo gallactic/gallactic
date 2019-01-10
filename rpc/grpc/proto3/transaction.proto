@@ -2,7 +2,7 @@ syntax = 'proto3';
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "google/protobuf/struct.proto";
+
 
 package proto3;
 
@@ -17,8 +17,14 @@ option (gogoproto.protosizer_all) =false;
 // Transaction Service definition
 service Transaction {
 	rpc BroadcastTx(TransactRequest) returns(ReceiptResponse);
-	rpc GetUnconfirmedTxs(UnconfirmedTxsRequest) returns(UnconfirmTxsResponse)  { option (google.api.http).get = "/UnconfirmedTxs/{maxTxs}";}
-
+	rpc GetUnconfirmedTxs(UnconfirmedTxsRequest) returns(UnconfirmTxsResponse)  {
+    option (google.api.http) = {
+      get: "/UnconfirmedTxs";
+      additional_bindings {
+        get: "/UnconfirmedTxs/{maxTxs}";
+      }
+    };
+  }
 }
 
 message TransactRequest {
@@ -35,5 +41,5 @@ message UnconfirmedTxsRequest {
 
 message UnconfirmTxsResponse {
   int32 Count = 1;
-	repeated google.protobuf.ListValue txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
+	repeated UnconfirmTxsResponse txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
 }

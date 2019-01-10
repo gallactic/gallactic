@@ -3,7 +3,6 @@ syntax = 'proto3';
 package proto3;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "google/protobuf/struct.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -24,14 +23,20 @@ service BlockChain {
   rpc GetValidator(AddressRequest) returns (ValidatorResponse)  { option (google.api.http).get = "/Validator/{Address}";}
   rpc GetValidators(Empty) returns (ValidatorsResponse)         { option (google.api.http).get = "/Validators";}
   rpc GetStatus(Empty) returns(StatusResponse)                  { option (google.api.http).get = "/Status";}
-  rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
-  rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetGenesis(Empty) returns(GenesisResponse)                { option (google.api.http).get = "/Genesis";}
   rpc GetChainID(Empty) returns(ChainResponse)                  { option (google.api.http).get = "/ChainID";}
   rpc GetLatestBlock(Empty) returns(BlockResponse)              { option (google.api.http).get = "/LatestBlock";}
   rpc GetConsensusState(Empty) returns (ConsensusResponse)      { option (google.api.http).get = "/ConsensusState";}
-  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http).get = "/BlockTxs/{height}";}
-  rpc GetBlockchainInfo(BlockchainInfoRequest) returns (BlockchainInfoResponse)  { option (google.api.http).get = "/BlockchainInfo/{Blockwithin}";}
+  rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
+  rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
+
+  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse) { option (google.api.http) = {
+      get : "/BlockTxs";
+      additional_bindings {
+        get : "/BlockTxs/{height}";
+      }
+    };
+  }
 }
 
 message Empty {
@@ -88,7 +93,7 @@ message StorageAtResponse {
 
 message ConsensusResponse{
   bytes RoundState = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.RoundStateSimple",(gogoproto.nullable) = false];
-  repeated google.protobuf.ListValue PeerRoundStates = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.PeerRoundState",(gogoproto.nullable) = false];
+  repeated ConsensusResponse PeerRoundStates = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/consensus/types.PeerRoundState",(gogoproto.nullable) = false];
 }
 
 message ChainResponse{
@@ -140,7 +145,7 @@ message GenesisResponse {
 
 message BlockTxsResponse {
   int32 Count = 1;
-  repeated google.protobuf.ListValue  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
+  repeated BlockTxsResponse  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 
 message BlockchainInfoRequest{
