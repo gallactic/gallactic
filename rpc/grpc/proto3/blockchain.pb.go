@@ -1879,7 +1879,6 @@ type BlockChainClient interface {
 	GetBlocks(ctx context.Context, in *BlocksRequest, opts ...grpc.CallOption) (*BlocksResponse, error)
 	GetBlockchainInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*BlockchainInfoResponse, error)
 	GetBlockTxs(ctx context.Context, in *BlockRequest, opts ...grpc.CallOption) (*BlockTxsResponse, error)
-
 }
 
 type blockChainClient struct {
@@ -2060,7 +2059,6 @@ type BlockChainServer interface {
 	GetBlocks(context.Context, *BlocksRequest) (*BlocksResponse, error)
 	GetBlockchainInfo(context.Context, *Empty) (*BlockchainInfoResponse, error)
 	GetBlockTxs(context.Context, *BlockRequest) (*BlockTxsResponse, error)
-
 }
 
 func RegisterBlockChainServer(s *grpc.Server, srv BlockChainServer) {
@@ -2447,6 +2445,10 @@ var _BlockChain_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBlockchainInfo",
 			Handler:    _BlockChain_GetBlockchainInfo_Handler,
+		},
+		{
+			MethodName: "GetBlockTxs",
+			Handler:    _BlockChain_GetBlockTxs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
