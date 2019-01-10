@@ -225,38 +225,3 @@ func (info NetInfoOutput) Size() int {
 	bs, _ := info.Encode()
 	return len(bs)
 }
-
-// protobuf marshal,unmarshal and size methods
-// func (info *NetInfoOutput) Encode() ([]byte, error) {
-// 	return aminoCodec.MarshalBinaryLengthPrefixed(&info)
-// }
-
-// func (info *NetInfoOutput) Decode(bs []byte) error {
-// 	err := aminoCodec.UnmarshalBinaryLengthPrefixed(bs, &info)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-
-// }
-
-// func (info *Dum) Unmarshal(bs []byte) error {
-// 	return info.Decode(bs)
-// }
-
-// func (info *NetInfoOutput) Marshal() ([]byte, error) {
-// 	return info.Encode()
-// }
-
-// func (info *NetInfoOutput) MarshalTo(data []byte) (int, error) {
-// 	bs, err := info.Encode()
-// 	if err != nil {
-// 		return -1, err
-// 	}
-// 	return copy(data, bs), nil
-// }
-
-// func (info NetInfoOutput) Size() int {
-// 	bs, _ := info.Encode()
-// 	return len(bs)
-// }

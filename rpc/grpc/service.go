@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -239,6 +238,15 @@ func (s *blockchainServer) GetLatestBlock(context.Context, *pb.Empty) (*pb.Block
 	}, nil
 }
 
+func (s *blockchainServer) GetBlockchainInfo(ctx context.Context, blockinfo *pb.Empty) (*pb.BlockchainInfoResponse, error) {
+	 res := &pb.BlockchainInfoResponse{
+		LastBlockHeight: s.blockchain.LastBlockHeight(),
+		LastBlockHash:   s.blockchain.LastBlockHash(),
+		LastBlockTime:   s.blockchain.LastBlockTime(),
+	}
+	return res,nil
+}
+
 func (s *blockchainServer) GetConsensusState(context.Context, *pb.Empty) (*pb.ConsensusResponse, error) {
 	peerRound := make([]consensusTypes.PeerRoundState, 0)
 	peerRoundState, err := s.nodeview.PeerRoundStates()
@@ -338,3 +346,6 @@ func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq 
 		TxEnvelopes: wrappedTxs,
 	}, nil
 }
+
+
+

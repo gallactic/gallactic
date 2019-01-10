@@ -4,6 +4,7 @@ package proto3;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.unmarshaler_all) = true;
@@ -11,7 +12,6 @@ option (gogoproto.sizer_all) = true;
 option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.protosizer_all) =false;
-
 
 
 // BlockChain  Service definition
@@ -29,6 +29,7 @@ service BlockChain {
   rpc GetConsensusState(Empty) returns (ConsensusResponse)      { option (google.api.http).get = "/ConsensusState";}
   rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
+  rpc GetBlockchainInfo(Empty) returns (BlockchainInfoResponse) { option (google.api.http).get = "/GetBlockchainInfo";}
 
   rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse) { option (google.api.http) = {
       get : "/BlockTxs";
@@ -122,7 +123,7 @@ message BlocksRequest {
 }
 
 message BlockResponse {
-  bytes  BlockMeta  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
+  bytes BlockMeta  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.BlockMeta"];
   bytes Block  = 2 [(gogoproto.customtype) = "github.com/tendermint/tendermint/types.Block"];
 }
 
@@ -147,4 +148,15 @@ message BlockTxsResponse {
   int32 Count = 1;
   repeated BlockTxsResponse  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
+
+message BlockchainInfoRequest{
+  string Blockwithin =1;
+}
+
+message BlockchainInfoResponse {
+  uint64  LastBlockHeight = 1;
+  google.protobuf.Timestamp LastBlockTime = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  bytes  LastBlockHash  = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+}
+
 
