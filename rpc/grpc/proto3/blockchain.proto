@@ -180,9 +180,15 @@ message BlockchainInfoResponse {
   google.protobuf.Timestamp LastBlockTime = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   bytes  LastBlockHash  = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 }
 
 
 =======
 }
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+}
+
+
+>>>>>>> updated in blockchaininfo method

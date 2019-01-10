@@ -9,9 +9,12 @@ import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 =======
 import _ "github.com/golang/protobuf/ptypes/struct"
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+>>>>>>> updated in blockchaininfo method
 import _ "github.com/golang/protobuf/ptypes/timestamp"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 
@@ -62,6 +65,7 @@ func (*Empty) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{0}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{0}
@@ -75,6 +79,9 @@ func (*Empty) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{0}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{0}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -122,6 +129,7 @@ func (*AddressRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{1}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{1}
@@ -135,6 +143,9 @@ func (*AddressRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{1}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{1}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *AddressRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -189,6 +200,7 @@ func (*AccountResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{2}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{2}
@@ -202,6 +214,9 @@ func (*AccountResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{2}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{2}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *AccountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -250,6 +265,7 @@ func (*AccountsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{3}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{3}
@@ -263,6 +279,9 @@ func (*AccountsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{3}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{3}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *AccountsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -324,6 +343,7 @@ func (*ValidatorResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{4}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{4}
@@ -337,6 +357,9 @@ func (*ValidatorResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{4}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{4}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *ValidatorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -385,6 +408,7 @@ func (*ValidatorsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{5}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{5}
@@ -398,6 +422,9 @@ func (*ValidatorsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{5}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{5}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *ValidatorsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -459,6 +486,7 @@ func (*ListAccountsParam) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{6}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{6}
@@ -472,6 +500,9 @@ func (*ListAccountsParam) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{6}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{6}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *ListAccountsParam) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -526,6 +557,7 @@ func (*StorageRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{7}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{7}
@@ -539,6 +571,9 @@ func (*StorageRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{7}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{7}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *StorageRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -593,6 +628,7 @@ func (*StorageResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{8}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{8}
@@ -606,6 +642,9 @@ func (*StorageResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{8}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{8}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *StorageResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -661,6 +700,7 @@ func (*StorageItem) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{9}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{9}
@@ -674,6 +714,9 @@ func (*StorageItem) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{9}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{9}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *StorageItem) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -722,6 +765,7 @@ func (*StorageAtRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{10}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{10}
@@ -735,6 +779,9 @@ func (*StorageAtRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{10}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{10}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *StorageAtRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -790,6 +837,7 @@ func (*StorageAtResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{11}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{11}
@@ -803,6 +851,9 @@ func (*StorageAtResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{11}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{11}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *StorageAtResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -851,6 +902,7 @@ func (*ConsensusResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{12}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{12}
@@ -864,6 +916,9 @@ func (*ConsensusResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{12}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{12}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *ConsensusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -913,6 +968,7 @@ func (*ChainResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{13}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{13}
@@ -926,6 +982,9 @@ func (*ChainResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{13}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{13}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *ChainResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -993,6 +1052,7 @@ func (*StatusResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{14}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{14}
@@ -1006,6 +1066,9 @@ func (*StatusResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{14}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{14}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *StatusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1074,6 +1137,7 @@ func (*BlockRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{15}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{15}
@@ -1087,6 +1151,9 @@ func (*BlockRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{15}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{15}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *BlockRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1142,6 +1209,7 @@ func (*BlocksRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{16}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{16}
@@ -1155,6 +1223,9 @@ func (*BlocksRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{16}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{16}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *BlocksRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1217,6 +1288,7 @@ func (*BlockResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{17}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{17}
@@ -1230,6 +1302,9 @@ func (*BlockResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{17}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{17}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *BlockResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1278,6 +1353,7 @@ func (*BlocksResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{18}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{18}
@@ -1291,6 +1367,9 @@ func (*BlocksResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{18}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{18}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *BlocksResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1345,6 +1424,7 @@ func (*BlockMeta) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{19}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{19}
@@ -1358,6 +1438,9 @@ func (*BlockMeta) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{19}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{19}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *BlockMeta) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1405,6 +1488,7 @@ func (*Block) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{20}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{20}
@@ -1418,6 +1502,9 @@ func (*Block) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{20}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{20}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *Block) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1465,6 +1552,7 @@ func (*GenesisResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{21}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{21}
@@ -1478,6 +1566,9 @@ func (*GenesisResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{21}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{21}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *GenesisResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1526,6 +1617,7 @@ func (*BlockTxsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{22}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{22}
@@ -1539,6 +1631,9 @@ func (*BlockTxsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{22}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{22}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *BlockTxsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1590,10 +1685,14 @@ func (m *BlockchainInfoRequest) String() string { return proto.CompactTextString
 func (*BlockchainInfoRequest) ProtoMessage()    {}
 func (*BlockchainInfoRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{23}
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{23}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{23}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *BlockchainInfoRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1647,10 +1746,14 @@ func (m *BlockchainInfoResponse) String() string { return proto.CompactTextStrin
 func (*BlockchainInfoResponse) ProtoMessage()    {}
 func (*BlockchainInfoResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{24}
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{24}
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+	return fileDescriptor_blockchain_8a9a6751828348c4, []int{24}
+>>>>>>> updated in blockchaininfo method
 }
 func (m *BlockchainInfoResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1776,7 +1879,6 @@ type BlockChainClient interface {
 	GetBlocks(ctx context.Context, in *BlocksRequest, opts ...grpc.CallOption) (*BlocksResponse, error)
 	GetBlockchainInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*BlockchainInfoResponse, error)
 	GetBlockTxs(ctx context.Context, in *BlockRequest, opts ...grpc.CallOption) (*BlockTxsResponse, error)
-	GetBlockchainInfo(ctx context.Context, in *BlockchainInfoRequest, opts ...grpc.CallOption) (*BlockchainInfoResponse, error)
 }
 
 type blockChainClient struct {
@@ -1911,6 +2013,7 @@ func (c *blockChainClient) GetBlocks(ctx context.Context, in *BlocksRequest, opt
 func (c *blockChainClient) GetBlockchainInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*BlockchainInfoResponse, error) {
 	out := new(BlockchainInfoResponse)
 	err := c.cc.Invoke(ctx, "/proto3.BlockChain/GetBlockchainInfo", in, out, opts...)
+<<<<<<< refs/remotes/gallactic/develop
 	if err != nil {
 		return nil, err
 	}
@@ -1920,15 +2023,17 @@ func (c *blockChainClient) GetBlockchainInfo(ctx context.Context, in *Empty, opt
 func (c *blockChainClient) GetBlockTxs(ctx context.Context, in *BlockRequest, opts ...grpc.CallOption) (*BlockTxsResponse, error) {
 	out := new(BlockTxsResponse)
 	err := c.cc.Invoke(ctx, "/proto3.BlockChain/GetBlockTxs", in, out, opts...)
+=======
+>>>>>>> updated in blockchaininfo method
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *blockChainClient) GetBlockchainInfo(ctx context.Context, in *BlockchainInfoRequest, opts ...grpc.CallOption) (*BlockchainInfoResponse, error) {
-	out := new(BlockchainInfoResponse)
-	err := c.cc.Invoke(ctx, "/proto3.BlockChain/GetBlockchainInfo", in, out, opts...)
+func (c *blockChainClient) GetBlockTxs(ctx context.Context, in *BlockRequest, opts ...grpc.CallOption) (*BlockTxsResponse, error) {
+	out := new(BlockTxsResponse)
+	err := c.cc.Invoke(ctx, "/proto3.BlockChain/GetBlockTxs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1952,7 +2057,6 @@ type BlockChainServer interface {
 	GetBlocks(context.Context, *BlocksRequest) (*BlocksResponse, error)
 	GetBlockchainInfo(context.Context, *Empty) (*BlockchainInfoResponse, error)
 	GetBlockTxs(context.Context, *BlockRequest) (*BlockTxsResponse, error)
-	GetBlockchainInfo(context.Context, *BlockchainInfoRequest) (*BlockchainInfoResponse, error)
 }
 
 func RegisterBlockChainServer(s *grpc.Server, srv BlockChainServer) {
@@ -2204,6 +2308,27 @@ func _BlockChain_GetBlocks_Handler(srv interface{}, ctx context.Context, dec fun
 
 func _BlockChain_GetBlockchainInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
+<<<<<<< refs/remotes/gallactic/develop
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlockChainServer).GetBlockchainInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto3.BlockChain/GetBlockchainInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlockChainServer).GetBlockchainInfo(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BlockChain_GetBlockTxs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockRequest)
+=======
+>>>>>>> updated in blockchaininfo method
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2234,24 +2359,6 @@ func _BlockChain_GetBlockTxs_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BlockChainServer).GetBlockTxs(ctx, req.(*BlockRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _BlockChain_GetBlockchainInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BlockchainInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BlockChainServer).GetBlockchainInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto3.BlockChain/GetBlockchainInfo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BlockChainServer).GetBlockchainInfo(ctx, req.(*BlockchainInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2313,6 +2420,7 @@ var _BlockChain_serviceDesc = grpc.ServiceDesc{
 			Handler:    _BlockChain_GetBlocks_Handler,
 		},
 		{
+<<<<<<< refs/remotes/gallactic/develop
 			MethodName: "GetBlockchainInfo",
 			Handler:    _BlockChain_GetBlockchainInfo_Handler,
 		},
@@ -2321,8 +2429,14 @@ var _BlockChain_serviceDesc = grpc.ServiceDesc{
 			Handler:    _BlockChain_GetBlockTxs_Handler,
 		},
 		{
+=======
+>>>>>>> updated in blockchaininfo method
 			MethodName: "GetBlockchainInfo",
 			Handler:    _BlockChain_GetBlockchainInfo_Handler,
+		},
+		{
+			MethodName: "GetBlockTxs",
+			Handler:    _BlockChain_GetBlockTxs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -3387,6 +3501,7 @@ func (m *StorageAtRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovBlockchain(uint64(l))
 	}
+<<<<<<< refs/remotes/gallactic/develop
 	l = m.Key.Size()
 	n += 1 + l + sovBlockchain(uint64(l))
 	if m.XXX_unrecognized != nil {
@@ -3438,6 +3553,8 @@ func (m *StorageAtRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovBlockchain(uint64(l))
 	}
+=======
+>>>>>>> updated in blockchaininfo method
 	l = m.Key.Size()
 	n += 1 + l + sovBlockchain(uint64(l))
 	if m.XXX_unrecognized != nil {
@@ -4283,279 +4400,6 @@ func (m *ListAccountsParam) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Query = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipBlockchain(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthBlockchain
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *StorageRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowBlockchain
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: StorageRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: StorageRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowBlockchain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthBlockchain
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipBlockchain(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthBlockchain
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *StorageResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowBlockchain
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: StorageResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: StorageResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StorageItems", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowBlockchain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthBlockchain
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.StorageItems = append(m.StorageItems, StorageItem{})
-			if err := m.StorageItems[len(m.StorageItems)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipBlockchain(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthBlockchain
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *StorageItem) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowBlockchain
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: StorageItem: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: StorageItem: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowBlockchain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthBlockchain
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Key.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Value", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowBlockchain
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthBlockchain
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Value.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -6609,6 +6453,9 @@ func init() {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
+=======
+>>>>>>> updated in blockchaininfo method
 	proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_8a9a6751828348c4)
 }
 func init() {
@@ -6710,6 +6557,7 @@ var fileDescriptor_blockchain_8a9a6751828348c4 = []byte{
 	0x4f, 0xca, 0xda, 0xaf, 0x4f, 0xca, 0xda, 0xa3, 0xa7, 0xe5, 0x53, 0x3f, 0x3e, 0x2d, 0x6b, 0x8f,
 	0x9f, 0x96, 0xb5, 0x3a, 0xff, 0xf3, 0xea, 0xcf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5b, 0xd1, 0x04,
 	0xf9, 0xe7, 0x12, 0x00, 0x00,
+<<<<<<< refs/remotes/gallactic/develop
 =======
 	proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_4a211592afcaa402)
 =======
@@ -7089,4 +6937,6 @@ var fileDescriptor_blockchain_07905e9213a8e6ed = []byte{
 	0x8a, 0xf6, 0xf8, 0x69, 0x45, 0x6b, 0xf0, 0xff, 0xba, 0xfe, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x37,
 	0x12, 0x2d, 0x9f, 0x16, 0x13, 0x00, 0x00,
 >>>>>>> =added getlastblockinfo method for grpc and rpc
+=======
+>>>>>>> updated in blockchaininfo method
 }
