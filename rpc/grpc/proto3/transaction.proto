@@ -17,14 +17,12 @@ option (gogoproto.protosizer_all) =false;
 // Transaction Service definition
 service Transaction {
 	rpc BroadcastTx(TransactRequest) returns(ReceiptResponse);
-	rpc GetUnconfirmedTxs(UnconfirmedTxsRequest) returns(UnconfirmTxsResponse)  {
-    option (google.api.http) = {
-      get: "/UnconfirmedTxs";
-      additional_bindings {
-        get: "/UnconfirmedTxs/{maxTxs}";
-      }
-    };
-  }
+	rpc GetUnconfirmedTxs(Empty2) returns(UnconfirmTxsResponse)  {option (google.api.http) = {get: "/UnconfirmedTxs";};
+}
+}
+
+message Empty2{
+
 }
 
 message TransactRequest {
@@ -36,7 +34,7 @@ message ReceiptResponse {
 }
 
 message UnconfirmedTxsRequest {
-  int32 maxTxs = 1;
+   int32 maxTxs = 1;
 }
 
 message UnconfirmTxsResponse {

@@ -32,7 +32,7 @@ type (
 		Address crypto.Address `json:"address"`
 	}
 
-    BlockInfoInput struct {
-		BlockWithin string    `json:"blockWithin"`
+	BlockInfoInput struct {
+		BlockWithin string `json:"blockWithin"`
 	}
 )

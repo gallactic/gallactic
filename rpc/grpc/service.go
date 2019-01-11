@@ -27,7 +27,7 @@ type blockchainServer struct {
 }
 
 type transcatorServer struct {
-	ctx        *context.Context
+	ctx        context.Context
 	nodeview   *query.NodeView
 	transactor *execution.Transactor
 }
@@ -51,9 +51,11 @@ func BlockchainService(blockchain *blockchain.Blockchain, nview *query.NodeView)
 		state:      blockchain.State(),
 	}
 }
-func TransactorService(transction *execution.Transactor) *transcatorServer {
+func TransactorService(con context.Context,transaction *execution.Transactor,nview *query.NodeView) *transcatorServer {
 	return &transcatorServer{
-		transactor: transction,
+		transactor: transaction,
+		nodeview:nview,
+		ctx:con,
 	}
 }
 func NetworkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *networkServer {
@@ -243,12 +245,12 @@ func (s *blockchainServer) GetLatestBlock(context.Context, *pb.Empty) (*pb.Block
 }
 
 func (s *blockchainServer) GetBlockchainInfo(ctx context.Context, blockinfo *pb.Empty) (*pb.BlockchainInfoResponse, error) {
-	 res := &pb.BlockchainInfoResponse{
+	res := &pb.BlockchainInfoResponse{
 		LastBlockHeight: s.blockchain.LastBlockHeight(),
 		LastBlockHash:   s.blockchain.LastBlockHash(),
 		LastBlockTime:   s.blockchain.LastBlockTime(),
 	}
-	return res,nil
+	return res, nil
 }
 
 func (s *blockchainServer) GetConsensusState(context.Context, *pb.Empty) (*pb.ConsensusResponse, error) {
@@ -334,8 +336,8 @@ func (tx *transcatorServer) BroadcastTx(ctx context.Context, txReq *pb.TransactR
 	}, nil
 }
 
-func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq *pb.UnconfirmedTxsRequest) (*pb.UnconfirmTxsResponse, error) {
-	transactions, err := tx.nodeview.MempoolTransactions(int(unconfirmreq.MaxTxs))
+func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq *pb.Empty2) (*pb.UnconfirmTxsResponse, error) {
+	transactions, err := tx.nodeview.MempoolTransactions(-1)
 	if err != nil {
 		return nil, err
 	}
@@ -350,6 +352,3 @@ func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq 
 		TxEnvelopes: wrappedTxs,
 	}, nil
 }
-
-
-
