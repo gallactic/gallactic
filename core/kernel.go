@@ -152,7 +152,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				/// TODO: ‌better design for kernel. They should be encapsulated
 				pb.RegisterBlockChainServer(grpcServer.Server, grpc.BlockchainService(bc, query.NewNodeView(tmNode)))
 				pb.RegisterNetworkServer(grpcServer.Server, grpc.NetworkService(bc, query.NewNodeView(tmNode)))
-				pb.RegisterTransactionServer(grpcServer.Server, grpc.TransactorService(transactor))
+				pb.RegisterTransactionServer(grpcServer.Server, grpc.TransactorService(ctx,transactor,query.NewNodeView(tmNode)))
 
 				if err := grpcServer.Start(conf.GRPC.ListenAddress); err != nil {
 					return nil, fmt.Errorf("Unable to start grpc server: %v", err)
