@@ -172,14 +172,6 @@
   version = "v1.1.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:e2b86e41f3d669fc36b50d31d32d22c8ac656c75aa5ea89717ce7177e134ff2a"
-  name = "github.com/golang/glog"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
-
-[[projects]]
   digest = "1:636a9b466dc9718000d40cee990ad052506b23c66db1b2f5ca58287e4ce9983e"
   name = "github.com/golang/protobuf"
   packages = [
@@ -716,9 +708,9 @@
     "github.com/go-kit/kit/log",
     "github.com/gogo/protobuf/gogoproto",
     "github.com/gogo/protobuf/proto",
-    "github.com/golang/glog",
+    "github.com/gogo/protobuf/types",
     "github.com/golang/protobuf/proto",
-    "github.com/golang/protobuf/ptypes/struct",
+    "github.com/golang/protobuf/ptypes/timestamp",
     "github.com/grpc-ecosystem/grpc-gateway/runtime",
     "github.com/grpc-ecosystem/grpc-gateway/utilities",
     "github.com/hyperledger/burrow/logging",
