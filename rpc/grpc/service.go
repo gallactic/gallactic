@@ -5,6 +5,7 @@ import (
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
+	"github.com/gallactic/gallactic/core/consensus/tendermint/p2p"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/state"
@@ -14,6 +15,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
+    net "github.com/tendermint/tendermint/p2p"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
@@ -51,11 +53,11 @@ func BlockchainService(blockchain *blockchain.Blockchain, nview *query.NodeView)
 		state:      blockchain.State(),
 	}
 }
-func TransactorService(con context.Context,transaction *execution.Transactor,nview *query.NodeView) *transcatorServer {
+func TransactorService(con context.Context, transaction *execution.Transactor, nview *query.NodeView) *transcatorServer {
 	return &transcatorServer{
 		transactor: transaction,
-		nodeview:nview,
-		ctx:con,
+		nodeview:   nview,
+		ctx:        con,
 	}
 }
 func NetworkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *networkServer {
@@ -170,7 +172,7 @@ func (s *blockchainServer) GetStatus(ctx context.Context, in *pb.Empty) (*pb.Sta
 		return nil, err
 	}
 	return &pb.StatusResponse{
-		//NodeInfo:          s.nodeview.deo,
+		//NodeInfo:          s.nodeview.NodeInfo(),
 		GenesisHash:       s.blockchain.GenesisHash(),
 		PubKey:            publicKey,
 		LatestBlockHash:   latestBlockHash,
@@ -293,29 +295,31 @@ func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *pb.BlockReque
 
 //Network service
 func (s *networkServer) GetNetworkInfo(context.Context, *pb.Empty1) (*pb.NetInfoResponse, error) {
-	//listening := s.nodeview.IsListening()
 	var contexts context.Context
-	//var listeners []string
-	// for _, listener := range s.nodeview.Listeners() {
-	// 	listeners = append(listeners, listener.String())
-	// }
 	peers, err := s.GetPeers(contexts, nil)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.NetInfoResponse{
-		//Listening: listening,
-		//Listeners: listeners,
 		Peers: peers.Peer,
 	}, nil
+
 }
 
 func (ns *networkServer) GetPeers(context.Context, *pb.Empty1) (*pb.PeerResponse, error) {
 	peers := make([]*pb.Peer, ns.nodeview.Peers().Size())
 	for i, peer := range ns.nodeview.Peers().List() {
-		peer.NodeInfo()
+		ni := new(p2p.GNodeInfo)
+		tmni, _ := peer.NodeInfo().(*net.DefaultNodeInfo)
+		ni.ID_ = tmni.ID_
+		ni.Network = tmni.Network
+		ni.ProtocolVersion = tmni.ProtocolVersion
+		ni.Version = tmni.Version
+		ni.Channels = tmni.Channels
+		ni.ListenAddr = tmni.ListenAddr
+		ni.Moniker = tmni.Moniker
 		peers[i] = &pb.Peer{
-			// NodeInfo:   peer.NodeInfo(),
+			NodeInfo:   *ni,
 			IsOutbound: peer.IsOutbound(),
 		}
 	}
