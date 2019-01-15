@@ -10,6 +10,7 @@ import (
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
+	"github.com/gallactic/gallactic/version"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 	"github.com/pkg/errors"
@@ -52,7 +53,7 @@ func (app *App) SetMempoolLocker(mempoolLocker sync.Locker) {
 func (app *App) Info(info abciTypes.RequestInfo) abciTypes.ResponseInfo {
 	return abciTypes.ResponseInfo{
 		Data:             responseInfoName,
-		Version:          "0.0.0", /// TODO
+		Version:          version.Version,
 		LastBlockHeight:  int64(app.bc.LastBlockHeight()),
 		LastBlockAppHash: app.bc.LastAppHash(),
 	}

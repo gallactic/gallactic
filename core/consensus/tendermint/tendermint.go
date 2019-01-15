@@ -5,7 +5,6 @@ import (
 
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/blockchain"
-	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/abci"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
@@ -97,18 +96,4 @@ func DeriveGenesisDoc(gen *proposal.Genesis) *tmTypes.GenesisDoc {
 		AppHash:         gen.Hash(),
 		ConsensusParams: tmTypes.DefaultConsensusParams(),
 	}
-}
-
-func DeriveConfig(conf *config.Config) *tmConfig.Config {
-
-	tmConf := tmConfig.DefaultConfig()
-
-	tmConf.SetRoot(conf.Tendermint.TendermintRoot)
-	tmConf.P2P.Seeds = conf.Tendermint.Seeds
-	tmConf.P2P.PersistentPeers = conf.Tendermint.PersistentPeers
-	tmConf.P2P.ListenAddress = conf.Tendermint.ListenAddress
-	tmConf.Moniker = conf.Tendermint.Moniker
-	tmConf.RPC.ListenAddress = "tcp://0.0.0.0:0" /// TODO: change it to localhost:0
-
-	return tmConf
 }

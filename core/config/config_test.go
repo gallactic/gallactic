@@ -9,9 +9,9 @@ import (
 
 func TestLoading(t *testing.T) {
 	conf1 := DefaultConfig()
-	conf1.Tendermint.ListenAddress = "1.1.1.1"
+	conf1.Tendermint.P2P.ListenAddress = "1.1.1.1"
 	conf1.Tendermint.Moniker = "moniker-test"
-	conf1.Tendermint.TendermintRoot = "tendermint1"
+	conf1.Tendermint.RootDir = "tendermint1"
 	conf1.GRPC.Enabled = false
 	conf1.RPC.Enabled = true
 	toml, err := conf1.ToTOML()
