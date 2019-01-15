@@ -41,7 +41,7 @@ func (m *Empty1) Reset()         { *m = Empty1{} }
 func (m *Empty1) String() string { return proto.CompactTextString(m) }
 func (*Empty1) ProtoMessage()    {}
 func (*Empty1) Descriptor() ([]byte, []int) {
-	return fileDescriptor_network_bdd496e159ef661e, []int{0}
+	return fileDescriptor_network_1d50ce459ae78782, []int{0}
 }
 func (m *Empty1) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -75,7 +75,6 @@ func (*Empty1) XXX_MessageName() string {
 }
 
 type Peer struct {
-	// bytes  NodeInfo  = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.DefaultNodeInfo",(gogoproto.nullable) = false];
 	NodeInfo             github_com_gallactic_gallactic_core_consensus_tendermint_p2p.GNodeInfo `protobuf:"bytes,1,opt,name=NodeInfo,proto3,customtype=github.com/gallactic/gallactic/core/consensus/tendermint/p2p.GNodeInfo" json:"NodeInfo"`
 	IsOutbound           bool                                                                   `protobuf:"varint,2,opt,name=IsOutbound,proto3" json:"IsOutbound,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                                                               `json:"-"`
@@ -87,7 +86,7 @@ func (m *Peer) Reset()         { *m = Peer{} }
 func (m *Peer) String() string { return proto.CompactTextString(m) }
 func (*Peer) ProtoMessage()    {}
 func (*Peer) Descriptor() ([]byte, []int) {
-	return fileDescriptor_network_bdd496e159ef661e, []int{1}
+	return fileDescriptor_network_1d50ce459ae78782, []int{1}
 }
 func (m *Peer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -138,7 +137,7 @@ func (m *PeerResponse) Reset()         { *m = PeerResponse{} }
 func (m *PeerResponse) String() string { return proto.CompactTextString(m) }
 func (*PeerResponse) ProtoMessage()    {}
 func (*PeerResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_network_bdd496e159ef661e, []int{2}
+	return fileDescriptor_network_1d50ce459ae78782, []int{2}
 }
 func (m *PeerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -191,7 +190,7 @@ func (m *NetInfoResponse) Reset()         { *m = NetInfoResponse{} }
 func (m *NetInfoResponse) String() string { return proto.CompactTextString(m) }
 func (*NetInfoResponse) ProtoMessage()    {}
 func (*NetInfoResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_network_bdd496e159ef661e, []int{3}
+	return fileDescriptor_network_1d50ce459ae78782, []int{3}
 }
 func (m *NetInfoResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1078,13 +1077,13 @@ var (
 )
 
 func init() {
-	proto.RegisterFile("rpc/grpc/proto3/network.proto", fileDescriptor_network_bdd496e159ef661e)
+	proto.RegisterFile("rpc/grpc/proto3/network.proto", fileDescriptor_network_1d50ce459ae78782)
 }
 func init() {
-	golang_proto.RegisterFile("rpc/grpc/proto3/network.proto", fileDescriptor_network_bdd496e159ef661e)
+	golang_proto.RegisterFile("rpc/grpc/proto3/network.proto", fileDescriptor_network_1d50ce459ae78782)
 }
 
-var fileDescriptor_network_bdd496e159ef661e = []byte{
+var fileDescriptor_network_1d50ce459ae78782 = []byte{
 	// 402 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x52, 0xcf, 0x6e, 0x9b, 0x30,
 	0x1c, 0x8e, 0x93, 0x2d, 0x23, 0x1e, 0x62, 0x92, 0x15, 0x69, 0x28, 0xca, 0x08, 0xe2, 0xc4, 0x65,

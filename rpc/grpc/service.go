@@ -130,11 +130,7 @@ func (s *blockchainServer) GetStorage(ctx context.Context, storage *pb.StorageRe
 
 	s.state.IterateStorage(storageaddr, func(key, value binary.Word256) (stop bool) {
 		storageItems = append(storageItems, pb.StorageItem{Key: key.UnpadLeft(), Value: value.UnpadLeft()})
-<<<<<<< refs/remotes/gallactic/develop
 		return false
-=======
-		return
->>>>>>> changes in get_stroage method
 	})
 	return &pb.StorageResponse{
 		StorageItems: storageItems,

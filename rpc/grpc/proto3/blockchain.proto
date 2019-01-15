@@ -18,18 +18,8 @@ option (gogoproto.protosizer_all) =false;
 service BlockChain {
   rpc GetAccount(AddressRequest) returns (AccountResponse)      { option (google.api.http).get = "/Account/{Address}";}
   rpc GetAccounts(Empty) returns (AccountsResponse)             { option (google.api.http).get = "/Accounts";}
-<<<<<<< refs/remotes/gallactic/develop
-<<<<<<< refs/remotes/gallactic/develop
   rpc GetStorage(StorageRequest) returns (StorageResponse)      { option (google.api.http).get = "/Storage/{Address}";}
   rpc GetStorageAt(StorageAtRequest) returns(StorageAtResponse) { option (google.api.http).get = "/StorageAt/{Address}/{Key}";}
-=======
-  rpc GetStorage(StorageRequest) returns (StorageResponse)    { option (google.api.http).get = "/Storage";}
-  rpc GetStorageAt(StorageAtRequest) returns(StorageAtResponse)   { option (google.api.http).get = "/StorageAt/{Address}/{Key}";}
->>>>>>> changes in get_stroage method
-=======
-  rpc GetStorage(StorageRequest) returns (StorageResponse)      { option (google.api.http).get = "/Storage/{Address}";}
-  rpc GetStorageAt(StorageAtRequest) returns(StorageAtResponse) { option (google.api.http).get = "/StorageAt/{Address}/{Key}";}
->>>>>>> changes in blockchain_proto GetStorage
   rpc GetValidator(AddressRequest) returns (ValidatorResponse)  { option (google.api.http).get = "/Validator/{Address}";}
   rpc GetValidators(Empty) returns (ValidatorsResponse)         { option (google.api.http).get = "/Validators";}
   rpc GetStatus(Empty) returns(StatusResponse)                  { option (google.api.http).get = "/Status";}
@@ -37,22 +27,16 @@ service BlockChain {
   rpc GetChainID(Empty) returns(ChainResponse)                  { option (google.api.http).get = "/ChainID";}
   rpc GetLatestBlock(Empty) returns(BlockResponse)              { option (google.api.http).get = "/LatestBlock";}
   rpc GetConsensusState(Empty) returns (ConsensusResponse)      { option (google.api.http).get = "/ConsensusState";}
-<<<<<<< refs/remotes/gallactic/develop
   rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetBlockchainInfo(Empty) returns (BlockchainInfoResponse) { option (google.api.http).get = "/GetBlockchainInfo";}
-
-  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse) { option (google.api.http) = {
+  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http) = {
       get : "/BlockTxs";
       additional_bindings {
         get : "/BlockTxs/{height}";
       }
     };
   }
-=======
-  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http).get = "/BlockTxs/{height}";}
-  rpc GetBlockchainInfo(BlockchainInfoRequest) returns (BlockchainInfoResponse)  { option (google.api.http).get = "/BlockchainInfo/{Blockwithin}";}
->>>>>>> =added getlastblockinfo method for grpc and rpc
 }
 
 message Empty {
@@ -164,31 +148,12 @@ message BlockTxsResponse {
   repeated BlockTxsResponse  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 
-message BlockchainInfoRequest{
-  string Blockwithin =1;
-}
 
-<<<<<<< refs/remotes/gallactic/develop
-=======
-message BlockchainInfoRequest{
-  string Blockwithin =1;
-}
 
->>>>>>> =added getlastblockinfo method for grpc and rpc
 message BlockchainInfoResponse {
   uint64  LastBlockHeight = 1;
   google.protobuf.Timestamp LastBlockTime = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   bytes  LastBlockHash  = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
-<<<<<<< refs/remotes/gallactic/develop
-<<<<<<< refs/remotes/gallactic/develop
+
 }
 
-
-=======
-}
->>>>>>> =added getlastblockinfo method for grpc and rpc
-=======
-}
-
-
->>>>>>> updated in blockchaininfo method
