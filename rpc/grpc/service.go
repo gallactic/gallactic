@@ -15,7 +15,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
-    net "github.com/tendermint/tendermint/p2p"
+	net "github.com/tendermint/tendermint/p2p"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
@@ -171,8 +171,9 @@ func (s *blockchainServer) GetStatus(ctx context.Context, in *pb.Empty) (*pb.Sta
 	if err != nil {
 		return nil, err
 	}
+	
 	return &pb.StatusResponse{
-		//NodeInfo:          s.nodeview.NodeInfo(),
+		NodeInfo:          s.nodeview.NodeInfo(*net.DefaultNodeInfo),
 		GenesisHash:       s.blockchain.GenesisHash(),
 		PubKey:            publicKey,
 		LatestBlockHash:   latestBlockHash,

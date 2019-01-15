@@ -22,7 +22,7 @@ import github_com_gallactic_gallactic_core_account "github.com/gallactic/gallact
 import github_com_gallactic_gallactic_core_validator "github.com/gallactic/gallactic/core/validator"
 import github_com_gallactic_gallactic_common_binary "github.com/gallactic/gallactic/common/binary"
 import github_com_tendermint_tendermint_consensus_types "github.com/tendermint/tendermint/consensus/types"
-import github_com_tendermint_tendermint_p2p "github.com/tendermint/tendermint/p2p"
+import github_com_gallactic_gallactic_core_consensus_tendermint_p2p "github.com/gallactic/gallactic/core/consensus/tendermint/p2p"
 import github_com_gallactic_gallactic_crypto "github.com/gallactic/gallactic/crypto"
 import github_com_tendermint_tendermint_types "github.com/tendermint/tendermint/types"
 import github_com_gallactic_gallactic_core_proposal "github.com/gallactic/gallactic/core/proposal"
@@ -66,6 +66,7 @@ func (*Empty) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{0}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{0}
@@ -82,6 +83,9 @@ func (*Empty) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{0}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{0}
+>>>>>>> proto getstatus updated
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -130,6 +134,7 @@ func (*AddressRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{1}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{1}
@@ -146,6 +151,9 @@ func (*AddressRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{1}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{1}
+>>>>>>> proto getstatus updated
 }
 func (m *AddressRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -201,6 +209,7 @@ func (*AccountResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{2}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{2}
@@ -217,6 +226,9 @@ func (*AccountResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{2}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{2}
+>>>>>>> proto getstatus updated
 }
 func (m *AccountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -266,6 +278,7 @@ func (*AccountsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{3}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{3}
@@ -282,6 +295,9 @@ func (*AccountsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{3}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{3}
+>>>>>>> proto getstatus updated
 }
 func (m *AccountsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -344,6 +360,7 @@ func (*ValidatorResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{4}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{4}
@@ -360,6 +377,9 @@ func (*ValidatorResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{4}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{4}
+>>>>>>> proto getstatus updated
 }
 func (m *ValidatorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -409,6 +429,7 @@ func (*ValidatorsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{5}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{5}
@@ -425,6 +446,9 @@ func (*ValidatorsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{5}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{5}
+>>>>>>> proto getstatus updated
 }
 func (m *ValidatorsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -487,6 +511,7 @@ func (*ListAccountsParam) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{6}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{6}
@@ -503,6 +528,9 @@ func (*ListAccountsParam) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{6}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{6}
+>>>>>>> proto getstatus updated
 }
 func (m *ListAccountsParam) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -558,6 +586,7 @@ func (*StorageRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{7}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{7}
@@ -574,6 +603,9 @@ func (*StorageRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{7}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{7}
+>>>>>>> proto getstatus updated
 }
 func (m *StorageRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -629,6 +661,7 @@ func (*StorageResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{8}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{8}
@@ -645,6 +678,9 @@ func (*StorageResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{8}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{8}
+>>>>>>> proto getstatus updated
 }
 func (m *StorageResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -701,6 +737,7 @@ func (*StorageItem) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{9}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{9}
@@ -717,6 +754,9 @@ func (*StorageItem) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{9}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{9}
+>>>>>>> proto getstatus updated
 }
 func (m *StorageItem) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -766,6 +806,7 @@ func (*StorageAtRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{10}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{10}
@@ -782,6 +823,9 @@ func (*StorageAtRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{10}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{10}
+>>>>>>> proto getstatus updated
 }
 func (m *StorageAtRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -838,6 +882,7 @@ func (*StorageAtResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{11}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{11}
@@ -854,6 +899,9 @@ func (*StorageAtResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{11}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{11}
+>>>>>>> proto getstatus updated
 }
 func (m *StorageAtResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -903,6 +951,7 @@ func (*ConsensusResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{12}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{12}
@@ -919,6 +968,9 @@ func (*ConsensusResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{12}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{12}
+>>>>>>> proto getstatus updated
 }
 func (m *ConsensusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -969,6 +1021,7 @@ func (*ChainResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{13}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{13}
@@ -985,6 +1038,9 @@ func (*ChainResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{13}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{13}
+>>>>>>> proto getstatus updated
 }
 func (m *ChainResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1032,22 +1088,23 @@ func (*ChainResponse) XXX_MessageName() string {
 }
 
 type StatusResponse struct {
-	NodeInfo             github_com_tendermint_tendermint_p2p.DefaultNodeInfo  `protobuf:"bytes,1,opt,name=NodeInfo,proto3,customtype=github.com/tendermint/tendermint/p2p.DefaultNodeInfo" json:"NodeInfo"`
-	GenesisHash          github_com_gallactic_gallactic_common_binary.HexBytes `protobuf:"bytes,2,opt,name=GenesisHash,proto3,customtype=github.com/gallactic/gallactic/common/binary.HexBytes" json:"GenesisHash"`
-	PubKey               github_com_gallactic_gallactic_crypto.PublicKey       `protobuf:"bytes,3,opt,name=PubKey,proto3,customtype=github.com/gallactic/gallactic/crypto.PublicKey" json:"PubKey"`
-	LatestBlockHash      github_com_gallactic_gallactic_common_binary.HexBytes `protobuf:"bytes,4,opt,name=LatestBlockHash,proto3,customtype=github.com/gallactic/gallactic/common/binary.HexBytes" json:"LatestBlockHash"`
-	LatestBlockHeight    uint64                                                `protobuf:"varint,5,opt,name=LatestBlockHeight,proto3" json:"LatestBlockHeight,omitempty"`
-	LatestBlockTime      int64                                                 `protobuf:"varint,6,opt,name=LatestBlockTime,proto3" json:"LatestBlockTime,omitempty"`
-	NodeVersion          string                                                `protobuf:"bytes,7,opt,name=NodeVersion,proto3" json:"NodeVersion,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                                              `json:"-"`
-	XXX_unrecognized     []byte                                                `json:"-"`
-	XXX_sizecache        int32                                                 `json:"-"`
+	NodeInfo             github_com_gallactic_gallactic_core_consensus_tendermint_p2p.GNodeInfo `protobuf:"bytes,1,opt,name=NodeInfo,proto3,customtype=github.com/gallactic/gallactic/core/consensus/tendermint/p2p.GNodeInfo" json:"NodeInfo"`
+	GenesisHash          github_com_gallactic_gallactic_common_binary.HexBytes                  `protobuf:"bytes,2,opt,name=GenesisHash,proto3,customtype=github.com/gallactic/gallactic/common/binary.HexBytes" json:"GenesisHash"`
+	PubKey               github_com_gallactic_gallactic_crypto.PublicKey                        `protobuf:"bytes,3,opt,name=PubKey,proto3,customtype=github.com/gallactic/gallactic/crypto.PublicKey" json:"PubKey"`
+	LatestBlockHash      github_com_gallactic_gallactic_common_binary.HexBytes                  `protobuf:"bytes,4,opt,name=LatestBlockHash,proto3,customtype=github.com/gallactic/gallactic/common/binary.HexBytes" json:"LatestBlockHash"`
+	LatestBlockHeight    uint64                                                                 `protobuf:"varint,5,opt,name=LatestBlockHeight,proto3" json:"LatestBlockHeight,omitempty"`
+	LatestBlockTime      int64                                                                  `protobuf:"varint,6,opt,name=LatestBlockTime,proto3" json:"LatestBlockTime,omitempty"`
+	NodeVersion          string                                                                 `protobuf:"bytes,7,opt,name=NodeVersion,proto3" json:"NodeVersion,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                                                               `json:"-"`
+	XXX_unrecognized     []byte                                                                 `json:"-"`
+	XXX_sizecache        int32                                                                  `json:"-"`
 }
 
 func (m *StatusResponse) Reset()         { *m = StatusResponse{} }
 func (m *StatusResponse) String() string { return proto.CompactTextString(m) }
 func (*StatusResponse) ProtoMessage()    {}
 func (*StatusResponse) Descriptor() ([]byte, []int) {
+<<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
@@ -1069,6 +1126,9 @@ func (*StatusResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{14}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{14}
+>>>>>>> proto getstatus updated
 }
 func (m *StatusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1138,6 +1198,7 @@ func (*BlockRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{15}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{15}
@@ -1154,6 +1215,9 @@ func (*BlockRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{15}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{15}
+>>>>>>> proto getstatus updated
 }
 func (m *BlockRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1210,6 +1274,7 @@ func (*BlocksRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{16}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{16}
@@ -1226,6 +1291,9 @@ func (*BlocksRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{16}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{16}
+>>>>>>> proto getstatus updated
 }
 func (m *BlocksRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1289,6 +1357,7 @@ func (*BlockResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{17}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{17}
@@ -1305,6 +1374,9 @@ func (*BlockResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{17}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{17}
+>>>>>>> proto getstatus updated
 }
 func (m *BlockResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1354,6 +1426,7 @@ func (*BlocksResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{18}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{18}
@@ -1370,6 +1443,9 @@ func (*BlocksResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{18}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{18}
+>>>>>>> proto getstatus updated
 }
 func (m *BlocksResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1425,6 +1501,7 @@ func (*BlockMeta) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{19}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{19}
@@ -1441,6 +1518,9 @@ func (*BlockMeta) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{19}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{19}
+>>>>>>> proto getstatus updated
 }
 func (m *BlockMeta) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1489,6 +1569,7 @@ func (*Block) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{20}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{20}
@@ -1505,6 +1586,9 @@ func (*Block) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{20}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{20}
+>>>>>>> proto getstatus updated
 }
 func (m *Block) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1553,6 +1637,7 @@ func (*GenesisResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{21}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{21}
@@ -1569,6 +1654,9 @@ func (*GenesisResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{21}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{21}
+>>>>>>> proto getstatus updated
 }
 func (m *GenesisResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1618,6 +1706,7 @@ func (*BlockTxsResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{22}
 =======
 	return fileDescriptor_blockchain_4a211592afcaa402, []int{22}
@@ -1634,6 +1723,9 @@ func (*BlockTxsResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{22}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{22}
+>>>>>>> proto getstatus updated
 }
 func (m *BlockTxsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1686,6 +1778,7 @@ func (*BlockchainInfoRequest) ProtoMessage()    {}
 func (*BlockchainInfoRequest) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{23}
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{23}
@@ -1693,6 +1786,9 @@ func (*BlockchainInfoRequest) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{23}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{23}
+>>>>>>> proto getstatus updated
 }
 func (m *BlockchainInfoRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1747,6 +1843,7 @@ func (*BlockchainInfoResponse) ProtoMessage()    {}
 func (*BlockchainInfoResponse) Descriptor() ([]byte, []int) {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{24}
 =======
 	return fileDescriptor_blockchain_07905e9213a8e6ed, []int{24}
@@ -1754,6 +1851,9 @@ func (*BlockchainInfoResponse) Descriptor() ([]byte, []int) {
 =======
 	return fileDescriptor_blockchain_8a9a6751828348c4, []int{24}
 >>>>>>> updated in blockchaininfo method
+=======
+	return fileDescriptor_blockchain_5a4cb0713d9a611f, []int{24}
+>>>>>>> proto getstatus updated
 }
 func (m *BlockchainInfoResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -6466,28 +6566,33 @@ func init() {
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
 <<<<<<< refs/remotes/gallactic/develop
+<<<<<<< refs/remotes/gallactic/develop
 =======
 >>>>>>> updated in blockchaininfo method
 	proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_8a9a6751828348c4)
+=======
+	proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_5a4cb0713d9a611f)
+>>>>>>> proto getstatus updated
 }
 func init() {
-	golang_proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_8a9a6751828348c4)
+	golang_proto.RegisterFile("rpc/grpc/proto3/blockchain.proto", fileDescriptor_blockchain_5a4cb0713d9a611f)
 }
 
-var fileDescriptor_blockchain_8a9a6751828348c4 = []byte{
-	// 1477 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0xcd, 0x6f, 0x1b, 0x45,
-	0x14, 0xef, 0x3a, 0x75, 0x12, 0xbf, 0x7c, 0x38, 0x9e, 0xa6, 0xa9, 0x6b, 0x45, 0x76, 0x98, 0x03,
-	0x14, 0x28, 0xde, 0xaa, 0x29, 0x2a, 0x15, 0x54, 0x28, 0x4e, 0xdb, 0x34, 0x24, 0x34, 0x61, 0x53,
-	0x45, 0x7c, 0x48, 0x54, 0x6b, 0x7b, 0xe2, 0x2c, 0xf5, 0x7e, 0x74, 0x77, 0x5c, 0x62, 0x45, 0xe6,
-	0x80, 0xe0, 0x80, 0x04, 0x12, 0x12, 0xff, 0x40, 0x8f, 0x48, 0x1c, 0x39, 0x71, 0xe3, 0xd8, 0x23,
-	0x12, 0xb7, 0x1c, 0x0c, 0x6a, 0xf9, 0x0f, 0xf8, 0x03, 0x40, 0x3b, 0x3b, 0x33, 0x3b, 0xbb, 0xc6,
-	0x98, 0x0a, 0x73, 0xe0, 0x62, 0xed, 0xbc, 0x37, 0xef, 0xf7, 0x3e, 0xe6, 0xcd, 0x7b, 0x6f, 0x0c,
-	0x2b, 0xbe, 0xd7, 0xd0, 0x5b, 0xe1, 0x8f, 0xe7, 0xbb, 0xd4, 0x5d, 0xd5, 0xeb, 0x6d, 0xb7, 0x71,
-	0xbf, 0x71, 0x68, 0x5a, 0x4e, 0x95, 0x51, 0xd0, 0x64, 0xc4, 0x28, 0xbd, 0xd2, 0xb2, 0xe8, 0x61,
-	0xa7, 0x5e, 0x6d, 0xb8, 0xb6, 0xde, 0x72, 0x5b, 0x6e, 0x24, 0x50, 0xef, 0x1c, 0xb0, 0x15, 0x5b,
-	0xb0, 0xaf, 0x48, 0xac, 0xb4, 0xdc, 0x72, 0xdd, 0x56, 0x9b, 0xe8, 0xa6, 0x67, 0xe9, 0xa6, 0xe3,
+var fileDescriptor_blockchain_5a4cb0713d9a611f = []byte{
+	// 1478 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0x4f, 0x6f, 0x1b, 0x45,
+	0x14, 0xef, 0x3a, 0x71, 0x12, 0xbf, 0xfc, 0x71, 0x3c, 0x4d, 0x53, 0xd7, 0x8a, 0xec, 0x30, 0x07,
+	0x28, 0x50, 0xbc, 0x55, 0x53, 0x54, 0x2a, 0x54, 0xa1, 0x38, 0x6d, 0xd3, 0x90, 0xd0, 0x84, 0x4d,
+	0x15, 0x09, 0x90, 0xa8, 0xd6, 0xf6, 0xd4, 0xd9, 0xd6, 0xfb, 0xa7, 0xbb, 0xe3, 0x12, 0x2b, 0x32,
+	0x07, 0x04, 0x07, 0x24, 0x90, 0x40, 0x7c, 0x81, 0x1e, 0x91, 0x38, 0x72, 0xe2, 0xc6, 0xb1, 0x47,
+	0x24, 0x6e, 0x3e, 0x18, 0xd4, 0xf2, 0x0d, 0xf8, 0x02, 0x68, 0x67, 0x67, 0x66, 0x67, 0xd7, 0x98,
+	0xb4, 0xc2, 0x1c, 0xb8, 0x58, 0x3b, 0xef, 0xcd, 0xfb, 0xbd, 0x3f, 0xf3, 0xe6, 0xbd, 0x37, 0x86,
+	0x55, 0xdf, 0x6b, 0xe8, 0xad, 0xf0, 0xc7, 0xf3, 0x5d, 0xea, 0xae, 0xe9, 0xf5, 0xb6, 0xdb, 0x78,
+	0xd0, 0x38, 0x34, 0x2d, 0xa7, 0xca, 0x28, 0x68, 0x2a, 0x62, 0x94, 0xde, 0x68, 0x59, 0xf4, 0xb0,
+	0x53, 0xaf, 0x36, 0x5c, 0x5b, 0x6f, 0xb9, 0x2d, 0x37, 0x12, 0xa8, 0x77, 0xee, 0xb1, 0x15, 0x5b,
+	0xb0, 0xaf, 0x48, 0xac, 0xb4, 0xd2, 0x72, 0xdd, 0x56, 0x9b, 0xe8, 0xa6, 0x67, 0xe9, 0xa6, 0xe3,
 	0xb8, 0xd4, 0xa4, 0x96, 0xeb, 0x04, 0x9c, 0x5b, 0xe1, 0x5c, 0x89, 0x41, 0x2d, 0x9b, 0x04, 0xd4,
+<<<<<<< refs/remotes/gallactic/develop
 	0xb4, 0xbd, 0x68, 0x03, 0x9e, 0x82, 0xec, 0x4d, 0xdb, 0xa3, 0x5d, 0xfc, 0x12, 0xcc, 0xaf, 0x35,
 	0x9b, 0x3e, 0x09, 0x02, 0x83, 0x3c, 0xe8, 0x90, 0x80, 0xa2, 0x22, 0x4c, 0x71, 0x4a, 0x51, 0x5b,
 	0xd1, 0x2e, 0xe4, 0x0c, 0xb1, 0xc4, 0x3d, 0xc8, 0xaf, 0x35, 0x1a, 0x6e, 0xc7, 0xa1, 0x06, 0x09,
@@ -6951,4 +7056,87 @@ var fileDescriptor_blockchain_07905e9213a8e6ed = []byte{
 >>>>>>> =added getlastblockinfo method for grpc and rpc
 =======
 >>>>>>> updated in blockchaininfo method
+=======
+	0xb4, 0xbd, 0x68, 0x03, 0x9e, 0x86, 0xec, 0x0d, 0xdb, 0xa3, 0x5d, 0xfc, 0x1a, 0x2c, 0xac, 0x37,
+	0x9b, 0x3e, 0x09, 0x02, 0x83, 0x3c, 0xec, 0x90, 0x80, 0xa2, 0x22, 0x4c, 0x73, 0x4a, 0x51, 0x5b,
+	0xd5, 0xce, 0xe7, 0x0c, 0xb1, 0xc4, 0x3d, 0xc8, 0xaf, 0x37, 0x1a, 0x6e, 0xc7, 0xa1, 0x06, 0x09,
+	0x3c, 0xd7, 0x09, 0x08, 0xba, 0x0f, 0xd3, 0x9c, 0xc4, 0x36, 0xcf, 0x5e, 0x3a, 0x1b, 0x29, 0x58,
+	0xab, 0xa6, 0x76, 0xd6, 0xae, 0xf4, 0x07, 0x95, 0x35, 0xd5, 0x47, 0xb3, 0xdd, 0x36, 0x1b, 0xd4,
+	0x6a, 0x28, 0x5f, 0x0d, 0xd7, 0x27, 0xba, 0x19, 0x09, 0x4a, 0x00, 0xa1, 0x00, 0x5b, 0xb0, 0xc8,
+	0x3f, 0x03, 0xa9, 0x7f, 0x15, 0x66, 0x6b, 0x61, 0x44, 0x6f, 0x11, 0xab, 0x75, 0x18, 0xd9, 0x30,
+	0x69, 0xa8, 0x24, 0xb4, 0x06, 0x33, 0x42, 0xaa, 0x98, 0x59, 0x9d, 0xf8, 0x07, 0x13, 0x0d, 0xb9,
+	0x11, 0x7f, 0xa9, 0x41, 0xe1, 0xc0, 0x6c, 0x5b, 0x4d, 0x93, 0xba, 0xbe, 0x54, 0x46, 0x21, 0x27,
+	0x89, 0xdc, 0xdd, 0x73, 0x02, 0x6b, 0x68, 0x77, 0xed, 0xed, 0xfe, 0xa0, 0x72, 0xe5, 0x79, 0x1c,
+	0x7e, 0x24, 0x44, 0x15, 0x90, 0x58, 0x11, 0x7e, 0x08, 0x48, 0x2e, 0x5e, 0xc4, 0xf1, 0xab, 0x00,
+	0xb1, 0x1c, 0x77, 0x7d, 0xb4, 0xb9, 0x86, 0xb2, 0x19, 0xbf, 0x0a, 0x85, 0x1d, 0x2b, 0xa0, 0x22,
+	0x1c, 0x7b, 0xa6, 0x6f, 0xda, 0x68, 0x09, 0xb2, 0xef, 0x77, 0x88, 0xdf, 0xe5, 0x59, 0x11, 0x2d,
+	0xc2, 0xfc, 0xd9, 0xa7, 0xae, 0x6f, 0xb6, 0xc8, 0xc9, 0xf9, 0xb3, 0x07, 0x79, 0xb9, 0x97, 0xbb,
+	0x71, 0x0d, 0xe6, 0x38, 0x69, 0x8b, 0x12, 0x3b, 0x94, 0x08, 0xcd, 0x3c, 0x2d, 0xcc, 0x54, 0x78,
+	0xb5, 0xc9, 0x27, 0x83, 0xca, 0x29, 0x23, 0xb1, 0x1d, 0xff, 0xa8, 0xc1, 0xac, 0x42, 0x40, 0xbb,
+	0x30, 0xb1, 0x4d, 0x22, 0x0b, 0xe7, 0x6a, 0xd7, 0x42, 0x81, 0xfe, 0xa0, 0xf2, 0xe6, 0x89, 0x87,
+	0x60, 0xdb, 0xae, 0xa3, 0xd7, 0x2d, 0xc7, 0xf4, 0xbb, 0xd5, 0x5b, 0xe4, 0xa8, 0xd6, 0xa5, 0x24,
+	0x30, 0x42, 0x24, 0xb4, 0x0f, 0xd9, 0x03, 0xb3, 0xdd, 0x21, 0xc5, 0xcc, 0x38, 0x20, 0x23, 0x2c,
+	0xdc, 0x83, 0x45, 0x6e, 0xf4, 0x3a, 0x3d, 0x31, 0x6a, 0xc2, 0xa7, 0xcc, 0xb8, 0x7c, 0xc2, 0x3f,
+	0x69, 0x50, 0x50, 0xf4, 0xf3, 0x93, 0xf8, 0x7f, 0x84, 0xee, 0xeb, 0x0c, 0x14, 0x36, 0x42, 0x7b,
+	0x9d, 0xa0, 0x13, 0x5f, 0x06, 0x0b, 0xc0, 0x70, 0x3b, 0x4e, 0x73, 0x9f, 0x9a, 0x94, 0x70, 0x17,
+	0xb6, 0xb8, 0xbe, 0x75, 0x45, 0x1f, 0x25, 0x4e, 0x93, 0xf8, 0xb6, 0xe5, 0x50, 0xf5, 0xb3, 0x21,
+	0xf0, 0x74, 0xda, 0xf5, 0x48, 0x50, 0x8d, 0xa1, 0xf6, 0x2d, 0xdb, 0x6b, 0x13, 0x43, 0x01, 0x47,
+	0x5f, 0x69, 0x90, 0xdf, 0x23, 0xc4, 0x8f, 0x49, 0x43, 0x77, 0x6b, 0xc8, 0xbe, 0xda, 0x26, 0xb7,
+	0xe5, 0x9d, 0x17, 0xb6, 0x25, 0xa9, 0xca, 0x48, 0xab, 0xc6, 0xdf, 0x6b, 0x30, 0xbf, 0x11, 0x76,
+	0x13, 0x19, 0x8b, 0x15, 0xc8, 0x31, 0xc2, 0x6d, 0xd3, 0x26, 0x3c, 0x95, 0x62, 0x42, 0x98, 0x66,
+	0x6c, 0xb1, 0xd5, 0x64, 0xc7, 0x92, 0x33, 0xc4, 0x12, 0xdd, 0x85, 0xd9, 0x4d, 0xe2, 0x90, 0xc0,
+	0x0a, 0x6e, 0x99, 0xc1, 0x61, 0x71, 0x62, 0x1c, 0x87, 0xa6, 0x22, 0xe2, 0x6f, 0x27, 0xc3, 0x52,
+	0x61, 0x52, 0xe5, 0xdc, 0xee, 0xc3, 0xcc, 0x6d, 0xb7, 0x49, 0xb6, 0x9c, 0x7b, 0x2e, 0x3f, 0xb5,
+	0xdb, 0x5c, 0xe1, 0xcd, 0xe7, 0x29, 0x9c, 0x4a, 0xb0, 0xe2, 0x08, 0x7a, 0x97, 0xbc, 0xea, 0xa6,
+	0x40, 0x35, 0x24, 0x7e, 0xda, 0xbf, 0xcc, 0xb8, 0xfd, 0x43, 0xbb, 0x30, 0xb5, 0xd7, 0xa9, 0x87,
+	0x77, 0x28, 0x8a, 0xdd, 0x15, 0x8e, 0xad, 0x9f, 0x84, 0xed, 0x77, 0x3d, 0xea, 0x56, 0xf7, 0x3a,
+	0xf5, 0xb6, 0xd5, 0xd8, 0x26, 0x5d, 0x83, 0xc3, 0xa0, 0x16, 0xe4, 0x77, 0xc2, 0x43, 0xa6, 0x51,
+	0x55, 0x0f, 0xad, 0x9e, 0x1c, 0x87, 0xd5, 0x69, 0x54, 0x74, 0x01, 0x0a, 0x2a, 0x29, 0xea, 0x28,
+	0x59, 0xd6, 0x51, 0x86, 0x19, 0xe8, 0x7c, 0xc2, 0xac, 0x3b, 0x96, 0x4d, 0x8a, 0x53, 0xab, 0xda,
+	0xf9, 0x09, 0x23, 0x4d, 0x0e, 0x7b, 0x54, 0x18, 0xfe, 0x03, 0xe2, 0x07, 0x96, 0xeb, 0x14, 0xa7,
+	0x59, 0xc2, 0xa9, 0x24, 0xfc, 0x32, 0xcc, 0xb1, 0xed, 0xa2, 0x0a, 0x2e, 0xc3, 0xd4, 0xa1, 0xda,
+	0xd0, 0xf8, 0x0a, 0x6f, 0xc3, 0x3c, 0xdb, 0x27, 0x87, 0x94, 0x15, 0xc8, 0xd9, 0x96, 0x93, 0x68,
+	0x7e, 0x31, 0x81, 0x71, 0xcd, 0x23, 0xce, 0xcd, 0x70, 0xae, 0x20, 0xe0, 0x1f, 0x34, 0x8e, 0x26,
+	0xf3, 0xd0, 0x80, 0x1c, 0x23, 0xbc, 0x47, 0xa8, 0xc9, 0x13, 0xf1, 0x72, 0x7f, 0x50, 0xb9, 0x78,
+	0xe2, 0x75, 0x8d, 0x2e, 0xa9, 0x94, 0x35, 0x62, 0x18, 0x74, 0x13, 0xb2, 0x6c, 0xc1, 0x33, 0xed,
+	0x62, 0x7f, 0x50, 0xb9, 0xf0, 0x22, 0x78, 0x46, 0x24, 0x8e, 0x3f, 0xd7, 0x60, 0x41, 0xf8, 0xce,
+	0xcd, 0x2d, 0x03, 0xec, 0x98, 0x01, 0x4d, 0x78, 0xaf, 0x50, 0x92, 0xee, 0x84, 0xc5, 0xe9, 0xdf,
+	0xbb, 0x83, 0xef, 0x2a, 0x98, 0xff, 0x45, 0xbc, 0xf0, 0x2e, 0x8f, 0xd7, 0xd8, 0x02, 0xf7, 0x29,
+	0xe4, 0xf9, 0xf5, 0x94, 0x81, 0x7b, 0x00, 0xd3, 0x9c, 0x94, 0x9e, 0x56, 0x53, 0x3b, 0x6b, 0x6f,
+	0xf5, 0x07, 0x95, 0xcb, 0xcf, 0x53, 0x83, 0x3c, 0xdf, 0xf5, 0xdc, 0xc0, 0x6c, 0x4b, 0x04, 0xa1,
+	0x01, 0x7f, 0xa1, 0xc1, 0x62, 0x74, 0x17, 0x8e, 0x62, 0x0b, 0x96, 0x20, 0xbb, 0x21, 0xa7, 0xe5,
+	0xac, 0x11, 0x2d, 0xd0, 0x47, 0x30, 0x71, 0xe7, 0x28, 0x28, 0x4e, 0xb0, 0x3e, 0x52, 0x14, 0x36,
+	0xa5, 0x85, 0x6b, 0x7a, 0x7f, 0x50, 0x79, 0xfd, 0x04, 0xa3, 0xe8, 0x51, 0x50, 0xbd, 0xe1, 0x3c,
+	0x22, 0x6d, 0xd7, 0x23, 0x46, 0x88, 0x8a, 0xaf, 0xc2, 0x99, 0x9a, 0x7c, 0x74, 0xb0, 0xa2, 0xc8,
+	0xef, 0x90, 0x18, 0x21, 0x3f, 0xb1, 0xe8, 0xa1, 0xe5, 0xf0, 0x5e, 0xa1, 0x92, 0xf0, 0x9f, 0x1a,
+	0x2c, 0xa7, 0x65, 0xb9, 0x23, 0xac, 0x0a, 0x24, 0x2b, 0x46, 0x94, 0x88, 0x69, 0x32, 0x7a, 0x17,
+	0xe6, 0x25, 0x89, 0x55, 0x8b, 0x0c, 0x0b, 0x7d, 0xa9, 0x1a, 0xbd, 0x51, 0xaa, 0xe2, 0x8d, 0x52,
+	0xbd, 0x23, 0xde, 0x28, 0xb5, 0x99, 0xb0, 0xc0, 0x7d, 0xf3, 0x5b, 0x45, 0x33, 0x92, 0xa2, 0xa8,
+	0xa1, 0x60, 0x8d, 0xaf, 0x4d, 0x25, 0x31, 0x2f, 0x3d, 0x06, 0x00, 0xb6, 0x62, 0xad, 0x11, 0x7d,
+	0x00, 0xb0, 0x49, 0xc4, 0x2c, 0x8c, 0x96, 0xe5, 0xe3, 0x21, 0xf1, 0x6a, 0x2a, 0x8d, 0x7a, 0x54,
+	0xe0, 0xd2, 0x67, 0xbf, 0xfe, 0xf1, 0x5d, 0x66, 0x09, 0x21, 0x9d, 0x73, 0xf4, 0x63, 0x2e, 0xda,
+	0x43, 0x5b, 0x61, 0x4f, 0x92, 0x63, 0x36, 0x9a, 0x17, 0x18, 0xec, 0x69, 0x56, 0x2a, 0xa6, 0x20,
+	0x65, 0x22, 0xe0, 0x02, 0xc3, 0x9c, 0x45, 0x39, 0x5d, 0xca, 0x46, 0x56, 0xf2, 0xb1, 0x2e, 0xb6,
+	0x32, 0x39, 0x9b, 0xc7, 0x56, 0xa6, 0xe6, 0x70, 0xc5, 0x4a, 0xce, 0x51, 0xac, 0x6c, 0xc1, 0x5c,
+	0x0c, 0xbd, 0x4e, 0x51, 0x31, 0x05, 0x22, 0x87, 0xd8, 0xd2, 0xb9, 0xbf, 0xe1, 0x70, 0x05, 0x98,
+	0x29, 0x58, 0x41, 0x25, 0x5d, 0xf2, 0x62, 0x15, 0xfa, 0xf1, 0x36, 0xe9, 0xf6, 0xd0, 0x5d, 0xa6,
+	0x48, 0xbe, 0x43, 0x46, 0xc6, 0x7a, 0xf4, 0x2b, 0x06, 0xaf, 0x30, 0x35, 0xcb, 0x68, 0x49, 0x97,
+	0x3c, 0xc5, 0x93, 0x5d, 0x98, 0x57, 0x15, 0x0c, 0x45, 0xbc, 0x34, 0x04, 0x1c, 0xc7, 0xfc, 0x34,
+	0x43, 0x9e, 0x47, 0xb3, 0xba, 0x22, 0xbf, 0x01, 0x39, 0x16, 0x9a, 0x70, 0xaa, 0x49, 0x83, 0x29,
+	0x67, 0xa0, 0x0e, 0x3d, 0x38, 0xcf, 0x80, 0x72, 0x68, 0x5a, 0xe7, 0x72, 0x37, 0xd9, 0xd1, 0xf1,
+	0xb2, 0x91, 0x46, 0x19, 0x55, 0xa1, 0xf0, 0x22, 0x83, 0x01, 0x34, 0xa3, 0x0b, 0xc9, 0xeb, 0x0c,
+	0x27, 0x9a, 0xe7, 0xae, 0xa7, 0x71, 0xce, 0xc8, 0xe9, 0x54, 0x9d, 0x16, 0x15, 0x14, 0x21, 0xb7,
+	0x03, 0x0b, 0x9b, 0x84, 0x2a, 0xad, 0x7c, 0x24, 0x52, 0xa2, 0x87, 0xe2, 0x25, 0x86, 0xb4, 0x80,
+	0xe6, 0x74, 0x55, 0xf6, 0x00, 0x0a, 0xa1, 0x4d, 0x62, 0x50, 0x8b, 0x66, 0xe8, 0x14, 0xe0, 0xe8,
+	0xc1, 0x19, 0x9f, 0x65, 0xa0, 0x05, 0x94, 0xd7, 0x53, 0x10, 0x7b, 0x30, 0xb3, 0x49, 0xb8, 0x8e,
+	0xa5, 0x94, 0x41, 0x51, 0x92, 0x8c, 0x30, 0x33, 0x46, 0x64, 0x74, 0xfd, 0x38, 0x9a, 0x30, 0x7a,
+	0xa8, 0xc1, 0x8e, 0x32, 0xea, 0xb4, 0x28, 0x29, 0x2c, 0x13, 0x6f, 0x39, 0x4d, 0xe6, 0xa0, 0xaf,
+	0x30, 0xd0, 0x97, 0x50, 0x25, 0x02, 0x0d, 0xf4, 0x63, 0x39, 0x8b, 0xf4, 0xf4, 0x63, 0x39, 0x79,
+	0xf4, 0xd0, 0xc7, 0x2c, 0x1c, 0xc9, 0x92, 0x9a, 0x0e, 0x47, 0x39, 0xa1, 0x64, 0xa8, 0xf2, 0x2a,
+	0x57, 0x75, 0x18, 0xea, 0x1e, 0x2b, 0x28, 0xa2, 0x71, 0x8c, 0x88, 0xcc, 0xc8, 0x06, 0x23, 0xfd,
+	0xc8, 0xe9, 0x82, 0xf5, 0x61, 0xa8, 0x47, 0x2c, 0x64, 0xb0, 0x6a, 0xc5, 0x27, 0x4f, 0xcb, 0xda,
+	0x2f, 0x4f, 0xcb, 0xda, 0xef, 0x4f, 0xcb, 0xda, 0xe3, 0x67, 0xe5, 0x53, 0x3f, 0x3f, 0x2b, 0x6b,
+	0x4f, 0x9e, 0x95, 0xb5, 0x3a, 0xff, 0x3b, 0xeb, 0xaf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2d, 0x61,
+	0x52, 0x30, 0xf9, 0x12, 0x00, 0x00,
+>>>>>>> proto getstatus updated
 }

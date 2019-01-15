@@ -41,7 +41,7 @@ func (m *Empty2) Reset()         { *m = Empty2{} }
 func (m *Empty2) String() string { return proto.CompactTextString(m) }
 func (*Empty2) ProtoMessage()    {}
 func (*Empty2) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_b613e4ea1407eefa, []int{0}
+	return fileDescriptor_transaction_fbadb36d8e955c81, []int{0}
 }
 func (m *Empty2) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -85,7 +85,7 @@ func (m *TransactRequest) Reset()         { *m = TransactRequest{} }
 func (m *TransactRequest) String() string { return proto.CompactTextString(m) }
 func (*TransactRequest) ProtoMessage()    {}
 func (*TransactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_b613e4ea1407eefa, []int{1}
+	return fileDescriptor_transaction_fbadb36d8e955c81, []int{1}
 }
 func (m *TransactRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -129,7 +129,7 @@ func (m *ReceiptResponse) Reset()         { *m = ReceiptResponse{} }
 func (m *ReceiptResponse) String() string { return proto.CompactTextString(m) }
 func (*ReceiptResponse) ProtoMessage()    {}
 func (*ReceiptResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_b613e4ea1407eefa, []int{2}
+	return fileDescriptor_transaction_fbadb36d8e955c81, []int{2}
 }
 func (m *ReceiptResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -173,7 +173,7 @@ func (m *UnconfirmedTxsRequest) Reset()         { *m = UnconfirmedTxsRequest{} }
 func (m *UnconfirmedTxsRequest) String() string { return proto.CompactTextString(m) }
 func (*UnconfirmedTxsRequest) ProtoMessage()    {}
 func (*UnconfirmedTxsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_b613e4ea1407eefa, []int{3}
+	return fileDescriptor_transaction_fbadb36d8e955c81, []int{3}
 }
 func (m *UnconfirmedTxsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -225,7 +225,7 @@ func (m *UnconfirmTxsResponse) Reset()         { *m = UnconfirmTxsResponse{} }
 func (m *UnconfirmTxsResponse) String() string { return proto.CompactTextString(m) }
 func (*UnconfirmTxsResponse) ProtoMessage()    {}
 func (*UnconfirmTxsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_b613e4ea1407eefa, []int{4}
+	return fileDescriptor_transaction_fbadb36d8e955c81, []int{4}
 }
 func (m *UnconfirmTxsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1126,13 +1126,13 @@ var (
 )
 
 func init() {
-	proto.RegisterFile("rpc/grpc/proto3/transaction.proto", fileDescriptor_transaction_b613e4ea1407eefa)
+	proto.RegisterFile("rpc/grpc/proto3/transaction.proto", fileDescriptor_transaction_fbadb36d8e955c81)
 }
 func init() {
-	golang_proto.RegisterFile("rpc/grpc/proto3/transaction.proto", fileDescriptor_transaction_b613e4ea1407eefa)
+	golang_proto.RegisterFile("rpc/grpc/proto3/transaction.proto", fileDescriptor_transaction_fbadb36d8e955c81)
 }
 
-var fileDescriptor_transaction_b613e4ea1407eefa = []byte{
+var fileDescriptor_transaction_fbadb36d8e955c81 = []byte{
 	// 414 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x52, 0x4d, 0x8b, 0xda, 0x40,
 	0x18, 0x76, 0x2c, 0x4a, 0x3b, 0x29, 0x15, 0x07, 0x5b, 0x25, 0x48, 0xb4, 0x39, 0x49, 0x4b, 0x33,

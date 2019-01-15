@@ -1,8 +1,8 @@
 package p2p
 
 import (
-	net "github.com/tendermint/tendermint/p2p"
 	amino "github.com/tendermint/go-amino"
+	net "github.com/tendermint/tendermint/p2p"
 )
 
 const (

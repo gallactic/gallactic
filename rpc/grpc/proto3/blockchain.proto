@@ -119,7 +119,7 @@ message ChainResponse{
 }
 
 message StatusResponse {
-  bytes  NodeInfo          = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.DefaultNodeInfo",(gogoproto.nullable) = false];
+  bytes  NodeInfo          = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/consensus/tendermint/p2p.GNodeInfo",(gogoproto.nullable) = false];
   bytes	 GenesisHash       = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
   bytes	 PubKey            = 3  [(gogoproto.customtype) =   "github.com/gallactic/gallactic/crypto.PublicKey",(gogoproto.nullable) = false];
   bytes	 LatestBlockHash   = 4 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
