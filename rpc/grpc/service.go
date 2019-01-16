@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -167,15 +168,15 @@ func (s *blockchainServer) GetStatus(ctx context.Context, in *pb.Empty) (*pb.Sta
 	if err != nil {
 		return nil, err
 	}
-	    ni := new(p2p.GNodeInfo)
-		tmni := s.nodeview.NodeInfo().(*net.DefaultNodeInfo)
-		ni.ID_ = tmni.ID_
-		ni.Network = tmni.Network
-		ni.ProtocolVersion = tmni.ProtocolVersion
-		ni.Version = tmni.Version
-		ni.Channels = tmni.Channels
-		ni.ListenAddr = tmni.ListenAddr
-		ni.Moniker = tmni.Moniker
+	ni := new(p2p.GNodeInfo)
+	tmni := s.nodeview.NodeInfo().(net.DefaultNodeInfo)
+	ni.ID_ = tmni.ID_
+	ni.Network = tmni.Network
+	ni.ProtocolVersion = tmni.ProtocolVersion
+	ni.Version = tmni.Version
+	ni.Channels = tmni.Channels
+	ni.ListenAddr = tmni.ListenAddr
+	ni.Moniker = tmni.Moniker
 	return &pb.StatusResponse{
 		NodeInfo:          *ni,
 		GenesisHash:       s.blockchain.GenesisHash(),
