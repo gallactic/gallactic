@@ -65,8 +65,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	logger = logger.WithScope("NewKernel()").With(structure.TimeKey, kitlog.DefaultTimestampUTC)
 	tmLogger := logger.With(structure.CallerKey, kitlog.Caller(loggingCallerDepth+1))
 	logger = logger.WithInfo(structure.CallerKey, kitlog.Caller(loggingCallerDepth))
-	tmConfig := tendermint.DeriveConfig(conf)
-	stateDB := dbm.NewDB("gallactic_state", dbm.GoLevelDBBackend, tmConfig.DBDir())
+	stateDB := dbm.NewDB("gallactic_state", dbm.GoLevelDBBackend, conf.Tendermint.DBDir())
 
 	bc, err := blockchain.LoadOrNewBlockchain(stateDB, gen, myVal, logger)
 	if err != nil {
@@ -78,7 +77,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	committer := execution.NewBatchCommitter(bc, logger)
 	tmGenesis := tendermint.DeriveGenesisDoc(gen)
 
-	tmNode, err := tendermint.NewNode(tmConfig, privVal, tmGenesis, bc, checker, committer, tmLogger)
+	tmNode, err := tendermint.NewNode(conf.Tendermint, privVal, tmGenesis, bc, checker, committer, tmLogger)
 	if err != nil {
 		return nil, err
 	}

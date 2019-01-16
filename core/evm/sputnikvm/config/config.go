@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
 type SputnikvmConfig struct {
-	Web3Address string `toml:"web3Address"`
+	Web3Address string `toml:"Web3Address"`
 }
 
 func DefaultSputnikvmConfig() *SputnikvmConfig {
