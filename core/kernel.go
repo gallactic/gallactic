@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gallactic/gallactic/events"
 	"github.com/gallactic/gallactic/rpc/grpc"
 
 	"github.com/gallactic/gallactic/common/process"
@@ -71,10 +72,10 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	if err != nil {
 		return nil, fmt.Errorf("error creating or loading blockchain state: %v", err)
 	}
-
+	eventBus := events.NewEventBus(nil)
 	privVal := tmv.NewPrivValidatorMemory(myVal)
 	checker := execution.NewBatchChecker(bc, logger)
-	committer := execution.NewBatchCommitter(bc, logger)
+	committer := execution.NewBatchCommitter(bc, eventBus, logger)
 	tmGenesis := tendermint.DeriveGenesisDoc(gen)
 
 	tmNode, err := tendermint.NewNode(conf.Tendermint, privVal, tmGenesis, bc, checker, committer, tmLogger)

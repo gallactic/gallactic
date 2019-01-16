@@ -5,6 +5,8 @@ import (
 	"runtime/debug"
 	"sync"
 
+	"github.com/gallactic/gallactic/events"
+
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/execution/executors"
 	"github.com/gallactic/gallactic/core/state"
@@ -45,6 +47,7 @@ type executor struct {
 	sync.RWMutex
 	logger          *logging.Logger
 	bc              *blockchain.Blockchain
+	eventBus        *events.EventBus
 	cache           *state.Cache
 	txExecutors     map[tx.Type]Executor
 	accumulatedFees uint64
@@ -54,14 +57,14 @@ var _ BatchExecutor = (*executor)(nil)
 
 // Wraps a cache of what is variously known as the 'check cache' and 'mempool'
 func NewBatchChecker(bc *blockchain.Blockchain, logger *logging.Logger) BatchExecutor {
-	return newExecutor("CheckCache", false, bc, logger.WithScope("NewBatchExecutor"))
+	return newExecutor("CheckCache", false, bc, nil, logger.WithScope("NewBatchExecutor"))
 }
 
-func NewBatchCommitter(bc *blockchain.Blockchain, logger *logging.Logger) BatchCommitter {
-	return newExecutor("CommitCache", true, bc, logger.WithScope("NewBatchCommitter"))
+func NewBatchCommitter(bc *blockchain.Blockchain, eventBus *events.EventBus, logger *logging.Logger) BatchCommitter {
+	return newExecutor("CommitCache", true, bc, eventBus, logger.WithScope("NewBatchCommitter"))
 }
 
-func newExecutor(name string, committing bool, bc *blockchain.Blockchain, logger *logging.Logger) *executor {
+func newExecutor(name string, committing bool, bc *blockchain.Blockchain, eventBus *events.EventBus, logger *logging.Logger) *executor {
 
 	exe := &executor{
 		bc:     bc,

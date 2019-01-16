@@ -10,6 +10,7 @@ import (
 
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"google.golang.org/grpc"
 )
 
@@ -34,7 +35,7 @@ func (s *Server) StartGateway(ctx context.Context, grpcAddr, gatewayAddr string)
 
 	s.handleEntryPoint(mux, gatewayAddr)
 
-	go http.ListenAndServe(gatewayAddr, mux) /// TODO: check error with channels
+	go http.ListenAndServe(gatewayAddr, wsproxy.WebsocketProxy(mux)) /// TODO: check error with channels
 
 	return nil
 }

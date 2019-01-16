@@ -269,6 +269,14 @@
   version = "v1.1.5"
 
 [[projects]]
+  digest = "1:4059c14e87a2de3a434430340521b5feece186c1469eff0834c29a63870de3ed"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
+
+[[projects]]
   branch = "master"
   digest = "1:f91bb67d051a94cf6ab2cf07eee0550432afc31655838d42cdec258db4b348f0"
   name = "github.com/kr/logfmt"
@@ -400,6 +408,14 @@
   version = "v1.6.0"
 
 [[projects]]
+  digest = "1:e256b859ab89f005f2f639f5ed9807d0873d9135e27c6382f419b840ff9abe71"
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
+  version = "v1.3.0"
+
+[[projects]]
   digest = "1:0331452965d8695c0a5633e0f509012987681a654f388f2ad0c3b2d7f7004b1c"
   name = "github.com/stretchr/testify"
   packages = [
@@ -512,6 +528,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:d4e58a50951cee7efe774acb441b5a3b75c99f9fd8cc6d58a3146b4de190e14d"
+  name = "github.com/tmc/grpc-websocket-proxy"
+  packages = ["wsproxy"]
+  pruneopts = "NUT"
+  revision = "0ad062ec5ee553a48f6dbd280b7a1b5638e8a113"
+
+[[projects]]
+  branch = "master"
   digest = "1:8f326b9b29560f9e661f6f692a66b8b30db788bdb8550b3e5791ed3ee607e4d7"
   name = "github.com/tmthrgd/asm"
   packages = ["."]
@@ -561,6 +585,7 @@
     "salsa20/salsa",
     "scrypt",
     "sha3",
+    "ssh/terminal",
   ]
   pruneopts = "NUT"
   revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
@@ -740,6 +765,7 @@
     "github.com/tendermint/tendermint/rpc/core/types",
     "github.com/tendermint/tendermint/state",
     "github.com/tendermint/tendermint/types",
+    "github.com/tmc/grpc-websocket-proxy/wsproxy",
     "github.com/tmthrgd/go-hex",
     "github.com/tommy351/gin-cors",
     "golang.org/x/crypto/ed25519",
