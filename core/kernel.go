@@ -73,6 +73,10 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 		return nil, fmt.Errorf("error creating or loading blockchain state: %v", err)
 	}
 	eventBus := events.NewEventBus(nil)
+	if err := eventBus.Start(); err != nil {
+		return nil, err
+	}
+
 	privVal := tmv.NewPrivValidatorMemory(myVal)
 	checker := execution.NewBatchChecker(bc, logger)
 	committer := execution.NewBatchCommitter(bc, eventBus, logger)
