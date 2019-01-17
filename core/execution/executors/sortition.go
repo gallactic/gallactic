@@ -5,7 +5,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/state"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
@@ -20,7 +20,7 @@ type SortitionContext struct {
 	Logger     *logging.Logger
 }
 
-func (ctx *SortitionContext) Execute(txEnv *txs.Envelope) error {
+func (ctx *SortitionContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	tx, ok := txEnv.Tx.(*tx.SortitionTx)
 	if !ok {
 		return e.Error(e.ErrInvalidTxType)

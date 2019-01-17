@@ -3,23 +3,34 @@ package events
 import (
 	"context"
 
-	tmpubsub "github.com/tendermint/tendermint/libs/pubsub"
+	tmPubSub "github.com/tendermint/tendermint/libs/pubsub"
 )
 
-type NopEventBus struct{}
+type nopEventBus struct{}
 
-func (NopEventBus) Subscribe(ctx context.Context, subscriber string, query tmpubsub.Query, out chan<- interface{}) error {
+func NewNopeEventBus() EventBus {
+	return &nopEventBus{}
+}
+
+func (nopEventBus) Start() error {
+	return nil
+}
+func (nopEventBus) Stop() error {
 	return nil
 }
 
-func (NopEventBus) Unsubscribe(ctx context.Context, subscriber string, query tmpubsub.Query) error {
+func (nopEventBus) Subscribe(ctx context.Context, subscriber string, query tmPubSub.Query, out chan<- interface{}) error {
 	return nil
 }
 
-func (NopEventBus) UnsubscribeAll(ctx context.Context, subscriber string) error {
+func (nopEventBus) Unsubscribe(ctx context.Context, subscriber string, query tmPubSub.Query) error {
 	return nil
 }
 
-func (NopEventBus) PublishEventTx(data EventDataTx) error {
+func (nopEventBus) UnsubscribeAll(ctx context.Context, subscriber string) error {
+	return nil
+}
+
+func (nopEventBus) Publish(msg interface{}, tags tmPubSub.TagMap) error {
 	return nil
 }

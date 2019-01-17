@@ -114,6 +114,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 					return nil, fmt.Errorf("could not subscribe to Tendermint events: %v", err)
 				}
 				return process.ShutdownFunc(func(ctx context.Context) error {
+					eventBus.Stop() /// Stopping EventBus
 					err := tmNode.Stop()
 					// Close tendermint database connections using our wrapper
 					defer tmNode.Close()

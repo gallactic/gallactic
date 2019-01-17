@@ -220,27 +220,9 @@
   version = "v1.6.2"
 
 [[projects]]
-  digest = "1:a3f468c3e1fc9595a21d22ca758bb937fb6cf2055798e3fc328754ce14954da0"
+  digest = "1:2f3631983055bb7fe8cd0a1bd407ab9e5f460e5ea1734f3845bd8ff2c4c370f1"
   name = "github.com/hyperledger/burrow"
   packages = [
-    "acm",
-    "acm/balance",
-    "acm/state",
-    "acm/validator",
-    "binary",
-    "crypto",
-    "event",
-    "event/pubsub",
-    "event/query",
-    "execution/errors",
-    "execution/evm/asm",
-    "execution/evm/asm/bc",
-    "execution/evm/sha3",
-    "execution/exec",
-    "execution/names",
-    "genesis",
-    "genesis/spec",
-    "keys",
     "logging",
     "logging/adapters/stdlib",
     "logging/errors",
@@ -248,10 +230,6 @@
     "logging/logconfig",
     "logging/loggers",
     "logging/structure",
-    "permission",
-    "process",
-    "txs",
-    "txs/payload",
   ]
   pruneopts = "NUT"
   revision = "4c4a833f4c59b67ed1b389a8e8961ee64100bb9b"
@@ -759,8 +737,6 @@
     "github.com/golang/protobuf/ptypes/timestamp",
     "github.com/grpc-ecosystem/grpc-gateway/runtime",
     "github.com/grpc-ecosystem/grpc-gateway/utilities",
-    "github.com/hyperledger/burrow/event",
-    "github.com/hyperledger/burrow/execution/exec",
     "github.com/hyperledger/burrow/logging",
     "github.com/hyperledger/burrow/logging/lifecycle",
     "github.com/hyperledger/burrow/logging/logconfig",

@@ -336,7 +336,7 @@ func (ns *networkServer) GetPeers(context.Context, *pb.Empty1) (*pb.PeerResponse
 
 //Transcation Service
 func (tx *transcatorServer) BroadcastTx(ctx context.Context, txReq *pb.TransactRequest) (*pb.ReceiptResponse, error) {
-	receipt, err := tx.transactor.BroadcastTx(txReq.TxEnvelope)
+	receipt, err := tx.transactor.BroadcastTxSync(txReq.TxEnvelope)
 	if err != nil {
 		return nil, err
 	}

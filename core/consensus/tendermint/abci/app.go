@@ -82,19 +82,20 @@ func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 			Log:  fmt.Sprintf("Encoding error: %s", err),
 		}
 	}
-	receipt := txEnv.GenerateReceipt()
-	if err := app.checker.Execute(txEnv); err != nil {
+	txRec := txEnv.GenerateReceipt()
+	err := app.checker.Execute(txEnv, txRec)
+	if err != nil {
 		app.logger.TraceMsg("CheckTx execution error",
 			structure.ErrorKey, err,
 			"tag", "CheckTx",
-			"tx_hash", receipt.TxHash)
+			"tx_hash", txRec.Hash)
 		return abciTypes.ResponseCheckTx{
 			Code: codes.EncodingErrorCode,
 			Log:  fmt.Sprintf("CheckTx could not execute transaction: %s, error: %v", txEnv, err),
 		}
 	}
 
-	receiptBytes, err := json.Marshal(receipt)
+	receiptBytes, err := json.Marshal(txRec)
 	if err != nil {
 		return abciTypes.ResponseCheckTx{
 			Code: codes.TxExecutionErrorCode,
@@ -103,7 +104,7 @@ func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 	}
 	app.logger.TraceMsg("CheckTx success",
 		"tag", "CheckTx",
-		"tx_hash", receipt.TxHash)
+		"tx_hash", txRec.Hash)
 	return abciTypes.ResponseCheckTx{
 		Code: codes.TxExecutionSuccessCode,
 		Log:  "CheckTx success - receipt in data",
@@ -153,12 +154,13 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 		}
 	}
 
-	receipt := txEnv.GenerateReceipt()
-	if err := app.committer.Execute(txEnv); err != nil {
+	txRec := txEnv.GenerateReceipt()
+	txRec.Height = app.block.Header.Height
+	if err := app.committer.Execute(txEnv, txRec); err != nil {
 		app.logger.TraceMsg("DeliverTx execution error",
 			structure.ErrorKey, err,
 			"tag", "DeliverTx",
-			"tx_hash", receipt.TxHash)
+			"tx_hash", txRec.Hash)
 		return abciTypes.ResponseDeliverTx{
 			Code: codes.TxExecutionErrorCode,
 			Log:  fmt.Sprintf("DeliverTx could not execute transaction: %s, error: %s", txEnv, err),
@@ -167,8 +169,8 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 
 	app.logger.TraceMsg("DeliverTx success",
 		"tag", "DeliverTx",
-		"tx_hash", receipt.TxHash)
-	receiptBytes, err := json.Marshal(receipt)
+		"tx_hash", txRec.Hash)
+	receiptBytes, err := json.Marshal(txRec)
 	if err != nil {
 		return abciTypes.ResponseDeliverTx{
 			Code: codes.TxExecutionErrorCode,
