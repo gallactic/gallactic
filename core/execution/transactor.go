@@ -4,17 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gallactic/gallactic/core/consensus/tendermint/codes"
 	"github.com/gallactic/gallactic/events"
 	"github.com/gallactic/gallactic/txs"
 
-	"github.com/hyperledger/burrow/event"
-	"github.com/hyperledger/burrow/execution/exec"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	tmTypes "github.com/tendermint/tendermint/types"
+)
+
+const (
+	blockingTimeout = 100 * time.Second
 )
 
 // Transactor is the controller/middleware for the v0 RPC
@@ -48,7 +51,7 @@ func (trans *Transactor) BroadcastTxAsync(txEnv *txs.Envelope, callback func(res
 
 // Broadcast a transaction and waits for a response from the mempool. Transactions to BroadcastTx will block during
 // various mempool operations (managed by Tendermint) including mempool Reap, Commit, and recheckTx.
-func (trans *Transactor) BroadcastTx2(txEnv *txs.Envelope) (*txs.Receipt, error) {
+func (trans *Transactor) BroadcastTx(txEnv *txs.Envelope) (*txs.Receipt, error) {
 	trans.logger.Trace.Log("method", "BroadcastTx",
 		"tx_hash", txEnv.Hash(),
 		"tx", txEnv.String())
@@ -89,7 +92,9 @@ func (trans *Transactor) BroadcastTxRaw(txBytes []byte) (*txs.Receipt, error) {
 	}
 }
 
-func (trans *Transactor) BroadcastTx(txEnv *txs.Envelope, callback func(res *abciTypes.Response)) (int, error) {
+func (trans *Transactor) BroadcastTxSync(txEnv *txs.Envelope, callback func(res *abciTypes.Response)) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), blockingTimeout)
+	defer cancel()
 	txBytes, err := txEnv.Encode()
 	if err != nil {
 		return 0, fmt.Errorf("error encoding transaction: %v", err)
@@ -97,17 +102,38 @@ func (trans *Transactor) BroadcastTx(txEnv *txs.Envelope, callback func(res *abc
 
 	// Subscribe before submitting to mempool
 	txHash := txEnv.Hash()
-	subID := event.GenSubID()
+	subID := events.GenSubID()
 	out := make(chan interface{}, 1)
-	err := trans.eventBus.Subscribe(ctx, subID, exec.QueryForTxExecution(txHash), out)
+	q := events.QueryForTxExecution(txHash)
+	err = trans.eventBus.Subscribe(ctx, subID, q, out)
+
 	if err != nil {
 		// We do not want to hold the lock with a defer so we must
-		return nil, err
-	}
-	defer trans.eventBus.UnsubscribeAll(context.Background(), subID)
-
-	if err := trans.BroadcastTxAsyncRaw(txBytes, callback); err != nil {
 		return 0, err
 	}
+	defer trans.eventBus.UnsubscribeAll(ctx, subID)
 
+	txReceipt, err := trans.BroadcastTxRaw(txBytes)
+	if err != nil {
+		return 0, err
+	}
+	fmt.Print(txReceipt)
+
+	return 0, nil
+
+	// Get all the execution events for this Tx
+	// select {
+	// case <-ctx.Done():
+	// 	return nil, ctx.Err()
+	// case <-timer.C:
+	// 	return nil, fmt.Errorf("timed out waiting for transaction with hash %v timed out after %v",
+	// 		checkTxReceipt.TxHash, BlockingTimeout)
+	// case msg := <-out:
+	// 	txe := msg.(*exec.TxExecution)
+	// 	callError := txe.CallError()
+	// 	if callError != nil && callError.ErrorCode() != errors.ErrorCodeExecutionReverted {
+	// 		return nil, errors.Wrap(callError, "exception during transaction execution")
+	// 	}
+	// 	return txe, nil
+	// }
 }

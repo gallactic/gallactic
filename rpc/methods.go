@@ -1,8 +1,11 @@
 package rpc
 
 import (
+	"fmt"
+
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/txs"
+	abciTypes "github.com/tendermint/tendermint/abci/types"
 )
 
 // Used to handle requests. interface{} param is a wildcard used for example with socket events.
@@ -43,7 +46,9 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		if err != nil {
 			return nil, RPCErrorInvalidParams, err
 		}
-		receipt, err := service.Transactor().BroadcastTx(txEnv)
+		receipt, err := service.Transactor().BroadcastTxSync(txEnv, func(res *abciTypes.Response) {
+			fmt.Print(res)
+		})
 		if err != nil {
 			return nil, RPCErrorInternalError, err
 		}

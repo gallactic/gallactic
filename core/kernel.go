@@ -83,7 +83,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 		return nil, err
 	}
 
-	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, logger)
+	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, eventBus, logger)
 	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode), logger)
 
 	launchers := []process.Launcher{
