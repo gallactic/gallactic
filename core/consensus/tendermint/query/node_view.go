@@ -75,3 +75,7 @@ func (nv *NodeView) PrivValidatorPublicKey() (crypto.PublicKey, error) {
 
 	return crypto.PublicKeyFromRawBytes(pub[:])
 }
+
+// func (nv *NodeView) DefaultNodeInfo() p2p.DefaultNodeInfo {
+// 	return nv.tmNode.NodeInfo()
+// }

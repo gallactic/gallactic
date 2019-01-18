@@ -30,8 +30,7 @@ service BlockChain {
   rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetBlockchainInfo(Empty) returns (BlockchainInfoResponse) { option (google.api.http).get = "/GetBlockchainInfo";}
-
-  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse) { option (google.api.http) = {
+  rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http) = {
       get : "/BlockTxs";
       additional_bindings {
         get : "/BlockTxs/{height}";
@@ -104,7 +103,7 @@ message ChainResponse{
 }
 
 message StatusResponse {
-  bytes  NodeInfo          = 1 [(gogoproto.customtype) = "github.com/tendermint/tendermint/p2p.DefaultNodeInfo",(gogoproto.nullable) = false];
+  bytes  NodeInfo          = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/core/consensus/tendermint/p2p.GNodeInfo",(gogoproto.nullable) = false];
   bytes	 GenesisHash       = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
   bytes	 PubKey            = 3  [(gogoproto.customtype) =   "github.com/gallactic/gallactic/crypto.PublicKey",(gogoproto.nullable) = false];
   bytes	 LatestBlockHash   = 4 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
@@ -149,14 +148,12 @@ message BlockTxsResponse {
   repeated BlockTxsResponse  Txs = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
 }
 
-message BlockchainInfoRequest{
-  string Blockwithin =1;
-}
+
 
 message BlockchainInfoResponse {
   uint64  LastBlockHeight = 1;
   google.protobuf.Timestamp LastBlockTime = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   bytes  LastBlockHash  = 3 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
-}
 
+}
 

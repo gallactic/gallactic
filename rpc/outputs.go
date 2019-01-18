@@ -225,3 +225,4 @@ func (info NetInfoOutput) Size() int {
 	bs, _ := info.Encode()
 	return len(bs)
 }
+

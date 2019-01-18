@@ -2,9 +2,11 @@ package grpc
 
 import (
 	"context"
+
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
+	"github.com/gallactic/gallactic/core/consensus/tendermint/p2p"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/state"
@@ -14,6 +16,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
+	net "github.com/tendermint/tendermint/p2p"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
@@ -27,7 +30,7 @@ type blockchainServer struct {
 }
 
 type transcatorServer struct {
-	ctx        *context.Context
+	ctx        context.Context
 	nodeview   *query.NodeView
 	transactor *execution.Transactor
 }
@@ -51,9 +54,11 @@ func BlockchainService(blockchain *blockchain.Blockchain, nview *query.NodeView)
 		state:      blockchain.State(),
 	}
 }
-func TransactorService(transction *execution.Transactor) *transcatorServer {
+func TransactorService(con context.Context, transaction *execution.Transactor, nview *query.NodeView) *transcatorServer {
 	return &transcatorServer{
-		transactor: transction,
+		transactor: transaction,
+		nodeview:   nview,
+		ctx:        con,
 	}
 }
 func NetworkService(blockchain *blockchain.Blockchain, nView *query.NodeView) *networkServer {
@@ -163,8 +168,17 @@ func (s *blockchainServer) GetStatus(ctx context.Context, in *pb.Empty) (*pb.Sta
 	if err != nil {
 		return nil, err
 	}
+	ni := new(p2p.GNodeInfo)
+	tmni := s.nodeview.NodeInfo().(net.DefaultNodeInfo)
+	ni.ID_ = tmni.ID_
+	ni.Network = tmni.Network
+	ni.ProtocolVersion = tmni.ProtocolVersion
+	ni.Version = tmni.Version
+	ni.Channels = tmni.Channels
+	ni.ListenAddr = tmni.ListenAddr
+	ni.Moniker = tmni.Moniker
 	return &pb.StatusResponse{
-		//NodeInfo:          s.nodeview.deo,
+		NodeInfo:          *ni,
 		GenesisHash:       s.blockchain.GenesisHash(),
 		PubKey:            publicKey,
 		LatestBlockHash:   latestBlockHash,
@@ -239,12 +253,12 @@ func (s *blockchainServer) GetLatestBlock(context.Context, *pb.Empty) (*pb.Block
 }
 
 func (s *blockchainServer) GetBlockchainInfo(ctx context.Context, blockinfo *pb.Empty) (*pb.BlockchainInfoResponse, error) {
-	 res := &pb.BlockchainInfoResponse{
+	res := &pb.BlockchainInfoResponse{
 		LastBlockHeight: s.blockchain.LastBlockHeight(),
 		LastBlockHash:   s.blockchain.LastBlockHash(),
 		LastBlockTime:   s.blockchain.LastBlockTime(),
 	}
-	return res,nil
+	return res, nil
 }
 
 func (s *blockchainServer) GetConsensusState(context.Context, *pb.Empty) (*pb.ConsensusResponse, error) {
@@ -287,29 +301,31 @@ func (s *blockchainServer) GetBlockTxs(ctx context.Context, block *pb.BlockReque
 
 //Network service
 func (s *networkServer) GetNetworkInfo(context.Context, *pb.Empty1) (*pb.NetInfoResponse, error) {
-	//listening := s.nodeview.IsListening()
 	var contexts context.Context
-	//var listeners []string
-	// for _, listener := range s.nodeview.Listeners() {
-	// 	listeners = append(listeners, listener.String())
-	// }
 	peers, err := s.GetPeers(contexts, nil)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.NetInfoResponse{
-		//Listening: listening,
-		//Listeners: listeners,
 		Peers: peers.Peer,
 	}, nil
+
 }
 
 func (ns *networkServer) GetPeers(context.Context, *pb.Empty1) (*pb.PeerResponse, error) {
 	peers := make([]*pb.Peer, ns.nodeview.Peers().Size())
 	for i, peer := range ns.nodeview.Peers().List() {
-		peer.NodeInfo()
+		ni := new(p2p.GNodeInfo)
+		tmni, _ := peer.NodeInfo().(*net.DefaultNodeInfo)
+		ni.ID_ = tmni.ID_
+		ni.Network = tmni.Network
+		ni.ProtocolVersion = tmni.ProtocolVersion
+		ni.Version = tmni.Version
+		ni.Channels = tmni.Channels
+		ni.ListenAddr = tmni.ListenAddr
+		ni.Moniker = tmni.Moniker
 		peers[i] = &pb.Peer{
-			// NodeInfo:   peer.NodeInfo(),
+			NodeInfo:   *ni,
 			IsOutbound: peer.IsOutbound(),
 		}
 	}
@@ -330,8 +346,8 @@ func (tx *transcatorServer) BroadcastTx(ctx context.Context, txReq *pb.TransactR
 	}, nil
 }
 
-func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq *pb.UnconfirmedTxsRequest) (*pb.UnconfirmTxsResponse, error) {
-	transactions, err := tx.nodeview.MempoolTransactions(int(unconfirmreq.MaxTxs))
+func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq *pb.Empty2) (*pb.UnconfirmTxsResponse, error) {
+	transactions, err := tx.nodeview.MempoolTransactions(-1)
 	if err != nil {
 		return nil, err
 	}
@@ -346,6 +362,3 @@ func (tx *transcatorServer) GetUnconfirmedTxs(ctx context.Context, unconfirmreq 
 		TxEnvelopes: wrappedTxs,
 	}, nil
 }
-
-
-
