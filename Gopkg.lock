@@ -96,6 +96,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:1095cce6419e511a07e0ff74d5dfaca1876773c1dcebbd109ff6645d239eccfe"
+  name = "github.com/gallactic/sputnikvm-ffi"
+  packages = ["go/sputnikvm"]
+  pruneopts = "NT"
+  revision = "e680215a08e8887ffc325161dc33162cbf7be494"
+
+[[projects]]
+  branch = "master"
   digest = "1:23edf5aaca7a1f15d68215ac41595c0732152757e9d7b3f282821222784049f1"
   name = "github.com/gin-contrib/sse"
   packages = ["."]
@@ -693,6 +701,7 @@
     "github.com/BurntSushi/toml",
     "github.com/ethereum/go-ethereum/rpc",
     "github.com/ethereumproject/go-ethereum/common",
+    "github.com/gallactic/sputnikvm-ffi/go/sputnikvm",
     "github.com/gin-gonic/gin",
     "github.com/go-kit/kit/log",
     "github.com/gogo/protobuf/gogoproto",
