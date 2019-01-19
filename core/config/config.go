@@ -32,7 +32,7 @@ func DefaultConfig() *Config {
 	tmDef.Consensus.TimeoutCommit = 5 * tmDef.Consensus.TimeoutCommit
 	tmDef.LogLevel = "main:info,state:info,*:error,*:debug"
 	tmDef.ProxyApp = "gallactic"
-	tmDef.PrivValidator = ""
+	tmDef.PrivValidatorKey = ""
 	tmDef.Genesis = ""
 
 	return &Config{
