@@ -1,23 +1,16 @@
 package sputnikvm
 
 import (
-	"errors"
 	"math/big"
 
 	"github.com/ethereumproject/go-ethereum/common"
-	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 )
 
-func Execute(adapter Adapter) (Output, error) {
+func Execute(adapter Adapter) Output {
 	var out Output
-	var retError error
-
-	if adapter.calleeAddress() == nil && len(adapter.GetData()) == 0 {
-		return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
-	}
 
 	transaction := sputnikvm.Transaction{
 		Caller:   adapter.callerAddress(),
@@ -38,7 +31,6 @@ func Execute(adapter Adapter) (Output, error) {
 	}
 
 	vm := sputnikvm.NewGallactic(&transaction, &header)
-	defer vm.Free()
 
 Loop:
 	for {
@@ -55,7 +47,8 @@ Loop:
 			} else {
 				acc := adapter.getAccount(require.Address())
 				if acc != nil {
-					vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()), new(big.Int).SetUint64(acc.Balance()), acc.Code())
+					vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()),
+						new(big.Int).SetUint64(acc.Balance()), acc.Code())
 				} else {
 					vm.CommitNonexist(require.Address())
 				}
@@ -66,7 +59,7 @@ Loop:
 			if acc != nil {
 				vm.CommitAccountCode(require.Address(), acc.Code())
 			} else {
-				return out, errors.New("No Exist Account for Acquire Code")
+				vm.CommitNonexist(require.Address())
 			}
 
 		case sputnikvm.RequireAccountStorage:
@@ -78,29 +71,22 @@ Loop:
 			vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
 
 		case sputnikvm.RequireBlockhash:
-			//Require Blockhash
-			reqblockNumber := require.BlockNumber().Int64()
-
-			block, err := tmRPC.Block(&reqblockNumber)
-
-			if err != nil {
-				return out, e.Errorf(e.ErrInternalEvm, "Not Exist Block!")
-			}
-
-			hash := block.Block.Hash().Bytes()
 			var blockHash common.Hash
-			blockHash.SetBytes(hash)
+
+			reqblockNumber := require.BlockNumber().Int64()
+			block, err := tmRPC.Block(&reqblockNumber)
+			if err == nil {
+				hash := block.Block.Hash().Bytes()
+				blockHash.SetBytes(hash)
+			}
 			vm.CommitBlockhash(require.BlockNumber(), blockHash)
 
 		default:
-			return out, e.Errorf(e.ErrInternalEvm, "Not Supperted Requirement by Sputnik!")
+			/// The cache is irreversible, during delivering call transaction
+			/// Better panic in case of unexpected error happens
+			/// rather than changing the state which the tx is not delivered.
+			panic("unreachable")
 		}
-	}
-
-	if vm.Failed() {
-		out.Failed = true
-		out.UsedGas = vm.UsedGas().Uint64()
-		return out, e.Errorf(e.ErrInternalEvm, "VM Failed")
 	}
 
 	changedAccs := vm.AccountChanges()
@@ -162,11 +148,17 @@ Loop:
 			}
 
 		default:
-			//Return error :unreachable!
-			return out, errors.New("unreachable")
+			panic("unreachable")
 		}
-
 	}
+
+	if vm.Failed() {
+		out.Failed = true
+	} else {
+		out.Failed = false
+	}
+
+	out.UsedGas = vm.UsedGas().Uint64()
 
 	//Extract logs and events
 	for _, log := range vm.Logs() {
@@ -177,5 +169,7 @@ Loop:
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())
 
-	return out, retError
+	vm.Free()
+
+	return out
 }

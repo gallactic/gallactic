@@ -567,7 +567,7 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:59f8a7116a3f60e39a8ae03fd9b27f99ed30a0a911005037edd0c78d85ed3dac"
+  digest = "1:e13811aec86ab99adf73d7e009081b0443d9e933608d72ce3c90471e61d07e32"
   name = "golang.org/x/crypto"
   packages = [
     "chacha20poly1305",

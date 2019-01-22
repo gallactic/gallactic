@@ -10,20 +10,19 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gallactic/gallactic/events"
-	"github.com/gallactic/gallactic/rpc/grpc"
-
 	"github.com/gallactic/gallactic/common/process"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/consensus/tendermint"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	tmv "github.com/gallactic/gallactic/core/consensus/tendermint/validator" // TODO:::
+	"github.com/gallactic/gallactic/core/events"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/rpc"
+	"github.com/gallactic/gallactic/rpc/grpc"
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/hyperledger/burrow/logging"

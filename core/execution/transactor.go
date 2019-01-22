@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gallactic/gallactic/core/consensus/tendermint/codes"
-	"github.com/gallactic/gallactic/events"
+	"github.com/gallactic/gallactic/core/events"
 	"github.com/gallactic/gallactic/txs"
 
 	"github.com/hyperledger/burrow/logging"

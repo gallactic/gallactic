@@ -5,9 +5,8 @@ import (
 	"runtime/debug"
 	"sync"
 
-	"github.com/gallactic/gallactic/events"
-
 	"github.com/gallactic/gallactic/core/blockchain"
+	"github.com/gallactic/gallactic/core/events"
 	"github.com/gallactic/gallactic/core/execution/executors"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/txs"

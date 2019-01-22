@@ -56,13 +56,6 @@ func (ga *GallacticAdapter) GetNonce() uint64 {
 	return ga.Nonce
 }
 
-func (ga *GallacticAdapter) GetCallee() *account.Account {
-	return ga.Callee
-}
-
-func (ga *GallacticAdapter) GetCaller() *account.Account {
-	return ga.Caller
-}
 
 func (ga *GallacticAdapter) updateAccount(acc *account.Account) {
 	ga.Cache.UpdateAccount(acc)

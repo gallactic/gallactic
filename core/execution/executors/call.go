@@ -54,7 +54,10 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	}
 
 	if ctx.Committing {
-		ret, err := ctx.Deliver(tx, caller, callee, tx.Data())
+		adapter := sputnikvm.GallacticAdapter{ctx.BC, ctx.Cache, caller,
+			callee, tx.GasLimit(), tx.Amount(), tx.Data(), caller.Sequence()}
+
+		ret := sputnikvm.Execute(&adapter)
 
 		caller.IncSequence()
 
@@ -72,11 +75,8 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 		//SPUTNIK RESULT -> !ret.Failed
 		//SPUTNIK OUT -> ret.Output
 		txRec.UsedGas = ret.UsedGas
+		//txRec.ContractAddress = adapter.
 		/// TODO: Contract address
-
-		if err != nil {
-			return err
-		}
 	}
 
 	err = caller.SubtractFromBalance(tx.Fee())
@@ -88,16 +88,4 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	ctx.Cache.UpdateAccount(caller)
 
 	return nil
-}
-
-func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account, code []byte) (sputnikvm.Output, error) {
-	adapter := sputnikvm.GallacticAdapter{ctx.BC, ctx.Cache, caller,
-		callee, tx.GasLimit(), tx.Amount(), code, caller.Sequence()}
-
-	ret, err := sputnikvm.Execute(&adapter)
-	if err != nil {
-		return ret, err
-	}
-
-	return ret, nil
 }
