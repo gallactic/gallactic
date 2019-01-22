@@ -114,14 +114,15 @@ func TestTransactionMethods(t *testing.T) {
 	env := txs.Enclose(tGenesis.ChainName(), tx)
 	require.NoError(t, env.Sign(signer))
 
+	bcClient := grpcBlockchainClient()
+	ret11, err := bcClient.GetLatestBlock(context.Background(), &pb.Empty{})
+	require.NoError(t, err)
+
 	ret1, err := client.BroadcastTx(context.Background(), &pb.TransactRequest{TxEnvelope: env})
 	require.NoError(t, err)
 	require.Equal(t, env.Hash(), ret1.TxReceipt.TxHash)
 
 	// wait for new block and check balance
-	bcClient := grpcBlockchainClient()
-	ret11, err := bcClient.GetLatestBlock(context.Background(), &pb.Empty{})
-	require.NoError(t, err)
 	for {
 		ret111, err := bcClient.GetLatestBlock(context.Background(), &pb.Empty{})
 		require.NoError(t, err)
