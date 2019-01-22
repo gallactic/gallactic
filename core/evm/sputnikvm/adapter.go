@@ -5,12 +5,14 @@ import (
 
 	"github.com/ethereumproject/go-ethereum/common"
 	"github.com/gallactic/gallactic/core/account"
+	"github.com/gallactic/gallactic/crypto"
 )
 
 type Output struct {
-	Failed  bool
-	UsedGas uint64
-	Output  []uint8
+	Failed          bool
+	UsedGas         uint64
+	Output          []uint8
+	ContractAddress *crypto.Address
 }
 
 type Adapter interface {

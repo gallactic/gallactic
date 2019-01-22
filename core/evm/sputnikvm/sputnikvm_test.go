@@ -63,14 +63,15 @@ func TestSputnikVM(t *testing.T) {
 		Callee: nil, GasLimit: 1000000, Amount: 0, Data: testCode, Nonce: 3}
 	outD := Execute(&adapter3)
 	require.Equal(t, outD.Failed, false)
+	require.NotNil(t, *outD.ContractAddress)
 	require.Equal(t, getContractCodeAfterDeploy(), hex.EncodeToString(outD.Output))
 
-	callee, _ := cache.GetAccount(adapter3.Callee.Address())
+	contract, _ := cache.GetAccount(*outD.ContractAddress)
 
 	//Call none exist method
 	noneMethod, _ := hex.DecodeString("c0ae47d2")
 	adapter4 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
-		Callee: callee, GasLimit: 1000000, Amount: 0, Data: noneMethod, Nonce: 4}
+		Callee: contract, GasLimit: 1000000, Amount: 0, Data: noneMethod, Nonce: 4}
 	outN := Execute(&adapter4)
 	require.Equal(t, outN.Failed, true)
 	require.Equal(t, 0, len(outN.Output))
@@ -78,7 +79,7 @@ func TestSputnikVM(t *testing.T) {
 	//Call SetMethod() by 1234567 as parameter
 	setMethod, _ := hex.DecodeString("60fe47b100000000000000000000000000000000000000000000000000000000000001c8")
 	adapter5 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
-		Callee: callee, GasLimit: 1000000, Amount: 0, Data: setMethod, Nonce: 5}
+		Callee: contract, GasLimit: 1000000, Amount: 0, Data: setMethod, Nonce: 5}
 	outS := Execute(&adapter5)
 	require.Equal(t, outS.Failed, false)
 	require.Equal(t, 0, len(outS.Output))
@@ -86,7 +87,7 @@ func TestSputnikVM(t *testing.T) {
 	//Call Get() Method...
 	getMethod, _ := hex.DecodeString("6d4ce63c")
 	adapter6 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
-		Callee: callee, GasLimit: 1000000, Amount: 0, Data: getMethod, Nonce: 6}
+		Callee: contract, GasLimit: 1000000, Amount: 0, Data: getMethod, Nonce: 6}
 	outG := Execute(&adapter6)
 	require.Equal(t, outG.Failed, false)
 	require.Equal(t, "00000000000000000000000000000000000000000000000000000000000001c8", hex.EncodeToString(outG.Output))
@@ -94,7 +95,7 @@ func TestSputnikVM(t *testing.T) {
 	//Call GetOwner() Method...
 	getOwnerMethod, _ := hex.DecodeString("893d20e8")
 	adapter7 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
-		Callee: callee, GasLimit: 1000000, Amount: 0, Data: getOwnerMethod, Nonce: 7}
+		Callee: contract, GasLimit: 1000000, Amount: 0, Data: getOwnerMethod, Nonce: 7}
 	outW := Execute(&adapter7)
 	require.Equal(t, outW.Failed, false)
 	require.Equal(t, toEthAddress(caller.Address()).Bytes(), outW.Output[12:])
@@ -102,7 +103,7 @@ func TestSputnikVM(t *testing.T) {
 	//Call kill() Method...
 	killMethod, _ := hex.DecodeString("41c0e1b5")
 	adapter8 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
-		Callee: callee, GasLimit: 1000000, Amount: 0, Data: killMethod, Nonce: 7}
+		Callee: contract, GasLimit: 1000000, Amount: 0, Data: killMethod, Nonce: 7}
 	outK := Execute(&adapter8)
 	require.Equal(t, outK.Failed, false)
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
 	amino "github.com/tendermint/go-amino"
 	"golang.org/x/crypto/ripemd160"
@@ -131,7 +131,7 @@ type Receipt struct {
 	Failed          bool            `json:"failed,omitempty"`
 	Height          int64           `json:"height,omitempty"`
 	UsedGas         uint64          `json:"usedGas,omitempty"`
-	ContractAddress uint64          `json:"contractAddress,omitempty"`
+	ContractAddress *crypto.Address `json:"contractAddress,omitempty"`
 }
 
 // Generate a transaction Receipt containing the Tx hash.

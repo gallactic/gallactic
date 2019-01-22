@@ -71,12 +71,8 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 			"error", err)
 
 		//Here we can acquire sputnik VM result
-		//SPUTNIK USED GAS -> ret.UsedGas
-		//SPUTNIK RESULT -> !ret.Failed
-		//SPUTNIK OUT -> ret.Output
 		txRec.UsedGas = ret.UsedGas
-		//txRec.ContractAddress = adapter.
-		/// TODO: Contract address
+		txRec.ContractAddress = ret.ContractAddress
 	}
 
 	err = caller.SubtractFromBalance(tx.Fee())

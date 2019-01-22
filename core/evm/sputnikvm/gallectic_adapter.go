@@ -56,7 +56,6 @@ func (ga *GallacticAdapter) GetNonce() uint64 {
 	return ga.Nonce
 }
 
-
 func (ga *GallacticAdapter) updateAccount(acc *account.Account) {
 	ga.Cache.UpdateAccount(acc)
 }
@@ -84,7 +83,6 @@ func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*b
 func (ga *GallacticAdapter) createContractAccount(address common.Address) *account.Account {
 	_, addr := fromEthAddress(address, true)
 	acc, _ := account.NewContractAccount(addr)
-	ga.Cache.UpdateAccount(acc)
 	return acc
 }
 

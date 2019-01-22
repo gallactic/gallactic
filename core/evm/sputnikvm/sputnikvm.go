@@ -143,8 +143,9 @@ Loop:
 
 			adapter.updateAccount(acc)
 
-			if adapter.calleeAddress() == nil {
-				adapter.setCalleeAddress(changedAcc.Address())
+			if out.ContractAddress == nil {
+				addr := acc.Address()
+				out.ContractAddress = &addr
 			}
 
 		default:
