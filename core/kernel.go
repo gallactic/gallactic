@@ -10,8 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gallactic/gallactic/rpc/grpc"
-
 	"github.com/gallactic/gallactic/common/process"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/config"
@@ -23,6 +21,7 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/rpc"
+	"github.com/gallactic/gallactic/rpc/grpc"
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/hyperledger/burrow/logging"
@@ -150,9 +149,9 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			Launch: func() (process.Process, error) {
 				grpcServer := grpc.NewGRPCServer(logger)
 				/// TODO: ‌better design for kernel. They should be encapsulated
-				pb.RegisterBlockChainServer(grpcServer.Server, grpc.BlockchainService(bc, query.NewNodeView(tmNode)))
-				pb.RegisterNetworkServer(grpcServer.Server, grpc.NetworkService(bc, query.NewNodeView(tmNode)))
-				pb.RegisterTransactionServer(grpcServer.Server, grpc.TransactorService(ctx, transactor, query.NewNodeView(tmNode)))
+				pb.RegisterBlockChainServer(grpcServer.Server, grpc.NewBlockchainService(bc, query.NewNodeView(tmNode)))
+				pb.RegisterNetworkServer(grpcServer.Server, grpc.NewNetworkService(bc, query.NewNodeView(tmNode)))
+				pb.RegisterTransactionServer(grpcServer.Server, grpc.NewTransactorService(ctx, transactor, query.NewNodeView(tmNode)))
 
 				if err := grpcServer.Start(conf.GRPC.ListenAddress); err != nil {
 					return nil, fmt.Errorf("Unable to start grpc server: %v", err)
