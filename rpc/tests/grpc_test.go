@@ -6,6 +6,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/gallactic/keystore/key"
+	"github.com/gallactic/gallactic/txs"
+	"github.com/gallactic/gallactic/txs/tx"
+
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -95,20 +100,40 @@ func TestBlockchainMethods(t *testing.T) {
 	fmt.Println("GetLatestBlock", ret10)
 }
 
-/*
-TODO:::
 func TestTransactionMethods(t *testing.T) {
 	client := grpcTransactionClient()
 
-	_, pv := crypto.GenerateKey(nil)
-	signer := crypto.NewAccountSigner(pv)
-	sender := signer.Address()
-	tx, _ := tx.NewUnbondTx(sender, crypto.GlobalAddress, 1, 100, 200)
+	acc_1 := tGenesis.Accounts()[1]
+	acc_2 := tGenesis.Accounts()[2]
+	bal_1 := acc_1.Balance()
+	bal_2 := acc_2.Balance()
+	k, err := key.DecryptKeyFile(tWorkingDir+"/keys/"+acc_1.Address().String()+".json", "")
+	require.NoError(t, err)
+	signer := crypto.NewAccountSigner(k.PrivateKey())
+	tx, _ := tx.NewSendTx(acc_1.Address(), acc_2.Address(), 1, 1000, 200)
 	env := txs.Enclose(tGenesis.ChainName(), tx)
 	require.NoError(t, env.Sign(signer))
 
+	bcClient := grpcBlockchainClient()
+	ret11, err := bcClient.GetLatestBlock(context.Background(), &pb.Empty{})
+	require.NoError(t, err)
+
 	ret1, err := client.BroadcastTx(context.Background(), &pb.TransactRequest{TxEnvelope: env})
 	require.NoError(t, err)
-	require.Equal(t, env.Hash, ret1.TxReceipt.TxHash)
+	require.Equal(t, env.Hash(), ret1.TxReceipt.TxHash)
+
+	// wait for new block and check balance
+	for {
+		ret111, err := bcClient.GetLatestBlock(context.Background(), &pb.Empty{})
+		require.NoError(t, err)
+		if ret111.Block.Height != ret11.Block.Height {
+			break
+		}
+	}
+
+	ret2, _ := bcClient.GetAccount(context.Background(), &pb.AddressRequest{Address: acc_1.Address().String()})
+	ret3, _ := bcClient.GetAccount(context.Background(), &pb.AddressRequest{Address: acc_2.Address().String()})
+
+	require.Equal(t, ret2.Account.Balance(), bal_1-1200)
+	require.Equal(t, ret3.Account.Balance(), bal_2+1000)
 }
-*/

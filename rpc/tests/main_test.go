@@ -43,8 +43,8 @@ func startServer(done chan struct{}) *exec.Cmd {
 	//Just for wait to ensure command executed and instance object is ready
 	grpcBCClient := grpcBlockchainClient()
 	for {
-		_, getchain_err := grpcBCClient.GetChainID(context.Background(), &pb.Empty{})
-		if getchain_err == nil {
+		lb, err := grpcBCClient.GetLatestBlock(context.Background(), &pb.Empty{})
+		if err == nil && lb.Block != nil {
 			break
 		}
 		time.Sleep(100)

@@ -96,6 +96,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:1095cce6419e511a07e0ff74d5dfaca1876773c1dcebbd109ff6645d239eccfe"
+  name = "github.com/gallactic/sputnikvm-ffi"
+  packages = ["go/sputnikvm"]
+  pruneopts = "NT"
+  revision = "e680215a08e8887ffc325161dc33162cbf7be494"
+
+[[projects]]
+  branch = "master"
   digest = "1:23edf5aaca7a1f15d68215ac41595c0732152757e9d7b3f282821222784049f1"
   name = "github.com/gin-contrib/sse"
   packages = ["."]
@@ -447,11 +455,12 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:178e46ad8d502252069981b20e0932c4179c2414e32c01aff772feead38ff395"
+  digest = "1:8965eb0528cc678c5727d83e85fc1402517f4869cdbce3bff9375cbefdf36dd2"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
     "abci/example/code",
+    "abci/example/counter",
     "abci/example/kvstore",
     "abci/types",
     "blockchain",
@@ -498,8 +507,8 @@
     "version",
   ]
   pruneopts = "NUT"
-  revision = "1e1ca15bccedc16c2452c73745c3c2b5df91ae96"
-  version = "v0.27.4"
+  revision = "aa40cfcbb97fac3832b47ccdcf99c6b7fb504cb2"
+  version = "v0.28.0"
 
 [[projects]]
   branch = "master"
@@ -693,6 +702,7 @@
     "github.com/BurntSushi/toml",
     "github.com/ethereum/go-ethereum/rpc",
     "github.com/ethereumproject/go-ethereum/common",
+    "github.com/gallactic/sputnikvm-ffi/go/sputnikvm",
     "github.com/gin-gonic/gin",
     "github.com/go-kit/kit/log",
     "github.com/gogo/protobuf/gogoproto",
