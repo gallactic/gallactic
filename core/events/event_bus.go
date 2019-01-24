@@ -3,6 +3,8 @@ package events
 import (
 	"context"
 
+	tmLogger "github.com/gallactic/gallactic/core/consensus/tendermint/logger"
+	"github.com/hyperledger/burrow/logging"
 	tmCommon "github.com/tendermint/tendermint/libs/common"
 	tmLog "github.com/tendermint/tendermint/libs/log"
 	tmPubSub "github.com/tendermint/tendermint/libs/pubsub"
@@ -28,17 +30,18 @@ type eventBus struct {
 }
 
 // NewEventBus returns a new event bus.
-func NewEventBus(logger tmLog.Logger) EventBus {
+func NewEventBus(logger *logging.Logger) EventBus {
 	return NewEventBusWithBufferCapacity(defaultCapacity, logger)
 }
 
 // NewEventBusWithBufferCapacity returns a new event bus with the given buffer capacity.
-func NewEventBusWithBufferCapacity(cap int, logger tmLog.Logger) EventBus {
+func NewEventBusWithBufferCapacity(cap int, logger *logging.Logger) EventBus {
 	// capacity could be exposed later if needed
 	pubsub := tmPubSub.NewServer(tmPubSub.BufferCapacity(cap))
 	b := &eventBus{pubsub: pubsub}
 	b.BaseService = *tmCommon.NewBaseService(nil, "EventBus", b)
-	b.SetLogger(tmLog.NewNopLogger()) /// TODO::
+	l := tmLogger.NewLogger(logger)
+	b.SetLogger(l)
 	return b
 }
 

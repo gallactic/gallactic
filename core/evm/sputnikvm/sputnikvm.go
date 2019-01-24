@@ -1,9 +1,11 @@
 package sputnikvm
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/ethereumproject/go-ethereum/common"
+	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
@@ -35,6 +37,7 @@ func Execute(adapter Adapter) Output {
 Loop:
 	for {
 		require := vm.Fire()
+		fmt.Printf("require.Typ(): %v\n", require.Typ())
 
 		switch require.Typ() {
 
@@ -98,7 +101,7 @@ Loop:
 		if changedAcc.Address().IsEmpty() {
 			continue
 		}
-
+		fmt.Printf("changedAcc.Typ(): %v\n", changedAcc.Typ())
 		switch changedAcc.Typ() {
 
 		case sputnikvm.AccountChangeIncreaseBalance:
@@ -113,9 +116,12 @@ Loop:
 
 		case sputnikvm.AccountChangeRemoved:
 			//Removing Account
+			fmt.Println("remove called")
 			adapter.removeAccount(changedAcc.Address())
 
 		case sputnikvm.AccountChangeFull:
+			acc := adapter.getAccount(changedAcc.Address())
+
 			changeStorage := changedAcc.ChangedStorage()
 			if len(changeStorage) > 0 {
 				for i := 0; i < len(changeStorage); i++ {
@@ -124,7 +130,11 @@ Loop:
 					adapter.updateStorage(changedAcc.Address(), key, value)
 				}
 			}
-			adapter.setAccount(changedAcc.Address(), changedAcc.Balance().Uint64(), changedAcc.Code(), changedAcc.Nonce().Uint64())
+			acc.SetBalance(changedAcc.Balance().Uint64())
+			acc.SetSequence(changedAcc.Nonce().Uint64())
+			acc.SetCode(changedAcc.Code())
+
+			adapter.updateAccount(acc)
 
 		case sputnikvm.AccountChangeCreate:
 			acc := adapter.createContractAccount(changedAcc.Address())
@@ -162,8 +172,9 @@ Loop:
 	out.UsedGas = vm.UsedGas().Uint64()
 
 	//Extract logs and events
+	var logs []evm.Log
 	for _, log := range vm.Logs() {
-		adapter.log(log.Address, log.Topics, log.Data)
+		logs = append(logs, adapter.ConvertLog(log))
 	}
 
 	out.UsedGas = vm.UsedGas().Uint64()

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
 
 	"github.com/stretchr/testify/assert"
@@ -166,4 +166,18 @@ func TestMultiSigs(t *testing.T) {
 	}
 
 	signAndExecute(t, e.ErrNone, tx, names...)
+}
+
+func TestSendTxSequence(t *testing.T) {
+	setPermissions(t, "alice", permission.Send)
+
+	sequence1 := getAccountByName(t, "alice").Sequence()
+	sequence2 := getAccountByName(t, "bob").Sequence()
+	for i := 0; i < 100; i++ {
+		tx := makeSendTx(t, "alice", "bob", 1, _fee)
+		signAndExecute(t, e.ErrNone, tx, "alice")
+	}
+
+	require.Equal(t, sequence1+100, getAccountByName(t, "alice").Sequence())
+	require.Equal(t, sequence2, getAccountByName(t, "bob").Sequence())
 }

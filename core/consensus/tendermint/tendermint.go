@@ -6,6 +6,7 @@ import (
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/abci"
+	tmLogger "github.com/gallactic/gallactic/core/consensus/tendermint/logger"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/hyperledger/burrow/logging"
@@ -59,7 +60,7 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 		PrometheusListenAddr: "",
 	})
 
-	tmLogger := NewLogger(logger.WithPrefix(structure.ComponentKey, "Tendermint").With(structure.ScopeKey, "tendermint.NewNode"))
+	tmLogger := tmLogger.NewLogger(logger.WithPrefix(structure.ComponentKey, "Tendermint").With(structure.ScopeKey, "tendermint.NewNode"))
 	n := &Node{}
 	app := abci.NewApp(bc, checker, committer, logger)
 	client := proxy.NewLocalClientCreator(app)

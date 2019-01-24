@@ -25,7 +25,6 @@ const (
 	accountPrefix   = "a/"
 	storagePrefix   = "s/"
 	validatorPrefix = "i/"
-	//eventPrefix     = "e/"
 )
 
 var (
@@ -345,6 +344,14 @@ func (st *State) updateAccount(acc *account.Account) error {
 	}
 
 	st.tree.Set(accountKey(acc.Address()), bs)
+	return nil
+}
+
+func (st *State) removeAccount(addr crypto.Address) error {
+	st.Lock()
+	defer st.Unlock()
+
+	st.tree.Remove(accountKey(addr))
 	return nil
 }
 

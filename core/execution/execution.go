@@ -5,6 +5,8 @@ import (
 	"runtime/debug"
 	"sync"
 
+	e "github.com/gallactic/gallactic/errors"
+
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/events"
 	"github.com/gallactic/gallactic/core/execution/executors"
@@ -122,12 +124,6 @@ func (exe *executor) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 				debug.Stack())
 		}
 		*/
-
-		if err != nil {
-			txRec.Failed = true
-			txRec.Status = err.Error()
-		}
-
 		exe.fireEvents(txRec)
 	}()
 	logger := exe.logger.WithScope("executor.Execute(tx txs.Tx)").With("tx_hash", txEnv.Hash())
@@ -143,15 +139,19 @@ func (exe *executor) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 		return err
 	}
 
-	if txExecutor, ok := exe.txExecutors[txEnv.Tx.Type()]; ok {
-		if err = txExecutor.Execute(txEnv, txRec); err != nil {
-			return err
-		}
+	executor, ok := exe.txExecutors[txEnv.Tx.Type()]
+	if !ok {
+		return e.Errorf(e.ErrInvalidTxType, "unknown transaction type: %v", txEnv.Tx.Type())
+	}
 
-		exe.accumulatedFees += txEnv.Tx.Fee()
+	if err = executor.Execute(txEnv, txRec); err != nil {
+		txRec.Failed = true
+		txRec.Status = err.Error()
+
 		return err
 	}
-	return fmt.Errorf("unknown transaction type: %v", txEnv.Tx.Type())
+
+	return nil
 }
 
 func (exe *executor) Commit() (err error) {

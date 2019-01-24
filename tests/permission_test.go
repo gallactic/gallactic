@@ -7,7 +7,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
 	"github.com/stretchr/testify/require"
 )

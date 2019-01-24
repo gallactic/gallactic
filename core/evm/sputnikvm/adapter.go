@@ -5,13 +5,16 @@ import (
 
 	"github.com/ethereumproject/go-ethereum/common"
 	"github.com/gallactic/gallactic/core/account"
+	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
 )
 
 type Output struct {
 	Failed          bool
 	UsedGas         uint64
 	Output          []uint8
+	Logs            []evm.Log
 	ContractAddress *crypto.Address
 }
 
@@ -40,11 +43,10 @@ type Adapter interface {
 	setBalance(address common.Address, amount uint64)
 	setNonce(address common.Address, nonce uint64)
 	setCode(address common.Address, code []byte)
-	setAccount(address common.Address, balance uint64, code []byte, nonce uint64)
-
-	log(address common.Address, topics []common.Hash, data []byte)
 
 	TimeStamp() uint64
 	LastBlockNumber() uint64
 	LastBlockHash() []byte
+
+	ConvertLog(log sputnikvm.Log) evm.Log
 }

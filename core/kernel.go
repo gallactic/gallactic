@@ -71,7 +71,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	if err != nil {
 		return nil, fmt.Errorf("error creating or loading blockchain state: %v", err)
 	}
-	eventBus := events.NewEventBus(nil)
+	eventBus := events.NewEventBus(logger)
 	if err := eventBus.Start(); err != nil {
 		return nil, err
 	}
