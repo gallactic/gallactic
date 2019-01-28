@@ -142,10 +142,10 @@ func TestCreateContractNew(t *testing.T) {
 	assert.Equal(t, rec6.Status, txs.Failed)
 	assert.Equal(t, rec6.Output, []byte{})
 
-	// Should pass: call adder_add function, result is 5
-	adderAddData2 := addParams_2(testerAddFunc, 1, 4)
+	// Should pass: call tester_add function, result is 5
+	testerAddData2 := addParams_2(testerAddFunc, 1, 4)
 	returnValue2, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000005")
-	tx7 := makeCallTx(t, "vbuterin", *rec5.ContractAddress, adderAddData2, 0, _fee)
+	tx7 := makeCallTx(t, "vbuterin", *rec5.ContractAddress, testerAddData2, 0, _fee)
 	_, rec7 := signAndExecute(t, e.ErrNone, tx7, "vbuterin")
 	assert.Equal(t, rec7.Status, txs.Ok)
 	assert.Equal(t, rec7.Output, returnValue2)
@@ -158,7 +158,7 @@ func TestCreateContractNew(t *testing.T) {
 	// Should pass: call adder_add function, result is 5
 	addr, err := crypto.ContractAddress(rec8.Output[12:])
 	require.NoError(t, err)
-	tx9 := makeCallTx(t, "vbuterin", addr, adderAddData1, 1000, _fee)
+	tx9 := makeCallTx(t, "vbuterin", addr, adderAddData1, 0, _fee)
 	_, rec9 := signAndExecute(t, e.ErrNone, tx9, "vbuterin")
 	assert.Equal(t, rec9.Status, txs.Ok)
 	assert.Equal(t, rec9.Output, returnValue1)
@@ -223,10 +223,13 @@ func TestCreateContract(t *testing.T) {
 	tx3 := makeCallTx(t, "carol", crypto.Address{}, factoryBytes, 0, _fee)
 	signAndExecute(t, e.ErrPermissionDenied, tx3, "carol")
 
+	seq1 := getAccountByName(t, "vbuterin").Sequence()
+
 	// Factory: Should pass: Vitalik has permission to create and call a contract
 	tx4 := makeCallTx(t, "vbuterin", crypto.Address{}, factoryBytes, 0, _fee)
 	_, rec4 := signAndExecute(t, e.ErrNone, tx4, "vbuterin")
 	assert.Equal(t, rec4.Status, txs.Ok)
+	factoryAddr := *rec4.ContractAddress
 
 	/*
 		// Adder: Should pass: Vitalik has permission to create and call a contract
@@ -241,7 +244,7 @@ func TestCreateContract(t *testing.T) {
 	assert.Equal(t, rec6.Status, txs.Failed)
 
 	// Tester: Should pass: Tester has constructor with proper vales
-	testerBytes = addParams_1(testerBytes, *rec4.ContractAddress, adderBytes)
+	testerBytes = addParams_1(testerBytes, factoryAddr, adderBytes)
 
 	tx7 := makeCallTx(t, "vbuterin", crypto.Address{}, testerBytes, 0, _fee)
 	_, rec7 := signAndExecute(t, e.ErrNone, tx7, "vbuterin")
@@ -252,15 +255,22 @@ func TestCreateContract(t *testing.T) {
 	_, rec8 := signAndExecute(t, e.ErrNone, tx8, "vbuterin")
 	assert.Equal(t, rec8.Status, txs.Ok)
 	assert.NotEmpty(t, rec8.Output)
+	testerAddr, _ := crypto.ContractAddress(rec8.Output[12:])
 
 	// Should pass: add 1+4=5
-	adderAddData1 := addParams_2(testerAddFunc, 1, 4)
+	testerAddData1 := addParams_2(testerAddFunc, 1, 4)
 	returnValue1, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000005")
-	tx9 := makeCallTx(t, "vbuterin", *rec7.ContractAddress, adderAddData1, 0, _fee)
+	tx9 := makeCallTx(t, "vbuterin", *rec7.ContractAddress, testerAddData1, 0, _fee)
 	_, rec9 := signAndExecute(t, e.ErrNone, tx9, "vbuterin")
 	assert.Equal(t, rec9.Status, txs.Ok)
 	assert.Equal(t, rec9.Output, returnValue1)
 
+	seq2 := getAccountByName(t, "vbuterin").Sequence()
+	seq3 := getAccount(t, testerAddr).Sequence()
+	seq4 := getAccount(t, factoryAddr).Sequence()
+	assert.Equal(t, seq1+5, seq2) // vbuterin sent 5 tx
+	assert.Equal(t, seq3, uint64(0))
+	assert.Equal(t, seq4, uint64(1))
 }
 
 // Test creating a contract from futher down the call stack
@@ -291,48 +301,78 @@ func TestStackOverflow(t *testing.T) {
 }
 
 func TestContractSend(t *testing.T) {
-	setPermissions(t, "alice", permission.Call|permission.CreateContract)
 	/*
-	   contract Caller {
-	      function send(address x){
-	          x.send(msg.value);
-	      }
-	   }
+		pragma solidity ^0.4.18;
+
+		contract Send {
+			function send(address x) public payable{
+				x.send(msg.value);
+			}
+			function sendBalance(address x) public payable{
+				x.send(balance(this));
+			}
+			function stake() public payable{
+
+			}
+			function stake2() public {
+
+			}
+			function balance(address x) public view returns (uint256) {
+				return address(x).balance;
+			}
+		}
 	*/
-	callerCode, _ := hex.DecodeString("60606040526000357c0100000000000000000000000000000000000000000000000000000000900480633e58c58c146037576035565b005b604b6004808035906020019091905050604d565b005b8073ffffffffffffffffffffffffffffffffffffffff16600034604051809050600060405180830381858888f19350505050505b5056")
-	sendFunc, _ := hex.DecodeString("3e58c58c")
 
-	tx1 := makeCallTx(t, "alice", crypto.Address{}, callerCode, 0, _fee)
-	_, rec1 := signAndExecute(t, e.ErrNone, tx1, "alice")
-	require.Equal(t, rec1.Status, txs.Ok)
+	//code, _ := hex.DecodeString("6060604052341561000f57600080fd5b6102058061001e6000396000f30060606040526004361061006d576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806305ea3cf1146100725780633a4b66f1146100875780633e58c58c146100915780635292af1f146100bf578063e3d670d7146100ed575b600080fd5b341561007d57600080fd5b61008561013a565b005b61008f61013c565b005b6100bd600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190505061013e565b005b6100eb600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610177565b005b34156100f857600080fd5b610124600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506101b8565b6040518082815260200191505060405180910390f35b565b565b8073ffffffffffffffffffffffffffffffffffffffff166108fc349081150290604051600060405180830381858888f193505050505050565b8073ffffffffffffffffffffffffffffffffffffffff166108fc61019a306101b8565b9081150290604051600060405180830381858888f193505050505050565b60008173ffffffffffffffffffffffffffffffffffffffff163190509190505600a165627a7a723058204131f76eeba980361855afa74e3005f73e68936a33d2a855aea79a7c8b9665450029")
 
-	var sendAmt uint64 = 1000
-	aliceBalance := getBalance(t, "alice")
-	bobAcc := getAccountByName(t, "bob")
-	bobBalance := bobAcc.Balance()
-	sendData := addParams_4(sendFunc, bobAcc.Address())
-	tx2 := makeCallTx(t, "alice", *rec1.ContractAddress, sendData, sendAmt, _fee)
-	_, rec2 := signAndExecute(t, e.ErrNone, tx2, "alice")
-	require.Equal(t, rec2.Status, txs.Ok)
+	/// Case 1: deploy: successful
+	/// case 2: alice calls Send (amount 10) to Bob address
+	/// 	     check: alice balance = 10-fee
+	///			 check: contract balance: 0
+	///			 check: bob balance += 10
+	///
+	/// case 3: alice calls Stake (amount 20)
+	/// 	     check: alice balance = 20-fee
+	///			 check: contract balance: 20
+	///
+	/// case 3: alice calls stake2 (amount 20)
+	/// 	     check: Error. should fail
+	///
+	/// case 3: alice calls sendBalance
+	/// 	     check: alice balance += 20
+	///			 check: contract balance: 0
 
-	checkBalance(t, "alice", aliceBalance-sendAmt-_fee-_fee)
-	checkBalance(t, "bob", bobBalance+sendAmt)
-	checkBalanceByAddress(t, *rec1.ContractAddress, 0)
 }
 
 func TestTxSequence(t *testing.T) {
-	setPermissions(t, "alice", permission.Send)
+	/*
+		pragma solidity ^0.4.18;
+		contract empty {}
+	*/
+	setPermissions(t, "alice", permission.Call|permission.CreateContract)
+
+	code, _ := hex.DecodeString("60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a7230582010a4ef31d2df6c96a7b2f027cfceb25025ee26593bae4fffc346e661d6b4200c0029")
 
 	sequence1 := getAccountByName(t, "alice").Sequence()
-	sequence2 := getAccountByName(t, "bob").Sequence()
 	for i := 0; i < 100; i++ {
-		panic("dddddddddddddddddddddddddddddd")
-		tx := makeSendTx(t, "alice", "bob", 1, _fee)
-		signAndExecute(t, e.ErrNone, tx, "alice")
+		tx1 := makeCallTx(t, "alice", crypto.Address{}, code, 0, _fee)
+		_, rec1 := signAndExecute(t, e.ErrNone, tx1, "alice")
+		require.Equal(t, rec1.Status, txs.Ok)
+
+		tx2 := makeCallTx(t, "alice", crypto.Address{}, []byte{}, 0, _fee)
+		_, rec2 := signAndExecute(t, e.ErrNone, tx2, "alice")
+		require.Equal(t, rec2.Status, txs.Ok)
+
+		tx3 := makeCallTx(t, "alice", crypto.Address{}, []byte{0x1}, 0, _fee)
+		_, rec3 := signAndExecute(t, e.ErrNone, tx3, "alice")
+		require.Equal(t, rec3.Status, txs.Failed)
+
+		tx4 := makeCallTx(t, "alice", crypto.Address{}, code, getBalance(t, "alice")+1, _fee)
+		_, rec4 := signAndExecute(t, e.ErrInsufficientFunds, tx4, "alice")
+		require.Equal(t, rec4.Status, txs.Failed)
 	}
 
-	require.Equal(t, sequence1+100, getAccountByName(t, "alice").Sequence())
-	require.Equal(t, sequence2, getAccountByName(t, "bob").Sequence())
+	require.Equal(t, sequence1+300, getAccountByName(t, "alice").Sequence())
 }
 
 func TestCallContract(t *testing.T) {

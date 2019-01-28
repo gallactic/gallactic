@@ -12,7 +12,7 @@ import (
 )
 
 func Execute(adapter Adapter) Output {
-	fmt.Printf("SputnikVM called: %x, %x, gas_limit:%d\n", adapter.calleeAddress(), adapter.GetData(), adapter.GetGasLimit())
+	fmt.Printf("SputnikVM called.\n")
 
 	var out Output
 
@@ -91,8 +91,10 @@ Loop:
 		}
 	}
 
-	/// If a contract creates another contract, the nonce of the new contract will be zero (less than creator)
-	var newContractSequence uint64 = 0
+	// HACKING SPUTNIKVM:
+	// If contract A creates contract B, the byte code of B will always be less than A.
+	// AccountChange are not always synchronize.
+	var contractCodeLength = 0
 
 	changedAccs := vm.AccountChanges()
 	accLen := len(changedAccs)
@@ -156,11 +158,11 @@ Loop:
 
 			adapter.updateAccount(acc)
 
-			if newContractSequence <= acc.Sequence() {
+			if contractCodeLength <= len(acc.Code()) {
 				addr := acc.Address()
 				out.ContractAddress = &addr
 				//
-				newContractSequence = acc.Sequence()
+				contractCodeLength = len(acc.Code())
 			}
 
 		default:
