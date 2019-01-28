@@ -6,8 +6,8 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
-option (gogoproto.marshaler_all) = true;
-option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = false;
+option (gogoproto.unmarshaler_all) = false;
 option (gogoproto.sizer_all) = true;
 option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
@@ -30,7 +30,8 @@ service BlockChain {
   rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetBlockchainInfo(Empty) returns (BlockchainInfoResponse) { option (google.api.http).get = "/GetBlockchainInfo";}
-  rpc GetTx(TxRequest) returns(TxResponse)                     { option (google.api.http) = {get: "/Tx/{TxHash}";};};
+  rpc GetTx(TxRequest) returns(TxResponse)                      { option (google.api.http) = {get: "/Tx/{TxHash}";};};
+  rpc GetListTx(Empty) returns(TxInfo)                          { option (google.api.http) = {get: "/GetListTx";};};
   rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http) = {
       get : "/BlockTxs";
       additional_bindings {
@@ -164,7 +165,7 @@ message BlockInfo {
 
 message HeaderInfo {
  // basic block info
- bytes block_hash = 1;
+ bytes block_hash = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
  Version version = 2 [(gogoproto.nullable)=false];
  string chain_id = 3 [(gogoproto.customname)="ChainID"];
  int64 height = 4;
@@ -174,16 +175,16 @@ message HeaderInfo {
  // prev block info
  bytes last_block_id = 8;
  // hashes of block data
- bytes last_commit_hash = 9; // commit from validators from the last block
- bytes data_hash = 10;        // transactions
+ bytes last_commit_hash = 9 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false]; // commit from validators from the last block
+ bytes data_hash = 10 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];        // transactions
  // hashes from the app output from the prev block
- bytes validators_hash = 11;   // validators for the current block
- bytes next_validators_hash = 12;   // validators for the next block
- bytes consensus_hash = 13;   // consensus params for current block
- bytes app_hash = 14;         // state after txs from the previous block
- bytes last_results_hash = 15;// root hash of all results from the txs from the previous block
+ bytes validators_hash = 11 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];   // validators for the current block
+ bytes next_validators_hash = 12 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];   // validators for the next block
+ bytes consensus_hash = 13 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];   // consensus params for current block
+ bytes app_hash = 14 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];         // state after txs from the previous block
+ bytes last_results_hash = 15 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];// root hash of all results from the txs from the previous block
  // consensus info
- bytes evidence_hash = 16;    // evidence included in the block
+ bytes evidence_hash = 16 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];    // evidence included in the block
  string proposer_address = 17; // original proposer of the block
 }
 
@@ -192,7 +193,7 @@ message Version {
  uint64 App = 2;
 }
 message CommitInfo {
- bytes block_hash = 1;
+ bytes block_hash = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable)=false];
  repeated VoteInfo votes = 2 [(gogoproto.nullable)=false];
 }
 
@@ -208,7 +209,7 @@ message ValidatorInfo {
  string address = 1;
  string pub_key = 2;
  int64 power = 3;
- uint64 stake = 4;
+ uint64 stake = 4 ;
 }
 
 message EvidenceInfo {
@@ -218,9 +219,9 @@ message EvidenceInfo {
 }
 
 message TxInfo {
-  int64 Height = 1 [(gogoproto.nullable)=true];
-  bytes Hash = 2;
-  int64 GasUsed = 3 [(gogoproto.nullable)=true];
-  int64 GasWanted = 4 [(gogoproto.nullable)=true];
+  int64 Height = 1 ;
+  bytes Hash = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
+  int64 GasUsed = 3;
+  int64 GasWanted = 4;
   string Envelope = 5 ;
 }

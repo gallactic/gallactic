@@ -97,11 +97,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1095cce6419e511a07e0ff74d5dfaca1876773c1dcebbd109ff6645d239eccfe"
+  digest = "1:0591af56897bc81da0af2637082b62842aa8b77df2c2b4a89b51219c4b24faf4"
   name = "github.com/gallactic/sputnikvm-ffi"
   packages = ["go/sputnikvm"]
   pruneopts = "NT"
-  revision = "2b88e33c5179a76f95f6a35a48d56bc2e7b4aee8"
+  revision = "c87e3e202597ef154b022e2125602d310b224a3c"
 
 [[projects]]
   branch = "master"

@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/gallactic/gallactic/core/blockchain"
 
 	"github.com/gallactic/gallactic/common/binary"
@@ -37,6 +38,7 @@ var _ pb.BlockChainServer = &blockchainService{}
 func (s *blockchainService) State() *state.State {
 	return s.state
 }
+
 func NewBlockchainService(blockchain *blockchain.Blockchain, nview *query.NodeView) *blockchainService {
 	return &blockchainService{
 		blockchain: blockchain,
@@ -174,7 +176,7 @@ func (s *blockchainService) GetBlock(ctx context.Context, req *pb.BlockRequest) 
 		height = s.nodeview.BlockStore().Height()
 
 	}
-	bl, _ := s.getBlockdetails(int64(req.Height))
+	bl, _ := s.getBlockdetails(height)
 	return &pb.BlockResponse{
 		Block: bl,
 	}, nil
@@ -281,6 +283,10 @@ func (s *blockchainService) GetTx(ctx context.Context, req *pb.TxRequest) (*pb.T
 
 }
 
+func (s *blockchainService) GetListTx(ctx context.Context, req *pb.Empty) (*pb.TxInfo, error) {
+	return nil, nil
+}
+
 //Get validator
 func (vs *blockchainService) toValidator(val *validator.Validator) *pb.ValidatorInfo {
 	return &pb.ValidatorInfo{
@@ -292,11 +298,15 @@ func (vs *blockchainService) toValidator(val *validator.Validator) *pb.Validator
 }
 
 //Get Block and Blockmeta
-func (s *blockchainService) getBlockdetails(Height int64) (*pb.BlockInfo, error) {
-	blockmeta := s.nodeview.BlockStore().LoadBlockMeta(Height)
-	block := s.nodeview.BlockStore().LoadBlock(Height)
+func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, error) {
+
+	blockmeta := s.nodeview.BlockStore().LoadBlockMeta(blockheight)
+	block := s.nodeview.BlockStore().LoadBlock(blockheight)
+	if blockmeta == nil || block == nil {
+		return nil, fmt.Errorf("Invalid blockheight")
+	}
 	var pbBlock pb.BlockInfo
-	pbBlock.Header.BlockHash = blockmeta.BlockID.Hash
+	pbBlock.Header.BlockHash = blockmeta.BlockID.Hash.Bytes()
 	pbBlock.Header.Time = blockmeta.Header.Time
 	pbBlock.Header.TotalTxs = blockmeta.Header.TotalTxs
 	pbBlock.Header.Version.App = blockmeta.Header.Version.App.Uint64()
@@ -305,14 +315,14 @@ func (s *blockchainService) getBlockdetails(Height int64) (*pb.BlockInfo, error)
 	pbBlock.Header.Height = blockmeta.Header.Height
 	pbBlock.Header.NumTxs = blockmeta.Header.NumTxs
 	pbBlock.Header.LastBlockId = blockmeta.Header.LastBlockID.Hash // ignoring PartSetHeader
-	pbBlock.Header.LastCommitHash = blockmeta.Header.LastCommitHash
-	pbBlock.Header.DataHash = blockmeta.Header.DataHash
-	pbBlock.Header.ValidatorsHash = blockmeta.Header.ValidatorsHash
-	pbBlock.Header.NextValidatorsHash = blockmeta.Header.NextValidatorsHash
-	pbBlock.Header.ConsensusHash = blockmeta.Header.ConsensusHash
-	pbBlock.Header.AppHash = blockmeta.Header.AppHash
-	pbBlock.Header.LastResultsHash = blockmeta.Header.LastResultsHash
-	pbBlock.Header.EvidenceHash = blockmeta.Header.EvidenceHash
+	pbBlock.Header.LastCommitHash = blockmeta.Header.LastCommitHash.Bytes()
+	pbBlock.Header.DataHash = blockmeta.Header.DataHash.Bytes()
+	pbBlock.Header.ValidatorsHash = blockmeta.Header.ValidatorsHash.Bytes()
+	pbBlock.Header.NextValidatorsHash = blockmeta.Header.NextValidatorsHash.Bytes()
+	pbBlock.Header.ConsensusHash = blockmeta.Header.ConsensusHash.Bytes()
+	pbBlock.Header.AppHash = blockmeta.Header.AppHash.Bytes()
+	pbBlock.Header.LastResultsHash = blockmeta.Header.LastResultsHash.Bytes()
+	pbBlock.Header.EvidenceHash = blockmeta.Header.EvidenceHash.Bytes()
 	valadrr, err := crypto.ValidatorAddress(blockmeta.Header.ProposerAddress)
 	if err != nil {
 		return nil, err
@@ -333,7 +343,7 @@ func (s *blockchainService) getBlockdetails(Height int64) (*pb.BlockInfo, error)
 		tx.Envelope = string(js)
 		pbBlock.Txs = append(pbBlock.Txs, tx)
 	}
-	pbBlock.LastCommitInfo.BlockHash = block.LastCommit.BlockID.Hash
+	pbBlock.LastCommitInfo.BlockHash = block.LastCommit.BlockID.Hash.Bytes()
 
 	for _, v := range block.LastCommit.Precommits {
 		var vote pb.VoteInfo
@@ -372,7 +382,7 @@ func (s *blockchainService) getTx(_tx *tmRPCTypes.ResultTx) *pb.TxInfo {
 	js, _ := json.Marshal(env)
 
 	tx.Height = _tx.Height
-	tx.Hash = _tx.Hash
+	tx.Hash = _tx.Hash.Bytes()
 	tx.GasUsed = _tx.TxResult.GasUsed
 	tx.GasWanted = _tx.TxResult.GasWanted
 	tx.Envelope = string(js)
