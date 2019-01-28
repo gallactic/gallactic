@@ -44,7 +44,7 @@ func (ctx *PermissionContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) e
 	}
 
 	if !permission.EnsureValid(tx.Permissions()) {
-		return e.Error(e.ErrPermInvalid)
+		return e.Error(e.ErrInvalidPermission)
 	}
 
 	if tx.Set() {

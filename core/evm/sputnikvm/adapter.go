@@ -22,10 +22,11 @@ type Adapter interface {
 	callerAddress() common.Address
 	calleeAddress() *common.Address
 
-	GetGasLimit() uint64
-	GetAmount() uint64
+	GetGasLimit() *big.Int
+	GetGasPrice() *big.Int
+	GetAmount() *big.Int
 	GetData() []byte
-	GetNonce() uint64
+	GetNonce() *big.Int
 
 	setCalleeAddress(address common.Address)
 
@@ -45,7 +46,7 @@ type Adapter interface {
 	setCode(address common.Address, code []byte)
 
 	TimeStamp() uint64
-	LastBlockNumber() uint64
+	LastBlockNumber() *big.Int
 	LastBlockHash() []byte
 
 	ConvertLog(log sputnikvm.Log) evm.Log

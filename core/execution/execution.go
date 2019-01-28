@@ -124,7 +124,6 @@ func (exe *executor) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 				debug.Stack())
 		}
 		*/
-		exe.fireEvents(txRec)
 	}()
 	logger := exe.logger.WithScope("executor.Execute(tx txs.Tx)").With("tx_hash", txEnv.Hash())
 	logger.TraceMsg("Executing transaction", "tx", txEnv.String())
@@ -145,13 +144,12 @@ func (exe *executor) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	}
 
 	if err = executor.Execute(txEnv, txRec); err != nil {
-		txRec.Failed = true
-		txRec.Status = err.Error()
-
-		return err
+		txRec.Status = txs.Failed
 	}
 
-	return nil
+	exe.fireEvents(txRec)
+
+	return err
 }
 
 func (exe *executor) Commit() (err error) {

@@ -43,20 +43,24 @@ func (ga *GallacticAdapter) callerAddress() common.Address {
 	return toEthAddress(ga.Caller.Address())
 }
 
-func (ga *GallacticAdapter) GetGasLimit() uint64 {
-	return ga.GasLimit
+func (ga *GallacticAdapter) GetGasLimit() *big.Int {
+	return bigint(ga.GasLimit)
 }
 
-func (ga *GallacticAdapter) GetAmount() uint64 {
-	return ga.Amount
+func (ga *GallacticAdapter) GetGasPrice() *big.Int {
+	return bigint(0) /// TODO: Using testnet is free
+}
+
+func (ga *GallacticAdapter) GetAmount() *big.Int {
+	return bigint(ga.Amount)
 }
 
 func (ga *GallacticAdapter) GetData() []byte {
 	return ga.Data
 }
 
-func (ga *GallacticAdapter) GetNonce() uint64 {
-	return ga.Nonce
+func (ga *GallacticAdapter) GetNonce() *big.Int {
+	return bigint(ga.Nonce)
 }
 
 func (ga *GallacticAdapter) updateAccount(acc *account.Account) {
@@ -96,7 +100,8 @@ func (ga *GallacticAdapter) setCalleeAddress(address common.Address) {
 }
 
 func (ga *GallacticAdapter) removeAccount(address common.Address) {
-	//TODO: We should implement removeAccount() in cache
+	addr := fromEthAddress(address, true)
+	ga.Cache.RemoveAccount(addr)
 }
 
 func (ga *GallacticAdapter) addBalance(address common.Address, amount uint64) {
@@ -146,8 +151,8 @@ func (ga *GallacticAdapter) getAccount(ethAddr common.Address) *account.Account 
 	return nil
 }
 
-func (ga *GallacticAdapter) LastBlockNumber() uint64 {
-	return ga.BlockChain.LastBlockHeight()
+func (ga *GallacticAdapter) LastBlockNumber() *big.Int {
+	return bigint(ga.BlockChain.LastBlockHeight())
 }
 
 func (ga *GallacticAdapter) LastBlockHash() []byte {
@@ -186,4 +191,8 @@ func fromEthAddress(ethAdr common.Address, contract bool) crypto.Address {
 	}
 
 	return addr
+}
+
+func bigint(val uint64) *big.Int {
+	return new(big.Int).SetUint64(val)
 }

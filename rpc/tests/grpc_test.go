@@ -120,7 +120,7 @@ func TestTransactionMethods(t *testing.T) {
 
 	ret1, err := client.BroadcastTx(context.Background(), &pb.TransactRequest{TxEnvelope: env})
 	require.NoError(t, err)
-	require.Equal(t, env.Hash(), ret1.TxReceipt.TxHash)
+	require.Equal(t, env.Hash(), ret1.TxReceipt.Hash.Bytes())
 
 	// wait for new block and check balance
 	for {

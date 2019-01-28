@@ -36,7 +36,7 @@ func TestSputnikVM(t *testing.T) {
 
 	require.NoError(t, err)
 
-	callerAddr := toGallecticAddress("6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0")
+	callerAddr := toGallacticAddress("6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0")
 	caller, _ := account.NewAccount(callerAddr)
 	caller.AddToBalance(1000000)
 	caller.SetCode([]byte{})
@@ -49,13 +49,13 @@ func TestSputnikVM(t *testing.T) {
 	adapter1 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
 		Callee: nil, GasLimit: 1000000, Amount: 0, Data: []byte{}, Nonce: 1}
 	outE := Execute(&adapter1)
-	require.Equal(t, outE.Failed, false)
+	require.Equal(t, outE.Failed, false) /// deploying an empty contract is possible
 
 	//Deploy a random contract.
 	adapter2 := GallacticAdapter{BlockChain: bc, Cache: cache, Caller: caller,
 		Callee: nil, GasLimit: 1000000, Amount: 0, Data: []byte{60, 80, 120, 48, 22, 8, 0, 0, 34}, Nonce: 2}
 	outR := Execute(&adapter2)
-	require.Equal(t, outR.Failed, true)
+	require.Equal(t, outR.Failed, true) /// invalid data
 
 	//Deploy a valid contract
 	testCode := createContractCode()
@@ -64,7 +64,8 @@ func TestSputnikVM(t *testing.T) {
 	outD := Execute(&adapter3)
 	require.Equal(t, outD.Failed, false)
 	require.NotNil(t, *outD.ContractAddress)
-	require.Equal(t, getContractCodeAfterDeploy(), hex.EncodeToString(outD.Output))
+	contractCodeAfterDeploy := testCode[71:] // first 64 bytes is for hashing, ...
+	require.Equal(t, contractCodeAfterDeploy, outD.Output)
 
 	contract, _ := cache.GetAccount(*outD.ContractAddress)
 
@@ -146,11 +147,8 @@ func createContractCode() []byte {
 	deployCode, _ := hex.DecodeString("608060405234801561001057600080fd5b5033600260006101000a815481600160a060020a030219169083600160a060020a031602179055506101be806100476000396000f3006080604052600436106100615763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166341c0e1b5811461006657806360fe47b11461007d5780636d4ce63c14610088578063893d20e8146100b0575b600080fd5b34801561007257600080fd5b5061007b610107565b005b61007b60043561012d565b34801561009457600080fd5b5061009d610168565b6040805191825251602090910181900390f35b3480156100bc57600080fd5b506100c561016e565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60025473ffffffffffffffffffffffffffffffffffffffff60006101000a909104811616ff5b60018190556040805182815290517f23f9887eb044d32dba99d7b0b753c61c3c3b72d70ff0addb9a843542fd7642129160200181900390a150565b60015490565b60025460006101000a900473ffffffffffffffffffffffffffffffffffffffff16905600a165627a7a7230582001a5bb7dbc53c4e0e7acc1b23010f4dd1415e0b440e8784ac8ce8d0696c841720029")
 	return deployCode
 }
-func getContractCodeAfterDeploy() string {
-	return "6080604052600436106100615763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166341c0e1b5811461006657806360fe47b11461007d5780636d4ce63c14610088578063893d20e8146100b0575b600080fd5b34801561007257600080fd5b5061007b610107565b005b61007b60043561012d565b34801561009457600080fd5b5061009d610168565b6040805191825251602090910181900390f35b3480156100bc57600080fd5b506100c561016e565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b60025473ffffffffffffffffffffffffffffffffffffffff60006101000a909104811616ff5b60018190556040805182815290517f23f9887eb044d32dba99d7b0b753c61c3c3b72d70ff0addb9a843542fd7642129160200181900390a150565b60015490565b60025460006101000a900473ffffffffffffffffffffffffffffffffffffffff16905600a165627a7a7230582001a5bb7dbc53c4e0e7acc1b23010f4dd1415e0b440e8784ac8ce8d0696c841720029"
-}
 
-func toGallecticAddress(ethAddr string) crypto.Address {
+func toGallacticAddress(ethAddr string) crypto.Address {
 
 	var addr common.Address
 	sss, _ := hex.DecodeString(ethAddr)

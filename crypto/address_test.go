@@ -11,27 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAddress(t *testing.T) {
-	bytes := []byte{
-		1, 2, 3, 4, 5,
-		1, 2, 3, 4, 5,
-		1, 2, 3, 4, 5,
-		1, 2, 3, 4, 5,
-	}
-	address1, err := addressFromHash(bytes, prefixAccountAddress)
-	assert.NoError(t, err)
-	word256 := address1.Word256()
-	leadingZeroes := []byte{
-		0, 0, 0, 0,
-		0, 0,
-	}
-	fmt.Println(address1.String())
-	assert.Equal(t, leadingZeroes, word256[:6])
-	address2, err := AddressFromWord256(word256)
-	assert.NoError(t, err)
-	assert.Equal(t, address1, address2)
-}
-
 func TestMarshalingEmptyAddress(t *testing.T) {
 	addr1 := Address{}
 

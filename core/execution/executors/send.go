@@ -41,7 +41,7 @@ func (ctx *SendContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 			for _, s := range tx.Senders() {
 				acc := accs[s.Address]
 				if !ctx.Cache.HasPermissions(acc, permission.CreateAccount) {
-					return e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", r.Address, acc.Permissions(), permission.CreateAccount)
+					return e.Errorf(e.ErrPermissionDenied, "%s has %s but needs %s", r.Address, acc.Permissions(), permission.CreateAccount)
 				}
 			}
 		}

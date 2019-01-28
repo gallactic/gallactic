@@ -34,7 +34,7 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	var callee *account.Account
 	if tx.CreateContract() {
 		if !ctx.Cache.HasPermissions(caller, permission.CreateContract) {
-			return e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", caller.Address(), caller.Permissions(), permission.CreateContract)
+			return e.Errorf(e.ErrPermissionDenied, "%s has %s but needs %s", caller.Address(), caller.Permissions(), permission.CreateContract)
 		}
 
 		// In case of create contract we must pass nil as callee
@@ -43,35 +43,25 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 
 		ctx.Logger.TraceMsg("Creating new contract", "init_code", tx.Data())
 	} else {
-		/// TODO : write test for this case: create and call in same block
-		callee, err = ctx.Cache.GetAccount(tx.Callee().Address)
-		if err != nil {
-			return err
-		}
+		callee, _ = ctx.Cache.GetAccount(tx.Callee().Address)
 		if callee == nil {
 			return e.Errorf(e.ErrInvalidAddress, "attempt to call a non-existing account: %s", tx.Callee().Address)
 		}
 	}
 
 	if ctx.Committing {
-		adapter := sputnikvm.GallacticAdapter{ctx.BC, ctx.Cache, caller,
-			callee, tx.GasLimit(), tx.Amount(), tx.Data(), caller.Sequence()}
-
-		ret := sputnikvm.Execute(&adapter)
+		ret := ctx.Deliver(tx, caller, callee)
 
 		caller.IncSequence()
 
-		ctx.Logger.TraceMsg("Calling existing contract", ret.Output)
-
-		// Create a receipt from the ret and whether it erred.
-		ctx.Logger.TraceMsg("VM call complete",
-			"caller", caller,
-			"callee", callee,
-			"return", ret,
-			"error", err)
-
 		//Here we can acquire sputnik VM result
-		txRec.UsedGas = ret.UsedGas
+		if ret.Failed {
+			txRec.Status = txs.Failed
+		} else {
+			txRec.Status = txs.Ok
+		}
+		txRec.GasUsed = ret.UsedGas
+		txRec.GasWanted = tx.GasLimit()
 		txRec.Output = ret.Output
 		txRec.ContractAddress = ret.ContractAddress
 	}
@@ -85,4 +75,29 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	ctx.Cache.UpdateAccount(caller)
 
 	return nil
+}
+
+func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) sputnikvm.Output {
+	defer func() {
+		/* TODO:::: better crash now for testnet
+		// NOTE: SputnikVM should never crash, report it as error message to the caller
+		if r := recover(); r != nil {
+			err = fmt.Errorf("recovered from panic in executor.Execute(%s): %v\n%s", txEnv.String(), r,
+				debug.Stack())
+		}
+		*/
+	}()
+
+	adapter := sputnikvm.GallacticAdapter{ctx.BC, ctx.Cache, caller,
+		callee, tx.GasLimit(), tx.Amount(), tx.Data(), caller.Sequence()}
+
+	ret := sputnikvm.Execute(&adapter)
+
+	// Create a receipt from the ret and whether it erred.
+	ctx.Logger.TraceMsg("VM call complete",
+		"caller", caller,
+		"callee", callee,
+		"return", ret)
+
+	return ret
 }

@@ -35,12 +35,18 @@ func TestUnbondTx(t *testing.T) {
 func TestUnbondTxSequence(t *testing.T) {
 	setPermissions(t, "alice", permission.Bond)
 
-	sequence1 := getValidatorByName(t, "val_1").Sequence()
+	val1 := getValidatorByName(t, "val_1")
+	seq1 := val1.Sequence()
+	seq2 := getAccountByName(t, "alice").Sequence()
 
 	for i := 0; i < 100; i++ {
 		tx := makeUnbondTx(t, "val_1", "alice", 9999, _fee)
 		signAndExecute(t, e.ErrNone, tx, "val_1")
+
+		invalidTx := makeUnbondTx(t, "val_1", "alice", val1.Stake()+1, _fee)
+		signAndExecute(t, e.ErrInsufficientFunds, invalidTx, "val_1")
 	}
 
-	require.Equal(t, sequence1+100, getValidatorByName(t, "val_1").Sequence())
+	require.Equal(t, seq1+100, getValidatorByName(t, "val_1").Sequence())
+	require.Equal(t, seq2, getAccountByName(t, "alice").Sequence())
 }

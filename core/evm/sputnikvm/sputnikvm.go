@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereumproject/go-ethereum/common"
+	ETCCommon "github.com/ethereumproject/go-ethereum/common"
 	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
 
@@ -12,24 +12,28 @@ import (
 )
 
 func Execute(adapter Adapter) Output {
+	fmt.Printf("SputnikVM called: %x, %x, gas_limit:%d\n", adapter.calleeAddress(), adapter.GetData(), adapter.GetGasLimit())
+
 	var out Output
 
 	transaction := sputnikvm.Transaction{
 		Caller:   adapter.callerAddress(),
-		GasPrice: new(big.Int).SetUint64(0),
-		GasLimit: new(big.Int).SetUint64(adapter.GetGasLimit()),
 		Address:  adapter.calleeAddress(),
-		Value:    new(big.Int).SetUint64(adapter.GetAmount()),
+		GasPrice: adapter.GetGasPrice(),
+		GasLimit: adapter.GetGasLimit(),
+		Value:    adapter.GetAmount(),
 		Input:    adapter.GetData(),
-		Nonce:    new(big.Int).SetUint64(adapter.GetNonce()),
+		Nonce:    adapter.GetNonce(),
 	}
 
+	beneficiary := ETCCommon.HexToAddress("ffffffffffffffffffffffffffffffffffffffff")
 	header := sputnikvm.HeaderParams{
-		Beneficiary: *new(common.Address),
-		Timestamp:   adapter.TimeStamp(),
-		Number:      new(big.Int).SetUint64(adapter.LastBlockNumber()),
+		Timestamp: adapter.TimeStamp(),
+		Number:    adapter.LastBlockNumber(),
+		GasLimit:  adapter.GetGasLimit(),
+		// Required by PoW block info
 		Difficulty:  new(big.Int).SetUint64(0),
-		GasLimit:    new(big.Int).SetUint64(adapter.GetGasLimit()),
+		Beneficiary: beneficiary,
 	}
 
 	vm := sputnikvm.NewGallactic(&transaction, &header)
@@ -37,7 +41,6 @@ func Execute(adapter Adapter) Output {
 Loop:
 	for {
 		require := vm.Fire()
-		fmt.Printf("require.Typ(): %v\n", require.Typ())
 
 		switch require.Typ() {
 
@@ -45,16 +48,12 @@ Loop:
 			break Loop
 
 		case sputnikvm.RequireAccount:
-			if require.Address().IsEmpty() {
-				vm.CommitNonexist(require.Address())
+			acc := adapter.getAccount(require.Address())
+			if acc != nil {
+				vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()),
+					new(big.Int).SetUint64(acc.Balance()), acc.Code())
 			} else {
-				acc := adapter.getAccount(require.Address())
-				if acc != nil {
-					vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()),
-						new(big.Int).SetUint64(acc.Balance()), acc.Code())
-				} else {
-					vm.CommitNonexist(require.Address())
-				}
+				vm.CommitNonexist(require.Address())
 			}
 
 		case sputnikvm.RequireAccountCode:
@@ -69,12 +68,12 @@ Loop:
 			storage, err := adapter.getStorage(require.Address(), require.StorageKey())
 			if err != nil {
 				vm.CommitAccountStorage(require.Address(), require.StorageKey(), new(big.Int).SetUint64(0))
-				break
+			} else {
+				vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
 			}
-			vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
 
 		case sputnikvm.RequireBlockhash:
-			var blockHash common.Hash
+			var blockHash ETCCommon.Hash
 
 			reqblockNumber := require.BlockNumber().Int64()
 			block, err := tmRPC.Block(&reqblockNumber)
@@ -92,16 +91,19 @@ Loop:
 		}
 	}
 
+	/// If a contract creates another contract, the nonce of the new contract will be zero (less than creator)
+	var newContractSequence uint64 = 0
+
 	changedAccs := vm.AccountChanges()
 	accLen := len(changedAccs)
 
 	for i := 0; i < accLen; i++ {
 		changedAcc := changedAccs[i]
-
-		if changedAcc.Address().IsEmpty() {
+		// We don't support beneficiary account
+		if beneficiary == changedAcc.Address() {
 			continue
 		}
-		fmt.Printf("changedAcc.Typ(): %v\n", changedAcc.Typ())
+
 		switch changedAcc.Typ() {
 
 		case sputnikvm.AccountChangeIncreaseBalance:
@@ -116,7 +118,6 @@ Loop:
 
 		case sputnikvm.AccountChangeRemoved:
 			//Removing Account
-			fmt.Println("remove called")
 			adapter.removeAccount(changedAcc.Address())
 
 		case sputnikvm.AccountChangeFull:
@@ -132,7 +133,9 @@ Loop:
 			}
 			acc.SetBalance(changedAcc.Balance().Uint64())
 			acc.SetSequence(changedAcc.Nonce().Uint64())
-			acc.SetCode(changedAcc.Code())
+			// After deploying the contract, code can't be changed
+			// https://github.com/ethereumproject/go-ethereum/issues/696
+			// acc.SetCode(changedAcc.Code())
 
 			adapter.updateAccount(acc)
 
@@ -153,9 +156,11 @@ Loop:
 
 			adapter.updateAccount(acc)
 
-			if out.ContractAddress == nil {
+			if newContractSequence <= acc.Sequence() {
 				addr := acc.Address()
 				out.ContractAddress = &addr
+				//
+				newContractSequence = acc.Sequence()
 			}
 
 		default:
@@ -163,20 +168,20 @@ Loop:
 		}
 	}
 
+	out.UsedGas = vm.UsedGas().Uint64()
+
 	if vm.Failed() {
+		fmt.Println("SputnikVm Failed")
 		out.Failed = true
 	} else {
 		out.Failed = false
 	}
-
-	out.UsedGas = vm.UsedGas().Uint64()
 
 	//Extract logs and events
 	var logs []evm.Log
 	for _, log := range vm.Logs() {
 		logs = append(logs, adapter.ConvertLog(log))
 	}
-
 	out.UsedGas = vm.UsedGas().Uint64()
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())

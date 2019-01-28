@@ -6,14 +6,19 @@ import (
 	"github.com/gallactic/gallactic/txs/tx"
 )
 
+const (
+	Ok     = 0
+	Failed = 1
+)
+
 // Transaction receipt
 type Receipt struct {
 	Type            tx.Type         `json:"type"`
 	Hash            binary.HexBytes `json:"hash"`
-	Status          string          `json:"status,omitempty"`
-	Failed          bool            `json:"failed,omitempty"`
+	Status          int             `json:"status"`
 	Height          int64           `json:"height,omitempty"`
-	UsedGas         uint64          `json:"usedGas,omitempty"`
+	GasUsed         uint64          `json:"gasUsed,omitempty"`
+	GasWanted       uint64          `json:"gasWanted,omitempty"`
 	ContractAddress *crypto.Address `json:"contractAddress,omitempty"`
 	Output          []byte          `json:"output,omitempty"`
 }

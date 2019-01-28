@@ -73,15 +73,15 @@ func TestSendTxFails(t *testing.T) {
 
 	// simple send tx with call perm should fail
 	tx2 := makeSendTx(t, "bob", "dan", 100, _fee)
-	signAndExecute(t, e.ErrPermDenied, tx2, "bob")
+	signAndExecute(t, e.ErrPermissionDenied, tx2, "bob")
 
 	// simple send tx with create perm should fail
 	tx3 := makeSendTx(t, "carol", "dan", 100, _fee)
-	signAndExecute(t, e.ErrPermDenied, tx3, "carol")
+	signAndExecute(t, e.ErrPermissionDenied, tx3, "carol")
 
 	// simple send tx to unknown account without create_account perm should fail
 	tx5 := makeSendTx(t, "alice", "", 100, _fee)
-	signAndExecute(t, e.ErrPermDenied, tx5, "alice")
+	signAndExecute(t, e.ErrPermissionDenied, tx5, "alice")
 
 	// Output amount can  be zero
 	tx6 := makeSendTx(t, "alice", "dan", 0, _fee)
@@ -101,7 +101,7 @@ func TestSendPermission(t *testing.T) {
 	addReceiver(t, tx2, "carol", 10)
 
 	// Two inputs, one with permission, one without, should fail
-	signAndExecute(t, e.ErrPermDenied, tx2, "alice", "bob")
+	signAndExecute(t, e.ErrPermissionDenied, tx2, "alice", "bob")
 }
 func TestCreateAccountPermission(t *testing.T) {
 	setPermissions(t, "alice", permission.Send|permission.CreateAccount)
@@ -126,13 +126,13 @@ func TestCreateAccountPermission(t *testing.T) {
 	tx3 := makeSendTx(t, "alice", "", 5, _fee)
 	addSender(t, tx3, "bob", 5, _fee)
 	tx3.Receivers()[0].Amount = 10
-	signAndExecute(t, e.ErrPermDenied, tx3, "alice", "bob")
+	signAndExecute(t, e.ErrPermissionDenied, tx3, "alice", "bob")
 
 	// Two inputs, both with send, one with create, one without, two outputs (one known, one unknown) should fail
 	tx4 := makeSendTx(t, "alice", "eve", 5, _fee)
 	addSender(t, tx4, "bob", 5, _fee)
 	addReceiver(t, tx4, "", 5)
-	signAndExecute(t, e.ErrPermDenied, tx4, "alice", "bob")
+	signAndExecute(t, e.ErrPermissionDenied, tx4, "alice", "bob")
 
 	// Two inputs, both with send, both with create, should pass
 	setPermissions(t, "bob", permission.Send|permission.CreateAccount)
@@ -171,13 +171,16 @@ func TestMultiSigs(t *testing.T) {
 func TestSendTxSequence(t *testing.T) {
 	setPermissions(t, "alice", permission.Send)
 
-	sequence1 := getAccountByName(t, "alice").Sequence()
-	sequence2 := getAccountByName(t, "bob").Sequence()
+	seq1 := getAccountByName(t, "alice").Sequence()
+	seq2 := getAccountByName(t, "bob").Sequence()
 	for i := 0; i < 100; i++ {
 		tx := makeSendTx(t, "alice", "bob", 1, _fee)
 		signAndExecute(t, e.ErrNone, tx, "alice")
+
+		invalidTx := makeSendTx(t, "alice", "bob", getBalance(t, "alice")+1, _fee)
+		signAndExecute(t, e.ErrInsufficientFunds, invalidTx, "alice")
 	}
 
-	require.Equal(t, sequence1+100, getAccountByName(t, "alice").Sequence())
-	require.Equal(t, sequence2, getAccountByName(t, "bob").Sequence())
+	require.Equal(t, seq1+100, getAccountByName(t, "alice").Sequence())
+	require.Equal(t, seq2, getAccountByName(t, "bob").Sequence())
 }

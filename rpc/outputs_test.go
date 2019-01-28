@@ -28,7 +28,7 @@ func TestResultBroadcastTx(t *testing.T) {
 
 	jsonResult, err := json.Marshal(result)
 	require.NoError(t, err)
-	assert.Equal(t, `{"type":"UnknownTx","hash":"666f6f"}`, string(jsonResult))
+	assert.Equal(t, `{"type":"UnknownTx","hash":"666f6f","status":0}`, string(jsonResult))
 }
 
 func TestListUnconfirmedTxs(t *testing.T) {

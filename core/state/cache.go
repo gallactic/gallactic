@@ -82,6 +82,7 @@ func (c *Cache) Flush(set *validator.ValidatorSet) error {
 	for addr, a := range c.accChanges {
 		if a.removed {
 			if err := c.state.removeAccount(addr); err != nil {
+				panic("Trying to delete an account which is not existed before") /// TODO: Remove this panic later
 				return err
 			}
 		} else {
