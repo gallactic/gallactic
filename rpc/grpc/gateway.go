@@ -5,12 +5,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"net/http"
-	"strings"
-
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
+	"net/http"
+	"strings"
 )
 
 func (s *Server) StartGateway(ctx context.Context, grpcAddr, gatewayAddr string) error {
