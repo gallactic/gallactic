@@ -2,8 +2,10 @@ package grpc
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+
 	"github.com/gallactic/gallactic/core/blockchain"
 
 	"github.com/gallactic/gallactic/common/binary"
@@ -270,11 +272,16 @@ func (s *blockchainService) GetBlockTxs(ctx context.Context, block *pb.BlockRequ
 }
 
 func (s *blockchainService) GetTx(ctx context.Context, req *pb.TxRequest) (*pb.TxResponse, error) {
-	_tx, err := tmRPC.Tx(req.TxHash, false)
-
+	hash, err := hex.DecodeString(req.TxHash)
 	if err != nil {
 		return nil, err
 	}
+
+	_tx, err := tmRPC.Tx(hash, false)
+	if err != nil {
+		return nil, err
+	}
+
 	tx := s.getTx(_tx)
 
 	return &pb.TxResponse{
@@ -338,7 +345,7 @@ func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, e
 		}
 		js, _ := json.Marshal(env)
 
-		tx.Hash = _tx.Hash()
+		tx.Hash = hex.EncodeToString(_tx.Hash())
 
 		tx.Envelope = string(js)
 		pbBlock.Txs = append(pbBlock.Txs, tx)
@@ -382,7 +389,7 @@ func (s *blockchainService) getTx(_tx *tmRPCTypes.ResultTx) *pb.TxInfo {
 	js, _ := json.Marshal(env)
 
 	tx.Height = _tx.Height
-	tx.Hash = _tx.Hash.Bytes()
+	tx.Hash = _tx.Hash.String()
 	tx.GasUsed = _tx.TxResult.GasUsed
 	tx.GasWanted = _tx.TxResult.GasWanted
 	tx.Envelope = string(js)
