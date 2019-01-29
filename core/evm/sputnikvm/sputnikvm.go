@@ -1,44 +1,42 @@
 package sputnikvm
 
 import (
-	"errors"
+	"fmt"
 	"math/big"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	e "github.com/gallactic/gallactic/errors"
+	ETCCommon "github.com/ethereumproject/go-ethereum/common"
+	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 )
 
-func Execute(adapter Adapter) (Output, error) {
-	var out Output
-	var retError error
+func Execute(adapter Adapter) Output {
+	fmt.Printf("SputnikVM called.\n")
 
-	if adapter.calleeAddress() == nil && len(adapter.GetData()) == 0 {
-		return out, e.Errorf(e.ErrInternalEvm, "Zero Bytes of Codes")
-	}
+	var out Output
 
 	transaction := sputnikvm.Transaction{
 		Caller:   adapter.callerAddress(),
-		GasPrice: new(big.Int).SetUint64(0),
-		GasLimit: new(big.Int).SetUint64(adapter.GetGasLimit()),
 		Address:  adapter.calleeAddress(),
-		Value:    new(big.Int).SetUint64(adapter.GetAmount()),
+		GasPrice: adapter.GetGasPrice(),
+		GasLimit: adapter.GetGasLimit(),
+		Value:    adapter.GetAmount(),
 		Input:    adapter.GetData(),
-		Nonce:    new(big.Int).SetUint64(adapter.GetNonce()),
+		Nonce:    adapter.GetNonce(),
 	}
 
+	beneficiary := ETCCommon.HexToAddress("ffffffffffffffffffffffffffffffffffffffff")
 	header := sputnikvm.HeaderParams{
-		Beneficiary: *new(common.Address),
-		Timestamp:   adapter.TimeStamp(),
-		Number:      new(big.Int).SetUint64(adapter.LastBlockNumber()),
+		Timestamp: adapter.TimeStamp(),
+		Number:    adapter.LastBlockNumber(),
+		GasLimit:  adapter.GetGasLimit(),
+		// Required by PoW block info
 		Difficulty:  new(big.Int).SetUint64(0),
-		GasLimit:    new(big.Int).SetUint64(adapter.GetGasLimit()),
+		Beneficiary: beneficiary,
 	}
 
 	vm := sputnikvm.NewGallactic(&transaction, &header)
-	defer vm.Free()
 
 Loop:
 	for {
@@ -50,15 +48,12 @@ Loop:
 			break Loop
 
 		case sputnikvm.RequireAccount:
-			if require.Address().IsEmpty() {
-				vm.CommitNonexist(require.Address())
+			acc := adapter.getAccount(require.Address())
+			if acc != nil {
+				vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()),
+					new(big.Int).SetUint64(acc.Balance()), acc.Code())
 			} else {
-				acc := adapter.getAccount(require.Address())
-				if acc != nil {
-					vm.CommitAccount(require.Address(), new(big.Int).SetUint64(acc.Sequence()), new(big.Int).SetUint64(acc.Balance()), acc.Code())
-				} else {
-					vm.CommitNonexist(require.Address())
-				}
+				vm.CommitNonexist(require.Address())
 			}
 
 		case sputnikvm.RequireAccountCode:
@@ -66,50 +61,48 @@ Loop:
 			if acc != nil {
 				vm.CommitAccountCode(require.Address(), acc.Code())
 			} else {
-				return out, errors.New("No Exist Account for Acquire Code")
+				vm.CommitNonexist(require.Address())
 			}
 
 		case sputnikvm.RequireAccountStorage:
 			storage, err := adapter.getStorage(require.Address(), require.StorageKey())
 			if err != nil {
 				vm.CommitAccountStorage(require.Address(), require.StorageKey(), new(big.Int).SetUint64(0))
-				break
+			} else {
+				vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
 			}
-			vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
 
 		case sputnikvm.RequireBlockhash:
-			//Require Blockhash
+			var blockHash ETCCommon.Hash
+
 			reqblockNumber := require.BlockNumber().Int64()
-
 			block, err := tmRPC.Block(&reqblockNumber)
-
-			if err != nil {
-				return out, e.Errorf(e.ErrInternalEvm, "Not Exist Block!")
+			if err == nil {
+				hash := block.Block.Hash().Bytes()
+				blockHash.SetBytes(hash)
 			}
-
-			hash := block.Block.Hash().Bytes()
-			var blockHash common.Hash
-			blockHash.SetBytes(hash)
 			vm.CommitBlockhash(require.BlockNumber(), blockHash)
 
 		default:
-			return out, e.Errorf(e.ErrInternalEvm, "Not Supperted Requirement by Sputnik!")
+			/// The cache is irreversible, during delivering call transaction
+			/// Better panic in case of unexpected error happens
+			/// rather than changing the state which the tx is not delivered.
+			panic("unreachable")
 		}
 	}
 
-	if vm.Failed() {
-		out.Failed = true
-		out.UsedGas = vm.UsedGas().Uint64()
-		return out, e.Errorf(e.ErrInternalEvm, "VM Failed")
-	}
+	// HACKING SPUTNIKVM:
+	// If contract A creates contract B, the byte code of B will always be less than A.
+	// AccountChange are not always synchronize.
+	var contractCodeLength = 0
 
 	changedAccs := vm.AccountChanges()
 	accLen := len(changedAccs)
 
 	for i := 0; i < accLen; i++ {
 		changedAcc := changedAccs[i]
-
-		if changedAcc.Address().IsEmpty() {
+		// We don't support beneficiary account
+		if beneficiary == changedAcc.Address() {
 			continue
 		}
 
@@ -130,6 +123,8 @@ Loop:
 			adapter.removeAccount(changedAcc.Address())
 
 		case sputnikvm.AccountChangeFull:
+			acc := adapter.getAccount(changedAcc.Address())
+
 			changeStorage := changedAcc.ChangedStorage()
 			if len(changeStorage) > 0 {
 				for i := 0; i < len(changeStorage); i++ {
@@ -138,7 +133,13 @@ Loop:
 					adapter.updateStorage(changedAcc.Address(), key, value)
 				}
 			}
-			adapter.setAccount(changedAcc.Address(), changedAcc.Balance().Uint64(), changedAcc.Code(), changedAcc.Nonce().Uint64())
+			acc.SetBalance(changedAcc.Balance().Uint64())
+			acc.SetSequence(changedAcc.Nonce().Uint64())
+			// After deploying the contract, code can't be changed
+			// https://github.com/ethereumproject/go-ethereum/issues/696
+			// acc.SetCode(changedAcc.Code())
+
+			adapter.updateAccount(acc)
 
 		case sputnikvm.AccountChangeCreate:
 			acc := adapter.createContractAccount(changedAcc.Address())
@@ -157,25 +158,39 @@ Loop:
 
 			adapter.updateAccount(acc)
 
-			if adapter.calleeAddress() == nil {
-				adapter.setCalleeAddress(changedAcc.Address())
+			if contractCodeLength <= len(acc.Code()) {
+				addr := acc.Address()
+				out.ContractAddress = &addr
+				//
+				contractCodeLength = len(acc.Code())
 			}
 
 		default:
-			//Return error :unreachable!
-			return out, errors.New("unreachable")
+			panic("unreachable")
 		}
+	}
 
+	out.UsedGas = vm.UsedGas().Uint64()
+
+	if vm.Failed() {
+		fmt.Println("SputnikVm Failed")
+		out.Failed = true
+	} else {
+		out.Failed = false
 	}
 
 	//Extract logs and events
+	var logs []evm.Log
 	for _, log := range vm.Logs() {
-		adapter.log(log.Address, log.Topics, log.Data)
+		logs = append(logs, adapter.ConvertLog(log))
 	}
 
+	out.Logs = logs
 	out.UsedGas = vm.UsedGas().Uint64()
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())
 
-	return out, retError
+	vm.Free()
+
+	return out
 }

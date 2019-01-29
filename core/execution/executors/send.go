@@ -5,7 +5,7 @@ import (
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
@@ -18,7 +18,7 @@ type SendContext struct {
 	Logger     *logging.Logger
 }
 
-func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {
+func (ctx *SendContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	tx, ok := txEnv.Tx.(*tx.SendTx)
 	if !ok {
 		return e.Error(e.ErrInvalidTxType)
@@ -41,7 +41,7 @@ func (ctx *SendContext) Execute(txEnv *txs.Envelope) error {
 			for _, s := range tx.Senders() {
 				acc := accs[s.Address]
 				if !ctx.Cache.HasPermissions(acc, permission.CreateAccount) {
-					return e.Errorf(e.ErrPermDenied, "%s has %s but needs %s", r.Address, acc.Permissions(), permission.CreateAccount)
+					return e.Errorf(e.ErrPermissionDenied, "%s has %s but needs %s", r.Address, acc.Permissions(), permission.CreateAccount)
 				}
 			}
 		}

@@ -5,7 +5,7 @@ import (
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
@@ -19,7 +19,7 @@ type BondContext struct {
 	Logger     *logging.Logger
 }
 
-func (ctx *BondContext) Execute(txEnv *txs.Envelope) error {
+func (ctx *BondContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	tx, ok := txEnv.Tx.(*tx.BondTx)
 	if !ok {
 		return e.Error(e.ErrInvalidTxType)

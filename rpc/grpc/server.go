@@ -17,7 +17,8 @@ type Server struct {
 
 func NewGRPCServer(logger *logging.Logger) *Server {
 	return &Server{
-		grpc.NewServer(grpc.UnaryInterceptor(unaryInterceptor(logger)),
+		grpc.NewServer(
+			grpc.UnaryInterceptor(unaryInterceptor(logger)),
 			grpc.StreamInterceptor(streamInterceptor(logger.WithScope("NewGRPCServer"))))}
 }
 

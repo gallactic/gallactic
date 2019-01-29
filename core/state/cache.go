@@ -37,6 +37,7 @@ type validatorInfo struct {
 type accountInfo struct {
 	account  *account.Account
 	storages map[binary.Word256]binary.Word256
+	removed  bool
 }
 
 type CacheOption func(*Cache)
@@ -78,9 +79,22 @@ func (c *Cache) Flush(set *validator.ValidatorSet) error {
 	c.Lock()
 	defer c.Unlock()
 
-	for _, a := range c.accChanges {
-		if err := c.state.updateAccount(a.account); err != nil {
-			return err
+	for addr, a := range c.accChanges {
+		if a.removed {
+			if err := c.state.removeAccount(addr); err != nil {
+				panic("Trying to delete an account which is not existed before") /// TODO: Remove this panic later
+				return err
+			}
+		} else {
+			if err := c.state.updateAccount(a.account); err != nil {
+				return err
+			}
+
+			for k, v := range a.storages {
+				if err := c.state.setStorage(a.account.Address(), k, v); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
@@ -152,9 +166,22 @@ func (c *Cache) UpdateAccount(acc *account.Account) error {
 	a, ok := c.accChanges[addr]
 	if ok {
 		a.account = acc
-
 	} else {
 		c.accChanges[addr] = &accountInfo{account: acc}
+	}
+
+	return nil
+}
+
+func (c *Cache) RemoveAccount(addr crypto.Address) error {
+	c.Lock()
+	defer c.Unlock()
+
+	_, ok := c.accChanges[addr]
+	if ok {
+		delete(c.accChanges, addr) /// simply remove it from cache
+	} else {
+		c.accChanges[addr] = &accountInfo{removed: true}
 	}
 
 	return nil
@@ -276,15 +303,20 @@ func (c *Cache) SetStorage(addr crypto.Address, key, value binary.Word256) error
 	defer c.Unlock()
 
 	a, ok := c.accChanges[addr]
-	if ok {
-		if a.storages == nil {
-			a.storages = make(map[binary.Word256]binary.Word256)
+	if !ok {
+		acc, _ := c.state.GetAccount(addr)
+		if acc == nil {
+			acc, _ = account.NewAccount(addr)
 		}
-	} else {
+
 		c.accChanges[addr] = &accountInfo{
-			storages: make(map[binary.Word256]binary.Word256),
+			account: acc,
 		}
 		a = c.accChanges[addr]
+	}
+
+	if a.storages == nil {
+		a.storages = make(map[binary.Word256]binary.Word256)
 	}
 
 	a.storages[key] = value
