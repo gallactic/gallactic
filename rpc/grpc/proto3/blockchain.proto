@@ -149,7 +149,7 @@ message BlockchainInfoResponse {
 }
 
 message TxRequest {
- bytes TxHash = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes", (gogoproto.nullable) = false];
+ string TxHash = 1;
 }
 
 message TxResponse {
@@ -219,8 +219,8 @@ message EvidenceInfo {
 }
 
 message TxInfo {
-  int64 Height = 1 ;
-  bytes Hash = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable) = false];
+  int64 Height = 1;
+  string Hash = 2;
   int64 GasUsed = 3;
   int64 GasWanted = 4;
   string Envelope = 5 ;
