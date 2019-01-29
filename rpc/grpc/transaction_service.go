@@ -26,7 +26,7 @@ func NewTransactorService(con context.Context, transaction *execution.Transactor
 
 //Transcation Service
 func (tx *transcatorService) BroadcastTx(ctx context.Context, txReq *pb.TransactRequest) (*pb.ReceiptResponse, error) {
-	receipt, err := tx.transactor.BroadcastTx(txReq.TxEnvelope)
+	receipt, err := tx.transactor.BroadcastTxSync(txReq.TxEnvelope)
 	if err != nil {
 		return nil, err
 	}

@@ -21,7 +21,7 @@ type Config struct {
 	RPC        *rpcConfig.RPCConfig             `toml:"RPC"`
 	GRPC       *grpcConfig.GRPCConfig           `toml:"GRPC"`
 	Logging    *logconfig.LoggingConfig         `toml:"Logging,omitempty"`
-	Sputnikvm  *sputnikvmConfig.SputnikvmConfig `toml:"SputnikVM"`
+	SputnikVM  *sputnikvmConfig.SputnikvmConfig `toml:"SputnikVM"`
 }
 
 func DefaultConfig() *Config {
@@ -40,7 +40,7 @@ func DefaultConfig() *Config {
 		RPC:        rpcConfig.DefaultRPCConfig(),
 		GRPC:       grpcConfig.DefaultGRPCConfig(),
 		Logging:    logconfig.DefaultNodeLoggingConfig(),
-		Sputnikvm:  sputnikvmConfig.DefaultSputnikvmConfig(),
+		SputnikVM:  sputnikvmConfig.DefaultSputnikvmConfig(),
 	}
 }
 
@@ -109,7 +109,7 @@ func (conf *Config) SaveToFile(file string) error {
 
 // Verify web3 connection - to use it in interChainTrx precompiled contract to connect
 func (conf *Config) Check() error {
-	if err := conf.Sputnikvm.Check(); err != nil {
+	if err := conf.SputnikVM.Check(); err != nil {
 		return err
 	}
 	return nil

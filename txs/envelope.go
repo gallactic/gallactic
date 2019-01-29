@@ -1,6 +1,7 @@
 package txs
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 
@@ -8,7 +9,6 @@ import (
 	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
 	amino "github.com/tendermint/go-amino"
-	"golang.org/x/crypto/ripemd160"
 )
 
 // Envelope contains both the signable Tx and the signatures for each input (in signatories)
@@ -28,13 +28,14 @@ func Enclose(chainId string, tx tx.Tx) *Envelope {
 	}
 }
 
-// SignBytes produces the canonical SignBytes for a Tx
-func (env Envelope) SignBytes() ([]byte, error) {
+// signBytes produces the canonical SignBytes for a Tx
+func (env Envelope) signBytes() ([]byte, error) {
 	env.Signatories = nil
 	bs, err := json.Marshal(env)
 	if err != nil {
 		return nil, fmt.Errorf("could not generate canonical SignBytes for tx %v: %v", env, err)
 	}
+
 	return bs, nil
 }
 
@@ -42,18 +43,23 @@ func (env *Envelope) Hash() []byte {
 	if env.hash != nil {
 		return env.hash
 	}
+	if env.Signatories == nil {
+		return nil
+	}
 
-	hasher := ripemd160.New()
-	bytes, err := env.SignBytes()
+	bs, err := env.Encode()
 	if err != nil {
 		return nil
 	}
-	hasher.Write(bytes)
-	env.hash = hasher.Sum(nil)
+	h := sha256.Sum256(bs) // Make sure that the Gallactic.Tx.Hash is same as Tendermint.Tx.Hash
+	env.hash = h[:]
+
 	return env.hash
 }
 
 func (env *Envelope) String() string {
+	//s, _ := json.Marshal(env.Tx)
+	//return fmt.Sprintf("Envelop{TxHash: %X; Tx: %s}", env.Hash(), s)
 	return fmt.Sprintf("Envelop{TxHash: %X; Tx: %v}", env.Hash(), env.Tx)
 }
 
@@ -61,28 +67,26 @@ func (env *Envelope) String() string {
 // appear in the same order as the inputs as returned by Tx.GetInputs().
 func (env *Envelope) Verify() error {
 	if len(env.Signatories) == 0 {
-		return e.Errorf(e.ErrInvalidSignature, "transaction envelope contains no (successfully unmarshalled) signatories")
+		return e.Errorf(e.ErrInvalidSignature, "Transaction envelope contains no signatories")
 	}
 
-	errPrefix := fmt.Sprintf("could not verify transaction %X", env.Hash())
 	inputs := env.Tx.Signers()
 	if len(inputs) != len(env.Signatories) {
-		return e.Errorf(e.ErrInvalidSignature, "%s: number of inputs (= %v) should equal number of signatories (= %v)",
-			errPrefix, len(inputs), len(env.Signatories))
+		return e.Errorf(e.ErrInvalidSignature, "Number of inputs (= %v) should equal number of signatories (= %v)",
+			len(inputs), len(env.Signatories))
 	}
-	signBytes, err := env.SignBytes()
+	signBytes, err := env.signBytes()
 	if err != nil {
-		return e.Errorf(e.ErrInvalidSignature, "%s: could not generate SignBytes: %v", errPrefix, err)
+		return e.Errorf(e.ErrInvalidSignature, "Could not generate SignBytes: %v", err)
 	}
 	// Expect order to match (we could build lookup but we want Verify to be quicker than Sign which does order sigs)
 	for i, s := range env.Signatories {
 		if !inputs[i].Address.Verify(s.PublicKey) {
-			return e.Errorf(e.ErrInvalidSignature, "%s: address %v can not be verified",
-				errPrefix, inputs[i].Address)
+			return e.Errorf(e.ErrInvalidSignature, "Address %v can not be verified", inputs[i].Address)
 		}
 
 		if !s.PublicKey.Verify(signBytes, s.Signature) {
-			return e.Errorf(e.ErrInvalidSignature, "%s: invalid signature in signatory %v ", errPrefix, inputs[i].Address)
+			return e.Errorf(e.ErrInvalidSignature, "Invalid signature in signatory %v", inputs[i].Address)
 		}
 	}
 
@@ -94,7 +98,7 @@ func (env *Envelope) Verify() error {
 func (env *Envelope) Sign(signers ...crypto.Signer) error {
 	// Clear any existing
 	env.Signatories = env.Signatories[:0]
-	signBytes, err := env.SignBytes()
+	signBytes, err := env.signBytes()
 	if err != nil {
 		return err
 	}
