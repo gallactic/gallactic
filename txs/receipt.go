@@ -2,6 +2,7 @@ package txs
 
 import (
 	"github.com/gallactic/gallactic/common/binary"
+	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs/tx"
 )
@@ -20,5 +21,6 @@ type Receipt struct {
 	GasUsed         uint64          `json:"gasUsed,omitempty"`
 	GasWanted       uint64          `json:"gasWanted,omitempty"`
 	ContractAddress *crypto.Address `json:"contractAddress,omitempty"`
+	Logs            evm.Logs        `json:"logs,omitempty"`
 	Output          []byte          `json:"output,omitempty"`
 }

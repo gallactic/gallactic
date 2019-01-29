@@ -16,6 +16,7 @@ import (
 	"github.com/pkg/errors"
 
 	abciTypes "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/common"
 )
 
 const responseInfoName = "Gallactic"
@@ -178,10 +179,28 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 		}
 	}
 
+	var tags []common.KVPair
+	var logTag common.KVPair
+	bs, err := txRec.Logs.MarshalBinary()
+
+	if err != nil {
+		return abciTypes.ResponseDeliverTx{
+			Code: codes.TxExecutionErrorCode,
+			Log:  fmt.Sprintf("DeliverTx could not serialize logs: %s", err),
+		}
+	}
+
+	logTag.Key = []byte("evm.log")
+	logTag.Value = bs
+	tags = append(tags, logTag)
+
 	return abciTypes.ResponseDeliverTx{
-		Code: codes.TxExecutionSuccessCode,
-		Log:  "DeliverTx success - receipt in data",
-		Data: receiptBytes,
+		Code:      codes.TxExecutionSuccessCode,
+		Log:       "DeliverTx success - receipt in data",
+		GasUsed:   int64(txRec.GasUsed),
+		GasWanted: int64(txRec.GasWanted),
+		Tags:      tags,
+		Data:      receiptBytes,
 	}
 }
 
