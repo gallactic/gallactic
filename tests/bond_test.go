@@ -7,7 +7,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
 	"github.com/stretchr/testify/require"
 )
@@ -39,7 +39,7 @@ func TestBondTxFails(t *testing.T) {
 	signAndExecute(t, e.ErrNone, tx2, "alice")
 
 	tx3 := makeBondTx(t, "bob", "", 9999, _fee)
-	signAndExecute(t, e.ErrPermDenied, tx3, "bob")
+	signAndExecute(t, e.ErrPermissionDenied, tx3, "bob")
 }
 
 func TestBondTx(t *testing.T) {
@@ -61,4 +61,22 @@ func TestBondTx(t *testing.T) {
 
 	checkBalance(t, "alice", aliceBalance-(9999+_fee))
 	checkBalance(t, "bob", bobBalance-(9999+_fee))
+}
+
+func TestBondTxSequence(t *testing.T) {
+	setPermissions(t, "alice", permission.Bond)
+
+	seq1 := getAccountByName(t, "alice").Sequence()
+	seq2 := getValidatorByName(t, "val_1").Sequence()
+
+	for i := 0; i < 100; i++ {
+		tx := makeBondTx(t, "alice", "val_1", 9999, _fee)
+		signAndExecute(t, e.ErrNone, tx, "alice")
+
+		invalidTx := makeBondTx(t, "alice", "val_1", getBalance(t, "alice")+1, _fee)
+		signAndExecute(t, e.ErrInsufficientFunds, invalidTx, "alice")
+	}
+
+	require.Equal(t, seq1+100, getAccountByName(t, "alice").Sequence())
+	require.Equal(t, seq2, getValidatorByName(t, "val_1").Sequence())
 }

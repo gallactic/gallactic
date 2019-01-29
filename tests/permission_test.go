@@ -7,7 +7,7 @@ import (
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
 	"github.com/stretchr/testify/require"
 )
@@ -41,7 +41,7 @@ func TestPermissionsTxFails(t *testing.T) {
 	signAndExecute(t, e.ErrNone, tx1, "alice")
 
 	tx2 := makePermissionTx(t, "bob", "dan", permission.Call, true, _fee)
-	signAndExecute(t, e.ErrPermDenied, tx2, "bob")
+	signAndExecute(t, e.ErrPermissionDenied, tx2, "bob")
 }
 
 func TestPermissionsTx(t *testing.T) {
@@ -55,4 +55,22 @@ func TestPermissionsTx(t *testing.T) {
 	tx2 := makePermissionTx(t, "alice", "bob", permission.Call, false, _fee)
 	signAndExecute(t, e.ErrNone, tx2, "alice")
 	assert.Equal(t, getAccountByName(t, "bob").Permissions(), permission.Send)
+}
+
+func TestPermissionTxSequence(t *testing.T) {
+	setPermissions(t, "alice", permission.ModifyPermission)
+
+	seq1 := getAccountByName(t, "alice").Sequence()
+	seq2 := getAccountByName(t, "bob").Sequence()
+
+	for i := 0; i < 100; i++ {
+		tx1 := makePermissionTx(t, "alice", "bob", permission.Call, true, _fee)
+		signAndExecute(t, e.ErrNone, tx1, "alice")
+
+		invalidTx := makePermissionTx(t, "alice", "bob", account.Permissions(0xFFFFFFFF), true, _fee)
+		signAndExecute(t, e.ErrInvalidPermission, invalidTx, "alice")
+	}
+
+	require.Equal(t, seq1+100, getAccountByName(t, "alice").Sequence())
+	require.Equal(t, seq2, getAccountByName(t, "bob").Sequence())
 }

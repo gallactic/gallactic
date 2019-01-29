@@ -1,4 +1,4 @@
-package tendermint
+package logger
 
 import (
 	"github.com/hyperledger/burrow/logging"

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
 	amino "github.com/tendermint/go-amino"
 	"golang.org/x/crypto/ripemd160"
@@ -122,16 +122,12 @@ func (env *Envelope) Sign(signers ...crypto.Signer) error {
 	return nil
 }
 
-// BroadcastTx or Transaction receipt
-type Receipt struct {
-	TxHash []byte
-}
-
 // Generate a transaction Receipt containing the Tx hash.
 // Returned by ABCI methods.
 func (env *Envelope) GenerateReceipt() *Receipt {
 	receipt := &Receipt{
-		TxHash: env.Hash(),
+		Type: env.Type,
+		Hash: env.Hash(),
 	}
 
 	return receipt

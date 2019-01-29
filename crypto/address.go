@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"unsafe"
 
-	"github.com/gallactic/gallactic/common/binary"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/mr-tron/base58/base58"
 )
 
@@ -43,11 +42,6 @@ func AddressFromRawBytes(bs []byte) (Address, error) {
 	}
 
 	return addr, nil
-}
-
-func AddressFromWord256(w binary.Word256) (Address, error) {
-	bs := w.Bytes()[6:]
-	return AddressFromRawBytes(bs)
 }
 
 func ContractAddress(bs []byte) (Address, error) {
@@ -90,10 +84,6 @@ func (addr Address) RawBytes() []byte {
 
 func (addr Address) String() string {
 	return base58.Encode(addr.RawBytes())
-}
-
-func (addr Address) Word256() binary.Word256 {
-	return binary.LeftPadWord256(addr.RawBytes())
 }
 
 /// ----------

@@ -6,7 +6,7 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/errors"
+	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs/tx"
 )
 
@@ -27,7 +27,7 @@ func getInputAccount(ch *state.Cache, in tx.TxInput, req account.Permissions) (*
 	}
 
 	if !ch.HasPermissions(acc, req) {
-		return nil, e.Errorf(e.ErrPermDenied, "%v has %v but needs %v permission", in.Address, acc.Permissions(), permission.Send)
+		return nil, e.Errorf(e.ErrPermissionDenied, "%v has %v but needs %v permission", in.Address, acc.Permissions(), permission.Send)
 	}
 
 	return acc, nil

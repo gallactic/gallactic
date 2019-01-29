@@ -4,6 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/gallactic/gallactic/core/events"
+
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/execution"
@@ -26,6 +28,7 @@ var tState *state.State
 var tLogger *logging.Logger
 var tChecker execution.BatchExecutor
 var tCommitter execution.BatchCommitter
+var tEventBus events.EventBus
 
 func TestMain(m *testing.M) {
 	tLogger = logging.NewNoopLogger()

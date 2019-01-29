@@ -16,6 +16,7 @@ import (
 	"github.com/gallactic/gallactic/core/consensus/tendermint"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	tmv "github.com/gallactic/gallactic/core/consensus/tendermint/validator" // TODO:::
+	"github.com/gallactic/gallactic/core/events"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
@@ -70,10 +71,14 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	if err != nil {
 		return nil, fmt.Errorf("error creating or loading blockchain state: %v", err)
 	}
+	eventBus := events.NewEventBus(logger)
+	if err := eventBus.Start(); err != nil {
+		return nil, err
+	}
 
 	privVal := tmv.NewPrivValidatorMemory(myVal)
 	checker := execution.NewBatchChecker(bc, logger)
-	committer := execution.NewBatchCommitter(bc, logger)
+	committer := execution.NewBatchCommitter(bc, eventBus, logger)
 	tmGenesis := tendermint.DeriveGenesisDoc(gen)
 
 	tmNode, err := tendermint.NewNode(conf.Tendermint, privVal, tmGenesis, bc, checker, committer, tmLogger)
@@ -81,7 +86,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 		return nil, err
 	}
 
-	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, logger)
+	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, eventBus, logger)
 	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode), logger)
 
 	launchers := []process.Launcher{
@@ -108,6 +113,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 					return nil, fmt.Errorf("could not subscribe to Tendermint events: %v", err)
 				}
 				return process.ShutdownFunc(func(ctx context.Context) error {
+					eventBus.Stop() /// Stopping EventBus
 					err := tmNode.Stop()
 					// Close tendermint database connections using our wrapper
 					defer tmNode.Close()

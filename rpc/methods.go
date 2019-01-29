@@ -43,7 +43,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		if err != nil {
 			return nil, RPCErrorInvalidParams, err
 		}
-		receipt, err := service.Transactor().BroadcastTx(txEnv)
+		receipt, err := service.Transactor().BroadcastTxSync(txEnv)
 		if err != nil {
 			return nil, RPCErrorInternalError, err
 		}
