@@ -164,11 +164,14 @@ func (ga *GallacticAdapter) TimeStamp() uint64 {
 }
 
 func (ga *GallacticAdapter) ConvertLog(log sputnikvm.Log) evm.Log {
-	return evm.Log{
-		Address: fromEthAddress(log.Address, true), // only contracts have events log
-		//Topics:  log.Topics, //TODO: define hash interface
-		Data: log.Data,
+	var l evm.Log
+	for _, t := range log.Topics {
+		l.Topics = append(l.Topics, t.Bytes())
+
 	}
+	l.Address = fromEthAddress(log.Address, true)
+	l.Data = log.Data
+	return l
 }
 
 func toEthAddress(addr crypto.Address) common.Address {

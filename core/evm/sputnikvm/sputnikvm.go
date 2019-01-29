@@ -184,6 +184,8 @@ Loop:
 	for _, log := range vm.Logs() {
 		logs = append(logs, adapter.ConvertLog(log))
 	}
+
+	out.Logs = logs
 	out.UsedGas = vm.UsedGas().Uint64()
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())

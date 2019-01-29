@@ -62,6 +62,7 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 		}
 		txRec.GasUsed = ret.UsedGas
 		txRec.GasWanted = tx.GasLimit()
+		txRec.Logs = ret.Logs
 		txRec.Output = ret.Output
 		txRec.ContractAddress = ret.ContractAddress
 	}
