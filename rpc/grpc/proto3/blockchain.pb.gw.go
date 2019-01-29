@@ -300,7 +300,7 @@ func request_BlockChain_GetTx_0(ctx context.Context, marshaler runtime.Marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "TxHash")
 	}
 
-	protoReq.TxHash, err = runtime.Bytes(val)
+	protoReq.TxHash, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "TxHash", err)
