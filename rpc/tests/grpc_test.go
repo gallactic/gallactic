@@ -44,10 +44,10 @@ func TestBlockchainMethods(t *testing.T) {
 	require.Equal(t, ret1.Account, tGenesis.Accounts()[1])
 
 	//
-	//valAddr := tGenesis.Validators()[0].Address()
-	// ret2, err := client.GetValidator(context.Background(), &pb.AddressRequest{Address: valAddr.String()})
-	// require.NoError(t, err)
-	// require.Equal(t, ret2.Validator.Address, valAddr)
+	valAddr := tGenesis.Validators()[0].Address()
+	ret2, err := client.GetValidator(context.Background(), &pb.AddressRequest{Address: valAddr.String()})
+	require.NoError(t, err)
+	require.Equal(t, ret2.Validator.Address, valAddr.String())
 
 	//
 	ret3, err := client.GetAccounts(context.Background(), &pb.Empty{})
@@ -55,9 +55,9 @@ func TestBlockchainMethods(t *testing.T) {
 	require.Equal(t, ret3.Accounts[0].Account, tGenesis.Accounts()[1])
 
 	//
-	// ret4, err := client.GetValidators(context.Background(), &pb.Empty{})
-	// require.NoError(t, err)
-	// require.Equal(t, ret4.Validators[0].Address, valAddr)
+	ret4, err := client.GetValidators(context.Background(), &pb.Empty{})
+	require.NoError(t, err)
+	require.Equal(t, ret4.Validators[0].Address, valAddr.String())
 
 	//
 	ret5, err := client.GetGenesis(context.Background(), &pb.Empty{})
@@ -115,8 +115,6 @@ func TestTransactionMethods(t *testing.T) {
 	require.NoError(t, env.Sign(signer))
 
 	bcClient := grpcBlockchainClient()
-	ret11, err := bcClient.GetLatestBlock(context.Background(), &pb.Empty{})
-	require.NoError(t, err)
 
 	ret1, err := client.BroadcastTx(context.Background(), &pb.TransactRequest{TxEnvelope: env})
 	require.NoError(t, err)
@@ -124,9 +122,8 @@ func TestTransactionMethods(t *testing.T) {
 
 	// wait for new block and check balance
 	for {
-		ret111, err := bcClient.GetLatestBlock(context.Background(), &pb.Empty{})
-		require.NoError(t, err)
-		if ret111.Block.Header.Height != ret11.Block.Header.Height {
+		retTx, err := bcClient.GetTx(context.Background(), &pb.TxRequest{TxHash: ret1.TxReceipt.Hash.String()})
+		if err == nil && retTx != nil {
 			break
 		}
 	}

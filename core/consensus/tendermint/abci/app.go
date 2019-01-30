@@ -106,6 +106,7 @@ func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 	app.logger.TraceMsg("CheckTx success",
 		"tag", "CheckTx",
 		"tx_hash", txRec.Hash)
+
 	return abciTypes.ResponseCheckTx{
 		Code: codes.TxExecutionSuccessCode,
 		Log:  "CheckTx success - receipt in data",
@@ -168,17 +169,6 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 		}
 	}
 
-	app.logger.TraceMsg("DeliverTx success",
-		"tag", "DeliverTx",
-		"tx_hash", txRec.Hash)
-	receiptBytes, err := json.Marshal(txRec)
-	if err != nil {
-		return abciTypes.ResponseDeliverTx{
-			Code: codes.TxExecutionErrorCode,
-			Log:  fmt.Sprintf("DeliverTx could not serialize receipt: %s", err),
-		}
-	}
-
 	var tags []common.KVPair
 	var logTag common.KVPair
 	bs, err := txRec.Logs.MarshalBinary()
@@ -200,7 +190,6 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 		GasUsed:   int64(txRec.GasUsed),
 		GasWanted: int64(txRec.GasWanted),
 		Tags:      tags,
-		Data:      receiptBytes,
 	}
 }
 

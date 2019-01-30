@@ -125,11 +125,8 @@ func (exe *executor) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 		}
 		*/
 	}()
-	logger := exe.logger.WithScope("executor.Execute(tx txs.Tx)").With("tx_hash", txEnv.Hash())
-	logger.TraceMsg("Executing transaction", "tx", txEnv.String())
 
 	// Verify transaction signature against inputs
-
 	if err = txEnv.Verify(); err != nil {
 		return err
 	}

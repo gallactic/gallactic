@@ -97,16 +97,15 @@ func (trans *Transactor) broadcastTxRaw(txEnv *txs.Envelope) (*txs.Receipt, erro
 		return nil, fmt.Errorf("application did not return CheckTx response")
 	}
 
-	receipt := new(txs.Receipt)
-	if err := json.Unmarshal(checkTxResponse.Data, receipt); err != nil {
-		return nil, fmt.Errorf("could not deserialise transaction receipt: %s", err)
-	}
-
 	switch checkTxResponse.Code {
 	case codes.TxExecutionSuccessCode:
+		receipt := new(txs.Receipt)
+		if err := json.Unmarshal(checkTxResponse.Data, receipt); err != nil {
+			return nil, fmt.Errorf("could not deserialise transaction receipt: %s", err)
+		}
 		return receipt, nil
 	default:
-		return receipt, fmt.Errorf("error returned by Tendermint in BroadcastTxSync "+
+		return nil, fmt.Errorf("error returned by Tendermint in BroadcastTxSync "+
 			"ABCI code: %v, ABCI log: %v", checkTxResponse.Code, checkTxResponse.Log)
 	}
 }
