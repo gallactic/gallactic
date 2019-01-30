@@ -94,11 +94,5 @@ func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) 
 
 	ret := sputnikvm.Execute(&adapter)
 
-	// Create a receipt from the ret and whether it erred.
-	ctx.Logger.TraceMsg("VM call complete",
-		"caller", caller,
-		"callee", callee,
-		"return", ret)
-
 	return ret
 }
