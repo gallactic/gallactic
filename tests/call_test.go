@@ -273,7 +273,6 @@ func TestCreateContract(t *testing.T) {
 	assert.Equal(t, seq4, uint64(1))
 }
 
-// Test creating a contract from futher down the call stack
 func TestStackOverflow(t *testing.T) {
 	/*
 		pragma solidity ^0.4.0;

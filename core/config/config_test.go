@@ -33,5 +33,5 @@ func TestCheck(t *testing.T) {
 
 	conf1.SputnikVM.Web3Address = ""
 	err = conf1.Check()
-	require.Error(t, err)
+	require.NoError(t, err)
 }

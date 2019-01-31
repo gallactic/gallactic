@@ -272,7 +272,7 @@ func (s *blockchainService) GetBlockTxs(ctx context.Context, block *pb.BlockRequ
 }
 
 func (s *blockchainService) GetTx(ctx context.Context, req *pb.TxRequest) (*pb.TxResponse, error) {
-	hash, err := hex.DecodeString(req.TxHash)
+	hash, err := hex.DecodeString(req.Hash)
 	if err != nil {
 		return nil, err
 	}
@@ -353,27 +353,32 @@ func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, e
 	pbBlock.LastCommitInfo.BlockHash = block.LastCommit.BlockID.Hash.Bytes()
 
 	for _, v := range block.LastCommit.Precommits {
+		if v == nil {
+			continue
+		}
+
 		var vote pb.VoteInfo
-		vote.Round = int32(v.Round)
-		vote.Time = v.Timestamp
-		valadrr, err := crypto.ValidatorAddress(v.ValidatorAddress)
+		valAddr, err := crypto.ValidatorAddress(v.ValidatorAddress)
 		if err != nil {
 			return nil, err
 		}
-		vote.ValidatorAddress = valadrr.String()
+		vote.Round = int32(v.Round)
+		vote.Time = v.Timestamp
+		vote.ValidatorAddress = valAddr.String()
 		vote.Height = v.Height
+		vote.Signature = v.Signature
 
-		pbBlock.LastCommitInfo.Votes = append(pbBlock.LastCommitInfo.Votes, vote)
+		pbBlock.LastCommitInfo.Votes = append(pbBlock.LastCommitInfo.Votes, &vote)
 	}
 
 	for _, ev := range block.Evidence.Evidence {
 		var evidence pb.EvidenceInfo
-		evidence.Height = ev.Height()
-		valadrr, err := crypto.ValidatorAddress(ev.Address())
+		valAddr, err := crypto.ValidatorAddress(ev.Address())
 		if err != nil {
 			return nil, err
 		}
-		evidence.Address = valadrr.String()
+		evidence.Height = ev.Height()
+		evidence.Address = valAddr.String()
 		pbBlock.ByzantineValidators = append(pbBlock.ByzantineValidators, evidence)
 	}
 	return &pbBlock, nil
