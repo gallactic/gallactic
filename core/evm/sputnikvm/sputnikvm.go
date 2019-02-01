@@ -37,6 +37,7 @@ func Execute(adapter Adapter) Output {
 	}
 
 	vm := sputnikvm.NewGallactic(&transaction, &header)
+	defer vm.Free()
 
 Loop:
 	for {
@@ -89,6 +90,12 @@ Loop:
 			/// rather than changing the state which the tx is not delivered.
 			panic("unreachable")
 		}
+	}
+
+	if vm.Failed() {
+		out.Failed = true
+		out.UsedGas = vm.UsedGas().Uint64()
+		return out /// Not touching state if SputnikVM failed.
 	}
 
 	// HACKING SPUTNIKVM:
@@ -170,27 +177,17 @@ Loop:
 		}
 	}
 
-	out.UsedGas = vm.UsedGas().Uint64()
-
-	if vm.Failed() {
-		fmt.Println("SputnikVm Failed")
-		out.Failed = true
-	} else {
-		out.Failed = false
-	}
-
-	//Extract logs and events
+	// Extract logs and events
 	var logs []evm.Log
 	for _, log := range vm.Logs() {
 		logs = append(logs, adapter.ConvertLog(log))
 	}
 
+	out.Failed = false
 	out.Logs = logs
 	out.UsedGas = vm.UsedGas().Uint64()
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())
-
-	vm.Free()
 
 	return out
 }
