@@ -295,15 +295,15 @@ func request_BlockChain_GetTx_0(ctx context.Context, marshaler runtime.Marshaler
 		_   = err
 	)
 
-	val, ok = pathParams["TxHash"]
+	val, ok = pathParams["Hash"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "TxHash")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "Hash")
 	}
 
-	protoReq.TxHash, err = runtime.String(val)
+	protoReq.Hash, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "TxHash", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "Hash", err)
 	}
 
 	msg, err := client.GetTx(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -794,7 +794,7 @@ var (
 
 	pattern_BlockChain_GetBlockchainInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"GetBlockchainInfo"}, ""))
 
-	pattern_BlockChain_GetTx_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"Tx", "TxHash"}, ""))
+	pattern_BlockChain_GetTx_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"Tx", "Hash"}, ""))
 
 	pattern_BlockChain_GetListTx_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"GetListTx"}, ""))
 

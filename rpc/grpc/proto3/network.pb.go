@@ -603,9 +603,7 @@ func sovNetwork(x uint64) (n int) {
 	}
 	return n
 }
-func sozNetwork(x uint64) (n int) {
-	return sovNetwork(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
+
 func (m *Empty1) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0

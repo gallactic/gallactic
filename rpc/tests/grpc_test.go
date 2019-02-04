@@ -122,7 +122,7 @@ func TestTransactionMethods(t *testing.T) {
 
 	// wait for new block and check balance
 	for {
-		retTx, err := bcClient.GetTx(context.Background(), &pb.TxRequest{TxHash: ret1.TxReceipt.Hash.String()})
+		retTx, err := bcClient.GetTx(context.Background(), &pb.TxRequest{Hash: ret1.TxReceipt.Hash.String()})
 		if err == nil && retTx != nil {
 			break
 		}

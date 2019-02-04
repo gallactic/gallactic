@@ -109,8 +109,5 @@ func (conf *Config) SaveToFile(file string) error {
 
 // Verify web3 connection - to use it in interChainTrx precompiled contract to connect
 func (conf *Config) Check() error {
-	if err := conf.SputnikVM.Check(); err != nil {
-		return err
-	}
-	return nil
+	return conf.SputnikVM.Check()
 }

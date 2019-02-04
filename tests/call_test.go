@@ -140,7 +140,7 @@ func TestCreateContractNew(t *testing.T) {
 	tx6 := makeCallTx(t, "vbuterin", *rec5.ContractAddress, adderAddDataWrong, 0, _fee)
 	_, rec6 := signAndExecute(t, e.ErrNone, tx6, "vbuterin")
 	assert.Equal(t, rec6.Status, txs.Failed)
-	assert.Equal(t, rec6.Output, []byte{})
+	assert.Empty(t, rec6.Output)
 
 	// Should pass: call tester_add function, result is 5
 	testerAddData2 := addParams_2(testerAddFunc, 1, 4)
@@ -273,7 +273,6 @@ func TestCreateContract(t *testing.T) {
 	assert.Equal(t, seq4, uint64(1))
 }
 
-// Test creating a contract from futher down the call stack
 func TestStackOverflow(t *testing.T) {
 	/*
 		pragma solidity ^0.4.0;

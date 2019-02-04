@@ -754,9 +754,6 @@ func sovTransaction(x uint64) (n int) {
 	}
 	return n
 }
-func sozTransaction(x uint64) (n int) {
-	return sovTransaction(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
 func (m *Empty2) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0

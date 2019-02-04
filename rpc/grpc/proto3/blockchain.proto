@@ -30,8 +30,8 @@ service BlockChain {
   rpc GetBlock(BlockRequest) returns(BlockResponse)             { option (google.api.http).get = "/Block/{height}";}
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetBlockchainInfo(Empty) returns (BlockchainInfoResponse) { option (google.api.http).get = "/GetBlockchainInfo";}
-  rpc GetTx(TxRequest) returns(TxResponse)                      { option (google.api.http) = {get: "/Tx/{TxHash}";};};
-  rpc GetListTx(Empty) returns(TxInfo)                          { option (google.api.http) = {get: "/GetListTx";};};
+  rpc GetTx(TxRequest) returns(TxResponse)                      { option (google.api.http).get = "/Tx/{Hash}";};
+  rpc GetListTx(Empty) returns(TxInfo)                          { option (google.api.http).get = "/GetListTx";};
   rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http) = {
       get : "/BlockTxs";
       additional_bindings {
@@ -149,7 +149,7 @@ message BlockchainInfoResponse {
 }
 
 message TxRequest {
- string TxHash = 1;
+ string Hash = 1;
 }
 
 message TxResponse {
@@ -194,7 +194,7 @@ message Version {
 }
 message CommitInfo {
  bytes block_hash = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/common/binary.HexBytes",(gogoproto.nullable)=false];
- repeated VoteInfo votes = 2 [(gogoproto.nullable)=false];
+ repeated VoteInfo votes = 2 [(gogoproto.nullable)=true];
 }
 
 message VoteInfo {

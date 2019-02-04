@@ -5,16 +5,6 @@ import (
 	net "github.com/tendermint/tendermint/p2p"
 )
 
-const (
-	maxNodeInfoSize = 10240 // 10Kb
-	maxNumChannels  = 16    // plenty of room for upgrades, for now
-)
-
-// Max size of the NodeInfo struct
-func MaxNodeInfoSize() int {
-	return maxNodeInfoSize
-}
-
 // NodeInfo is the basic node information exchanged
 // between two peers during the Tendermint P2P handshake.
 type GNodeInfo struct {

@@ -10,10 +10,10 @@ import (
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
-	"github.com/tendermint/go-amino"
+	amino "github.com/tendermint/go-amino"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
 	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/rpc/core/types"
+	core_types "github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
@@ -197,12 +197,7 @@ func (info *NetInfoOutput) Encode() ([]byte, error) {
 }
 
 func (info *NetInfoOutput) Decode(bs []byte) error {
-	err := aminoCodec.UnmarshalBinaryLengthPrefixed(bs, &info)
-	if err != nil {
-		return err
-	}
-	return nil
-
+	return aminoCodec.UnmarshalBinaryLengthPrefixed(bs, &info)
 }
 
 func (info *NetInfoOutput) Unmarshal(bs []byte) error {

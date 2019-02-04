@@ -1,6 +1,8 @@
 package executors
 
 import (
+	"fmt"
+
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/blockchain"
@@ -78,21 +80,19 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	return nil
 }
 
-func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) sputnikvm.Output {
+func (ctx *CallContext) Deliver(tx *tx.CallTx, caller, callee *account.Account) (ret sputnikvm.Output) {
 	defer func() {
-		/* TODO:::: better crash now for testnet
-		// NOTE: SputnikVM should never crash, report it as error message to the caller
 		if r := recover(); r != nil {
-			err = fmt.Errorf("recovered from panic in executor.Execute(%s): %v\n%s", txEnv.String(), r,
-				debug.Stack())
+			err := fmt.Errorf("recovered from panic on calling sputnikVM: %v", r)
+			ret.Failed = true
+			ret.Output = []byte(err.Error())
 		}
-		*/
 	}()
 
 	adapter := sputnikvm.GallacticAdapter{ctx.BC, ctx.Cache, caller,
 		callee, tx.GasLimit(), tx.Amount(), tx.Data(), caller.Sequence()}
 
-	ret := sputnikvm.Execute(&adapter)
+	ret = sputnikvm.Execute(&adapter)
 
 	return ret
 }
