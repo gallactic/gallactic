@@ -10,11 +10,11 @@ import (
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/account/permission"
 	"github.com/gallactic/gallactic/core/config"
-	proposal "github.com/gallactic/gallactic/core/proposal"
+	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/keystore/key"
-	"github.com/jawher/mow.cli"
+	cli "github.com/jawher/mow.cli"
 )
 
 // Init initializes the gallactic blockchain
@@ -71,6 +71,7 @@ func makeGenesis(workingDir string, chainName string) *proposal.Genesis {
 	accs := make([]*account.Account, 4)
 	for i := 0; i < len(accs); i++ {
 		k := key.GenAccountKey()
+		key.EncryptKeyFile(k, workingDir+"/keys/"+k.Address().String()+".json", "", "")
 		acc, _ := account.NewAccount(k.Address())
 		acc.AddToBalance(10000000000000000000)
 		accs[i] = acc

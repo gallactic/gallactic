@@ -21,13 +21,14 @@ import (
 func TestResultBroadcastTx(t *testing.T) {
 	result := BroadcastTxOutput{
 		Receipt: txs.Receipt{
-			TxHash: []byte("foo"),
+			Type: 0,
+			Hash: []byte("foo"),
 		},
 	}
 
 	jsonResult, err := json.Marshal(result)
 	require.NoError(t, err)
-	assert.Equal(t, `{"TxHash":"Zm9v"}`, string(jsonResult))
+	assert.Equal(t, `{"type":"UnknownTx","hash":"666f6f","status":0}`, string(jsonResult))
 }
 
 func TestListUnconfirmedTxs(t *testing.T) {

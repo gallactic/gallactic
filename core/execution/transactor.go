@@ -1,10 +1,13 @@
 package execution
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gallactic/gallactic/core/consensus/tendermint/codes"
+	"github.com/gallactic/gallactic/core/events"
 	"github.com/gallactic/gallactic/txs"
 
 	"github.com/hyperledger/burrow/logging"
@@ -13,56 +16,81 @@ import (
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
+const (
+	blockingTimeout = 100 * time.Second
+)
+
 // Transactor is the controller/middleware for the v0 RPC
 type Transactor struct {
-	broadcastTxAsync func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error
-	logger           *logging.Logger
+	broadcastTxFunc func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error
+	logger          *logging.Logger
+	eventBus        events.EventBus
 }
 
-func NewTransactor(broadcastTxAsync func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error,
-	logger *logging.Logger) *Transactor {
+func NewTransactor(broadcastTxFunc func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error,
+	eventBus events.EventBus, logger *logging.Logger) *Transactor {
 
 	return &Transactor{
-		broadcastTxAsync: broadcastTxAsync,
-		logger:           logger.With(structure.ComponentKey, "Transactor"),
+		broadcastTxFunc: broadcastTxFunc,
+		eventBus:        eventBus,
+		logger:          logger.With(structure.ComponentKey, "Transactor"),
 	}
 }
 
-func (trans *Transactor) BroadcastTxAsyncRaw(txBytes []byte, callback func(res *abciTypes.Response)) error {
-	return trans.broadcastTxAsync(txBytes, callback)
-}
+func (trans *Transactor) BroadcastTxSync(txEnv *txs.Envelope) (*txs.Receipt, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), blockingTimeout)
+	defer cancel()
 
-func (trans *Transactor) BroadcastTxAsync(txEnv *txs.Envelope, callback func(res *abciTypes.Response)) error {
-	txBytes, err := txEnv.Encode()
+	// Subscribe before submitting to mempool
+	txHash := txEnv.Hash()
+	subID := events.GenSubID()
+	out := make(chan interface{}, 1)
+	q := events.QueryForTx(txHash)
+
+	if err := trans.eventBus.Subscribe(ctx, subID, q, out); err != nil {
+		// We do not want to hold the lock with a defer so we must
+		return nil, err
+	}
+	defer trans.eventBus.UnsubscribeAll(ctx, subID)
+
+	receipt, err := trans.broadcastTxRaw(txEnv)
 	if err != nil {
-		return fmt.Errorf("error encoding transaction: %v", err)
+		return receipt, err
 	}
-	return trans.BroadcastTxAsyncRaw(txBytes, callback)
+
+	// Get all the execution events for this Tx
+	select {
+	case <-ctx.Done():
+		return receipt, ctx.Err()
+
+	case msg := <-out:
+		receipt2 := msg.(*txs.Receipt)
+		return receipt2, nil
+	}
 }
 
-// Broadcast a transaction and waits for a response from the mempool. Transactions to BroadcastTx will block during
-// various mempool operations (managed by Tendermint) including mempool Reap, Commit, and recheckTx.
-func (trans *Transactor) BroadcastTx(txEnv *txs.Envelope) (*txs.Receipt, error) {
-	trans.logger.Trace.Log("method", "BroadcastTx",
+func (trans *Transactor) BroadcastTxAsync(txEnv *txs.Envelope) (*txs.Receipt, error) {
+	trans.logger.Trace.Log("method", "BroadcastTxAsync",
 		"tx_hash", txEnv.Hash(),
 		"tx", txEnv.String())
 
+	return trans.broadcastTxRaw(txEnv)
+}
+
+func (trans *Transactor) broadcastTxRaw(txEnv *txs.Envelope) (*txs.Receipt, error) {
 	txBytes, err := txEnv.Encode()
 	if err != nil {
 		return nil, err
 	}
-	return trans.BroadcastTxRaw(txBytes)
-}
 
-func (trans *Transactor) BroadcastTxRaw(txBytes []byte) (*txs.Receipt, error) {
 	responseCh := make(chan *abciTypes.Response, 1)
-	err := trans.BroadcastTxAsyncRaw(txBytes, func(res *abciTypes.Response) {
+	err = trans.broadcastTxFunc(txBytes, func(res *abciTypes.Response) {
 		responseCh <- res
 	})
-
 	if err != nil {
 		return nil, err
 	}
+
 	response := <-responseCh
 	checkTxResponse := response.GetCheckTx()
 	if checkTxResponse == nil {
@@ -72,8 +100,7 @@ func (trans *Transactor) BroadcastTxRaw(txBytes []byte) (*txs.Receipt, error) {
 	switch checkTxResponse.Code {
 	case codes.TxExecutionSuccessCode:
 		receipt := new(txs.Receipt)
-		err := json.Unmarshal(checkTxResponse.Data, receipt)
-		if err != nil {
+		if err := json.Unmarshal(checkTxResponse.Data, receipt); err != nil {
 			return nil, fmt.Errorf("could not deserialise transaction receipt: %s", err)
 		}
 		return receipt, nil

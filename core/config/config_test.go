@@ -9,9 +9,9 @@ import (
 
 func TestLoading(t *testing.T) {
 	conf1 := DefaultConfig()
-	conf1.Tendermint.ListenAddress = "1.1.1.1"
+	conf1.Tendermint.P2P.ListenAddress = "1.1.1.1"
 	conf1.Tendermint.Moniker = "moniker-test"
-	conf1.Tendermint.TendermintRoot = "tendermint1"
+	conf1.Tendermint.RootDir = "tendermint1"
 	conf1.GRPC.Enabled = false
 	conf1.RPC.Enabled = true
 	toml, err := conf1.ToTOML()
@@ -27,11 +27,11 @@ func TestCheck(t *testing.T) {
 	err := conf1.Check()
 	require.NoError(t, err)
 
-	conf1.Sputnikvm.Web3Address = "https://google.com"
+	conf1.SputnikVM.Web3Address = "https://google.com"
 	err = conf1.Check()
 	require.Error(t, err)
 
-	conf1.Sputnikvm.Web3Address = ""
+	conf1.SputnikVM.Web3Address = ""
 	err = conf1.Check()
-	require.Error(t, err)
+	require.NoError(t, err)
 }

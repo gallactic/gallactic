@@ -5,8 +5,8 @@ import (
 
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/blockchain"
-	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/abci"
+	tmLogger "github.com/gallactic/gallactic/core/consensus/tendermint/logger"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/hyperledger/burrow/logging"
@@ -60,7 +60,7 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 		PrometheusListenAddr: "",
 	})
 
-	tmLogger := NewLogger(logger.WithPrefix(structure.ComponentKey, "Tendermint").With(structure.ScopeKey, "tendermint.NewNode"))
+	tmLogger := tmLogger.NewLogger(logger.WithPrefix(structure.ComponentKey, "Tendermint").With(structure.ScopeKey, "tendermint.NewNode"))
 	n := &Node{}
 	app := abci.NewApp(bc, checker, committer, logger)
 	client := proxy.NewLocalClientCreator(app)
@@ -97,18 +97,4 @@ func DeriveGenesisDoc(gen *proposal.Genesis) *tmTypes.GenesisDoc {
 		AppHash:         gen.Hash(),
 		ConsensusParams: tmTypes.DefaultConsensusParams(),
 	}
-}
-
-func DeriveConfig(conf *config.Config) *tmConfig.Config {
-
-	tmConf := tmConfig.DefaultConfig()
-
-	tmConf.SetRoot(conf.Tendermint.TendermintRoot)
-	tmConf.P2P.Seeds = conf.Tendermint.Seeds
-	tmConf.P2P.PersistentPeers = conf.Tendermint.PersistentPeers
-	tmConf.P2P.ListenAddress = conf.Tendermint.ListenAddress
-	tmConf.Moniker = conf.Tendermint.Moniker
-	tmConf.RPC.ListenAddress = "tcp://0.0.0.0:0" /// TODO: change it to localhost:0
-
-	return tmConf
 }

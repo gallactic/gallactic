@@ -15,12 +15,11 @@ const (
 	ErrInvalidAmount
 	ErrInvalidSequence
 	ErrInvalidTxType
+	ErrInvalidPermission
 	ErrDuplicateAddress
 	ErrInsufficientFunds
 	ErrInsufficientGas
-	ErrPermInvalid
-	ErrPermDenied
-	ErrInternalEvm
+	ErrPermissionDenied
 
 	ErrCount
 )
@@ -36,12 +35,11 @@ var messages = map[int]string{
 	ErrInvalidAmount:     "error invalid amount",
 	ErrInvalidSequence:   "Error invalid sequence",
 	ErrInvalidTxType:     "Invalid transaction type",
+	ErrInvalidPermission: "Invalid permission",
 	ErrDuplicateAddress:  "error duplicate address",
 	ErrInsufficientFunds: "error insufficient funds",
 	ErrInsufficientGas:   "Insufficient Gas",
-	ErrPermInvalid:       "Invalid permission",
-	ErrPermDenied:        "Permission denied",
-	ErrInternalEvm:       "Internal EVM error",
+	ErrPermissionDenied:  "Permission denied",
 }
 
 type withCode struct {

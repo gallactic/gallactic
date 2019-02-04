@@ -1,0 +1,29 @@
+syntax = 'proto3';
+
+package proto3;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.protosizer_all) =false;
+
+
+// Events Service definition
+service Events {
+  rpc Subscribe(SubscribeRequest) returns (SubscribeResponse) {
+    option (google.api.http).get = "/Subscribe";
+  }
+
+}
+
+message SubscribeRequest {
+}
+
+message SubscribeResponse {
+
+}
+

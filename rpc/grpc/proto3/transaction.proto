@@ -1,7 +1,8 @@
 syntax = 'proto3';
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "google/protobuf/struct.proto";
+import "google/api/annotations.proto";
+
 
 package proto3;
 
@@ -16,8 +17,12 @@ option (gogoproto.protosizer_all) =false;
 // Transaction Service definition
 service Transaction {
 	rpc BroadcastTx(TransactRequest) returns(ReceiptResponse);
-	rpc GetUnconfirmedTxs(UnconfirmedTxsRequest) returns(UnconfirmTxsResponse);
+	rpc GetUnconfirmedTxs(Empty2) returns(UnconfirmTxsResponse)  {option (google.api.http) = {get: "/UnconfirmedTxs";};};
+  rpc GetTxsList(Empty2) returns (TxsResponse)                   { option (google.api.http) = {get: "/GetTxsList";};};
+}
 
+
+message Empty2{
 }
 
 message TransactRequest {
@@ -29,10 +34,15 @@ message ReceiptResponse {
 }
 
 message UnconfirmedTxsRequest {
-  int32 maxTxs = 1;
+   int32 maxTxs = 1;
 }
 
 message UnconfirmTxsResponse {
   int32 Count = 1;
-	repeated google.protobuf.ListValue txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
+	repeated UnconfirmTxsResponse txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
 }
+
+message TxsResponse{
+  bytes  TxReceipt = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Receipt"];
+}
+

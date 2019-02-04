@@ -2,13 +2,16 @@ package sputnikvm
 
 import (
 	"bytes"
+	"fmt"
 	"math/big"
 
 	"github.com/gallactic/gallactic/common/binary"
+	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
 
 	"github.com/ethereumproject/go-ethereum/common"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/blockchain"
+	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
 )
@@ -40,28 +43,24 @@ func (ga *GallacticAdapter) callerAddress() common.Address {
 	return toEthAddress(ga.Caller.Address())
 }
 
-func (ga *GallacticAdapter) GetGasLimit() uint64 {
-	return ga.GasLimit
+func (ga *GallacticAdapter) GetGasLimit() *big.Int {
+	return bigint(ga.GasLimit)
 }
 
-func (ga *GallacticAdapter) GetAmount() uint64 {
-	return ga.Amount
+func (ga *GallacticAdapter) GetGasPrice() *big.Int {
+	return bigint(0) /// TODO: Using testnet is free
+}
+
+func (ga *GallacticAdapter) GetAmount() *big.Int {
+	return bigint(ga.Amount)
 }
 
 func (ga *GallacticAdapter) GetData() []byte {
 	return ga.Data
 }
 
-func (ga *GallacticAdapter) GetNonce() uint64 {
-	return ga.Nonce
-}
-
-func (ga *GallacticAdapter) GetCallee() *account.Account {
-	return ga.Callee
-}
-
-func (ga *GallacticAdapter) GetCaller() *account.Account {
-	return ga.Caller
+func (ga *GallacticAdapter) GetNonce() *big.Int {
+	return bigint(ga.Nonce)
 }
 
 func (ga *GallacticAdapter) updateAccount(acc *account.Account) {
@@ -69,14 +68,14 @@ func (ga *GallacticAdapter) updateAccount(acc *account.Account) {
 }
 
 func (ga *GallacticAdapter) updateStorage(address common.Address, key *big.Int, value *big.Int) {
-	_, addr := fromEthAddress(address, true)
+	addr := fromEthAddress(address, true)
 	wKey := binary.LeftPadWord256(key.Bytes())
 	wValue := binary.LeftPadWord256(value.Bytes())
 	ga.Cache.SetStorage(addr, wKey, wValue)
 }
 
 func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*big.Int, error) {
-	_, addr := fromEthAddress(address, true)
+	addr := fromEthAddress(address, true)
 	wKey := binary.LeftPadWord256(key.Bytes())
 	wValue, err := ga.Cache.GetStorage(addr, wKey)
 	var value big.Int
@@ -89,9 +88,8 @@ func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*b
 }
 
 func (ga *GallacticAdapter) createContractAccount(address common.Address) *account.Account {
-	_, addr := fromEthAddress(address, true)
+	addr := fromEthAddress(address, true)
 	acc, _ := account.NewContractAccount(addr)
-	ga.Cache.UpdateAccount(acc)
 	return acc
 }
 
@@ -102,7 +100,8 @@ func (ga *GallacticAdapter) setCalleeAddress(address common.Address) {
 }
 
 func (ga *GallacticAdapter) removeAccount(address common.Address) {
-	//TODO: We should implement removeAccount() in cache
+	addr := fromEthAddress(address, true)
+	ga.Cache.RemoveAccount(addr)
 }
 
 func (ga *GallacticAdapter) addBalance(address common.Address, amount uint64) {
@@ -135,40 +134,25 @@ func (ga *GallacticAdapter) setCode(address common.Address, code []byte) {
 	ga.Cache.UpdateAccount(acc)
 }
 
-func (ga *GallacticAdapter) setAccount(address common.Address, balance uint64, code []byte, nonce uint64) {
-	acc := ga.getAccount(address)
-	acc.SetBalance(balance)
-	acc.SetSequence(nonce)
-	acc.SetCode(code)
-	ga.Cache.UpdateAccount(acc)
-}
-
-func (ga *GallacticAdapter) log(address common.Address, topics []common.Hash, data []byte) {
-	//TODO: We should handle events inside this method
-}
-
 func (ga *GallacticAdapter) getAccount(ethAddr common.Address) *account.Account {
-	converted, addr := fromEthAddress(ethAddr, false)
-
-	if converted {
-		acc, _ := ga.Cache.GetAccount(addr)
-		if acc != nil {
-			return acc
-		}
-	}
-
-	converted, addr = fromEthAddress(ethAddr, true)
-
-	if converted {
-		acc, _ := ga.Cache.GetAccount(addr)
+	accAddr := fromEthAddress(ethAddr, false)
+	acc, _ := ga.Cache.GetAccount(accAddr)
+	if acc != nil {
 		return acc
 	}
 
+	ctrAddr := fromEthAddress(ethAddr, true)
+	ctr, _ := ga.Cache.GetAccount(ctrAddr)
+	if ctr != nil {
+		return ctr
+	}
+
+	fmt.Printf("Not such a address: %s, %s\n", accAddr, ctrAddr)
 	return nil
 }
 
-func (ga *GallacticAdapter) LastBlockNumber() uint64 {
-	return ga.BlockChain.LastBlockHeight()
+func (ga *GallacticAdapter) LastBlockNumber() *big.Int {
+	return bigint(ga.BlockChain.LastBlockHeight())
 }
 
 func (ga *GallacticAdapter) LastBlockHash() []byte {
@@ -179,31 +163,39 @@ func (ga *GallacticAdapter) TimeStamp() uint64 {
 	return uint64(ga.BlockChain.LastBlockTime().Unix())
 }
 
+func (ga *GallacticAdapter) ConvertLog(log sputnikvm.Log) evm.Log {
+	var l evm.Log
+	for _, t := range log.Topics {
+		l.Topics = append(l.Topics, t.Bytes())
+
+	}
+	l.Address = fromEthAddress(log.Address, true)
+	l.Data = log.Data
+	return l
+}
+
 func toEthAddress(addr crypto.Address) common.Address {
 	var ethAddr common.Address
 	ethAddr.SetBytes(addr.RawBytes()[2:22])
 	return ethAddr
 }
 
-func fromEthAddress(ethAdr common.Address, contract bool) (bool, crypto.Address) {
-
+func fromEthAddress(ethAdr common.Address, contract bool) crypto.Address {
 	var addr crypto.Address
-	var err error
+
 	if contract {
-		addr, err = crypto.ContractAddress(ethAdr.Bytes())
-		if err != nil {
-			return false, addr
-		}
+		addr, _ = crypto.ContractAddress(ethAdr.Bytes())
 	} else {
 		if bytes.Equal(ethAdr.Bytes(), crypto.GlobalAddress.RawBytes()[2:22]) {
 			addr = crypto.GlobalAddress
 		} else {
-			addr, err = crypto.AccountAddress(ethAdr.Bytes())
-			if err != nil {
-				return false, addr
-			}
+			addr, _ = crypto.AccountAddress(ethAdr.Bytes())
 		}
 	}
 
-	return true, addr
+	return addr
+}
+
+func bigint(val uint64) *big.Int {
+	return new(big.Int).SetUint64(val)
 }

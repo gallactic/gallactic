@@ -53,6 +53,10 @@ func (nv *NodeView) RoundState() *consensusTypes.RoundState {
 	return nv.tmNode.ConsensusState().GetRoundState()
 }
 
+func (nv *NodeView) RoundStateJSON() ([]byte, error) {
+	return nv.tmNode.ConsensusState().GetRoundStateJSON()
+}
+
 func (nv *NodeView) PeerRoundStates() ([]*consensusTypes.PeerRoundState, error) {
 	peers := nv.tmNode.Switch().Peers().List()
 	peerRoundStates := make([]*consensusTypes.PeerRoundState, len(peers))
@@ -71,3 +75,7 @@ func (nv *NodeView) PrivValidatorPublicKey() (crypto.PublicKey, error) {
 
 	return crypto.PublicKeyFromRawBytes(pub[:])
 }
+
+// func (nv *NodeView) DefaultNodeInfo() p2p.DefaultNodeInfo {
+// 	return nv.tmNode.NodeInfo()
+// }

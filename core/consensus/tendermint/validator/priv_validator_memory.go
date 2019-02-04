@@ -44,10 +44,6 @@ func (pvm *privValidatorMemory) SignProposal(chainID string, proposal *tmTypes.P
 	return pvm.lastSignedInfo.SignProposal(pvm.signer, chainID, proposal)
 }
 
-func (pvm *privValidatorMemory) SignHeartbeat(chainID string, heartbeat *tmTypes.Heartbeat) error {
-	return pvm.lastSignedInfo.SignHeartbeat(pvm.signer, chainID, heartbeat)
-}
-
 func asTendermintSigner(signer crypto.Signer) tmSigner {
 	return func(msg []byte) []byte {
 		sig, err := signer.SignWithoutHash(msg)

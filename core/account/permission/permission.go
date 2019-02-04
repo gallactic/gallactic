@@ -13,7 +13,7 @@ const (
 	Bond                                             // 0x0020
 	ModifyPermission                                 // 0x0040
 	CreateChain                                      // 0x0080
-	InterChainTx
+	InterChainTx                                     // 0x0100
 
 	Reserved
 	None account.Permissions = 0

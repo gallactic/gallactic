@@ -2,32 +2,45 @@ package config
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/gallactic/gallactic/common"
-	tmConfig "github.com/gallactic/gallactic/core/consensus/tendermint/config"
 	sputnikvmConfig "github.com/gallactic/gallactic/core/evm/sputnikvm/config"
 	rpcConfig "github.com/gallactic/gallactic/rpc/config"
 	grpcConfig "github.com/gallactic/gallactic/rpc/grpc/config"
 	logconfig "github.com/hyperledger/burrow/logging/logconfig"
+	tmConfig "github.com/tendermint/tendermint/config"
 )
 
 type Config struct {
-	Tendermint *tmConfig.TendermintConfig       `toml:"tendermint"`
-	RPC        *rpcConfig.RPCConfig             `toml:"rpc"`
-	GRPC       *grpcConfig.GRPCConfig           `toml:"grpc"`
-	Logging    *logconfig.LoggingConfig         `toml:"logging,omitempty"`
-	Sputnikvm  *sputnikvmConfig.SputnikvmConfig `toml:"sputnikvm"`
+	Tendermint *tmConfig.Config                 `toml:"Tendermint"`
+	RPC        *rpcConfig.RPCConfig             `toml:"RPC"`
+	GRPC       *grpcConfig.GRPCConfig           `toml:"GRPC"`
+	Logging    *logconfig.LoggingConfig         `toml:"Logging,omitempty"`
+	SputnikVM  *sputnikvmConfig.SputnikvmConfig `toml:"SputnikVM"`
 }
 
 func DefaultConfig() *Config {
+	tmDef := tmConfig.DefaultConfig()
+	tmDef.SetRoot("./data")
+	tmDef.P2P.ListenAddress = "tcp://0.0.0.0:46656"
+	tmDef.RPC.ListenAddress = "tcp://localhost:46657"
+	tmDef.Consensus.TimeoutCommit = 5 * tmDef.Consensus.TimeoutCommit
+	tmDef.LogLevel = "main:info,state:info,*:error,*:debug"
+	tmDef.ProxyApp = "gallactic"
+	tmDef.PrivValidatorKey = ""
+	tmDef.Genesis = ""
+
 	return &Config{
-		Tendermint: tmConfig.DefaultTendermintConfig(),
+		Tendermint: tmDef,
 		RPC:        rpcConfig.DefaultRPCConfig(),
 		GRPC:       grpcConfig.DefaultGRPCConfig(),
 		Logging:    logconfig.DefaultNodeLoggingConfig(),
-		Sputnikvm:  sputnikvmConfig.DefaultSputnikvmConfig(),
+		SputnikVM:  sputnikvmConfig.DefaultSputnikvmConfig(),
 	}
 }
 
@@ -51,20 +64,43 @@ func (conf *Config) ToTOML() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+func FromJSON(t string) (*Config, error) {
+	conf := DefaultConfig()
+	if err := json.Unmarshal([]byte(t), conf); err != nil {
+		return nil, err
+	}
+	return conf, nil
+}
+
+func (conf *Config) ToJSON() ([]byte, error) {
+	return json.MarshalIndent(conf, "", "  ")
+}
+
 func LoadFromFile(file string) (*Config, error) {
 	dat, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
-	return FromTOML(string(dat))
+
+	if strings.HasSuffix(file, "toml") {
+		return FromTOML(string(dat))
+	} else if strings.HasSuffix(file, "json") {
+		return FromJSON(string(dat))
+	}
+
+	return nil, errors.New("Invalid suffix for the config file")
 }
 
 func (conf *Config) SaveToFile(file string) error {
-	toml, err := conf.ToTOML()
-	if err != nil {
-		return err
+	var dat []byte
+	if strings.HasSuffix(file, "toml") {
+		dat, _ = conf.ToTOML()
+	} else if strings.HasSuffix(file, "json") {
+		dat, _ = conf.ToJSON()
+	} else {
+		return errors.New("Invalid suffix for the config file")
 	}
-	if err := common.WriteFile(file, toml); err != nil {
+	if err := common.WriteFile(file, dat); err != nil {
 		return err
 	}
 
@@ -73,8 +109,5 @@ func (conf *Config) SaveToFile(file string) error {
 
 // Verify web3 connection - to use it in interChainTrx precompiled contract to connect
 func (conf *Config) Check() error {
-	if err := conf.Sputnikvm.Check(); err != nil {
-		return err
-	}
-	return nil
+	return conf.SputnikVM.Check()
 }

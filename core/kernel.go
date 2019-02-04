@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"net"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -11,19 +10,19 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gallactic/gallactic/rpc/grpc"
-
 	"github.com/gallactic/gallactic/common/process"
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/consensus/tendermint"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	tmv "github.com/gallactic/gallactic/core/consensus/tendermint/validator" // TODO:::
+	"github.com/gallactic/gallactic/core/events"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/rpc"
+	"github.com/gallactic/gallactic/rpc/grpc"
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/hyperledger/burrow/logging"
@@ -66,25 +65,28 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	logger = logger.WithScope("NewKernel()").With(structure.TimeKey, kitlog.DefaultTimestampUTC)
 	tmLogger := logger.With(structure.CallerKey, kitlog.Caller(loggingCallerDepth+1))
 	logger = logger.WithInfo(structure.CallerKey, kitlog.Caller(loggingCallerDepth))
-	tmConfig := tendermint.DeriveConfig(conf)
-	stateDB := dbm.NewDB("gallactic_state", dbm.GoLevelDBBackend, tmConfig.DBDir())
+	stateDB := dbm.NewDB("gallactic_state", dbm.GoLevelDBBackend, conf.Tendermint.DBDir())
 
 	bc, err := blockchain.LoadOrNewBlockchain(stateDB, gen, myVal, logger)
 	if err != nil {
 		return nil, fmt.Errorf("error creating or loading blockchain state: %v", err)
 	}
+	eventBus := events.NewEventBus(logger)
+	if err := eventBus.Start(); err != nil {
+		return nil, err
+	}
 
 	privVal := tmv.NewPrivValidatorMemory(myVal)
 	checker := execution.NewBatchChecker(bc, logger)
-	committer := execution.NewBatchCommitter(bc, logger)
+	committer := execution.NewBatchCommitter(bc, eventBus, logger)
 	tmGenesis := tendermint.DeriveGenesisDoc(gen)
 
-	tmNode, err := tendermint.NewNode(tmConfig, privVal, tmGenesis, bc, checker, committer, tmLogger)
+	tmNode, err := tendermint.NewNode(conf.Tendermint, privVal, tmGenesis, bc, checker, committer, tmLogger)
 	if err != nil {
 		return nil, err
 	}
 
-	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, logger)
+	transactor := execution.NewTransactor(tmNode.MempoolReactor().BroadcastTx, eventBus, logger)
 	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode), logger)
 
 	launchers := []process.Launcher{
@@ -111,6 +113,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 					return nil, fmt.Errorf("could not subscribe to Tendermint events: %v", err)
 				}
 				return process.ShutdownFunc(func(ctx context.Context) error {
+					eventBus.Stop() /// Stopping EventBus
 					err := tmNode.Stop()
 					// Close tendermint database connections using our wrapper
 					defer tmNode.Close()
@@ -149,15 +152,18 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			Name:    "GRPC",
 			Enabled: conf.GRPC.Enabled,
 			Launch: func() (process.Process, error) {
-				listen, err := net.Listen("tcp", conf.GRPC.ListenAddress)
-				if err != nil {
-					return nil, err
-				}
 				grpcServer := grpc.NewGRPCServer(logger)
-				pb.RegisterBlockChainServer(grpcServer, grpc.BlockchainService(bc, query.NewNodeView(tmNode)))
-				pb.RegisterNetworkServer(grpcServer, grpc.NetowrkService(bc, query.NewNodeView(tmNode)))
-				pb.RegisterTransactionServer(grpcServer, grpc.TransactorService(transactor))
-				go grpcServer.Serve(listen)
+				/// TODO: ‌better design for kernel. They should be encapsulated
+				pb.RegisterBlockChainServer(grpcServer.Server, grpc.NewBlockchainService(bc, query.NewNodeView(tmNode)))
+				pb.RegisterNetworkServer(grpcServer.Server, grpc.NewNetworkService(bc, query.NewNodeView(tmNode)))
+				pb.RegisterTransactionServer(grpcServer.Server, grpc.NewTransactorService(ctx, transactor, query.NewNodeView(tmNode)))
+
+				if err := grpcServer.Start(conf.GRPC.ListenAddress); err != nil {
+					return nil, fmt.Errorf("Unable to start grpc server: %v", err)
+				}
+				if err := grpcServer.StartGateway(ctx, conf.GRPC.ListenAddress, conf.GRPC.HTTPAddress); err != nil {
+					return nil, fmt.Errorf("Unable to start grpc-gateway server: %v", err)
+				}
 				return process.ShutdownFunc(func(ctx context.Context) error {
 					grpcServer.Stop()
 					// listener is closed for us

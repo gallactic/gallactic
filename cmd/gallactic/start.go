@@ -121,13 +121,11 @@ func Start() func(c *cli.Cmd) {
 				return
 			}
 
-			err = os.Setenv("MAINNET_URL", conf.Sputnikvm.Web3Address)
+			err = os.Setenv("MAINNET_URL", conf.SputnikVM.Web3Address)
 			if err != nil {
 				cmd.PrintErrorMsg("Failed to set environment variable: %v", err)
 				return
 			}
-			cmd.PrintSuccessMsg("Gallactic successfully connected to Ethereum Network")
-
 			cmd.PrintInfoMsg("You are running a gallactic block chain node version: %v. Welcome! ", version.Version)
 
 			ctx, cancel := context.WithCancel(context.Background())

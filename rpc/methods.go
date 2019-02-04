@@ -29,6 +29,7 @@ const (
 	BROADCAST_TX        = GALLACTIC + "broadcastTx"
 	GET_UNCONFIRMED_TXS = GALLACTIC + "getUnconfirmedTxs"
 	GET_BLOCK_TXS       = GALLACTIC + "getBlockTxs"
+	GET_LastBlock_Info  = GALLACTIC + "getLastBlockInfo"
 )
 
 func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[string]RequestHandlerFunc) {
@@ -42,7 +43,7 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		if err != nil {
 			return nil, RPCErrorInvalidParams, err
 		}
-		receipt, err := service.Transactor().BroadcastTx(txEnv)
+		receipt, err := service.Transactor().BroadcastTxSync(txEnv)
 		if err != nil {
 			return nil, RPCErrorInternalError, err
 		}
@@ -236,6 +237,20 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 		genesis := service.Genesis()
 		return genesis, 0, nil
 	}
+
+	rpcServiceMap[GET_LastBlock_Info] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &BlockInfoInput{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, RPCErrorInvalidParams, err
+		}
+		storage, err := service.LastBlockInfo(input.BlockWithin)
+		if err != nil {
+			return nil, RPCErrorInternalError, err
+		}
+		return storage, 0, nil
+	}
+
 }
 
 func GetMethods(codec Codec, service *Service) map[string]RequestHandlerFunc {

@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
 type SputnikvmConfig struct {
-	Web3Address string `toml:"web3Address"`
+	Web3Address string `toml:"Web3Address"`
 }
 
 func DefaultSputnikvmConfig() *SputnikvmConfig {
@@ -16,6 +17,10 @@ func DefaultSputnikvmConfig() *SputnikvmConfig {
 }
 
 func (conf *SputnikvmConfig) Check() error {
+	if conf.Web3Address == "" {
+		return nil
+	}
+
 	// Make connection to the RPC client
 	newRpcClient, err := rpc.Dial(conf.Web3Address)
 	if err != nil {
@@ -26,5 +31,8 @@ func (conf *SputnikvmConfig) Check() error {
 	if err != nil {
 		return fmt.Errorf("RPC call failed: %v", err)
 	}
+
+	fmt.Println("Gallactic successfully connected to Ethereum Network")
+
 	return nil
 }

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.0
+
+- Improving SputnikVM & adding more tests
+- Call transaction tested under the hood.
+- PubSub server implemented.
+- Transaction receipt issued after delivery.
+- Adding grpc-gateway (supporting RESTfull APIS)
+- Improving grpc APIs and add more tests for gRPC module
+- Updating Tendermint.
+- Add some more features and fixing some issues
+
+
 ## 0.4.0
 
 - Add edVerify pre-compiled contract (Smart Chain architecture)

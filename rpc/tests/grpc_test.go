@@ -6,6 +6,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gallactic/gallactic/crypto"
+	"github.com/gallactic/gallactic/keystore/key"
+	"github.com/gallactic/gallactic/txs"
+	"github.com/gallactic/gallactic/txs/tx"
+
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -34,15 +39,15 @@ func TestBlockchainMethods(t *testing.T) {
 
 	//
 	addr := tGenesis.Accounts()[1].Address()
-	ret1, err := client.GetAccount(context.Background(), &pb.AddressRequest{Address: addr})
+	ret1, err := client.GetAccount(context.Background(), &pb.AddressRequest{Address: addr.String()})
 	require.NoError(t, err)
 	require.Equal(t, ret1.Account, tGenesis.Accounts()[1])
 
 	//
-	valaddr := tGenesis.Validators()[0].Address()
-	ret2, err := client.GetValidator(context.Background(), &pb.AddressRequest{Address: valaddr})
+	valAddr := tGenesis.Validators()[0].Address()
+	ret2, err := client.GetValidator(context.Background(), &pb.AddressRequest{Address: valAddr.String()})
 	require.NoError(t, err)
-	require.Equal(t, ret2.Validator, tGenesis.Validators()[0])
+	require.Equal(t, ret2.Validator.Address, valAddr.String())
 
 	//
 	ret3, err := client.GetAccounts(context.Background(), &pb.Empty{})
@@ -52,7 +57,7 @@ func TestBlockchainMethods(t *testing.T) {
 	//
 	ret4, err := client.GetValidators(context.Background(), &pb.Empty{})
 	require.NoError(t, err)
-	require.Equal(t, ret4.Validators[0].Validator, tGenesis.Validators()[0])
+	require.Equal(t, ret4.Validators[0].Address, valAddr.String())
 
 	//
 	ret5, err := client.GetGenesis(context.Background(), &pb.Empty{})
@@ -80,12 +85,12 @@ func TestBlockchainMethods(t *testing.T) {
 	}
 
 	//
-	ret8, err := client.GetLatestBlock(context.Background(), &pb.BlockRequest{Height: 1000})
+	ret8, err := client.GetLatestBlock(context.Background(), &pb.Empty{})
 	require.NoError(t, err)
 	fmt.Println("GetLatestBlock", ret8)
 
 	//
-	ret9, err := client.GetBlock(context.Background(), &pb.BlockRequest{Height: uint64(ret8.Block.Height)})
+	ret9, err := client.GetBlock(context.Background(), &pb.BlockRequest{Height: uint64(ret8.Block.Header.Height)})
 	require.NoError(t, err)
 	require.Equal(t, ret9, ret8)
 
@@ -95,20 +100,37 @@ func TestBlockchainMethods(t *testing.T) {
 	fmt.Println("GetLatestBlock", ret10)
 }
 
-/*
-TODO:::
 func TestTransactionMethods(t *testing.T) {
 	client := grpcTransactionClient()
 
-	_, pv := crypto.GenerateKey(nil)
-	signer := crypto.NewAccountSigner(pv)
-	sender := signer.Address()
-	tx, _ := tx.NewUnbondTx(sender, crypto.GlobalAddress, 1, 100, 200)
+	acc_1 := tGenesis.Accounts()[1]
+	acc_2 := tGenesis.Accounts()[2]
+	bal_1 := acc_1.Balance()
+	bal_2 := acc_2.Balance()
+	k, err := key.DecryptKeyFile(tWorkingDir+"/keys/"+acc_1.Address().String()+".json", "")
+	require.NoError(t, err)
+	signer := crypto.NewAccountSigner(k.PrivateKey())
+	tx, _ := tx.NewSendTx(acc_1.Address(), acc_2.Address(), 1, 1000, 200)
 	env := txs.Enclose(tGenesis.ChainName(), tx)
 	require.NoError(t, env.Sign(signer))
 
+	bcClient := grpcBlockchainClient()
+
 	ret1, err := client.BroadcastTx(context.Background(), &pb.TransactRequest{TxEnvelope: env})
 	require.NoError(t, err)
-	require.Equal(t, env.Hash, ret1.TxReceipt.TxHash)
+	require.Equal(t, env.Hash(), ret1.TxReceipt.Hash.Bytes())
+
+	// wait for new block and check balance
+	for {
+		retTx, err := bcClient.GetTx(context.Background(), &pb.TxRequest{Hash: ret1.TxReceipt.Hash.String()})
+		if err == nil && retTx != nil {
+			break
+		}
+	}
+
+	ret2, _ := bcClient.GetAccount(context.Background(), &pb.AddressRequest{Address: acc_1.Address().String()})
+	ret3, _ := bcClient.GetAccount(context.Background(), &pb.AddressRequest{Address: acc_2.Address().String()})
+
+	require.Equal(t, ret2.Account.Balance(), bal_1-1200)
+	require.Equal(t, ret3.Account.Balance(), bal_2+1000)
 }
-*/

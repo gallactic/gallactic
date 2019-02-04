@@ -10,11 +10,13 @@ import (
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
+	"github.com/gallactic/gallactic/version"
 	"github.com/hyperledger/burrow/logging"
 	"github.com/hyperledger/burrow/logging/structure"
 	"github.com/pkg/errors"
 
 	abciTypes "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/common"
 )
 
 const responseInfoName = "Gallactic"
@@ -52,7 +54,7 @@ func (app *App) SetMempoolLocker(mempoolLocker sync.Locker) {
 func (app *App) Info(info abciTypes.RequestInfo) abciTypes.ResponseInfo {
 	return abciTypes.ResponseInfo{
 		Data:             responseInfoName,
-		Version:          "0.0.0", /// TODO
+		Version:          version.Version,
 		LastBlockHeight:  int64(app.bc.LastBlockHeight()),
 		LastBlockAppHash: app.bc.LastAppHash(),
 	}
@@ -81,19 +83,20 @@ func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 			Log:  fmt.Sprintf("Encoding error: %s", err),
 		}
 	}
-	receipt := txEnv.GenerateReceipt()
-	if err := app.checker.Execute(txEnv); err != nil {
+	txRec := txEnv.GenerateReceipt()
+	err := app.checker.Execute(txEnv, txRec)
+	if err != nil {
 		app.logger.TraceMsg("CheckTx execution error",
 			structure.ErrorKey, err,
 			"tag", "CheckTx",
-			"tx_hash", receipt.TxHash)
+			"tx_hash", txRec.Hash)
 		return abciTypes.ResponseCheckTx{
 			Code: codes.EncodingErrorCode,
 			Log:  fmt.Sprintf("CheckTx could not execute transaction: %s, error: %v", txEnv, err),
 		}
 	}
 
-	receiptBytes, err := json.Marshal(receipt)
+	receiptBytes, err := json.Marshal(txRec)
 	if err != nil {
 		return abciTypes.ResponseCheckTx{
 			Code: codes.TxExecutionErrorCode,
@@ -102,7 +105,8 @@ func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 	}
 	app.logger.TraceMsg("CheckTx success",
 		"tag", "CheckTx",
-		"tx_hash", receipt.TxHash)
+		"tx_hash", txRec.Hash)
+
 	return abciTypes.ResponseCheckTx{
 		Code: codes.TxExecutionSuccessCode,
 		Log:  "CheckTx success - receipt in data",
@@ -152,33 +156,40 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 		}
 	}
 
-	receipt := txEnv.GenerateReceipt()
-	if err := app.committer.Execute(txEnv); err != nil {
+	txRec := txEnv.GenerateReceipt()
+	txRec.Height = app.block.Header.Height
+	if err := app.committer.Execute(txEnv, txRec); err != nil {
 		app.logger.TraceMsg("DeliverTx execution error",
 			structure.ErrorKey, err,
 			"tag", "DeliverTx",
-			"tx_hash", receipt.TxHash)
+			"tx_hash", txRec.Hash)
 		return abciTypes.ResponseDeliverTx{
 			Code: codes.TxExecutionErrorCode,
 			Log:  fmt.Sprintf("DeliverTx could not execute transaction: %s, error: %s", txEnv, err),
 		}
 	}
 
-	app.logger.TraceMsg("DeliverTx success",
-		"tag", "DeliverTx",
-		"tx_hash", receipt.TxHash)
-	receiptBytes, err := json.Marshal(receipt)
+	var tags []common.KVPair
+	var logTag common.KVPair
+	bs, err := txRec.Logs.MarshalBinary()
+
 	if err != nil {
 		return abciTypes.ResponseDeliverTx{
 			Code: codes.TxExecutionErrorCode,
-			Log:  fmt.Sprintf("DeliverTx could not serialize receipt: %s", err),
+			Log:  fmt.Sprintf("DeliverTx could not serialize logs: %s", err),
 		}
 	}
 
+	logTag.Key = []byte("evm.log")
+	logTag.Value = bs
+	tags = append(tags, logTag)
+
 	return abciTypes.ResponseDeliverTx{
-		Code: codes.TxExecutionSuccessCode,
-		Log:  "DeliverTx success - receipt in data",
-		Data: receiptBytes,
+		Code:      codes.TxExecutionSuccessCode,
+		Log:       "DeliverTx success - receipt in data",
+		GasUsed:   int64(txRec.GasUsed),
+		GasWanted: int64(txRec.GasWanted),
+		Tags:      tags,
 	}
 }
 

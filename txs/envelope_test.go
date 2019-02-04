@@ -100,7 +100,7 @@ func testMarshaling(t *testing.T, tx tx.Tx, signer crypto.Signer) {
 	/// Now sign it and test marshaling with signature
 	err = env1.Sign(signer)
 	require.NoError(t, err)
-	sb, _ := env1.SignBytes()
+	sb, _ := env1.signBytes()
 	js, _ := json.Marshal(env1)
 	fmt.Println("Sign bytes: " + string(sb))
 	fmt.Println("Tx JSON: " + string(js))
@@ -163,7 +163,7 @@ func TestSignature(t *testing.T) {
 	// extra signature, should fail
 	env3 := Enclose("test-chain", tx1)
 	env3.Sign(signer1, signer2, signer3)
-	bs, _ := env3.SignBytes()
+	bs, _ := env3.signBytes()
 	sig, _ := signer4.Sign(bs)
 	env3.Signatories = append(env3.Signatories, crypto.Signatory{
 		PublicKey: pubKey4,
