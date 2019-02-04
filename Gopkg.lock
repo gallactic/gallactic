@@ -15,7 +15,7 @@
   name = "github.com/aristanetworks/goarista"
   packages = ["monotime"]
   pruneopts = "NUT"
-  revision = "8f049bdb8feb7d7d5f1a9b9cd854396112fb0c0e"
+  revision = "e2363f69bde9cb44d6b7f31b741a5a65a8f73b39"
 
 [[projects]]
   branch = "master"
@@ -84,8 +84,8 @@
     "rpc",
   ]
   pruneopts = "NUT"
-  revision = "9dc5d1a915ac0e0bd8429d6ac41df50eec91de5f"
-  version = "v1.8.21"
+  revision = "7fa3509e2eaf1a4ebc12344590e5699406690f15"
+  version = "v1.8.22"
 
 [[projects]]
   digest = "1:77acb9aff98e5dc372a28ac50ae62610ea5a4e627fa18084812e2907d04f0de8"
@@ -101,7 +101,7 @@
   name = "github.com/gallactic/sputnikvm-ffi"
   packages = ["go/sputnikvm"]
   pruneopts = "NT"
-  revision = "c87e3e202597ef154b022e2125602d310b224a3c"
+  revision = "0d6718781da88816b6c89e599aee943788bb557f"
 
 [[projects]]
   branch = "master"
@@ -373,10 +373,10 @@
   name = "github.com/prometheus/client_model"
   packages = ["go"]
   pruneopts = "NUT"
-  revision = "56726106282f1985ea77d5305743db7231b0c0a8"
+  revision = "fd36f4220a901265f90734c3183c5f0c91daa0b8"
 
 [[projects]]
-  digest = "1:4340e7fba4a17b3c5c8c874698eae0db8573668bfa541903bd6a654915d6b2bb"
+  digest = "1:4e776079b966091d3e6e12ed2aaf728bea5cd1175ef88bb654e03adbf5d4f5d3"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
@@ -384,12 +384,12 @@
     "model",
   ]
   pruneopts = "NUT"
-  revision = "2998b132700a7d019ff618c06a234b47c1f3f681"
-  version = "v0.1.0"
+  revision = "cfeb6f9992ffa54aaa4f2170ade4067ee478b250"
+  version = "v0.2.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:21971c48d2d34cf633e1898e60bb968eb046a42010ebeb73c8733d7b610cbf59"
+  digest = "1:2879c2c4d44040c8f8cd47127c8a40ab4ff1ceb02401982338f0f3bc18583001"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -398,7 +398,7 @@
     "xfs",
   ]
   pruneopts = "NUT"
-  revision = "bf6a532e95b1f7a62adf0ab5050a5bb2237ad2f4"
+  revision = "488faf799f863e27e50c516468f76ae8f1da20a5"
 
 [[projects]]
   digest = "1:f250ca51e5b9215bc2df18f92060a9a835e9f85ab18ebbba0e1a6ef1f8fcdbfe"
@@ -446,7 +446,7 @@
     "leveldb/util",
   ]
   pruneopts = "NUT"
-  revision = "b001fa50d6b27f3f0bb175a87d0cb55426d0a0ae"
+  revision = "2f17a3356c6616cbfc4ae4c38147dc062a68fb0e"
 
 [[projects]]
   digest = "1:0f300196893c040e7a5c6025051a696c068392fe2f836f2a7e8ab35d0af9cafa"
@@ -610,7 +610,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8cb1610c98d81b6b52e19f0b7f5ba3bda72b96bbd2b42c88700a06260d00aaf6"
+  digest = "1:f70e77c1682502d517730894f6f4b854fa5ad6a319632d6027a0fe5b6c2273ab"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -619,7 +619,7 @@
     "windows/registry",
   ]
   pruneopts = "NUT"
-  revision = "b90733256f2e882e81d52f9126de08df5615afd9"
+  revision = "7ae0202eb74c2b534255c71b5a15fa4115aabbcc"
 
 [[projects]]
   digest = "1:e7071ed636b5422cc51c0e3a6cebc229d6c9fffc528814b519a980641422d619"
