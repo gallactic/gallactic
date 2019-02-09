@@ -114,5 +114,8 @@ func signAndExecute(t *testing.T, errorCode int, tx tx.Tx, names ...string) (*tx
 		assert.Equal(t, totalBalance2, totalBalance1-tx.Amount()-tx.Fee(), "Unexpected total balance")
 	}
 
+	require.Equal(t, rec.Hash.Bytes(), env.Hash())
+	require.Equal(t, rec.Type, env.Type)
+
 	return env, rec
 }

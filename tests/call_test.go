@@ -16,11 +16,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var defaultGas uint64 = 100000
+var defaultGas uint64 = 21000000
 
 func makeCallTx(t *testing.T, from string, addr crypto.Address, data []byte, amt, fee uint64) *tx.CallTx {
 	acc := getAccountByName(t, from)
-	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, 21000000, amt, fee)
+	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, defaultGas, amt, fee)
 	assert.NoError(t, err)
 
 	return tx
@@ -119,6 +119,8 @@ func TestCreateContractNew(t *testing.T) {
 	tx4 := makeCallTx(t, "vbuterin", crypto.Address{}, adderBytes, 0, _fee)
 	_, rec4 := signAndExecute(t, e.ErrNone, tx4, "vbuterin")
 	require.Equal(t, rec4.Status, txs.Ok)
+	require.Equal(t, rec4.GasWanted, defaultGas)
+	require.NotZero(t, rec4.GasUsed)
 
 	// Should pass: result is 5
 	adderAddData1 := addParams_2(adderAddFunc, 1, 4)
