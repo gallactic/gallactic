@@ -372,7 +372,6 @@ func TestContractSend(t *testing.T) {
 	receiver1, _ := crypto.AccountAddress(sendBalanceCode[16:])
 	balSender5 := getBalance(t, "alice")
 	balReceiver1 := getBalanceByAddress(t, receiver1)
-	balContract3 := getBalanceByAddress(t, contractAddr)
 	assert.Nil(t, err)
 	tx5 := makeCallTx(t, "alice", contractAddr, sendBalanceCode, amount2, fee2)
 	_, rec5 := signAndExecute(t, e.ErrNone, tx5, "alice")
