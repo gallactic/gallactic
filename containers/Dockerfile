@@ -1,5 +1,5 @@
 
-FROM alpine:edge
+FROM alpine:3.9
 
 ENV WORKING_DIR /gallactic
 
