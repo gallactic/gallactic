@@ -1,6 +1,6 @@
 [[override]]
   name = "github.com/tendermint/tendermint"
-  version = "=0.28.0"
+  version = "=0.30.0"
 
 [[override]]
   name = "github.com/tendermint/go-amino"
@@ -12,35 +12,24 @@
 
 [[override]]
   name = "github.com/gogo/protobuf"
-  version = "~1.1.1"
+  version = "~1.2.0"
 
 [[override]]
   name = "github.com/golang/protobuf"
-  version = "~1.1.0"
+  version = "~1.2.0"
 
 [[override]]
   name = "google.golang.org/grpc"
-  version = "~1.13.0"
+  version = "~1.18.0"
 
 [[constraint]]
   name = "golang.org/x/crypto"
   revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
 
-[[override]]
-  name = "google.golang.org/genproto"
-  revision = "7fd901a49ba6a7f87732eb344f6e3c5b19d1b200"
 
 [[override]]
   name = "golang.org/x/net"
   revision = "292b43bbf7cb8d35ddf40f8d5100ef3837cced3f"
-
-[[override]]
-  name = "github.com/prometheus/client_golang"
-  revision = "ae27198cdd90bf12cd134ad79d1366a6cf49f632"
-
-[[override]]
-  name = "github.com/rcrowley/go-metrics"
-  revision = "e2704e165165ec55d062f5919b4b29494e9fa790"
 
 [prune]
   go-tests = true

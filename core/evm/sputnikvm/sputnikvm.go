@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/gallactic/gallactic/core/account"
+
 	ETCCommon "github.com/ethereumproject/go-ethereum/common"
 	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
@@ -37,7 +39,6 @@ func Execute(adapter Adapter) Output {
 	}
 
 	vm := sputnikvm.NewGallactic(&transaction, &header)
-	defer vm.Free()
 
 Loop:
 	for {
@@ -92,12 +93,6 @@ Loop:
 		}
 	}
 
-	if vm.Failed() {
-		out.Failed = true
-		out.UsedGas = vm.UsedGas().Uint64()
-		return out /// Not touching state if SputnikVM failed.
-	}
-
 	// HACKING SPUTNIKVM:
 	// If contract A creates contract B, the byte code of B will always be less than A.
 	// AccountChange are not always synchronize.
@@ -149,45 +144,64 @@ Loop:
 			adapter.updateAccount(acc)
 
 		case sputnikvm.AccountChangeCreate:
-			acc := adapter.createContractAccount(changedAcc.Address())
+			var acc *account.Account
+			if len(changedAcc.Code()) == 0 {
+				acc = adapter.createAccount(changedAcc.Address())
+				fmt.Printf("addddddd bal: %v\n", changedAcc.Balance().Uint64())
 
-			changeStorage := changedAcc.Storage()
-			if len(changeStorage) > 0 {
-				for i := 0; i < len(changeStorage); i++ {
-					key := changeStorage[i].Key
-					value := changeStorage[i].Value
-					adapter.updateStorage(changedAcc.Address(), key, value)
+				acc.SetBalance(changedAcc.Balance().Uint64())
+				acc.SetSequence(changedAcc.Nonce().Uint64())
+			} else {
+				acc = adapter.createContractAccount(changedAcc.Address())
+
+				changeStorage := changedAcc.Storage()
+				if len(changeStorage) > 0 {
+					for i := 0; i < len(changeStorage); i++ {
+						key := changeStorage[i].Key
+						value := changeStorage[i].Value
+						adapter.updateStorage(changedAcc.Address(), key, value)
+					}
+				}
+				acc.SetBalance(changedAcc.Balance().Uint64())
+				acc.SetSequence(changedAcc.Nonce().Uint64())
+				acc.SetCode(changedAcc.Code())
+
+				if contractCodeLength <= len(acc.Code()) {
+					addr := acc.Address()
+					out.ContractAddress = &addr
+					//
+					contractCodeLength = len(acc.Code())
 				}
 			}
-			acc.SetBalance(changedAcc.Balance().Uint64())
-			acc.SetSequence(changedAcc.Nonce().Uint64())
-			acc.SetCode(changedAcc.Code())
 
 			adapter.updateAccount(acc)
-
-			if contractCodeLength <= len(acc.Code()) {
-				addr := acc.Address()
-				out.ContractAddress = &addr
-				//
-				contractCodeLength = len(acc.Code())
-			}
 
 		default:
 			panic("unreachable")
 		}
 	}
 
-	// Extract logs and events
+	out.UsedGas = vm.UsedGas().Uint64()
+
+	if vm.Failed() {
+		fmt.Println("SputnikVm Failed")
+		out.Failed = true
+	} else {
+		out.Failed = false
+	}
+
+	//Extract logs and events
 	var logs []evm.Log
 	for _, log := range vm.Logs() {
 		logs = append(logs, adapter.ConvertLog(log))
 	}
 
-	out.Failed = false
 	out.Logs = logs
 	out.UsedGas = vm.UsedGas().Uint64()
 	out.Output = make([]uint8, vm.OutLen())
 	copy(out.Output, vm.Output())
+
+	vm.Free()
 
 	return out
 }

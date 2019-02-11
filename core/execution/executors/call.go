@@ -53,10 +53,11 @@ func (ctx *CallContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 
 	if ctx.Committing {
 		ret := ctx.Deliver(tx, caller, callee)
+		// we get the latest changes after sputnik modified caller account info
+		// scenario: sputnik modified caller balance, then at this line, we need to get the latest info
+		caller, _ = ctx.Cache.GetAccount(caller.Address())
 
-		caller.IncSequence()
-
-		//Here we can acquire sputnik VM result
+		//Here we can acquire sputnikVM result
 		if ret.Failed {
 			txRec.Status = txs.Failed
 		} else {

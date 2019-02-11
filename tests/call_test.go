@@ -16,11 +16,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var defaultGas uint64 = 100000
+var defaultGas uint64 = 21000000
 
 func makeCallTx(t *testing.T, from string, addr crypto.Address, data []byte, amt, fee uint64) *tx.CallTx {
 	acc := getAccountByName(t, from)
-	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, 21000000, amt, fee)
+	tx, err := tx.NewCallTx(acc.Address(), addr, acc.Sequence()+1, data, defaultGas, amt, fee)
 	assert.NoError(t, err)
 
 	return tx
@@ -119,6 +119,8 @@ func TestCreateContractNew(t *testing.T) {
 	tx4 := makeCallTx(t, "vbuterin", crypto.Address{}, adderBytes, 0, _fee)
 	_, rec4 := signAndExecute(t, e.ErrNone, tx4, "vbuterin")
 	require.Equal(t, rec4.Status, txs.Ok)
+	require.Equal(t, rec4.GasWanted, defaultGas)
+	require.NotZero(t, rec4.GasUsed)
 
 	// Should pass: result is 5
 	adderAddData1 := addParams_2(adderAddFunc, 1, 4)
@@ -126,7 +128,7 @@ func TestCreateContractNew(t *testing.T) {
 	tx44 := makeCallTx(t, "vbuterin", *rec4.ContractAddress, adderAddData1, 0, _fee)
 	_, rec44 := signAndExecute(t, e.ErrNone, tx44, "vbuterin")
 	assert.Equal(t, rec44.Status, txs.Ok)
-	assert.Equal(t, rec44.Output, returnValue1)
+	assert.Equal(t, rec44.Output.Bytes(), returnValue1)
 
 	// Tester: Should pass: vbuterin has permission to call and create a contract
 	tx5 := makeCallTx(t, "vbuterin", crypto.Address{}, testerBytes, 0, _fee)
@@ -148,7 +150,7 @@ func TestCreateContractNew(t *testing.T) {
 	tx7 := makeCallTx(t, "vbuterin", *rec5.ContractAddress, testerAddData2, 0, _fee)
 	_, rec7 := signAndExecute(t, e.ErrNone, tx7, "vbuterin")
 	assert.Equal(t, rec7.Status, txs.Ok)
-	assert.Equal(t, rec7.Output, returnValue2)
+	assert.Equal(t, rec7.Output.Bytes(), returnValue2)
 
 	// Should pass: get the address of deployed adder contract
 	tx8 := makeCallTx(t, "vbuterin", *rec5.ContractAddress, testerAddrFunc, 0, _fee)
@@ -161,7 +163,7 @@ func TestCreateContractNew(t *testing.T) {
 	tx9 := makeCallTx(t, "vbuterin", addr, adderAddData1, 0, _fee)
 	_, rec9 := signAndExecute(t, e.ErrNone, tx9, "vbuterin")
 	assert.Equal(t, rec9.Status, txs.Ok)
-	assert.Equal(t, rec9.Output, returnValue1)
+	assert.Equal(t, rec9.Output.Bytes(), returnValue1)
 }
 
 func TestCreateContract(t *testing.T) {
@@ -263,7 +265,7 @@ func TestCreateContract(t *testing.T) {
 	tx9 := makeCallTx(t, "vbuterin", *rec7.ContractAddress, testerAddData1, 0, _fee)
 	_, rec9 := signAndExecute(t, e.ErrNone, tx9, "vbuterin")
 	assert.Equal(t, rec9.Status, txs.Ok)
-	assert.Equal(t, rec9.Output, returnValue1)
+	assert.Equal(t, rec9.Output.Bytes(), returnValue1)
 
 	seq2 := getAccountByName(t, "vbuterin").Sequence()
 	seq3 := getAccount(t, testerAddr).Sequence()
@@ -300,46 +302,88 @@ func TestStackOverflow(t *testing.T) {
 }
 
 func TestContractSend(t *testing.T) {
-	/*
-		pragma solidity ^0.4.18;
-
-		contract Send {
-			function send(address x) public payable{
-				x.send(msg.value);
-			}
-			function sendBalance(address x) public payable{
-				x.send(balance(this));
-			}
-			function stake() public payable{
-
-			}
-			function stake2() public {
-
-			}
-			function balance(address x) public view returns (uint256) {
-				return address(x).balance;
-			}
-		}
-	*/
-
-	//code, _ := hex.DecodeString("6060604052341561000f57600080fd5b6102058061001e6000396000f30060606040526004361061006d576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806305ea3cf1146100725780633a4b66f1146100875780633e58c58c146100915780635292af1f146100bf578063e3d670d7146100ed575b600080fd5b341561007d57600080fd5b61008561013a565b005b61008f61013c565b005b6100bd600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190505061013e565b005b6100eb600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610177565b005b34156100f857600080fd5b610124600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506101b8565b6040518082815260200191505060405180910390f35b565b565b8073ffffffffffffffffffffffffffffffffffffffff166108fc349081150290604051600060405180830381858888f193505050505050565b8073ffffffffffffffffffffffffffffffffffffffff166108fc61019a306101b8565b9081150290604051600060405180830381858888f193505050505050565b60008173ffffffffffffffffffffffffffffffffffffffff163190509190505600a165627a7a723058204131f76eeba980361855afa74e3005f73e68936a33d2a855aea79a7c8b9665450029")
+	setPermissions(t, "alice", permission.Call|permission.CreateContract)
+	setPermissions(t, "bob", permission.Call|permission.CreateContract)
 
 	/// Case 1: deploy: successful
+	code, err := hex.DecodeString("6060604052341561000f57600080fd5b61018a8061001e6000396000f30060606040526004361061006c5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166305ea3cf181146100715780633a4b66f11461007c5780633e58c58c146100865780635292af1f1461009a578063e3d670d7146100ae575b600080fd5b341561007c57600080fd5b6100846100df565b005b610084600160a060020a03600435166100e1565b610084600160a060020a0360043516610116565b34156100b957600080fd5b6100cd600160a060020a0360043516610151565b60405190815260200160405180910390f35b565b600160a060020a0381163480156108fc0290604051600060405180830381858888f19350505050151561011357600080fd5b50565b80600160a060020a03166108fc61012c30610151565b9081150290604051600060405180830381858888f19350505050151561011357600080fd5b600160a060020a031631905600a165627a7a723058206f2bbf09ded1fb7cf6d8367a1d227a9d50bdfe46c8ef967249b05806104a7ee50029")
+	assert.Nil(t, err)
+
+	seq1 := getAccountByName(t, "alice").Sequence()
+	tx1 := makeCallTx(t, "alice", crypto.Address{}, code, 0, _fee)
+	_, rec1 := signAndExecute(t, e.ErrNone, tx1, "alice")
+	contractAddr := *rec1.ContractAddress
+	assert.Equal(t, rec1.Status, txs.Ok)
+	assert.NotNil(t, contractAddr)
+
+	seq2 := getAccountByName(t, "alice").Sequence()
+	assert.Equal(t, seq1+1, seq2)
+
 	/// case 2: alice calls Send (amount 10) to Bob address
-	/// 	     check: alice balance = 10-fee
-	///			 check: contract balance: 0
-	///			 check: bob balance += 10
-	///
+	/// check:  alice balance = 10-fee
+	///	check:  contract balance: 0
+	///	check:  bob balance += 10
+
+	sendCode, err := hex.DecodeString("3e58c58c00000000000000000000000014723a09acff6d2a60dcdf7aa4aff308fddc160c")
+	assert.Nil(t, err)
+
+	receiver, _ := crypto.AccountAddress(sendCode[16:])
+	balSender1 := getBalance(t, "bob")
+	amount1 := uint64(1000)
+	fee1 := uint64(10)
+	tx2 := makeCallTx(t, "bob", contractAddr, sendCode, amount1, fee1)
+	_, rec2 := signAndExecute(t, e.ErrNone, tx2, "bob")
+	assert.Equal(t, rec2.Status, txs.Ok)
+	balSender2 := getBalance(t, "bob")
+	balReceiver := getBalanceByAddress(t, receiver)
+	balContract := getBalanceByAddress(t, contractAddr)
+	assert.Equal(t, balSender1-amount1-fee1, balSender2)
+	assert.Equal(t, amount1, balReceiver) /// create and update balance at the same time
+	assert.Equal(t, balContract, uint64(0))
+
 	/// case 3: alice calls Stake (amount 20)
-	/// 	     check: alice balance = 20-fee
-	///			 check: contract balance: 20
-	///
-	/// case 3: alice calls stake2 (amount 20)
-	/// 	     check: Error. should fail
-	///
-	/// case 3: alice calls sendBalance
-	/// 	     check: alice balance += 20
-	///			 check: contract balance: 0
+	/// check:  alice balance = 20-fee
+	///	check:  contract balance: 20
+	stakeCode, err := hex.DecodeString("3a4b66f1")
+	assert.Nil(t, err)
+
+	balSender3 := getBalance(t, "bob")
+	amount2 := uint64(2000)
+	fee2 := uint64(10)
+	tx3 := makeCallTx(t, "bob", contractAddr, stakeCode, amount2, fee2)
+	_, rec3 := signAndExecute(t, e.ErrNone, tx3, "bob")
+	assert.Equal(t, rec3.Status, txs.Ok)
+	balSender4 := getBalance(t, "bob")
+	balContract2 := getBalanceByAddress(t, contractAddr)
+	assert.Equal(t, balSender3-amount2-fee2, balSender4)
+	assert.Equal(t, balContract2, amount2)
+
+	/// case 4: alice calls stake2 (amount 20)
+	/// check:  Error. should fail
+	stakeCode2, err := hex.DecodeString("05ea3cf1")
+	assert.Nil(t, err)
+
+	tx4 := makeCallTx(t, "bob", contractAddr, stakeCode2, amount2, fee2)
+	_, rec4 := signAndExecute(t, e.ErrNone, tx4, "bob")
+	assert.Equal(t, rec4.Status, txs.Failed)
+
+	/// case 5: alice calls sendBalance
+	/// check:  alice balance += 20
+	/// check:  contract balance: 0
+	sendBalanceCode, err := hex.DecodeString("5292af1f00000000000000000000000014723a09acff6d2a60dcdf7aa4aff308fddc160c")
+	receiver1, _ := crypto.AccountAddress(sendBalanceCode[16:])
+	balSender5 := getBalance(t, "alice")
+	balReceiver1 := getBalanceByAddress(t, receiver1)
+	assert.Nil(t, err)
+	tx5 := makeCallTx(t, "alice", contractAddr, sendBalanceCode, amount2, fee2)
+	_, rec5 := signAndExecute(t, e.ErrNone, tx5, "alice")
+	assert.Equal(t, rec5.Status, txs.Ok)
+	balSender7 := getBalance(t, "alice")
+	balReceiver2 := getBalanceByAddress(t, receiver1)
+	balContract4 := getBalanceByAddress(t, contractAddr)
+	assert.Equal(t, balContract4, uint64(0))
+	assert.Equal(t, balSender5-amount2-fee2, balSender7)
+	assert.Equal(t, balReceiver1+amount2+amount2, balReceiver2) // receiver will receive amount from contract and the sender at the same time
 
 }
 
@@ -459,7 +503,7 @@ func TestStorage(t *testing.T) {
 	// empty storage
 	tx11 := makeCallTx(t, "alice", contractAddr, getFunc, 0, _fee)
 	_, rec11 := signAndExecute(t, e.ErrNone, tx11, "alice")
-	assert.Equal(t, rec11.Output, []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+	assert.Equal(t, rec11.Output.Bytes(), []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 
 	// Input is the function hash of `setVal()`: 100
 	retVal1, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000064")
@@ -471,7 +515,7 @@ func TestStorage(t *testing.T) {
 	// Input is the function hash of `getVal()`
 	tx3 := makeCallTx(t, "alice", contractAddr, getFunc, 0, _fee)
 	_, rec3 := signAndExecute(t, e.ErrNone, tx3, "alice")
-	assert.Equal(t, rec3.Output, retVal1)
+	assert.Equal(t, rec3.Output.Bytes(), retVal1)
 
 	// Input is the function hash of `setVal()`: ccb4...
 	retVal2, _ := hex.DecodeString("ccb49089f0f3c8339bef0ff8af2351740aefb9701c0c490f1b5528d8173c5de4")
@@ -484,7 +528,7 @@ func TestStorage(t *testing.T) {
 	// Input is the function hash of `getVal()`
 	tx5 := makeCallTx(t, "alice", contractAddr, getFunc, 0, _fee)
 	_, rec5 := signAndExecute(t, e.ErrNone, tx5, "alice")
-	assert.Equal(t, rec5.Output, retVal2)
+	assert.Equal(t, rec5.Output.Bytes(), retVal2)
 }
 
 func TestStorage2(t *testing.T) {
@@ -533,7 +577,7 @@ func TestStorage2(t *testing.T) {
 	tx2 := makeCallTx(t, "alice", contractAddr, getValueFunc, 0, _fee)
 	_, rec2 := signAndExecute(t, e.ErrNone, tx2, "alice")
 	assert.Equal(t, rec2.Status, txs.Ok)
-	assert.Equal(t, rec2.Output, data)
+	assert.Equal(t, rec2.Output.Bytes(), data)
 
 	// Input is the function hash of `setVal()`: 100
 	retVal1, _ := hex.DecodeString("0000000000000000000000000000000000000000000000000000000000000064")
@@ -546,7 +590,7 @@ func TestStorage2(t *testing.T) {
 	tx4 := makeCallTx(t, "alice", contractAddr, getValueFunc, 0, _fee)
 	_, rec4 := signAndExecute(t, e.ErrNone, tx4, "alice")
 	assert.Equal(t, rec4.Status, txs.Ok)
-	assert.Equal(t, rec4.Output, retVal1)
+	assert.Equal(t, rec4.Output.Bytes(), retVal1)
 }
 
 func TestSelfDestruct(t *testing.T) {

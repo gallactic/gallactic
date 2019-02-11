@@ -22,5 +22,5 @@ type Receipt struct {
 	GasWanted       uint64          `json:"gasWanted,omitempty"`
 	ContractAddress *crypto.Address `json:"contractAddress,omitempty"`
 	Logs            evm.Logs        `json:"logs,omitempty"`
-	Output          []byte          `json:"output,omitempty"`
+	Output          binary.HexBytes `json:"output,omitempty"`
 }
