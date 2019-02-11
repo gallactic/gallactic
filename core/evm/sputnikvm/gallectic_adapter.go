@@ -63,6 +63,12 @@ func (ga *GallacticAdapter) GetNonce() *big.Int {
 	return bigint(ga.Nonce)
 }
 
+func (ga *GallacticAdapter) createAccount(address common.Address) *account.Account {
+	addr := fromEthAddress(address, false)
+	acc, _ := account.NewAccount(addr)
+	return acc
+}
+
 func (ga *GallacticAdapter) updateAccount(acc *account.Account) {
 	ga.Cache.UpdateAccount(acc)
 }
