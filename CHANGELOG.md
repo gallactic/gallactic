@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0
+
+- Update Tendermint to version 0.30.0
+- Fix a bug on payable methods
+- Update call_test for payable methods
+- Returning after SputnikVM failure
+- Fixing some issues
+
 ## 0.5.0
 
 - Improving SputnikVM & adding more tests
@@ -10,7 +18,6 @@
 - Improving grpc APIs and add more tests for gRPC module
 - Updating Tendermint.
 - Add some more features and fixing some issues
-
 
 ## 0.4.0
 
