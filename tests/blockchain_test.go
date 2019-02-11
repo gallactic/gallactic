@@ -64,8 +64,8 @@ func signAndExecute(t *testing.T, errorCode int, tx tx.Tx, names ...string) (*tx
 	}
 
 	env := txs.Enclose(tChainID, tx)
-	rec := env.GenerateReceipt()
 	require.NoError(t, env.Sign(signers...), "Could not sign tx in call: %s", debug.Stack())
+	rec := env.GenerateReceipt()
 
 	if errorCode != e.ErrNone {
 		require.Equal(t, e.Code(tChecker.Execute(env, rec)), errorCode, "Tx should fail: %s", debug.Stack())
@@ -117,6 +117,9 @@ func signAndExecute(t *testing.T, errorCode int, tx tx.Tx, names ...string) (*tx
 			assert.Equal(t, totalBalance2, totalBalance1-tx.Fee(), "Unexpected total balance")
 		}
 	}
+
+	require.Equal(t, rec.Hash.Bytes(), env.Hash())
+	require.Equal(t, rec.Type, env.Type)
 
 	return env, rec
 }
