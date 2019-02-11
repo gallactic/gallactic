@@ -30,6 +30,7 @@ type Adapter interface {
 
 	setCalleeAddress(address common.Address)
 
+	createAccount(address common.Address) *account.Account
 	updateAccount(account *account.Account)
 	getAccount(address common.Address) *account.Account
 
