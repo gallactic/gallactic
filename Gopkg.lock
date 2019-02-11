@@ -26,7 +26,6 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
-  branch = "master"
   digest = "1:d9043cacf637538c6d9df546f256173ce78b1ff10f42fba7a22ba72fb13b7837"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
@@ -74,11 +73,12 @@
   version = "v1.1.0"
 
 [[projects]]
-  digest = "1:9ebed29c855eef24c37ee9189c56aed31cd613fb5944a42c7fab3795e946b991"
+  digest = "1:06f5bcd2ef2c1986492e761fe70c128ec65e03ecfbebb0e07cf8f2608fbf1b0b"
   name = "github.com/ethereum/go-ethereum"
   packages = [
     "common/hexutil",
     "common/mclock",
+    "crypto/secp256k1",
     "log",
     "p2p/netutil",
     "rpc",
@@ -387,7 +387,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2879c2c4d44040c8f8cd47127c8a40ab4ff1ceb02401982338f0f3bc18583001"
+  digest = "1:4487583fed075f4eeb10f6b91bad992fff84a27a6f6bdabc20f37b31694e69ee"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -396,7 +396,7 @@
     "xfs",
   ]
   pruneopts = "NUT"
-  revision = "488faf799f863e27e50c516468f76ae8f1da20a5"
+  revision = "f8d8b3f739bd91a7c0462cb55235ef63c79c9abc"
 
 [[projects]]
   digest = "1:f250ca51e5b9215bc2df18f92060a9a835e9f85ab18ebbba0e1a6ef1f8fcdbfe"
@@ -447,14 +447,6 @@
   revision = "2f17a3356c6616cbfc4ae4c38147dc062a68fb0e"
 
 [[projects]]
-  digest = "1:d32b18c99013d2a961a3b299369d9ddaba48e1b1a64e7c6f30e10d9c3736a65a"
-  name = "github.com/tendermint/btcd"
-  packages = ["btcec"]
-  pruneopts = "NUT"
-  revision = "80daadac05d1cd29571fccf27002d79667a88b58"
-  version = "v0.1.1"
-
-[[projects]]
   digest = "1:cab51cbba1fe9bd667ccd5198911b306a4b551c8fb2be754daae5b748d806d12"
   name = "github.com/tendermint/go-amino"
   packages = ["."]
@@ -471,7 +463,7 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:6591189c5d0b1896f1c354d5423d28c5b659faddaab7f151390cbcd375093b4f"
+  digest = "1:99690f69428313bff6b61d8a1692623d038f748ea64c6f42995c4c44950f189f"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -523,8 +515,8 @@
     "version",
   ]
   pruneopts = "NUT"
-  revision = "4d7b29cd8f8ef998cf8f7141f3a100b0a4fa718d"
-  version = "v0.29.1"
+  revision = "28d75ec8016b7fb043735cbe4c4d92ec73355de7"
+  version = "v0.30.0"
 
 [[projects]]
   branch = "master"
@@ -609,7 +601,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ba417446e5d8ababf900d2e16b5cfd08d954830a89cba079447440274df097b6"
+  digest = "1:48ea3ed44fdf39c749a361027a35dc1a3469aa17325b803f9f3a4531751497e4"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -618,7 +610,7 @@
     "windows/registry",
   ]
   pruneopts = "NUT"
-  revision = "41f3e6584952bb034a481797859f6ab34b6803bd"
+  revision = "3b5209105503162ded1863c307ac66fec31120dd"
 
 [[projects]]
   digest = "1:e7071ed636b5422cc51c0e3a6cebc229d6c9fffc528814b519a980641422d619"

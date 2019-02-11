@@ -15,7 +15,6 @@ import (
 	"github.com/gallactic/gallactic/txs/tx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	tmTypes "github.com/tendermint/tendermint/types"
 )
 
 func TestResultBroadcastTx(t *testing.T) {
@@ -125,28 +124,6 @@ func TestResultEvent(t *testing.T) {
 
 
 */
-
-func TestResultGetBlock(t *testing.T) {
-	res := &BlockOutput{
-		Block: &Block{&tmTypes.Block{
-			LastCommit: &tmTypes.Commit{
-				Precommits: []*tmTypes.Vote{
-					{
-						Signature: []byte{1, 2, 3},
-					},
-				},
-			},
-		},
-		},
-	}
-	bs, err := json.Marshal(res)
-	require.NoError(t, err)
-	resOut := new(BlockOutput)
-	require.NoError(t, json.Unmarshal([]byte(bs), resOut))
-	bsOut, err := json.Marshal(resOut)
-	require.NoError(t, err)
-	assert.Equal(t, string(bs), string(bsOut))
-}
 
 func TestResultLastBlockInfo(t *testing.T) {
 	res := &LastBlockInfoOutput{
