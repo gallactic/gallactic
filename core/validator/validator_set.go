@@ -152,7 +152,7 @@ func (set *ValidatorSet) AdjustPower(height int64) error {
 			vals1 = append(vals1[:m-n], vals1[m-n+1:]...)
 			n++
 
-			/// Not removing more than requested
+			/// Maximum 1/3 of vals
 			if len(vals1) == dif {
 				break
 			}
