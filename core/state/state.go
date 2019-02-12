@@ -33,9 +33,9 @@ var (
 	storageStart, storageEnd     []byte = prefixKeyRange(storagePrefix)
 )
 
-func prefixedKey(prefix string, suffices ...[]byte) []byte {
+func prefixedKey(prefix string, suffixes ...[]byte) []byte {
 	key := []byte(prefix)
-	for _, suffix := range suffices {
+	for _, suffix := range suffixes {
 		key = append(key, suffix...)
 	}
 	return key
@@ -352,6 +352,7 @@ func (st *State) removeAccount(addr crypto.Address) error {
 	defer st.Unlock()
 
 	st.tree.Remove(accountKey(addr))
+	/// TODO: Remove all storages assigned to this account
 	return nil
 }
 
@@ -377,10 +378,7 @@ func (st *State) removeValidator(addr crypto.Address) error {
 }
 
 func (st *State) setStorage(addr crypto.Address, key, value binary.Word256) error {
-	if value == binary.Zero256 {
-		st.tree.Remove(key.Bytes())
-	} else {
-		st.tree.Set(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()), value.Bytes())
-	}
+	key1 := prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes())
+	st.tree.Set(key1, value.Bytes())
 	return nil
 }

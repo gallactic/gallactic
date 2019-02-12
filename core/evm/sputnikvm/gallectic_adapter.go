@@ -80,7 +80,7 @@ func (ga *GallacticAdapter) updateStorage(address common.Address, key *big.Int, 
 	ga.Cache.SetStorage(addr, wKey, wValue)
 }
 
-func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*big.Int, error) {
+func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) *big.Int {
 	addr := fromEthAddress(address, true)
 	wKey := binary.LeftPadWord256(key.Bytes())
 	wValue, err := ga.Cache.GetStorage(addr, wKey)
@@ -90,7 +90,7 @@ func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*b
 	} else {
 		value.SetBytes(wValue.Bytes())
 	}
-	return &value, err
+	return &value
 }
 
 func (ga *GallacticAdapter) createContractAccount(address common.Address) *account.Account {

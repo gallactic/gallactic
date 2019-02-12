@@ -67,12 +67,8 @@ Loop:
 			}
 
 		case sputnikvm.RequireAccountStorage:
-			storage, err := adapter.getStorage(require.Address(), require.StorageKey())
-			if err != nil {
-				vm.CommitAccountStorage(require.Address(), require.StorageKey(), new(big.Int).SetUint64(0))
-			} else {
-				vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
-			}
+			storage := adapter.getStorage(require.Address(), require.StorageKey())
+			vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
 
 		case sputnikvm.RequireBlockhash:
 			var blockHash ETCCommon.Hash
@@ -147,7 +143,6 @@ Loop:
 			var acc *account.Account
 			if len(changedAcc.Code()) == 0 {
 				acc = adapter.createAccount(changedAcc.Address())
-				fmt.Printf("addddddd bal: %v\n", changedAcc.Balance().Uint64())
 
 				acc.SetBalance(changedAcc.Balance().Uint64())
 				acc.SetSequence(changedAcc.Nonce().Uint64())

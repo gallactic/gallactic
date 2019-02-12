@@ -38,7 +38,7 @@ type Adapter interface {
 	createContractAccount(address common.Address) *account.Account
 
 	updateStorage(address common.Address, key *big.Int, value *big.Int)
-	getStorage(address common.Address, key *big.Int) (*big.Int, error)
+	getStorage(address common.Address, key *big.Int) *big.Int
 
 	addBalance(address common.Address, amount uint64)
 	subBalance(address common.Address, amount uint64)
