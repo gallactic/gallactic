@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/p2p"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
@@ -41,7 +42,7 @@ func (ns *networkService) GetPeers(context.Context, *pb.Empty1) (*pb.PeerRespons
 	peers := make([]*pb.Peer, ns.nodeview.Peers().Size())
 	for i, peer := range ns.nodeview.Peers().List() {
 		ni := new(p2p.GNodeInfo)
-		tmni, _ := peer.NodeInfo().(*net.DefaultNodeInfo)
+		tmni, _ := peer.NodeInfo().(net.DefaultNodeInfo)
 		ni.ID_ = tmni.ID_
 		ni.Network = tmni.Network
 		ni.ProtocolVersion = tmni.ProtocolVersion
