@@ -197,6 +197,14 @@
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
+  branch = "master"
+  digest = "1:05f95ffdfcf651bdb0f05b40b69e7f5663047f8da75c72d58728acb59b5cc107"
+  name = "github.com/google/btree"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "4030bb1f1f0c35b30ca7009e9ebd06849dd45306"
+
+[[projects]]
   digest = "1:4a0c072e44da763409da72d41492373a034baf2e6d849c76d239b4abdfbb6c49"
   name = "github.com/gorilla/websocket"
   packages = ["."]
@@ -328,6 +336,14 @@
   pruneopts = "NUT"
   revision = "89529c6904fcd077434931b4eac8b4b2f0991baf"
   version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:3bf17a6e6eaa6ad24152148a631d18662f7212e21637c2699bff3369b7f00fa2"
+  name = "github.com/petar/GoLLRB"
+  packages = ["llrb"]
+  pruneopts = "NUT"
+  revision = "53be0d36a84c2a886ca057d34b6aa4468df9ccb4"
 
 [[projects]]
   digest = "1:657ac55eff70ffd654b39f04bc3731105a3135a8f5529a7de5963ba03df5ef4f"
@@ -733,6 +749,7 @@
     "github.com/gogo/protobuf/types",
     "github.com/golang/protobuf/proto",
     "github.com/golang/protobuf/ptypes/timestamp",
+    "github.com/google/btree",
     "github.com/grpc-ecosystem/grpc-gateway/runtime",
     "github.com/grpc-ecosystem/grpc-gateway/utilities",
     "github.com/hyperledger/burrow/logging",
