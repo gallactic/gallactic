@@ -25,7 +25,7 @@ func NewTransactorService(con context.Context, transaction *execution.Transactor
 }
 
 //Transcation Service
-func (tx *transcatorService) BroadcastTx(ctx context.Context, txReq *pb.TransactRequest) (*pb.ReceiptResponse, error) {
+func (tx *transcatorService) BroadcastTxSync(ctx context.Context, txReq *pb.TransactRequest) (*pb.ReceiptResponse, error) {
 	receipt, err := tx.transactor.BroadcastTxSync(txReq.TxEnvelope)
 	if err != nil {
 		return nil, err
@@ -54,3 +54,13 @@ func (tx *transcatorService) GetUnconfirmedTxs(ctx context.Context, unconfirmreq
 	}, nil
 }
 
+func (tx *transcatorService) BroadcastTxAsync(ctx context.Context, txReq *pb.TransactRequest) (*pb.ReceiptResponse, error) {
+	receipt, err := tx.transactor.BroadcastTxAsync(txReq.TxEnvelope)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ReceiptResponse{
+		TxReceipt: receipt,
+	}, nil
+}
