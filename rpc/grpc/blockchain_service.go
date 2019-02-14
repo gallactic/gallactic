@@ -290,9 +290,7 @@ func (s *blockchainService) GetTx(ctx context.Context, req *pb.TxRequest) (*pb.T
 
 }
 
-func (s *blockchainService) GetListTx(ctx context.Context, req *pb.Empty) (*pb.TxInfo, error) {
-	return nil, nil
-}
+
 
 //Get validator
 func (vs *blockchainService) toValidator(val *validator.Validator) *pb.ValidatorInfo {

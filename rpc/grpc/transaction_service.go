@@ -54,7 +54,3 @@ func (tx *transcatorService) GetUnconfirmedTxs(ctx context.Context, unconfirmreq
 	}, nil
 }
 
-//Get list of transaction
-func (s *transcatorService) GetTxsList(ctx context.Context, block *pb.Empty2) (*pb.TxsResponse, error) {
-	return nil, nil
-}

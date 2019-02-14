@@ -37,15 +37,6 @@ func request_Transaction_GetUnconfirmedTxs_0(ctx context.Context, marshaler runt
 
 }
 
-func request_Transaction_GetTxsList_0(ctx context.Context, marshaler runtime.Marshaler, client TransactionClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq Empty2
-	var metadata runtime.ServerMetadata
-
-	msg, err := client.GetTxsList(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
 // RegisterTransactionHandlerFromEndpoint is same as RegisterTransactionHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterTransactionHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
@@ -104,37 +95,13 @@ func RegisterTransactionHandlerClient(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("GET", pattern_Transaction_GetTxsList_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_Transaction_GetTxsList_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_Transaction_GetTxsList_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
 	return nil
 }
 
 var (
 	pattern_Transaction_GetUnconfirmedTxs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"UnconfirmedTxs"}, ""))
-
-	pattern_Transaction_GetTxsList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"GetTxsList"}, ""))
 )
 
 var (
 	forward_Transaction_GetUnconfirmedTxs_0 = runtime.ForwardResponseMessage
-
-	forward_Transaction_GetTxsList_0 = runtime.ForwardResponseMessage
 )

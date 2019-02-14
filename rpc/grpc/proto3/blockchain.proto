@@ -31,7 +31,6 @@ service BlockChain {
   rpc GetBlocks(BlocksRequest) returns (BlocksResponse)         { option (google.api.http).get = "/Blocks/{minHeight}/{maxHeight}";}
   rpc GetBlockchainInfo(Empty) returns (BlockchainInfoResponse) { option (google.api.http).get = "/GetBlockchainInfo";}
   rpc GetTx(TxRequest) returns(TxResponse)                      { option (google.api.http).get = "/Tx/{Hash}";};
-  rpc GetListTx(Empty) returns(TxInfo)                          { option (google.api.http).get = "/GetListTx";};
   rpc GetBlockTxs(BlockRequest)returns(BlockTxsResponse)        { option (google.api.http) = {
       get : "/BlockTxs";
       additional_bindings {
