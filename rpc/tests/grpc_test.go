@@ -116,7 +116,7 @@ func TestTransactionMethods(t *testing.T) {
 
 	bcClient := grpcBlockchainClient()
 
-	ret1, err := client.BroadcastTx(context.Background(), &pb.TransactRequest{TxEnvelope: env})
+	ret1, err := client.BroadcastTxSync(context.Background(), &pb.TransactRequest{TxEnvelope: env})
 	require.NoError(t, err)
 	require.Equal(t, env.Hash(), ret1.TxReceipt.Hash.Bytes())
 
@@ -133,4 +133,6 @@ func TestTransactionMethods(t *testing.T) {
 
 	require.Equal(t, ret2.Account.Balance(), bal_1-1200)
 	require.Equal(t, ret3.Account.Balance(), bal_2+1000)
+
+
 }
