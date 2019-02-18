@@ -134,5 +134,4 @@ func TestTransactionMethods(t *testing.T) {
 	require.Equal(t, ret2.Account.Balance(), bal_1-1200)
 	require.Equal(t, ret3.Account.Balance(), bal_2+1000)
 
-
 }

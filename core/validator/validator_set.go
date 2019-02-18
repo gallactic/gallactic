@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/hyperledger/burrow/logging"
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 	tmRPCTypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
@@ -34,16 +33,14 @@ type ValidatorSet struct {
 	maximumPower int
 	leavers      map[crypto.Address]*Validator
 	validators   map[crypto.Address]*Validator
-	logger       *logging.Logger
 }
 
-func NewValidatorSet(validators map[crypto.Address]*Validator, maximumPower int, logger *logging.Logger) *ValidatorSet {
+func NewValidatorSet(validators map[crypto.Address]*Validator, maximumPower int) *ValidatorSet {
 	set := &ValidatorSet{
 		validators:   validators,
 		leavers:      make(map[crypto.Address]*Validator),
 		maximumPower: maximumPower,
 		proxy:        _validatorListProxy{},
-		logger:       logger,
 	}
 	return set
 }

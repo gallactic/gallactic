@@ -13,7 +13,6 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/hyperledger/burrow/logging"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
@@ -25,13 +24,11 @@ var tGenesis *proposal.Genesis
 var tBC *blockchain.Blockchain
 var tDB dbm.DB
 var tState *state.State
-var tLogger *logging.Logger
 var tChecker execution.BatchExecutor
 var tCommitter execution.BatchCommitter
 var tEventBus events.EventBus
 
 func TestMain(m *testing.M) {
-	tLogger = logging.NewNoopLogger()
 
 	setupAccountPool(m)
 	setupGenesis(m)

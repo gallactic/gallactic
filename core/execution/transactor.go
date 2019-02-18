@@ -10,8 +10,7 @@ import (
 	"github.com/gallactic/gallactic/core/events"
 	"github.com/gallactic/gallactic/txs"
 
-	"github.com/hyperledger/burrow/logging"
-	"github.com/hyperledger/burrow/logging/structure"
+	log "github.com/inconshreveable/log15"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
@@ -23,21 +22,23 @@ const (
 // Transactor is the controller/middleware for the v0 RPC
 type Transactor struct {
 	broadcastTxFunc func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error
-	logger          *logging.Logger
 	eventBus        events.EventBus
 }
 
 func NewTransactor(broadcastTxFunc func(tx tmTypes.Tx, cb func(*abciTypes.Response)) error,
-	eventBus events.EventBus, logger *logging.Logger) *Transactor {
+	eventBus events.EventBus) *Transactor {
 
 	return &Transactor{
 		broadcastTxFunc: broadcastTxFunc,
 		eventBus:        eventBus,
-		logger:          logger.With(structure.ComponentKey, "Transactor"),
 	}
 }
 
 func (trans *Transactor) BroadcastTxSync(txEnv *txs.Envelope) (*txs.Receipt, error) {
+	log.Info("Broadcasting Tx Sync",
+		"tx_hash", txEnv.Hash(),
+		"tx", txEnv.String())
+
 	ctx, cancel := context.WithTimeout(context.Background(), blockingTimeout)
 	defer cancel()
 
@@ -70,7 +71,7 @@ func (trans *Transactor) BroadcastTxSync(txEnv *txs.Envelope) (*txs.Receipt, err
 }
 
 func (trans *Transactor) BroadcastTxAsync(txEnv *txs.Envelope) (*txs.Receipt, error) {
-	trans.logger.Trace.Log("method", "BroadcastTxAsync",
+	log.Info("Broadcasting Tx Async",
 		"tx_hash", txEnv.Hash(),
 		"tx", txEnv.String())
 

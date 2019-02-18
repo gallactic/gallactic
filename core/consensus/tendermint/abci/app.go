@@ -11,10 +11,8 @@ import (
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
-	"github.com/hyperledger/burrow/logging"
-	"github.com/hyperledger/burrow/logging/structure"
+	log "github.com/inconshreveable/log15"
 	"github.com/pkg/errors"
-
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/common"
 )
@@ -29,18 +27,15 @@ type App struct {
 	mempoolLocker sync.Locker
 	// We need to cache these from BeginBlock for when we need actually need it in Commit
 	block *abciTypes.RequestBeginBlock
-	// Logging
-	logger *logging.Logger
 }
 
 var _ abciTypes.Application = &App{}
 
-func NewApp(bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter, logger *logging.Logger) *App {
+func NewApp(bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter) *App {
 	return &App{
 		bc:        bc,
 		checker:   checker,
 		committer: committer,
-		logger:    logger.WithScope("abci.NewApp").With(structure.ComponentKey, "ABCI_App"),
 	}
 }
 
@@ -75,9 +70,9 @@ func (app *App) Query(reqQuery abciTypes.RequestQuery) (respQuery abciTypes.Resp
 func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 	txEnv := new(txs.Envelope)
 	if err := txEnv.Decode(txBytes); err != nil {
-		app.logger.TraceMsg("CheckTx decoding error",
-			"tag", "CheckTx",
-			structure.ErrorKey, err)
+		log.Error("CheckTx decoding error",
+			"error", err)
+
 		return abciTypes.ResponseCheckTx{
 			Code: codes.EncodingErrorCode,
 			Log:  fmt.Sprintf("Encoding error: %s", err),
@@ -86,10 +81,10 @@ func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 	txRec := txEnv.GenerateReceipt()
 	err := app.checker.Execute(txEnv, txRec)
 	if err != nil {
-		app.logger.TraceMsg("CheckTx execution error",
-			structure.ErrorKey, err,
-			"tag", "CheckTx",
+		log.Error("CheckTx execution error",
+			"error", err,
 			"tx_hash", txRec.Hash)
+
 		return abciTypes.ResponseCheckTx{
 			Code: codes.EncodingErrorCode,
 			Log:  fmt.Sprintf("CheckTx could not execute transaction: %s, error: %v", txEnv, err),
@@ -103,8 +98,7 @@ func (app *App) CheckTx(txBytes []byte) abciTypes.ResponseCheckTx {
 			Log:  fmt.Sprintf("CheckTx could not serialize receipt: %s", err),
 		}
 	}
-	app.logger.TraceMsg("CheckTx success",
-		"tag", "CheckTx",
+	log.Debug("CheckTx success",
 		"tx_hash", txRec.Hash)
 
 	return abciTypes.ResponseCheckTx{
@@ -145,9 +139,8 @@ func (app *App) BeginBlock(block abciTypes.RequestBeginBlock) (respBeginBlock ab
 func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 	txEnv := new(txs.Envelope)
 	if err := txEnv.Decode(txBytes); err != nil {
-		app.logger.TraceMsg("DeliverTx decoding error",
-			"tag", "DeliverTx",
-			structure.ErrorKey, err)
+		log.Error("DeliverTx decoding error",
+			"error", err)
 
 		app.mempoolLocker.Unlock()
 		return abciTypes.ResponseDeliverTx{
@@ -159,10 +152,10 @@ func (app *App) DeliverTx(txBytes []byte) abciTypes.ResponseDeliverTx {
 	txRec := txEnv.GenerateReceipt()
 	txRec.Height = app.block.Header.Height
 	if err := app.committer.Execute(txEnv, txRec); err != nil {
-		app.logger.TraceMsg("DeliverTx execution error",
-			structure.ErrorKey, err,
-			"tag", "DeliverTx",
+		log.Error("DeliverTx execution error",
+			"error", err,
 			"tx_hash", txRec.Hash)
+
 		return abciTypes.ResponseDeliverTx{
 			Code: codes.TxExecutionErrorCode,
 			Log:  fmt.Sprintf("DeliverTx could not execute transaction: %s, error: %s", txEnv, err),
@@ -220,9 +213,7 @@ func (app *App) EndBlock(reqEndBlock abciTypes.RequestEndBlock) abciTypes.Respon
 }
 
 func (app *App) Commit() abciTypes.ResponseCommit {
-	app.logger.InfoMsg("Committing block",
-		"tag", "Commit",
-		structure.ScopeKey, "Commit()",
+	log.Debug("Committing block",
 		"height", app.block.Header.Height,
 		"hash", app.block.Hash,
 		"txs", app.block.Header.NumTxs,
@@ -289,11 +280,6 @@ func (app *App) Commit() abciTypes.ResponseCommit {
 
 	// Perform a sanity check our block height
 	if app.bc.LastBlockHeight() != uint64(app.block.Header.Height) {
-		app.logger.InfoMsg("gallactic block height disagrees with Tendermint block height",
-			structure.ScopeKey, "Commit()",
-			"gallactic_height", app.bc.LastBlockHeight(),
-			"tendermint_height", app.block.Header.Height)
-
 		panic(fmt.Errorf("gallactic has recorded a block height of %v, "+
 			"but Tendermint reports a block height of %v, and the two should agree",
 			app.bc.LastBlockHeight(), app.block.Header.Height))

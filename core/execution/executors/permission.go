@@ -9,14 +9,11 @@ import (
 	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
-
-	"github.com/hyperledger/burrow/logging"
 )
 
 type PermissionContext struct {
 	Committing bool
 	Cache      *state.Cache
-	Logger     *logging.Logger
 }
 
 func (ctx *PermissionContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {

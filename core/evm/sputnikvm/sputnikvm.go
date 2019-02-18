@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/gallactic/gallactic/core/account"
-
 	ETCCommon "github.com/ethereumproject/go-ethereum/common"
+	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
+	log "github.com/inconshreveable/log15"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 )
 
 func Execute(adapter Adapter) Output {
-	fmt.Printf("SputnikVM called.\n")
+	log.Debug("SputnikVM called", "tx_hash", adapter.GetTxHash())
 
 	var out Output
 

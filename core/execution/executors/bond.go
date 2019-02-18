@@ -8,15 +8,12 @@ import (
 	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
-
-	"github.com/hyperledger/burrow/logging"
 )
 
 type BondContext struct {
 	Committing bool
 	BC         *blockchain.Blockchain
 	Cache      *state.Cache
-	Logger     *logging.Logger
 }
 
 func (ctx *BondContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {

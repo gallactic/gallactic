@@ -31,8 +31,6 @@ import (
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
-	"github.com/hyperledger/burrow/logging"
-	"github.com/hyperledger/burrow/logging/structure"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
@@ -46,19 +44,17 @@ type Service struct {
 	state      *state.State
 	blockchain *blockchain.Blockchain
 	transactor *execution.Transactor
-	logger     *logging.Logger
 	nodeView   *query.NodeView
 }
 
 func NewService(ctx context.Context, blockchain *blockchain.Blockchain,
-	transactor *execution.Transactor, nView *query.NodeView, logger *logging.Logger) *Service {
+	transactor *execution.Transactor, nView *query.NodeView) *Service {
 
 	return &Service{
 		ctx:        ctx,
 		state:      blockchain.State(),
 		blockchain: blockchain,
 		transactor: transactor,
-		logger:     logger.With(structure.ComponentKey, "Service"),
 		nodeView:   nView,
 	}
 }

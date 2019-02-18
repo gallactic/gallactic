@@ -8,8 +8,6 @@ import (
 	e "github.com/gallactic/gallactic/errors"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
-
-	"github.com/hyperledger/burrow/logging"
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 )
 
@@ -17,7 +15,6 @@ type SortitionContext struct {
 	Committing bool
 	BC         *blockchain.Blockchain
 	Cache      *state.Cache
-	Logger     *logging.Logger
 }
 
 func (ctx *SortitionContext) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
