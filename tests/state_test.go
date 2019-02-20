@@ -14,7 +14,7 @@ import (
 )
 
 func loadState(t *testing.T, hash []byte) *state.State {
-	s, err := state.LoadState(tDB, hash, tLogger)
+	s, err := state.LoadState(tDB, hash)
 	require.NoError(t, err)
 	require.NotNil(t, s)
 
@@ -64,7 +64,7 @@ func getValidator(t *testing.T, addr crypto.Address) *validator.Validator {
 
 func TestState_LoadingWrongHash(t *testing.T) {
 	db := dbm.NewMemDB()
-	s0, err := state.LoadState(db, []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}, tLogger)
+	s0, err := state.LoadState(db, []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0})
 	require.Error(t, err)
 	require.Nil(t, s0)
 }

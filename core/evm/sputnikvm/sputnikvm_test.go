@@ -12,7 +12,6 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/hyperledger/burrow/logging"
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
@@ -32,7 +31,7 @@ func TestSputnikVM(t *testing.T) {
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
 	gen := proposal.MakeGenesis("bar", time.Now().Truncate(0), gAcc, nil, nil, vals)
 	db := dbm.NewMemDB()
-	bc, err := blockchain.LoadOrNewBlockchain(db, gen, nil, logging.NewNoopLogger())
+	bc, err := blockchain.LoadOrNewBlockchain(db, gen, nil)
 
 	require.NoError(t, err)
 
@@ -41,7 +40,7 @@ func TestSputnikVM(t *testing.T) {
 	caller.AddToBalance(1000000)
 	caller.SetCode([]byte{})
 
-	st := state.NewState(db, logging.NewNoopLogger())
+	st := state.NewState(db)
 	cache := state.NewCache(st)
 	cache.UpdateAccount(caller)
 

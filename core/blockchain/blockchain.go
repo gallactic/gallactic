@@ -11,7 +11,7 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/hyperledger/burrow/logging"
+	log "github.com/inconshreveable/log15"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
@@ -25,7 +25,6 @@ type Blockchain struct {
 	data         *blockchainData
 	validatorSet *validator.ValidatorSet
 	sortition    *sortition.Sortition
-	logger       *logging.Logger
 }
 
 type blockchainData struct {
@@ -38,11 +37,11 @@ type blockchainData struct {
 	MaximumPower    int               `json:"maximumPower"`
 }
 
-func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, myVal crypto.Signer, logger *logging.Logger) (*Blockchain, error) {
-	logger = logger.WithScope("LoadOrNewBlockchain")
-	logger.InfoMsg("Trying to load blockchain state from database",
-		"database_key", stateKey)
-	bc, err := loadBlockchain(db, logger)
+func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, myVal crypto.Signer) (*Blockchain, error) {
+
+	log.Info("Trying to load blockchain state from database")
+
+	bc, err := loadBlockchain(db)
 	if err != nil {
 		return nil, fmt.Errorf("error loading blockchain state from database: %v", err)
 	}
@@ -56,16 +55,13 @@ func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, myVal crypto.Signer, 
 		}
 	} else {
 
-		logger.InfoMsg("No existing blockchain state found in database, making new blockchain")
+		log.Info("No existing blockchain state found in database, making new blockchain")
 
-		bc, err = newBlockchain(db, gen, logger)
+		bc, err = newBlockchain(db, gen)
 		if err != nil {
 			return nil, fmt.Errorf("error creating blockchain from genesis doc: %v", err)
 		}
 	}
-
-	/// set logger
-	bc.logger = logger
 
 	if err := bc.loadValidatorSet(); err != nil {
 		return nil, err
@@ -79,7 +75,7 @@ func LoadOrNewBlockchain(db dbm.DB, gen *proposal.Genesis, myVal crypto.Signer, 
 }
 
 // Pointer to blockchain state initialized from genesis
-func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*Blockchain, error) {
+func newBlockchain(db dbm.DB, gen *proposal.Genesis) (*Blockchain, error) {
 	if len(gen.Validators()) == 0 {
 		return nil, fmt.Errorf("The genesis file has no validators")
 	}
@@ -88,7 +84,7 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 		return nil, fmt.Errorf("Genesis time didn't set inside genesis doc")
 	}
 
-	st := state.NewState(db, logger)
+	st := state.NewState(db)
 
 	// Update state for genesis accounts
 	err := st.UpdateGenesisState(gen)
@@ -118,7 +114,7 @@ func newBlockchain(db dbm.DB, gen *proposal.Genesis, logger *logging.Logger) (*B
 	return bc, nil
 }
 
-func loadBlockchain(db dbm.DB, logger *logging.Logger) (*Blockchain, error) {
+func loadBlockchain(db dbm.DB) (*Blockchain, error) {
 	buf := db.Get(stateKey)
 	if len(buf) == 0 {
 		return nil, nil
@@ -130,7 +126,7 @@ func loadBlockchain(db dbm.DB, logger *logging.Logger) (*Blockchain, error) {
 		return nil, err
 	}
 
-	st, err := state.LoadState(db, data.LastAppHash, logger)
+	st, err := state.LoadState(db, data.LastAppHash)
 	if err != nil {
 		return nil, fmt.Errorf("could not load persisted execution state at hash 0x%X: %v", data.LastAppHash, err)
 	}
@@ -212,12 +208,12 @@ func (bc *Blockchain) loadValidatorSet() error {
 		valMap[addr] = val
 	}
 
-	bc.validatorSet = validator.NewValidatorSet(valMap, bc.data.MaximumPower, bc.logger)
+	bc.validatorSet = validator.NewValidatorSet(valMap, bc.data.MaximumPower)
 	return nil
 }
 
 func (bc *Blockchain) createSortition(myVal crypto.Signer) error {
-	bc.sortition = sortition.NewSortition(bc.state, myVal, bc.chainID, bc.logger)
+	bc.sortition = sortition.NewSortition(bc.state, myVal, bc.chainID)
 	return nil
 }
 

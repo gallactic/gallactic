@@ -6,8 +6,7 @@ import (
 	"github.com/gallactic/gallactic/crypto"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
-
-	"github.com/hyperledger/burrow/logging"
+	log "github.com/inconshreveable/log15"
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 )
 
@@ -18,27 +17,27 @@ type Sortition struct {
 	vrf          VRF
 	chainID      string
 	sortitionFee uint64
-	logger       *logging.Logger
+	logger       log.Logger
 }
 
-func NewSortition(state *state.State, signer crypto.Signer, chainID string, logger *logging.Logger) *Sortition {
+func NewSortition(state *state.State, signer crypto.Signer, chainID string) *Sortition {
 	return &Sortition{
 		signer:  signer,
 		state:   state,
 		chainID: chainID,
 		vrf:     NewVRF(signer),
-		logger:  logger,
 	}
 }
 
 // Evaluate return the vrf for self choosing to be a validator
 func (s *Sortition) Evaluate(blockHeight uint64, blockHash []byte) {
-	totalStake, valStake := s.getTotalStake(s.signer.Address())
+	addr := s.signer.Address()
+	totalStake, valStake := s.getTotalStake(addr)
 	s.vrf.SetMax(totalStake)
 	index, proof := s.vrf.Evaluate(blockHash)
 
 	if index < valStake {
-		s.logger.InfoMsg("This validator is chosen to be in set at height %v", blockHeight)
+		log.Info("This validator is chosen to be in set", "height", blockHeight, "address", addr, "stake", valStake)
 
 		/// TODO: better way????
 		val, err := s.state.GetValidator(s.Address())
@@ -79,8 +78,8 @@ func (s *Sortition) Evaluate(blockHeight uint64, blockHash []byte) {
 }
 
 func (s *Sortition) Verify(blockHash []byte, pb crypto.PublicKey, index uint64, proof []byte) bool {
-
-	totalStake, valStake := s.getTotalStake(pb.ValidatorAddress())
+	addr := pb.ValidatorAddress()
+	totalStake, valStake := s.getTotalStake(addr)
 
 	// Note: totalStake can be changed by time on verifying
 	// So we calculate the index again
@@ -88,6 +87,7 @@ func (s *Sortition) Verify(blockHash []byte, pb crypto.PublicKey, index uint64, 
 
 	index2, result := s.vrf.Verify(blockHash, pb, proof)
 	if !result {
+		log.Warn("Unable to verify a sortition tx", "blockhash", blockHash, "Address", addr)
 		return false
 	}
 

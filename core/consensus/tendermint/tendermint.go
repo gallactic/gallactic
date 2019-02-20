@@ -9,8 +9,6 @@ import (
 	tmLogger "github.com/gallactic/gallactic/core/consensus/tendermint/logger"
 	"github.com/gallactic/gallactic/core/execution"
 	"github.com/gallactic/gallactic/core/proposal"
-	"github.com/hyperledger/burrow/logging"
-	"github.com/hyperledger/burrow/logging/structure"
 	tmConfig "github.com/tendermint/tendermint/config"
 	tmEd25519 "github.com/tendermint/tendermint/crypto/ed25519"
 	dbm "github.com/tendermint/tendermint/libs/db"
@@ -46,8 +44,7 @@ func (n *Node) Close() {
 }
 
 func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tmTypes.GenesisDoc,
-	bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter,
-	logger *logging.Logger) (*Node, error) {
+	bc *blockchain.Blockchain, checker execution.BatchExecutor, committer execution.BatchCommitter) (*Node, error) {
 
 	err := common.Mkdir(path.Dir(conf.NodeKeyFile()))
 	if err != nil {
@@ -60,9 +57,9 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 		PrometheusListenAddr: "",
 	})
 
-	tmLogger := tmLogger.NewLogger(logger.WithPrefix(structure.ComponentKey, "Tendermint").With(structure.ScopeKey, "tendermint.NewNode"))
+	tmLogger := tmLogger.NewLogger().With("module", "Tendermint")
 	n := &Node{}
-	app := abci.NewApp(bc, checker, committer, logger)
+	app := abci.NewApp(bc, checker, committer)
 	client := proxy.NewLocalClientCreator(app)
 	nodeKey, _ := p2p.LoadOrGenNodeKey(conf.NodeKeyFile())
 	n.Node, err = node.NewNode(conf, privValidator, nodeKey, client,

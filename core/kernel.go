@@ -24,17 +24,13 @@ import (
 	"github.com/gallactic/gallactic/rpc"
 	"github.com/gallactic/gallactic/rpc/grpc"
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
-	kitlog "github.com/go-kit/kit/log"
-	"github.com/hyperledger/burrow/logging"
-	"github.com/hyperledger/burrow/logging/lifecycle"
-	"github.com/hyperledger/burrow/logging/structure"
+	log "github.com/inconshreveable/log15"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
 const (
 	cooldownMilliseconds              = 1000
 	serverShutdownTimeoutMilliseconds = 1000
-	loggingCallerDepth                = 5
 )
 
 // Kernel is the root structure of Gallactic
@@ -42,7 +38,6 @@ type Kernel struct {
 	// Expose these public-facing interfaces to allow programmatic extension of the Kernel by other projects
 	st             *state.State
 	bc             *blockchain.Blockchain
-	logger         *logging.Logger
 	launchers      []process.Launcher
 	processes      map[string]process.Process
 	shutdownNotify chan struct{}
@@ -50,44 +45,35 @@ type Kernel struct {
 }
 
 func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, myVal crypto.Signer) (*Kernel, error) {
-	if gen == nil {
-		return nil, fmt.Errorf("no Genesis defined, cannot make Kernel")
-	}
-	if conf == nil {
-		return nil, fmt.Errorf("no Config defined, cannot make Kernel")
-	}
+	handler := log.MultiHandler(
+		log.StreamHandler(os.Stderr, log.TerminalFormat()),
+		log.LvlFilterHandler(
+			log.LvlError,
+			log.Must.FileHandler("errors.log", log.JsonFormat())))
+	log.Root().SetHandler(handler)
 
-	logger, err := lifecycle.NewLoggerFromLoggingConfig(conf.Logging)
-	if err != nil {
-		return nil, fmt.Errorf("could not generate logger from logging config: %v", err)
-	}
-
-	logger = logger.WithScope("NewKernel()").With(structure.TimeKey, kitlog.DefaultTimestampUTC)
-	tmLogger := logger.With(structure.CallerKey, kitlog.Caller(loggingCallerDepth+1))
-	logger = logger.WithInfo(structure.CallerKey, kitlog.Caller(loggingCallerDepth))
 	stateDB := dbm.NewDB("gallactic_state", dbm.GoLevelDBBackend, conf.Tendermint.DBDir())
-
-	bc, err := blockchain.LoadOrNewBlockchain(stateDB, gen, myVal, logger)
+	bc, err := blockchain.LoadOrNewBlockchain(stateDB, gen, myVal)
 	if err != nil {
 		return nil, fmt.Errorf("error creating or loading blockchain state: %v", err)
 	}
-	eventBus := events.NewEventBus(logger)
+	eventBus := events.NewEventBus()
 	if err := eventBus.Start(); err != nil {
 		return nil, err
 	}
 
 	privVal := tmv.NewPrivValidatorMemory(myVal)
-	checker := execution.NewBatchChecker(bc, logger)
-	committer := execution.NewBatchCommitter(bc, eventBus, logger)
+	checker := execution.NewBatchChecker(bc)
+	committer := execution.NewBatchCommitter(bc, eventBus)
 	tmGenesis := tendermint.DeriveGenesisDoc(gen)
 
-	tmNode, err := tendermint.NewNode(conf.Tendermint, privVal, tmGenesis, bc, checker, committer, tmLogger)
+	tmNode, err := tendermint.NewNode(conf.Tendermint, privVal, tmGenesis, bc, checker, committer)
 	if err != nil {
 		return nil, err
 	}
 
-	transactor := execution.NewTransactor(tmNode.MempoolReactor().Mempool.CheckTx, eventBus, logger)
-	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode), logger)
+	transactor := execution.NewTransactor(tmNode.MempoolReactor().Mempool.CheckTx, eventBus)
+	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode))
 
 	launchers := []process.Launcher{
 		{
@@ -124,7 +110,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 					case <-ctx.Done():
 						return ctx.Err()
 					case <-tmNode.Quit():
-						logger.InfoMsg("Tendermint Node has quit, closing DB connections...")
+						log.Info("Tendermint Node has quit, closing DB connections...")
 						return nil
 					}
 					return err
@@ -136,8 +122,8 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			Enabled: conf.RPC.Enabled,
 			Launch: func() (process.Process, error) {
 				codec := rpc.NewTCodec()
-				jsonServer := rpc.NewJSONServer(rpc.NewJSONService(codec, service, logger))
-				serveProcess, err := rpc.NewServeProcess(conf.RPC.Server, logger, jsonServer)
+				jsonServer := rpc.NewJSONServer(rpc.NewJSONService(codec, service))
+				serveProcess, err := rpc.NewServeProcess(conf.RPC.Server, jsonServer)
 				if err != nil {
 					return nil, err
 				}
@@ -152,7 +138,7 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			Name:    "GRPC",
 			Enabled: conf.GRPC.Enabled,
 			Launch: func() (process.Process, error) {
-				grpcServer := grpc.NewGRPCServer(logger)
+				grpcServer := grpc.NewGRPCServer()
 				/// TODO: ‌better design for kernel. They should be encapsulated
 				pb.RegisterBlockChainServer(grpcServer.Server, grpc.NewBlockchainService(bc, query.NewNodeView(tmNode)))
 				pb.RegisterNetworkServer(grpcServer.Server, grpc.NewNetworkService(bc, query.NewNodeView(tmNode)))
@@ -176,7 +162,6 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	return &Kernel{
 		launchers:      launchers,
 		bc:             bc,
-		logger:         logger,
 		processes:      make(map[string]process.Process),
 		shutdownNotify: make(chan struct{}),
 	}, nil
@@ -211,7 +196,7 @@ func (kern *Kernel) supervise() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	sig := <-signals
-	kern.logger.InfoMsg(fmt.Sprintf("Caught %v signal so shutting down", sig),
+	log.Info(fmt.Sprintf("Caught %v signal so shutting down", sig),
 		"signal", sig.String())
 	kern.Shutdown(context.Background())
 }
@@ -219,9 +204,6 @@ func (kern *Kernel) supervise() {
 // Stop the kernel allowing for a graceful shutdown of components in order
 func (kern *Kernel) Shutdown(ctx context.Context) (err error) {
 	kern.shutdownOnce.Do(func() {
-		logger := kern.logger.WithScope("Shutdown")
-		logger.InfoMsg("Attempting graceful shutdown...")
-		logger.InfoMsg("Shutting down servers")
 		ctx, cancel := context.WithTimeout(ctx, serverShutdownTimeoutMilliseconds*time.Millisecond)
 		defer cancel()
 		// Shutdown servers in reverse order to boot
@@ -229,21 +211,19 @@ func (kern *Kernel) Shutdown(ctx context.Context) (err error) {
 			name := kern.launchers[i].Name
 			srvr, ok := kern.processes[name]
 			if ok {
-				logger.InfoMsg("Shutting down server", "server_name", name)
+				log.Info("Shutting down server", "server_name", name)
 				sErr := srvr.Shutdown(ctx)
 				if sErr != nil {
-					logger.InfoMsg("Failed to shutdown server",
+					log.Error("Failed to shutdown server",
 						"server_name", name,
-						structure.ErrorKey, sErr)
+						"error", sErr)
 					if err == nil {
 						err = sErr
 					}
 				}
 			}
 		}
-		logger.InfoMsg("Shutdown complete")
-		structure.Sync(kern.logger.Info)
-		structure.Sync(kern.logger.Trace)
+
 		// We don't want to wait for them, but yielding for a cooldown Let other goroutines flush
 		// potentially interesting final output (e.g. log messages)
 		time.Sleep(time.Millisecond * cooldownMilliseconds)

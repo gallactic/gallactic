@@ -14,8 +14,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
-	"github.com/hyperledger/burrow/logging"
-	"github.com/hyperledger/burrow/logging/structure"
+	log "github.com/inconshreveable/log15"
 )
 
 type Executor interface {
@@ -46,7 +45,6 @@ type BatchCommitter interface {
 
 type executor struct {
 	sync.RWMutex
-	logger          *logging.Logger
 	bc              *blockchain.Blockchain
 	cache           *state.Cache
 	eventBus        events.EventBus
@@ -57,56 +55,49 @@ type executor struct {
 var _ BatchExecutor = (*executor)(nil)
 
 // Wraps a cache of what is variously known as the 'check cache' and 'mempool'
-func NewBatchChecker(bc *blockchain.Blockchain, logger *logging.Logger) BatchExecutor {
-	return newExecutor("CheckCache", false, bc, events.NewNopeEventBus(), logger.WithScope("NewBatchExecutor"))
+func NewBatchChecker(bc *blockchain.Blockchain) BatchExecutor {
+	return newExecutor("CheckCache", false, bc, events.NewNopeEventBus())
 }
 
-func NewBatchCommitter(bc *blockchain.Blockchain, eventBus events.EventBus, logger *logging.Logger) BatchCommitter {
-	return newExecutor("CommitCache", true, bc, eventBus, logger.WithScope("NewBatchCommitter"))
+func NewBatchCommitter(bc *blockchain.Blockchain, eventBus events.EventBus) BatchCommitter {
+	return newExecutor("CommitCache", true, bc, eventBus)
 }
 
-func newExecutor(name string, committing bool, bc *blockchain.Blockchain, eventBus events.EventBus, logger *logging.Logger) *executor {
+func newExecutor(name string, committing bool, bc *blockchain.Blockchain, eventBus events.EventBus) *executor {
 
 	exe := &executor{
 		bc:       bc,
 		eventBus: eventBus,
 		cache:    state.NewCache(bc.State(), state.Name(name)),
-		logger:   logger.With(structure.ComponentKey, "Executor"),
 	}
 
 	exe.txExecutors = map[tx.Type]Executor{
 		tx.TypeSend: &executors.SendContext{
 			Committing: committing,
 			Cache:      exe.cache,
-			Logger:     exe.logger,
 		},
 		tx.TypeCall: &executors.CallContext{
 			Committing: committing,
 			BC:         bc,
 			Cache:      exe.cache,
-			Logger:     exe.logger,
 		},
 		tx.TypePermissions: &executors.PermissionContext{
 			Committing: committing,
 			Cache:      exe.cache,
-			Logger:     exe.logger,
 		},
 		tx.TypeBond: &executors.BondContext{
 			Committing: committing,
 			BC:         bc,
 			Cache:      exe.cache,
-			Logger:     exe.logger,
 		},
 		tx.TypeUnbond: &executors.UnbondContext{
 			Committing: committing,
 			Cache:      exe.cache,
-			Logger:     exe.logger,
 		},
 		tx.TypeSortition: &executors.SortitionContext{
 			Committing: committing,
 			BC:         bc,
 			Cache:      exe.cache,
-			Logger:     exe.logger,
 		},
 	}
 	return exe
@@ -175,6 +166,6 @@ func (exe *executor) Fees() uint64 {
 func (exe *executor) fireEvents(receipt *txs.Receipt) {
 	err := exe.eventBus.Publish(receipt, events.TagsForTx(receipt.Hash))
 	if err != nil {
-		exe.logger.InfoMsg("Error publishing Event: %v", err)
+		log.Error("Error publishing Event", "error", err, "tx_hash", receipt.Hash)
 	}
 }

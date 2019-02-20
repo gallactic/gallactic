@@ -5,14 +5,13 @@ import (
 
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/hyperledger/burrow/logging"
 	"github.com/stretchr/testify/assert"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
 
 func newState() *State {
 	db := dbm.NewMemDB()
-	return NewState(db, logging.NewNoopLogger())
+	return NewState(db)
 }
 
 func TestStateChanges(t *testing.T) {

@@ -25,6 +25,7 @@ type GallacticAdapter struct {
 	Amount     uint64
 	Data       []byte
 	Nonce      uint64
+	TxHash     binary.HexBytes
 }
 
 func (ga *GallacticAdapter) calleeAddress() *common.Address {
@@ -61,6 +62,10 @@ func (ga *GallacticAdapter) GetData() []byte {
 
 func (ga *GallacticAdapter) GetNonce() *big.Int {
 	return bigint(ga.Nonce)
+}
+
+func (ga *GallacticAdapter) GetTxHash() binary.HexBytes {
+	return ga.TxHash
 }
 
 func (ga *GallacticAdapter) createAccount(address common.Address) *account.Account {
@@ -138,6 +143,10 @@ func (ga *GallacticAdapter) setCode(address common.Address, code []byte) {
 	acc := ga.getAccount(address)
 	acc.SetCode(code)
 	ga.Cache.UpdateAccount(acc)
+}
+
+func (ga *GallacticAdapter) setTxHash(h binary.HexBytes) {
+	ga.TxHash = h
 }
 
 func (ga *GallacticAdapter) getAccount(ethAddr common.Address) *account.Account {

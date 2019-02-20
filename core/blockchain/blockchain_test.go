@@ -8,7 +8,6 @@ import (
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/hyperledger/burrow/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tendermint/libs/db"
@@ -24,7 +23,7 @@ func TestPersistedState(t *testing.T) {
 	gAcc, _ := account.NewAccount(crypto.GlobalAddress)
 	gen := proposal.MakeGenesis("bar", time.Now().UTC().Truncate(0), gAcc, nil, nil, vals)
 	db := dbm.NewMemDB()
-	bc1, err := LoadOrNewBlockchain(db, gen, nil, logging.NewNoopLogger())
+	bc1, err := LoadOrNewBlockchain(db, gen, nil)
 	require.NoError(t, err)
 
 	hash1, err := bc1.CommitBlock(time.Now().UTC().Truncate(0), []byte{1, 2})
@@ -45,7 +44,7 @@ func TestPersistedState(t *testing.T) {
 	bc1.save() /// save last state
 
 	/// load blockchain
-	bc2, err2 := LoadOrNewBlockchain(db, gen, nil, logging.NewNoopLogger())
+	bc2, err2 := LoadOrNewBlockchain(db, gen, nil)
 	require.NoError(t, err2)
 
 	assert.Equal(t, bc1.data, bc2.data)
