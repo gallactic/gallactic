@@ -50,25 +50,27 @@ type executor struct {
 	eventBus        events.EventBus
 	txExecutors     map[tx.Type]Executor
 	accumulatedFees uint64
+	name            string
 }
 
 var _ BatchExecutor = (*executor)(nil)
 
 // Wraps a cache of what is variously known as the 'check cache' and 'mempool'
 func NewBatchChecker(bc *blockchain.Blockchain) BatchExecutor {
-	return newExecutor("CheckCache", false, bc, events.NewNopeEventBus())
+	return newExecutor("TxCheck", false, bc, events.NewNopeEventBus())
 }
 
 func NewBatchCommitter(bc *blockchain.Blockchain, eventBus events.EventBus) BatchCommitter {
-	return newExecutor("CommitCache", true, bc, eventBus)
+	return newExecutor("TxCommit", true, bc, eventBus)
 }
 
 func newExecutor(name string, committing bool, bc *blockchain.Blockchain, eventBus events.EventBus) *executor {
 
 	exe := &executor{
+		name:     name,
 		bc:       bc,
 		eventBus: eventBus,
-		cache:    state.NewCache(bc.State(), state.Name(name)),
+		cache:    state.NewCache(bc.State()),
 	}
 
 	exe.txExecutors = map[tx.Type]Executor{
@@ -132,6 +134,11 @@ func (exe *executor) Execute(txEnv *txs.Envelope, txRec *txs.Receipt) error {
 	}
 
 	if err = executor.Execute(txEnv, txRec); err != nil {
+		log.Error("Transaction execution failed",
+			"error", err,
+			"executor", exe.name,
+			"env", txEnv.String())
+
 		txRec.Status = txs.Failed
 	}
 
