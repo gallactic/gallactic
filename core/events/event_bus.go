@@ -40,7 +40,7 @@ func NewEventBusWithBufferCapacity(cap int) EventBus {
 	b := &eventBus{pubsub: pubsub}
 	b.BaseService = *tmCommon.NewBaseService(nil, "EventBus", b)
 	l := tmLogger.NewLogger()
-	b.pubsub.SetLogger(l.With("module", "pubsub"))
+	b.pubsub.SetLogger(l)
 	return b
 }
 

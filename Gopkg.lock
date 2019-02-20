@@ -463,7 +463,7 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:99690f69428313bff6b61d8a1692623d038f748ea64c6f42995c4c44950f189f"
+  digest = "1:e1a99b76e8c625fe6dd333c33fb09a8d3b27319ebe65b5d71d7ac75d1469c7d1"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -485,6 +485,7 @@
     "crypto/tmhash",
     "evidence",
     "libs/autofile",
+    "libs/cli/flags",
     "libs/clist",
     "libs/common",
     "libs/db",
@@ -750,6 +751,7 @@
     "github.com/tendermint/tendermint/consensus/types",
     "github.com/tendermint/tendermint/crypto",
     "github.com/tendermint/tendermint/crypto/ed25519",
+    "github.com/tendermint/tendermint/libs/cli/flags",
     "github.com/tendermint/tendermint/libs/common",
     "github.com/tendermint/tendermint/libs/db",
     "github.com/tendermint/tendermint/libs/log",

@@ -57,7 +57,8 @@ func NewNode(conf *tmConfig.Config, privValidator tmTypes.PrivValidator, gen *tm
 		PrometheusListenAddr: "",
 	})
 
-	tmLogger := tmLogger.NewLogger().With("module", "Tendermint")
+	tmLogger := tmLogger.NewLoggerF(conf.LogLevel).With("module", "Tendermint")
+
 	n := &Node{}
 	app := abci.NewApp(bc, checker, committer)
 	client := proxy.NewLocalClientCreator(app)
