@@ -215,11 +215,8 @@ func (app *App) EndBlock(reqEndBlock abciTypes.RequestEndBlock) abciTypes.Respon
 func (app *App) Commit() abciTypes.ResponseCommit {
 	log.Debug("Committing block",
 		"height", app.block.Header.Height,
-		"hash", app.block.Hash,
-		"txs", app.block.Header.NumTxs,
-		"block_time", app.block.Header.Time, // [CSK] this sends a fairly non-sensical number; should be human readable
-		"last_block_time", app.bc.LastBlockTime(),
-		"last_block_hash", app.bc.LastBlockHash())
+		"hash", fmt.Sprintf("%X", app.block.Hash),
+		"txs", app.block.Header.NumTxs)
 
 	// Lock the checker while we reset it and possibly while recheckTxs replays transactions
 	app.checker.Lock()

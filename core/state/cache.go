@@ -52,23 +52,13 @@ func lessFn(l, r interface{}) bool {
 func lessFn2(l, r interface{}) bool {
 	return bytes.Compare(l.(binary.Word256).Bytes(), r.(binary.Word256).Bytes()) < 0
 }
-func NewCache(state *State, options ...CacheOption) *Cache {
+func NewCache(state *State) *Cache {
 	ch := &Cache{
 		state:      state,
 		valChanges: orderedmap.NewMap(lessFn),
 		accChanges: orderedmap.NewMap(lessFn),
 	}
-	for _, option := range options {
-		option(ch)
-	}
-
 	return ch
-}
-
-func Name(name string) CacheOption {
-	return func(c *Cache) {
-		c.name = name
-	}
 }
 
 func (c *Cache) Reset() {
