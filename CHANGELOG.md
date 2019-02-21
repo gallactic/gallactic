@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0
+
+- Introducing OrderedMap package to create deterministic state cache.
+- Storages will be saved in order after executing by SputnikVM.
+- Any changes in accounts or validators will be sort by their address.
+- Update Tendermint to version 0.30.1
+- Enable CORS for grpc-gateway endpoints
+- Easy logging
+- Add some logs on tx execution failure
+- Introducing broadcast tx async and sync methods in gRPC module
+- Update NetworkInfo and PeersInfo methods
+
 ## 0.6.0
 
 - Update Tendermint to version 0.30.0

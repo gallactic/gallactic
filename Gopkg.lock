@@ -68,8 +68,8 @@
     "rpc",
   ]
   pruneopts = "NUT"
-  revision = "7fa3509e2eaf1a4ebc12344590e5699406690f15"
-  version = "v1.8.22"
+  revision = "c942700427557e3ff6de3aaf6b916e2f056c1ec2"
+  version = "v1.8.23"
 
 [[projects]]
   digest = "1:77acb9aff98e5dc372a28ac50ae62610ea5a4e627fa18084812e2907d04f0de8"
@@ -173,12 +173,12 @@
   version = "v1.2.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:7f114b78210bf5b75f307fc97cff293633c835bab1e0ea8a744a44b39c042dfe"
   name = "github.com/golang/snappy"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
+  revision = "2a8bb927dd31d8daada140a5d09578521ce5c36a"
+  version = "v0.0.1"
 
 [[projects]]
   branch = "master"
@@ -387,16 +387,17 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4487583fed075f4eeb10f6b91bad992fff84a27a6f6bdabc20f37b31694e69ee"
+  digest = "1:0a2e604afa3cbf53a1ddade2f240ee8472eded98856dd8c7cfbfea392ddbbfc7"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
     "internal/util",
+    "iostats",
     "nfs",
     "xfs",
   ]
   pruneopts = "NUT"
-  revision = "f8d8b3f739bd91a7c0462cb55235ef63c79c9abc"
+  revision = "e4d4a2206da023361ed100d85c5f2cf9c8364e9f"
 
 [[projects]]
   digest = "1:f250ca51e5b9215bc2df18f92060a9a835e9f85ab18ebbba0e1a6ef1f8fcdbfe"
@@ -463,7 +464,7 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:e1a99b76e8c625fe6dd333c33fb09a8d3b27319ebe65b5d71d7ac75d1469c7d1"
+  digest = "1:972f8f8c0d2e4e99270d8dd7b85ed9383e2727bf243327c5471d998f111d8fff"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -516,8 +517,8 @@
     "version",
   ]
   pruneopts = "NUT"
-  revision = "28d75ec8016b7fb043735cbe4c4d92ec73355de7"
-  version = "v0.30.0"
+  revision = "e0f8936455029a40287a69d5b0e7baa4d5864da1"
+  version = "v0.30.1"
 
 [[projects]]
   branch = "master"
@@ -602,7 +603,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2ba736c72ab9e445759b433e76236061d7b59246dc00ec39aca8054b99fedc8d"
+  digest = "1:32c94c31732903288d1e9f13a83c4aa4e2c49add85f7315c913f0360427bb5f0"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -611,7 +612,7 @@
     "windows/registry",
   ]
   pruneopts = "NUT"
-  revision = "d0b11bdaac8adb652bff00e49bcacf992835621a"
+  revision = "629670e5acc5b3e069375d323404911dc8fe1d19"
 
 [[projects]]
   digest = "1:e7071ed636b5422cc51c0e3a6cebc229d6c9fffc528814b519a980641422d619"
@@ -645,7 +646,7 @@
     "googleapis/rpc/status",
   ]
   pruneopts = "NUT"
-  revision = "bd968387e4aa590b3c6e4ba38ecac1ed314d43ad"
+  revision = "082222b4a5c572e33e82ee9162d1352c7cf38682"
 
 [[projects]]
   digest = "1:4837585442801f3c7ebd044a96fce852242529a73bdd96fcba2119ff74987b0b"
