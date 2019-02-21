@@ -13,16 +13,11 @@ import (
 	amino "github.com/tendermint/go-amino"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
 	"github.com/tendermint/tendermint/p2p"
-	core_types "github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
 // When using Tendermint types like Block and Vote we are forced to wrap the outer object and use amino marshalling
 var aminoCodec = amino.NewCodec()
-
-func init() {
-	core_types.RegisterAmino(aminoCodec)
-}
 
 type StorageOutput struct {
 	Key   binary.HexBytes

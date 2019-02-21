@@ -1,34 +1,32 @@
 package logger
 
 import (
-	"github.com/hyperledger/burrow/logging"
+	log "github.com/inconshreveable/log15"
+	tmFlags "github.com/tendermint/tendermint/libs/cli/flags"
 	tmLog "github.com/tendermint/tendermint/libs/log"
 )
 
 type tendermintLogger struct {
-	logger *logging.Logger
+	log.Logger
 }
 
-func NewLogger(logger *logging.Logger) *tendermintLogger {
-	return &tendermintLogger{
-		logger: logger,
+func NewLoggerF(filter string, keyvals ...interface{}) tmLog.Logger {
+	l := &tendermintLogger{
+		log.New(),
 	}
+
+	tLogger, err := tmFlags.ParseLogLevel(filter, l, "*:info")
+	if err != nil {
+		panic("Unable to start tendermint logger: " + err.Error())
+	}
+
+	return tLogger
 }
 
-func (tml *tendermintLogger) Info(msg string, keyvals ...interface{}) {
-	tml.logger.InfoMsg(msg, keyvals...)
-}
-
-func (tml *tendermintLogger) Error(msg string, keyvals ...interface{}) {
-	tml.logger.InfoMsg(msg, keyvals...)
-}
-
-func (tml *tendermintLogger) Debug(msg string, keyvals ...interface{}) {
-	tml.logger.TraceMsg(msg, keyvals...)
+func NewLogger(keyvals ...interface{}) tmLog.Logger {
+	return NewLoggerF("*:debug")
 }
 
 func (tml *tendermintLogger) With(keyvals ...interface{}) tmLog.Logger {
-	return &tendermintLogger{
-		logger: tml.logger.With(keyvals...),
-	}
+	return NewLogger(keyvals)
 }

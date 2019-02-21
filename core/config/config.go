@@ -12,7 +12,6 @@ import (
 	sputnikvmConfig "github.com/gallactic/gallactic/core/evm/sputnikvm/config"
 	rpcConfig "github.com/gallactic/gallactic/rpc/config"
 	grpcConfig "github.com/gallactic/gallactic/rpc/grpc/config"
-	logconfig "github.com/hyperledger/burrow/logging/logconfig"
 	tmConfig "github.com/tendermint/tendermint/config"
 )
 
@@ -20,7 +19,7 @@ type Config struct {
 	Tendermint *tmConfig.Config                 `toml:"Tendermint"`
 	RPC        *rpcConfig.RPCConfig             `toml:"RPC"`
 	GRPC       *grpcConfig.GRPCConfig           `toml:"GRPC"`
-	Logging    *logconfig.LoggingConfig         `toml:"Logging,omitempty"`
+	Logging    *Logging                         `toml:"Logging,omitempty"`
 	SputnikVM  *sputnikvmConfig.SputnikvmConfig `toml:"SputnikVM"`
 }
 
@@ -30,7 +29,6 @@ func DefaultConfig() *Config {
 	tmDef.P2P.ListenAddress = "tcp://0.0.0.0:46656"
 	tmDef.RPC.ListenAddress = "tcp://localhost:46657"
 	tmDef.Consensus.TimeoutCommit = 5 * tmDef.Consensus.TimeoutCommit
-	tmDef.LogLevel = "main:info,state:info,*:error,*:debug"
 	tmDef.ProxyApp = "gallactic"
 	tmDef.PrivValidatorKey = ""
 	tmDef.Genesis = ""
@@ -39,7 +37,6 @@ func DefaultConfig() *Config {
 		Tendermint: tmDef,
 		RPC:        rpcConfig.DefaultRPCConfig(),
 		GRPC:       grpcConfig.DefaultGRPCConfig(),
-		Logging:    logconfig.DefaultNodeLoggingConfig(),
 		SputnikVM:  sputnikvmConfig.DefaultSputnikvmConfig(),
 	}
 }

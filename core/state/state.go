@@ -10,7 +10,6 @@ import (
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/hyperledger/burrow/logging"
 	"github.com/tendermint/iavl"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
@@ -33,9 +32,9 @@ var (
 	storageStart, storageEnd     []byte = prefixKeyRange(storagePrefix)
 )
 
-func prefixedKey(prefix string, suffices ...[]byte) []byte {
+func prefixedKey(prefix string, suffixes ...[]byte) []byte {
 	key := []byte(prefix)
-	for _, suffix := range suffices {
+	for _, suffix := range suffixes {
 		key = append(key, suffix...)
 	}
 	return key
@@ -67,26 +66,24 @@ func validatorKey(addr crypto.Address) []byte {
 
 type State struct {
 	sync.Mutex
-	db     dbm.DB
-	tree   *iavl.MutableTree
-	logger *logging.Logger
+	db   dbm.DB
+	tree *iavl.MutableTree
 }
 
 // NewState creates a new instance of State object
-func NewState(db dbm.DB, logger *logging.Logger) *State {
+func NewState(db dbm.DB) *State {
 	tree := iavl.NewMutableTree(db, defaultCacheCapacity)
 	st := &State{
-		db:     db,
-		tree:   tree,
-		logger: logger,
+		db:   db,
+		tree: tree,
 	}
 
 	return st
 }
 
 // LoadState tries to load the execution state from DB, returns nil with no error if no state found
-func LoadState(db dbm.DB, hash []byte, logger *logging.Logger) (*State, error) {
-	st := NewState(db, logger)
+func LoadState(db dbm.DB, hash []byte) (*State, error) {
+	st := NewState(db)
 
 	// Get the version associated with this state hash
 	ver, err := st.getVersion(hash)
@@ -352,6 +349,7 @@ func (st *State) removeAccount(addr crypto.Address) error {
 	defer st.Unlock()
 
 	st.tree.Remove(accountKey(addr))
+	/// TODO: Remove all storages assigned to this account
 	return nil
 }
 
@@ -377,10 +375,7 @@ func (st *State) removeValidator(addr crypto.Address) error {
 }
 
 func (st *State) setStorage(addr crypto.Address, key, value binary.Word256) error {
-	if value == binary.Zero256 {
-		st.tree.Remove(key.Bytes())
-	} else {
-		st.tree.Set(prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes()), value.Bytes())
-	}
+	key1 := prefixedKey(storagePrefix, addr.RawBytes(), key.Bytes())
+	st.tree.Set(key1, value.Bytes())
 	return nil
 }

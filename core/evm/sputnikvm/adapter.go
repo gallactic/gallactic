@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	"github.com/ethereumproject/go-ethereum/common"
+	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/gallactic/crypto"
@@ -27,6 +28,7 @@ type Adapter interface {
 	GetAmount() *big.Int
 	GetData() []byte
 	GetNonce() *big.Int
+	GetTxHash() binary.HexBytes
 
 	setCalleeAddress(address common.Address)
 
@@ -38,13 +40,14 @@ type Adapter interface {
 	createContractAccount(address common.Address) *account.Account
 
 	updateStorage(address common.Address, key *big.Int, value *big.Int)
-	getStorage(address common.Address, key *big.Int) (*big.Int, error)
+	getStorage(address common.Address, key *big.Int) *big.Int
 
 	addBalance(address common.Address, amount uint64)
 	subBalance(address common.Address, amount uint64)
 	setBalance(address common.Address, amount uint64)
 	setNonce(address common.Address, nonce uint64)
 	setCode(address common.Address, code []byte)
+	setTxHash(h binary.HexBytes)
 
 	TimeStamp() uint64
 	LastBlockNumber() *big.Int

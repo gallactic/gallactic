@@ -5,12 +5,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net/http"
+	"strings"
+
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"google.golang.org/grpc"
-	"net/http"
-	"strings"
 )
 
 func (s *Server) StartGateway(ctx context.Context, grpcAddr, gatewayAddr string) error {
@@ -34,7 +35,10 @@ func (s *Server) StartGateway(ctx context.Context, grpcAddr, gatewayAddr string)
 
 	s.handleEntryPoint(mux, gatewayAddr)
 
-	go http.ListenAndServe(gatewayAddr, wsproxy.WebsocketProxy(mux)) /// TODO: check error with channels
+	/// TODO: Make it configurable
+	h := allowCORS(wsproxy.WebsocketProxy(mux))
+
+	go http.ListenAndServe(gatewayAddr, h) /// TODO: check error with channels
 
 	return nil
 }
@@ -63,4 +67,29 @@ func (s *Server) handleEntryPoint(mux *runtime.ServeMux, addr string) {
 
 		w.Write(buf.Bytes())
 	})
+}
+
+// allowCORS allows Cross Origin Resoruce Sharing from any origin.
+// Don't do this without consideration in production systems.
+func allowCORS(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if origin := r.Header.Get("Origin"); origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			if r.Method == "OPTIONS" && r.Header.Get("Access-Control-Request-Method") != "" {
+				preflightHandler(w, r)
+				return
+			}
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
+// preflightHandler adds the necessary headers in order to serve
+// CORS from any origin using the methods "GET", "HEAD", "POST", "PUT", "DELETE"
+// We insist, don't do this without consideration in production systems.
+func preflightHandler(w http.ResponseWriter, r *http.Request) {
+	headers := []string{"Content-Type", "Accept"}
+	w.Header().Set("Access-Control-Allow-Headers", strings.Join(headers, ","))
+	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
+	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
 }

@@ -25,6 +25,7 @@ type GallacticAdapter struct {
 	Amount     uint64
 	Data       []byte
 	Nonce      uint64
+	TxHash     binary.HexBytes
 }
 
 func (ga *GallacticAdapter) calleeAddress() *common.Address {
@@ -63,6 +64,10 @@ func (ga *GallacticAdapter) GetNonce() *big.Int {
 	return bigint(ga.Nonce)
 }
 
+func (ga *GallacticAdapter) GetTxHash() binary.HexBytes {
+	return ga.TxHash
+}
+
 func (ga *GallacticAdapter) createAccount(address common.Address) *account.Account {
 	addr := fromEthAddress(address, false)
 	acc, _ := account.NewAccount(addr)
@@ -80,7 +85,7 @@ func (ga *GallacticAdapter) updateStorage(address common.Address, key *big.Int, 
 	ga.Cache.SetStorage(addr, wKey, wValue)
 }
 
-func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*big.Int, error) {
+func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) *big.Int {
 	addr := fromEthAddress(address, true)
 	wKey := binary.LeftPadWord256(key.Bytes())
 	wValue, err := ga.Cache.GetStorage(addr, wKey)
@@ -90,7 +95,7 @@ func (ga *GallacticAdapter) getStorage(address common.Address, key *big.Int) (*b
 	} else {
 		value.SetBytes(wValue.Bytes())
 	}
-	return &value, err
+	return &value
 }
 
 func (ga *GallacticAdapter) createContractAccount(address common.Address) *account.Account {
@@ -138,6 +143,10 @@ func (ga *GallacticAdapter) setCode(address common.Address, code []byte) {
 	acc := ga.getAccount(address)
 	acc.SetCode(code)
 	ga.Cache.UpdateAccount(acc)
+}
+
+func (ga *GallacticAdapter) setTxHash(h binary.HexBytes) {
+	ga.TxHash = h
 }
 
 func (ga *GallacticAdapter) getAccount(ethAddr common.Address) *account.Account {

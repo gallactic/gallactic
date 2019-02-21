@@ -15,7 +15,7 @@
   name = "github.com/aristanetworks/goarista"
   packages = ["monotime"]
   pruneopts = "NUT"
-  revision = "2166578f34481200ec14ddd6b9c4115db36c7b62"
+  revision = "c1e4b37418775d8f5e0c0c1a68766d321b32d6ca"
 
 [[projects]]
   branch = "master"
@@ -57,22 +57,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:4f0ac2a7cc350b14c72a9de0de046b908482d6f16183c8570ee4d6e17adc6a94"
-  name = "github.com/eapache/channels"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "47238d5aae8c0fefd518ef2bee46290909cf8263"
-  version = "v1.1.0"
-
-[[projects]]
-  digest = "1:0d36a2b325b9e75f8057f7f9fbe778d348d70ba652cb9335485b69d1a5c4e038"
-  name = "github.com/eapache/queue"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "44cc805cf13205b55f69e14bcb69867d1ae92f98"
-  version = "v1.1.0"
-
-[[projects]]
   digest = "1:06f5bcd2ef2c1986492e761fe70c128ec65e03ecfbebb0e07cf8f2608fbf1b0b"
   name = "github.com/ethereum/go-ethereum"
   packages = [
@@ -84,8 +68,8 @@
     "rpc",
   ]
   pruneopts = "NUT"
-  revision = "7fa3509e2eaf1a4ebc12344590e5699406690f15"
-  version = "v1.8.22"
+  revision = "c942700427557e3ff6de3aaf6b916e2f056c1ec2"
+  version = "v1.8.23"
 
 [[projects]]
   digest = "1:77acb9aff98e5dc372a28ac50ae62610ea5a4e627fa18084812e2907d04f0de8"
@@ -157,7 +141,7 @@
   version = "v1.8.0"
 
 [[projects]]
-  digest = "1:c2c054176243698768c1609bde19eb70589f7c4cbb3c52a8a262a3e412371b4e"
+  digest = "1:895d2773c9e78e595dd5f946a25383d579d3094a9d8d9306dba27359f190f275"
   name = "github.com/gogo/protobuf"
   packages = [
     "gogoproto",
@@ -168,8 +152,8 @@
     "types",
   ]
   pruneopts = "NUT"
-  revision = "4cbf7e384e768b4e01799441fdf2a706a5635ae7"
-  version = "v1.2.0"
+  revision = "ba06b47c162d49f2af050fb4c75bcbc86a159d5c"
+  version = "v1.2.1"
 
 [[projects]]
   digest = "1:9b117ac202b9de210a7093bca0c29d0d2424e4c9235c9e025ae0d6ef6b121c82"
@@ -189,12 +173,20 @@
   version = "v1.2.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:7f114b78210bf5b75f307fc97cff293633c835bab1e0ea8a744a44b39c042dfe"
   name = "github.com/golang/snappy"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
+  revision = "2a8bb927dd31d8daada140a5d09578521ce5c36a"
+  version = "v0.0.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:05f95ffdfcf651bdb0f05b40b69e7f5663047f8da75c72d58728acb59b5cc107"
+  name = "github.com/google/btree"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "4030bb1f1f0c35b30ca7009e9ebd06849dd45306"
 
 [[projects]]
   digest = "1:4a0c072e44da763409da72d41492373a034baf2e6d849c76d239b4abdfbb6c49"
@@ -217,20 +209,12 @@
   version = "v1.5.1"
 
 [[projects]]
-  digest = "1:47ce87c43dcb107978584da705c4ef885a4e4a99560ff9bda7249b8dd5ea945d"
-  name = "github.com/hyperledger/burrow"
-  packages = [
-    "logging",
-    "logging/adapters/stdlib",
-    "logging/errors",
-    "logging/lifecycle",
-    "logging/logconfig",
-    "logging/loggers",
-    "logging/structure",
-  ]
+  digest = "1:405a46900fbfba733c5fb463b582c830f51c24d881d5a1d589d443cb4e374209"
+  name = "github.com/inconshreveable/log15"
+  packages = ["."]
   pruneopts = "NUT"
-  revision = "9596a8883cf94810be7eb2ffc521433d3dade212"
-  version = "v0.23.3"
+  revision = "67afb5ed74ec82fd7ac8f49d27c509ac6f991970"
+  version = "v2.14"
 
 [[projects]]
   digest = "1:c7ef3ee638cc1e5d39c2b1d9874183ecc62e4822c9524360bc8fbdc3139ab4c3"
@@ -282,6 +266,14 @@
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
 [[projects]]
+  digest = "1:9785a54031460a402fab4e4bbb3124c8dd9e9f7b1982109fef605cb91632d480"
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "efa589957cd060542a26d2dd7832fd6a6c6c3ade"
+  version = "v0.1.0"
+
+[[projects]]
   digest = "1:bffa444ca07c69c599ae5876bc18b25bfd5fa85b297ca10a25594d284a7e9c5d"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
@@ -328,6 +320,14 @@
   pruneopts = "NUT"
   revision = "89529c6904fcd077434931b4eac8b4b2f0991baf"
   version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:3bf17a6e6eaa6ad24152148a631d18662f7212e21637c2699bff3369b7f00fa2"
+  name = "github.com/petar/GoLLRB"
+  packages = ["llrb"]
+  pruneopts = "NUT"
+  revision = "53be0d36a84c2a886ca057d34b6aa4468df9ccb4"
 
 [[projects]]
   digest = "1:657ac55eff70ffd654b39f04bc3731105a3135a8f5529a7de5963ba03df5ef4f"
@@ -387,16 +387,17 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4487583fed075f4eeb10f6b91bad992fff84a27a6f6bdabc20f37b31694e69ee"
+  digest = "1:0a2e604afa3cbf53a1ddade2f240ee8472eded98856dd8c7cfbfea392ddbbfc7"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
     "internal/util",
+    "iostats",
     "nfs",
     "xfs",
   ]
   pruneopts = "NUT"
-  revision = "f8d8b3f739bd91a7c0462cb55235ef63c79c9abc"
+  revision = "e4d4a2206da023361ed100d85c5f2cf9c8364e9f"
 
 [[projects]]
   digest = "1:f250ca51e5b9215bc2df18f92060a9a835e9f85ab18ebbba0e1a6ef1f8fcdbfe"
@@ -463,7 +464,7 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:99690f69428313bff6b61d8a1692623d038f748ea64c6f42995c4c44950f189f"
+  digest = "1:972f8f8c0d2e4e99270d8dd7b85ed9383e2727bf243327c5471d998f111d8fff"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -485,6 +486,7 @@
     "crypto/tmhash",
     "evidence",
     "libs/autofile",
+    "libs/cli/flags",
     "libs/clist",
     "libs/common",
     "libs/db",
@@ -515,8 +517,8 @@
     "version",
   ]
   pruneopts = "NUT"
-  revision = "28d75ec8016b7fb043735cbe4c4d92ec73355de7"
-  version = "v0.30.0"
+  revision = "e0f8936455029a40287a69d5b0e7baa4d5864da1"
+  version = "v0.30.1"
 
 [[projects]]
   branch = "master"
@@ -601,7 +603,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:48ea3ed44fdf39c749a361027a35dc1a3469aa17325b803f9f3a4531751497e4"
+  digest = "1:32c94c31732903288d1e9f13a83c4aa4e2c49add85f7315c913f0360427bb5f0"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -610,7 +612,7 @@
     "windows/registry",
   ]
   pruneopts = "NUT"
-  revision = "3b5209105503162ded1863c307ac66fec31120dd"
+  revision = "629670e5acc5b3e069375d323404911dc8fe1d19"
 
 [[projects]]
   digest = "1:e7071ed636b5422cc51c0e3a6cebc229d6c9fffc528814b519a980641422d619"
@@ -637,14 +639,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6c6b70cf6d2788d9f7dc6589bc88e0e1c7edc40612294431ebb7d09536d12240"
+  digest = "1:48cd63b152af9cc0010714d881a3d29a68c19a265fbb914d884dfde42fe9337a"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
     "googleapis/rpc/status",
   ]
   pruneopts = "NUT"
-  revision = "4b09977fb92221987e99d190c8f88f2c92727a29"
+  revision = "082222b4a5c572e33e82ee9162d1352c7cf38682"
 
 [[projects]]
   digest = "1:4837585442801f3c7ebd044a96fce852242529a73bdd96fcba2119ff74987b0b"
@@ -727,18 +729,15 @@
     "github.com/ethereumproject/go-ethereum/common",
     "github.com/gallactic/sputnikvm-ffi/go/sputnikvm",
     "github.com/gin-gonic/gin",
-    "github.com/go-kit/kit/log",
     "github.com/gogo/protobuf/gogoproto",
     "github.com/gogo/protobuf/proto",
     "github.com/gogo/protobuf/types",
     "github.com/golang/protobuf/proto",
     "github.com/golang/protobuf/ptypes/timestamp",
+    "github.com/google/btree",
     "github.com/grpc-ecosystem/grpc-gateway/runtime",
     "github.com/grpc-ecosystem/grpc-gateway/utilities",
-    "github.com/hyperledger/burrow/logging",
-    "github.com/hyperledger/burrow/logging/lifecycle",
-    "github.com/hyperledger/burrow/logging/logconfig",
-    "github.com/hyperledger/burrow/logging/structure",
+    "github.com/inconshreveable/log15",
     "github.com/jawher/mow.cli",
     "github.com/mr-tron/base58/base58",
     "github.com/peterh/liner",
@@ -753,6 +752,7 @@
     "github.com/tendermint/tendermint/consensus/types",
     "github.com/tendermint/tendermint/crypto",
     "github.com/tendermint/tendermint/crypto/ed25519",
+    "github.com/tendermint/tendermint/libs/cli/flags",
     "github.com/tendermint/tendermint/libs/common",
     "github.com/tendermint/tendermint/libs/db",
     "github.com/tendermint/tendermint/libs/log",

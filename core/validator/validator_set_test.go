@@ -22,7 +22,7 @@ func TestValidatorSet(t *testing.T) {
 	validators[publicKeys[4].ValidatorAddress()], _ = NewValidator(publicKeys[4], 1)
 	validators[publicKeys[5].ValidatorAddress()], _ = NewValidator(publicKeys[5], 1)
 
-	vs := NewValidatorSet(validators, 8, nil)
+	vs := NewValidatorSet(validators, 8)
 
 	pb, _ := crypto.GenerateKeyFromSecret("z")
 	val, _ := NewValidator(pb, 1)

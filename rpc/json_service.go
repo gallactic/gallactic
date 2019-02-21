@@ -21,7 +21,7 @@ import (
 
 	rpcConfig "github.com/gallactic/gallactic/rpc/config"
 	"github.com/gin-gonic/gin"
-	"github.com/hyperledger/burrow/logging"
+	log "github.com/inconshreveable/log15"
 )
 
 // Server used to handle JSON-RPC 2.0 requests. Implements server.Server
@@ -61,21 +61,18 @@ func (jrs *JsonRpcServer) handleFunc(c *gin.Context) {
 	jrs.service.Process(r, w)
 }
 
-// Used for Burrow. Implements server.HttpService
 type JSONService struct {
 	codec           Codec
 	service         *Service
 	defaultHandlers map[string]RequestHandlerFunc
-	logger          *logging.Logger
 }
 
 // Create a new JSON-RPC 2.0 service for gallactic
-func NewJSONService(codec Codec, service *Service, logger *logging.Logger) HttpService {
+func NewJSONService(codec Codec, service *Service) HttpService {
 
 	httpService := &JSONService{
 		codec:   codec,
 		service: service,
-		logger:  logger.WithScope("NewJSONService"),
 	}
 
 	dhMap := GetMethods(codec, service)
@@ -108,7 +105,7 @@ func (js *JSONService) Process(r *http.Request, w http.ResponseWriter) {
 	mName := req.Method
 
 	if handler, ok := js.defaultHandlers[mName]; ok {
-		js.logger.TraceMsg("Request received",
+		log.Debug("Request received",
 			"id", req.Id,
 			"method", req.Method)
 		resp, errCode, err := handler(req, w)

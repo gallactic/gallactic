@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/gallactic/gallactic/core/account"
-
 	ETCCommon "github.com/ethereumproject/go-ethereum/common"
+	"github.com/gallactic/gallactic/core/account"
 	"github.com/gallactic/gallactic/core/evm"
 	"github.com/gallactic/sputnikvm-ffi/go/sputnikvm"
+	log "github.com/inconshreveable/log15"
 
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
 )
 
 func Execute(adapter Adapter) Output {
-	fmt.Printf("SputnikVM called.\n")
+	log.Debug("SputnikVM called", "tx_hash", adapter.GetTxHash())
 
 	var out Output
 
@@ -67,12 +67,8 @@ Loop:
 			}
 
 		case sputnikvm.RequireAccountStorage:
-			storage, err := adapter.getStorage(require.Address(), require.StorageKey())
-			if err != nil {
-				vm.CommitAccountStorage(require.Address(), require.StorageKey(), new(big.Int).SetUint64(0))
-			} else {
-				vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
-			}
+			storage := adapter.getStorage(require.Address(), require.StorageKey())
+			vm.CommitAccountStorage(require.Address(), require.StorageKey(), storage)
 
 		case sputnikvm.RequireBlockhash:
 			var blockHash ETCCommon.Hash
@@ -147,7 +143,6 @@ Loop:
 			var acc *account.Account
 			if len(changedAcc.Code()) == 0 {
 				acc = adapter.createAccount(changedAcc.Address())
-				fmt.Printf("addddddd bal: %v\n", changedAcc.Balance().Uint64())
 
 				acc.SetBalance(changedAcc.Balance().Uint64())
 				acc.SetSequence(changedAcc.Nonce().Uint64())
