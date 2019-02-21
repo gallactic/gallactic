@@ -10,8 +10,8 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/gallactic/gallactic/common"
 	sputnikvmConfig "github.com/gallactic/gallactic/core/evm/sputnikvm/config"
-	rpcConfig "github.com/gallactic/gallactic/rpc/config"
 	grpcConfig "github.com/gallactic/gallactic/rpc/grpc/config"
+	rpcConfig "github.com/gallactic/gallactic/rpc/rpc/config"
 	logconfig "github.com/hyperledger/burrow/logging/logconfig"
 	tmConfig "github.com/tendermint/tendermint/config"
 )

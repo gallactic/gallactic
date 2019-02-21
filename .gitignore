@@ -1,3 +1,10 @@
+chain/
+chain2/
+chain3/
+chainLocalPeer/
+chainWPeer/
+gallactic_js/
+gallactic_js (copy)/
 # build target
 target
 build/
