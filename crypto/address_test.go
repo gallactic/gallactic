@@ -13,6 +13,7 @@ import (
 
 func TestMarshalingEmptyAddress(t *testing.T) {
 	addr1 := Address{}
+	assert.Equal(t, addr1.String(), "")
 
 	js, err := json.Marshal(addr1)
 	assert.NoError(t, err)

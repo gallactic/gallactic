@@ -4,13 +4,10 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
-
-	"github.com/gallactic/gallactic/core/blockchain"
 
 	"github.com/gallactic/gallactic/common/binary"
 	"github.com/gallactic/gallactic/core/account"
-
+	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/p2p"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	"github.com/gallactic/gallactic/core/state"
@@ -19,10 +16,10 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
 	pb "github.com/gallactic/gallactic/www/grpc/proto3"
+	log "github.com/inconshreveable/log15"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
 	net "github.com/tendermint/tendermint/p2p"
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
-	tmRPCTypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
@@ -85,8 +82,8 @@ func (vs *blockchainService) GetValidator(ctx context.Context, param *pb.Address
 	if err != nil {
 		return nil, err
 	}
-	pbval := vs.toValidator(val)
-	return &pb.ValidatorResponse{Validator: pbval}, nil
+	valInfo := vs.toValidatorInfo(val)
+	return &pb.ValidatorResponse{Validator: valInfo}, nil
 }
 
 func (vs *blockchainService) GetValidators(context.Context, *pb.Empty) (*pb.ValidatorsResponse, error) {
@@ -94,8 +91,8 @@ func (vs *blockchainService) GetValidators(context.Context, *pb.Empty) (*pb.Vali
 
 	vs.state.IterateValidators(func(val *validator.Validator) (stop bool) {
 		if val != nil {
-			pbval := vs.toValidator(val)
-			validators = append(validators, pbval)
+			valInfo := vs.toValidatorInfo(val)
+			validators = append(validators, valInfo)
 		}
 		return false
 	})
@@ -178,9 +175,9 @@ func (s *blockchainService) GetBlock(ctx context.Context, req *pb.BlockRequest) 
 		height = s.nodeview.BlockStore().Height()
 
 	}
-	bl, _ := s.getBlockdetails(height)
+
 	return &pb.BlockResponse{
-		Block: bl,
+		Block: s.toBlockInfo(height),
 	}, nil
 
 }
@@ -198,10 +195,10 @@ func (s *blockchainService) GetBlocks(ctx context.Context, blocks *pb.BlocksRequ
 	}
 	var pbBlocks []pb.BlockInfo
 	for height := blocks.MaxHeight; height >= blocks.MinHeight; height-- {
-		bl, _ := s.getBlockdetails(int64(height))
+		bl := s.toBlockInfo(int64(height))
 		pbBlocks = append(pbBlocks, *bl)
-
 	}
+
 	return &pb.BlocksResponse{
 		Blocks: pbBlocks,
 	}, nil
@@ -226,7 +223,7 @@ func (s *blockchainService) GetChainID(context.Context, *pb.Empty) (*pb.ChainRes
 
 func (s *blockchainService) GetLatestBlock(context.Context, *pb.Empty) (*pb.BlockResponse, error) {
 	latestHeight := s.blockchain.LastBlockHeight()
-	bl, _ := s.getBlockdetails(int64(latestHeight))
+	bl := s.toBlockInfo(int64(latestHeight))
 	return &pb.BlockResponse{
 		Block: bl,
 	}, nil
@@ -277,21 +274,19 @@ func (s *blockchainService) GetTx(ctx context.Context, req *pb.TxRequest) (*pb.T
 		return nil, err
 	}
 
-	_tx, err := tmRPC.Tx(hash, false)
+	tx, err := tmRPC.Tx(hash, false)
 	if err != nil {
 		return nil, err
 	}
 
-	tx := s.getTx(_tx)
-
 	return &pb.TxResponse{
-		Tx: tx,
+		Tx: s.toTxInfo(tx.Tx),
 	}, nil
 
 }
 
-//Get validator
-func (vs *blockchainService) toValidator(val *validator.Validator) *pb.ValidatorInfo {
+//
+func (vs *blockchainService) toValidatorInfo(val *validator.Validator) *pb.ValidatorInfo {
 	return &pb.ValidatorInfo{
 		Address:  val.Address().String(),
 		PubKey:   val.PublicKey().String(),
@@ -301,15 +296,14 @@ func (vs *blockchainService) toValidator(val *validator.Validator) *pb.Validator
 	}
 }
 
-//Get Block and Blockmeta
-func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, error) {
-
+func (s *blockchainService) toBlockInfo(blockheight int64) *pb.BlockInfo {
+	pbBlock := new(pb.BlockInfo)
 	blockmeta := s.nodeview.BlockStore().LoadBlockMeta(blockheight)
 	block := s.nodeview.BlockStore().LoadBlock(blockheight)
 	if blockmeta == nil || block == nil {
-		return nil, fmt.Errorf("Invalid blockheight")
+		log.Error("Invalid block height", "height", blockheight)
+		return pbBlock
 	}
-	var pbBlock pb.BlockInfo
 	pbBlock.Header.BlockHash = blockmeta.BlockID.Hash.Bytes()
 	pbBlock.Header.Time = blockmeta.Header.Time
 	pbBlock.Header.TotalTxs = blockmeta.Header.TotalTxs
@@ -327,25 +321,12 @@ func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, e
 	pbBlock.Header.AppHash = blockmeta.Header.AppHash.Bytes()
 	pbBlock.Header.LastResultsHash = blockmeta.Header.LastResultsHash.Bytes()
 	pbBlock.Header.EvidenceHash = blockmeta.Header.EvidenceHash.Bytes()
-	valadrr, err := crypto.ValidatorAddress(blockmeta.Header.ProposerAddress)
-	if err != nil {
-		return nil, err
-	}
-	pbBlock.Header.ProposerAddress = valadrr.String()
+	valAddr, _ := crypto.ValidatorAddress(blockmeta.Header.ProposerAddress)
+	pbBlock.Header.ProposerAddress = valAddr.String()
 
-	for _, _tx := range block.Data.Txs {
-		var tx pb.TxInfo
-		var env txs.Envelope
-		err := env.Decode(_tx)
-		if err != nil {
-			return nil, err
-		}
-		js, _ := json.Marshal(env)
-
-		tx.Hash = hex.EncodeToString(_tx.Hash())
-
-		tx.Envelope = string(js)
-		pbBlock.Txs = append(pbBlock.Txs, tx)
+	for _, tx := range block.Data.Txs {
+		txInfo := s.toTxInfo(tx)
+		pbBlock.Txs = append(pbBlock.Txs, *txInfo)
 	}
 	pbBlock.LastCommitInfo.BlockHash = block.LastCommit.BlockID.Hash.Bytes()
 
@@ -355,10 +336,7 @@ func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, e
 		}
 
 		var vote pb.VoteInfo
-		valAddr, err := crypto.ValidatorAddress(v.ValidatorAddress)
-		if err != nil {
-			return nil, err
-		}
+		valAddr, _ := crypto.ValidatorAddress(v.ValidatorAddress)
 		vote.Round = int32(v.Round)
 		vote.Time = v.Timestamp
 		vote.ValidatorAddress = valAddr.String()
@@ -370,30 +348,24 @@ func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, e
 
 	for _, ev := range block.Evidence.Evidence {
 		var evidence pb.EvidenceInfo
-		valAddr, err := crypto.ValidatorAddress(ev.Address())
-		if err != nil {
-			return nil, err
-		}
+		valAddr, _ := crypto.ValidatorAddress(ev.Address())
 		evidence.Height = ev.Height()
 		evidence.Address = valAddr.String()
 		pbBlock.ByzantineValidators = append(pbBlock.ByzantineValidators, evidence)
 	}
-	return &pbBlock, nil
+	return pbBlock
 }
 
-func (s *blockchainService) getTx(_tx *tmRPCTypes.ResultTx) *pb.TxInfo {
-	tx := new(pb.TxInfo)
+func (s *blockchainService) toTxInfo(tx tmTypes.Tx) *pb.TxInfo {
+	txInfo := new(pb.TxInfo)
 	var env txs.Envelope
-	err := env.Decode(_tx.Tx)
-	if err != nil {
-		return tx
+	if err := env.Decode(tx); err != nil {
+		log.Error("Unable to decode transaction",
+			"error", err)
 	}
-	js, _ := json.Marshal(env)
 
-	tx.Height = _tx.Height
-	tx.Hash = _tx.Hash.String()
-	tx.GasUsed = _tx.TxResult.GasUsed
-	tx.GasWanted = _tx.TxResult.GasWanted
-	tx.Envelope = string(js)
-	return tx
+	js, _ := json.Marshal(env)
+	txInfo.Hash = hex.EncodeToString(tx.Hash())
+	txInfo.Envelope = string(js)
+	return txInfo
 }
