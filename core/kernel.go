@@ -21,10 +21,9 @@ import (
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/rpc"
 	"github.com/gallactic/gallactic/rpc/grpc"
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
-	rpcc "github.com/gallactic/gallactic/rpc/rpc"
+	"github.com/gallactic/gallactic/rpc/rpc"
 	log "github.com/inconshreveable/log15"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
@@ -74,8 +73,6 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 	}
 
 	transactor := execution.NewTransactor(tmNode.MempoolReactor().Mempool.CheckTx, eventBus)
-	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode))
-	fmt.Println(service)
 	launchers := []process.Launcher{
 		{
 			Name:    "Database",
@@ -146,9 +143,9 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			Name:    "RPC",
 			Enabled: conf.RPC.Enabled,
 			Launch: func() (process.Process, error) {
-				codec := rpcc.NewTmCodec()
-				jsonServer := rpcc.NewJSONServer(rpcc.NewJSONService(conf, codec))
-				serveProcess, err := rpcc.NewServeProcess(conf.RPC.Server, jsonServer)
+				codec := rpc.NewTmCodec()
+				jsonServer := rpc.NewJSONServer(rpc.NewJSONService(conf, codec))
+				serveProcess, err := rpc.NewServeProcess(conf.RPC.Server, jsonServer)
 				if err != nil {
 					return nil, err
 				}
