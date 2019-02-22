@@ -8,7 +8,6 @@ import (
 
 	rpcConf "github.com/gallactic/gallactic/rpc/rpc/config"
 	"github.com/gin-gonic/gin"
-	"github.com/hyperledger/burrow/logging"
 	graceful "gopkg.in/tylerb/graceful.v1"
 )
 
@@ -35,7 +34,6 @@ type JSONRPCServer struct {
 type JSONService struct {
 	codec           Codec
 	defaultHandlers map[string]RequestHandlerFunc
-	logger          *logging.Logger
 }
 
 type RequestHandlerFunc func(request *RPCRequest, requester interface{}) (interface{}, int, error)
@@ -88,5 +86,4 @@ type ServeProcess struct {
 	startListenChans []chan struct{}
 	stopListenChans  []chan struct{}
 	srv              *graceful.Server
-	logger           *logging.Logger
 }

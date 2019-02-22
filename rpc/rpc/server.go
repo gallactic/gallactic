@@ -11,7 +11,7 @@ import (
 	"github.com/gallactic/gallactic/rpc/rpc/config"
 	rpcConf "github.com/gallactic/gallactic/rpc/rpc/config"
 	"github.com/gin-gonic/gin"
-	"github.com/hyperledger/burrow/logging"
+	log "github.com/inconshreveable/log15"
 	cors "github.com/tommy351/gin-cors"
 	graceful "gopkg.in/tylerb/graceful.v1"
 )
@@ -20,8 +20,7 @@ const (
 	killTime = 100 * time.Millisecond
 )
 
-func NewServeProcess(config *rpcConf.ServerConfig, logger *logging.Logger,
-	servers ...Server) (*ServeProcess, error) {
+func NewServeProcess(config *rpcConf.ServerConfig, servers ...Server) (*ServeProcess, error) {
 	var spConfig rpcConf.ServerConfig
 	// var spConfig
 	if config != nil {
@@ -39,7 +38,6 @@ func NewServeProcess(config *rpcConf.ServerConfig, logger *logging.Logger,
 		startListenChans: startListeners,
 		stopListenChans:  stopListeners,
 		srv:              nil,
-		logger:           logger.WithScope("ServeProcess"),
 	}
 	return sp, nil
 }
@@ -55,10 +53,10 @@ func (sp *ServeProcess) Start() error {
 	var listener net.Listener
 
 	ch := newCORSMiddleware(config.CORS)
-	router.Use(gin.Recovery(), logHandler(sp.logger), contentTypeMiddleware, ch)
+	router.Use(gin.Recovery(), logHandler(), contentTypeMiddleware, ch)
 
 	if port == 0 {
-		return fmt.Errorf("0 is not a valid port.")
+		return fmt.Errorf("Assigned port 0 is not a valid port")
 	}
 	srv := &graceful.Server{
 		Server: &http.Server{
@@ -99,7 +97,7 @@ func (sp *ServeProcess) Start() error {
 		listener = listen
 	}
 	sp.srv = srv
-	sp.logger.InfoMsg(
+	log.Info(
 		"Server started.",
 		"address: ", sp.config.Bind.Address,
 		"port: ", sp.config.Bind.Port,
@@ -121,14 +119,14 @@ func (sp *ServeProcess) Start() error {
 	// calls 'Stop' on the process.
 	go func() {
 		<-sp.stopChan
-		sp.logger.InfoMsg("Close signal sent to server")
+		log.Info("Close signal sent to server")
 		sp.srv.Stop(killTime)
 	}()
 	// Listen to the servers stop event. It is triggered when
 	// the server has been fully shut down.
 	go func() {
 		<-sp.srv.StopChan()
-		sp.logger.InfoMsg("Server stop event fired. Good bye.")
+		log.Info("Server stop event fired. Good bye.")
 		for _, c := range sp.stopListenChans {
 			c <- struct{}{}
 		}
@@ -179,8 +177,7 @@ func (sp *ServeProcess) StopEventChannel() <-chan struct{} {
 	return lChan
 }
 
-func logHandler(logger *logging.Logger) gin.HandlerFunc {
-	logger = logger.WithScope("ginLogHandler")
+func logHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		path := ctx.Request.URL.Path
 
@@ -191,7 +188,7 @@ func logHandler(logger *logging.Logger) gin.HandlerFunc {
 		statusCode := ctx.Writer.Status()
 		rawError := ctx.Errors.String()
 
-		logger.Info.Log(
+		log.Info(
 			"clientIP: ", clientIP,
 			"statusCode: ", statusCode,
 			"method: ", method,

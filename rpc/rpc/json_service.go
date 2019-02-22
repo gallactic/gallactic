@@ -7,8 +7,17 @@ import (
 
 	"github.com/gallactic/gallactic/core/config"
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
-	"github.com/hyperledger/burrow/logging"
+	log "github.com/inconshreveable/log15"
 	"google.golang.org/grpc"
+)
+
+const (
+	rpcErrorServerError    = -32000
+	rpcErrorInvalidRequest = -32600
+	rpcErrorMethodNotFound = -32601
+	rpcErrorInvalidParams  = -32602
+	rpcErrorInternalError  = -32603
+	rpcErrorParseError     = -32700
 )
 
 const (
@@ -36,11 +45,10 @@ const (
 )
 
 // Create a new JSON-RPC 2.0 service for gallactic
-func NewJSONService(conf *config.Config, codec Codec, logger *logging.Logger) HttpService {
+func NewJSONService(conf *config.Config, codec Codec) HttpService {
 
 	httpService := &JSONService{
-		codec:  codec,
-		logger: logger.WithScope("NewJSONService"),
+		codec: codec,
 	}
 	bcSvc, ntwSvc, txSvc := newGrpcClient(*conf)
 	dhMap := getMethods(codec, bcSvc, ntwSvc, txSvc)
@@ -59,23 +67,25 @@ func (js *JSONService) Process(r *http.Request, w http.ResponseWriter) {
 	// Error when decoding.
 	if errU != nil {
 		js.writeError("Failed to parse request: "+errU.Error(), "",
-			RPCErrorParseError, w)
+			rpcErrorParseError, w)
 		return
 	}
 
 	// Wrong protocol version.
 	if req.JSONRPC != "2.0" {
 		js.writeError("Wrong protocol version: "+req.JSONRPC, req.Id,
-			RPCErrorInvalidRequest, w)
+			rpcErrorInvalidRequest, w)
 		return
 	}
 
 	mName := req.Method
 
 	if handler, ok := js.defaultHandlers[mName]; ok {
-		js.logger.TraceMsg("Request received",
+		log.Info(
+			"Request received",
 			"id", req.Id,
-			"method", req.Method)
+			"method", req.Method,
+		)
 		resp, errCode, err := handler(req, w)
 		if err != nil {
 			js.writeError(err.Error(), req.Id, errCode, w)
@@ -83,184 +93,8 @@ func (js *JSONService) Process(r *http.Request, w http.ResponseWriter) {
 			js.writeResponse(req.Id, resp, w)
 		}
 	} else {
-		js.writeError("Method not found: "+mName, req.Id, RPCErrorMethodNotFound, w)
+		js.writeError("Method not found: "+mName, req.Id, rpcErrorMethodNotFound, w)
 	}
-}
-
-func newGrpcClient(conf config.Config) (pb.BlockChainClient, pb.NetworkClient, pb.TransactionClient) {
-	addr := conf.GRPC.ListenAddress
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
-	if err != nil {
-		panic(err)
-	}
-	return pb.NewBlockChainClient(conn), pb.NewNetworkClient(conn), pb.NewTransactionClient(conn)
-}
-
-func getMethods(codec Codec, bcSvc pb.BlockChainClient, ntwSvc pb.NetworkClient,
-	txSvc pb.TransactionClient) map[string]RequestHandlerFunc {
-	// rpm stands for RPC Service Map
-	rpm := make(map[string]RequestHandlerFunc)
-
-	rpm[GET_ACCOUNT] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		input := &pb.AddressRequest{}
-		err := codec.DecodeBytes(input, request.Params)
-		if err != nil {
-			return nil, RPCErrorInvalidParams, err
-		}
-		acc, err := bcSvc.GetAccount(context.Background(), input)
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return acc, 0, nil
-	}
-
-	rpm[GET_ACCOUNTS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		list, err := bcSvc.GetAccounts(context.Background(), &pb.Empty{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return list, 0, nil
-	}
-
-	rpm[GET_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		input := &pb.BlockRequest{}
-		err := codec.DecodeBytes(input, request.Params)
-		if err != nil {
-			return nil, RPCErrorInvalidParams, err
-		}
-		block, err := bcSvc.GetBlock(context.Background(), input)
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return block, 0, nil
-	}
-
-	rpm[GET_BLOCK_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		input := &pb.BlockRequest{}
-		err := codec.DecodeBytes(input, request.Params)
-		if err != nil {
-			return nil, RPCErrorInvalidParams, err
-		}
-		transactions, err := bcSvc.GetBlockTxs(context.Background(), input)
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return transactions, 0, nil
-	}
-
-	rpm[GET_CONSENSUS_STATE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		consensusState, err := bcSvc.GetConsensusState(context.Background(), &pb.Empty{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return consensusState, 0, nil
-	}
-
-	rpm[GET_CHAIN_ID] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		chainID, err := bcSvc.GetChainID(context.Background(), &pb.Empty{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return chainID, 0, nil
-	}
-
-	rpm[GET_GENESIS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		genesis, err := bcSvc.GetGenesis(context.Background(), &pb.Empty{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return genesis, 0, nil
-	}
-
-	rpm[GET_LATEST_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		resultGetBlock, err := bcSvc.GetLatestBlock(context.Background(), &pb.Empty{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return resultGetBlock, 0, nil
-	}
-
-	rpm[GET_NETWORK_INFO] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		info, err := ntwSvc.GetNetworkInfo(context.Background(), &pb.Empty1{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return info, 0, nil
-	}
-
-	rpm[GET_PEERS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		peers, err := ntwSvc.GetNetworkInfo(context.Background(), &pb.Empty1{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return peers, 0, nil
-	}
-
-	rpm[GET_STATUS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		status, err := bcSvc.GetStatus(context.Background(), &pb.Empty{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return status, 0, nil
-	}
-
-	rpm[GET_STORAGE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		input := &pb.StorageRequest{}
-		err := codec.DecodeBytes(input, request.Params)
-		if err != nil {
-			return nil, RPCErrorInvalidParams, err
-		}
-		storage, err := bcSvc.GetStorage(context.Background(), input)
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return storage, 0, nil
-	}
-
-	rpm[GET_STORAGE_AT] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		input := &pb.StorageAtRequest{}
-		err := codec.DecodeBytes(input, request.Params)
-		if err != nil {
-			return nil, RPCErrorInvalidParams, err
-		}
-
-		storageItem, err := bcSvc.GetStorageAt(context.Background(), input)
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return storageItem, 0, nil
-	}
-
-	// rpm[GET_UNCONFIRMED_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-	// 	transactions, err := bcSvc.Get
-	// 	if err != nil {
-	// 		return nil, RPCErrorInternalError, err
-	// 	}
-	// 	return transactions, 0, nil
-	// }
-
-	rpm[GET_VALIDATOR] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		input := &pb.AddressRequest{}
-		err := codec.DecodeBytes(input, request.Params)
-		if err != nil {
-			return nil, RPCErrorInvalidParams, err
-		}
-		val, err := bcSvc.GetValidator(context.Background(), input)
-		if val == nil || err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return val, 0, nil
-	}
-
-	rpm[GET_VALIDATORS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		list, err := bcSvc.GetAccounts(context.Background(), &pb.Empty{})
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		return list, 0, nil
-	}
-
-	return rpm
 }
 
 // Helper for writing error responses.
@@ -280,8 +114,195 @@ func (js *JSONService) writeResponse(id string, result interface{}, w http.Respo
 	response := NewRPCResponse(id, result)
 	err := js.codec.Encode(response, w)
 	if err != nil {
-		js.writeError("Internal error: "+err.Error(), id, RPCErrorInternalError, w)
+		js.writeError("Internal error: "+err.Error(), id, rpcErrorInternalError, w)
 		return
 	}
 	w.WriteHeader(200)
+}
+
+func newGrpcClient(conf config.Config) (pb.BlockChainClient, pb.NetworkClient, pb.TransactionClient) {
+	addr := conf.GRPC.ListenAddress
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	return pb.NewBlockChainClient(conn), pb.NewNetworkClient(conn), pb.NewTransactionClient(conn)
+}
+
+func getMethods(codec Codec, bcSvc pb.BlockChainClient, ntwSvc pb.NetworkClient,
+	txSvc pb.TransactionClient) map[string]RequestHandlerFunc {
+	// rpm stands for RPC Service Map
+	rpm := make(map[string]RequestHandlerFunc)
+
+	rpm[BROADCAST_TX] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		txEnv := &pb.TransactRequest{
+			Envelope: string(request.Params),
+		}
+		receipt, err := txSvc.BroadcastTxSync(context.Background(), txEnv)
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return receipt, 0, nil
+	}
+
+	rpm[GET_ACCOUNT] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &pb.AddressRequest{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, rpcErrorInvalidParams, err
+		}
+		acc, err := bcSvc.GetAccount(context.Background(), input)
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return acc, 0, nil
+	}
+
+	rpm[GET_ACCOUNTS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		list, err := bcSvc.GetAccounts(context.Background(), &pb.Empty{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return list, 0, nil
+	}
+
+	rpm[GET_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &pb.BlockRequest{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, rpcErrorInvalidParams, err
+		}
+		block, err := bcSvc.GetBlock(context.Background(), input)
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return block, 0, nil
+	}
+
+	rpm[GET_BLOCK_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &pb.BlockRequest{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, rpcErrorInvalidParams, err
+		}
+		transactions, err := bcSvc.GetBlockTxs(context.Background(), input)
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return transactions, 0, nil
+	}
+
+	rpm[GET_CONSENSUS_STATE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		consensusState, err := bcSvc.GetConsensusState(context.Background(), &pb.Empty{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return consensusState, 0, nil
+	}
+
+	rpm[GET_CHAIN_ID] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		chainID, err := bcSvc.GetChainID(context.Background(), &pb.Empty{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return chainID, 0, nil
+	}
+
+	rpm[GET_GENESIS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		genesis, err := bcSvc.GetGenesis(context.Background(), &pb.Empty{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return genesis, 0, nil
+	}
+
+	rpm[GET_LATEST_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		resultGetBlock, err := bcSvc.GetLatestBlock(context.Background(), &pb.Empty{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return resultGetBlock, 0, nil
+	}
+
+	rpm[GET_NETWORK_INFO] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		info, err := ntwSvc.GetNetworkInfo(context.Background(), &pb.Empty1{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return info, 0, nil
+	}
+
+	rpm[GET_PEERS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		peers, err := ntwSvc.GetNetworkInfo(context.Background(), &pb.Empty1{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return peers, 0, nil
+	}
+
+	rpm[GET_STATUS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		status, err := bcSvc.GetStatus(context.Background(), &pb.Empty{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return status, 0, nil
+	}
+
+	rpm[GET_STORAGE] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &pb.StorageRequest{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, rpcErrorInvalidParams, err
+		}
+		storage, err := bcSvc.GetStorage(context.Background(), input)
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return storage, 0, nil
+	}
+
+	rpm[GET_STORAGE_AT] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &pb.StorageAtRequest{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, rpcErrorInvalidParams, err
+		}
+
+		storageItem, err := bcSvc.GetStorageAt(context.Background(), input)
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return storageItem, 0, nil
+	}
+
+	// rpm[GET_UNCONFIRMED_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+	// 	transactions, err := bcSvc.Get
+	// 	if err != nil {
+	// 		return nil, rpcErrorInternalError, err
+	// 	}
+	// 	return transactions, 0, nil
+	// }
+
+	rpm[GET_VALIDATOR] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		input := &pb.AddressRequest{}
+		err := codec.DecodeBytes(input, request.Params)
+		if err != nil {
+			return nil, rpcErrorInvalidParams, err
+		}
+		val, err := bcSvc.GetValidator(context.Background(), input)
+		if val == nil || err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return val, 0, nil
+	}
+
+	rpm[GET_VALIDATORS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		list, err := bcSvc.GetAccounts(context.Background(), &pb.Empty{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return list, 0, nil
+	}
+
+	return rpm
 }

@@ -10,8 +10,6 @@ import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 
-import github_com_gallactic_gallactic_txs "github.com/gallactic/gallactic/txs"
-
 import (
 	context "golang.org/x/net/context"
 	grpc "google.golang.org/grpc"
@@ -41,7 +39,7 @@ func (m *Empty2) Reset()         { *m = Empty2{} }
 func (m *Empty2) String() string { return proto.CompactTextString(m) }
 func (*Empty2) ProtoMessage()    {}
 func (*Empty2) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_89a98477ac501b03, []int{0}
+	return fileDescriptor_transaction_b63e4e4568db1797, []int{0}
 }
 func (m *Empty2) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -75,17 +73,17 @@ func (*Empty2) XXX_MessageName() string {
 }
 
 type TransactRequest struct {
-	TxEnvelope           *github_com_gallactic_gallactic_txs.Envelope `protobuf:"bytes,1,opt,name=txEnvelope,customtype=github.com/gallactic/gallactic/txs.Envelope" json:"txEnvelope,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                                     `json:"-"`
-	XXX_unrecognized     []byte                                       `json:"-"`
-	XXX_sizecache        int32                                        `json:"-"`
+	Envelope             string   `protobuf:"bytes,1,opt,name=Envelope,proto3" json:"Envelope,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *TransactRequest) Reset()         { *m = TransactRequest{} }
 func (m *TransactRequest) String() string { return proto.CompactTextString(m) }
 func (*TransactRequest) ProtoMessage()    {}
 func (*TransactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_89a98477ac501b03, []int{1}
+	return fileDescriptor_transaction_b63e4e4568db1797, []int{1}
 }
 func (m *TransactRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -114,22 +112,29 @@ func (m *TransactRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_TransactRequest proto.InternalMessageInfo
 
+func (m *TransactRequest) GetEnvelope() string {
+	if m != nil {
+		return m.Envelope
+	}
+	return ""
+}
+
 func (*TransactRequest) XXX_MessageName() string {
 	return "proto3.TransactRequest"
 }
 
 type ReceiptResponse struct {
-	TxReceipt            *github_com_gallactic_gallactic_txs.Receipt `protobuf:"bytes,1,opt,name=TxReceipt,proto3,customtype=github.com/gallactic/gallactic/txs.Receipt" json:"TxReceipt,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                                    `json:"-"`
-	XXX_unrecognized     []byte                                      `json:"-"`
-	XXX_sizecache        int32                                       `json:"-"`
+	Receipt              string   `protobuf:"bytes,1,opt,name=Receipt,proto3" json:"Receipt,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *ReceiptResponse) Reset()         { *m = ReceiptResponse{} }
 func (m *ReceiptResponse) String() string { return proto.CompactTextString(m) }
 func (*ReceiptResponse) ProtoMessage()    {}
 func (*ReceiptResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_89a98477ac501b03, []int{2}
+	return fileDescriptor_transaction_b63e4e4568db1797, []int{2}
 }
 func (m *ReceiptResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -158,74 +163,30 @@ func (m *ReceiptResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ReceiptResponse proto.InternalMessageInfo
 
+func (m *ReceiptResponse) GetReceipt() string {
+	if m != nil {
+		return m.Receipt
+	}
+	return ""
+}
+
 func (*ReceiptResponse) XXX_MessageName() string {
 	return "proto3.ReceiptResponse"
 }
 
-type UnconfirmedTxsRequest struct {
-	MaxTxs               int32    `protobuf:"varint,1,opt,name=maxTxs,proto3" json:"maxTxs,omitempty"`
+type UnconfirmTxsResponse struct {
+	Count                int32    `protobuf:"varint,1,opt,name=Count,proto3" json:"Count,omitempty"`
+	Envelopes            []string `protobuf:"bytes,2,rep,name=Envelopes" json:"Envelopes,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *UnconfirmedTxsRequest) Reset()         { *m = UnconfirmedTxsRequest{} }
-func (m *UnconfirmedTxsRequest) String() string { return proto.CompactTextString(m) }
-func (*UnconfirmedTxsRequest) ProtoMessage()    {}
-func (*UnconfirmedTxsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_89a98477ac501b03, []int{3}
-}
-func (m *UnconfirmedTxsRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *UnconfirmedTxsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_UnconfirmedTxsRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (dst *UnconfirmedTxsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UnconfirmedTxsRequest.Merge(dst, src)
-}
-func (m *UnconfirmedTxsRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *UnconfirmedTxsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UnconfirmedTxsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UnconfirmedTxsRequest proto.InternalMessageInfo
-
-func (m *UnconfirmedTxsRequest) GetMaxTxs() int32 {
-	if m != nil {
-		return m.MaxTxs
-	}
-	return 0
-}
-
-func (*UnconfirmedTxsRequest) XXX_MessageName() string {
-	return "proto3.UnconfirmedTxsRequest"
-}
-
-type UnconfirmTxsResponse struct {
-	Count                int32                                         `protobuf:"varint,1,opt,name=Count,proto3" json:"Count,omitempty"`
-	TxEnvelopes          []github_com_gallactic_gallactic_txs.Envelope `protobuf:"bytes,2,rep,name=txEnvelopes,customtype=github.com/gallactic/gallactic/txs.Envelope" json:"txEnvelopes"`
-	XXX_NoUnkeyedLiteral struct{}                                      `json:"-"`
-	XXX_unrecognized     []byte                                        `json:"-"`
-	XXX_sizecache        int32                                         `json:"-"`
 }
 
 func (m *UnconfirmTxsResponse) Reset()         { *m = UnconfirmTxsResponse{} }
 func (m *UnconfirmTxsResponse) String() string { return proto.CompactTextString(m) }
 func (*UnconfirmTxsResponse) ProtoMessage()    {}
 func (*UnconfirmTxsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_transaction_89a98477ac501b03, []int{4}
+	return fileDescriptor_transaction_b63e4e4568db1797, []int{3}
 }
 func (m *UnconfirmTxsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -261,6 +222,13 @@ func (m *UnconfirmTxsResponse) GetCount() int32 {
 	return 0
 }
 
+func (m *UnconfirmTxsResponse) GetEnvelopes() []string {
+	if m != nil {
+		return m.Envelopes
+	}
+	return nil
+}
+
 func (*UnconfirmTxsResponse) XXX_MessageName() string {
 	return "proto3.UnconfirmTxsResponse"
 }
@@ -271,8 +239,6 @@ func init() {
 	golang_proto.RegisterType((*TransactRequest)(nil), "proto3.TransactRequest")
 	proto.RegisterType((*ReceiptResponse)(nil), "proto3.ReceiptResponse")
 	golang_proto.RegisterType((*ReceiptResponse)(nil), "proto3.ReceiptResponse")
-	proto.RegisterType((*UnconfirmedTxsRequest)(nil), "proto3.UnconfirmedTxsRequest")
-	golang_proto.RegisterType((*UnconfirmedTxsRequest)(nil), "proto3.UnconfirmedTxsRequest")
 	proto.RegisterType((*UnconfirmTxsResponse)(nil), "proto3.UnconfirmTxsResponse")
 	golang_proto.RegisterType((*UnconfirmTxsResponse)(nil), "proto3.UnconfirmTxsResponse")
 }
@@ -290,8 +256,8 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TransactionClient interface {
 	BroadcastTxSync(ctx context.Context, in *TransactRequest, opts ...grpc.CallOption) (*ReceiptResponse, error)
-	GetUnconfirmedTxs(ctx context.Context, in *Empty2, opts ...grpc.CallOption) (*UnconfirmTxsResponse, error)
 	BroadcastTxAsync(ctx context.Context, in *TransactRequest, opts ...grpc.CallOption) (*ReceiptResponse, error)
+	GetUnconfirmedTxs(ctx context.Context, in *Empty2, opts ...grpc.CallOption) (*UnconfirmTxsResponse, error)
 }
 
 type transactionClient struct {
@@ -311,15 +277,6 @@ func (c *transactionClient) BroadcastTxSync(ctx context.Context, in *TransactReq
 	return out, nil
 }
 
-func (c *transactionClient) GetUnconfirmedTxs(ctx context.Context, in *Empty2, opts ...grpc.CallOption) (*UnconfirmTxsResponse, error) {
-	out := new(UnconfirmTxsResponse)
-	err := c.cc.Invoke(ctx, "/proto3.Transaction/GetUnconfirmedTxs", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *transactionClient) BroadcastTxAsync(ctx context.Context, in *TransactRequest, opts ...grpc.CallOption) (*ReceiptResponse, error) {
 	out := new(ReceiptResponse)
 	err := c.cc.Invoke(ctx, "/proto3.Transaction/BroadcastTxAsync", in, out, opts...)
@@ -329,11 +286,20 @@ func (c *transactionClient) BroadcastTxAsync(ctx context.Context, in *TransactRe
 	return out, nil
 }
 
+func (c *transactionClient) GetUnconfirmedTxs(ctx context.Context, in *Empty2, opts ...grpc.CallOption) (*UnconfirmTxsResponse, error) {
+	out := new(UnconfirmTxsResponse)
+	err := c.cc.Invoke(ctx, "/proto3.Transaction/GetUnconfirmedTxs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TransactionServer is the server API for Transaction service.
 type TransactionServer interface {
 	BroadcastTxSync(context.Context, *TransactRequest) (*ReceiptResponse, error)
-	GetUnconfirmedTxs(context.Context, *Empty2) (*UnconfirmTxsResponse, error)
 	BroadcastTxAsync(context.Context, *TransactRequest) (*ReceiptResponse, error)
+	GetUnconfirmedTxs(context.Context, *Empty2) (*UnconfirmTxsResponse, error)
 }
 
 func RegisterTransactionServer(s *grpc.Server, srv TransactionServer) {
@@ -358,24 +324,6 @@ func _Transaction_BroadcastTxSync_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Transaction_GetUnconfirmedTxs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty2)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TransactionServer).GetUnconfirmedTxs(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto3.Transaction/GetUnconfirmedTxs",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransactionServer).GetUnconfirmedTxs(ctx, req.(*Empty2))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Transaction_BroadcastTxAsync_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TransactRequest)
 	if err := dec(in); err != nil {
@@ -394,6 +342,24 @@ func _Transaction_BroadcastTxAsync_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Transaction_GetUnconfirmedTxs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty2)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransactionServer).GetUnconfirmedTxs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto3.Transaction/GetUnconfirmedTxs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransactionServer).GetUnconfirmedTxs(ctx, req.(*Empty2))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Transaction_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto3.Transaction",
 	HandlerType: (*TransactionServer)(nil),
@@ -403,12 +369,12 @@ var _Transaction_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Transaction_BroadcastTxSync_Handler,
 		},
 		{
-			MethodName: "GetUnconfirmedTxs",
-			Handler:    _Transaction_GetUnconfirmedTxs_Handler,
-		},
-		{
 			MethodName: "BroadcastTxAsync",
 			Handler:    _Transaction_BroadcastTxAsync_Handler,
+		},
+		{
+			MethodName: "GetUnconfirmedTxs",
+			Handler:    _Transaction_GetUnconfirmedTxs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -451,15 +417,11 @@ func (m *TransactRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.TxEnvelope != nil {
+	if len(m.Envelope) > 0 {
 		dAtA[i] = 0xa
 		i++
-		i = encodeVarintTransaction(dAtA, i, uint64(m.TxEnvelope.Size()))
-		n1, err := m.TxEnvelope.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
+		i = encodeVarintTransaction(dAtA, i, uint64(len(m.Envelope)))
+		i += copy(dAtA[i:], m.Envelope)
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(dAtA[i:], m.XXX_unrecognized)
@@ -482,41 +444,11 @@ func (m *ReceiptResponse) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.TxReceipt != nil {
+	if len(m.Receipt) > 0 {
 		dAtA[i] = 0xa
 		i++
-		i = encodeVarintTransaction(dAtA, i, uint64(m.TxReceipt.Size()))
-		n2, err := m.TxReceipt.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n2
-	}
-	if m.XXX_unrecognized != nil {
-		i += copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	return i, nil
-}
-
-func (m *UnconfirmedTxsRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *UnconfirmedTxsRequest) MarshalTo(dAtA []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if m.MaxTxs != 0 {
-		dAtA[i] = 0x8
-		i++
-		i = encodeVarintTransaction(dAtA, i, uint64(m.MaxTxs))
+		i = encodeVarintTransaction(dAtA, i, uint64(len(m.Receipt)))
+		i += copy(dAtA[i:], m.Receipt)
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(dAtA[i:], m.XXX_unrecognized)
@@ -544,16 +476,19 @@ func (m *UnconfirmTxsResponse) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintTransaction(dAtA, i, uint64(m.Count))
 	}
-	if len(m.TxEnvelopes) > 0 {
-		for _, msg := range m.TxEnvelopes {
+	if len(m.Envelopes) > 0 {
+		for _, s := range m.Envelopes {
 			dAtA[i] = 0x12
 			i++
-			i = encodeVarintTransaction(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
+			l = len(s)
+			for l >= 1<<7 {
+				dAtA[i] = uint8(uint64(l)&0x7f | 0x80)
+				l >>= 7
+				i++
 			}
-			i += n
+			dAtA[i] = uint8(l)
+			i++
+			i += copy(dAtA[i:], s)
 		}
 	}
 	if m.XXX_unrecognized != nil {
@@ -589,8 +524,8 @@ func (m *TransactRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.TxEnvelope != nil {
-		l = m.TxEnvelope.Size()
+	l = len(m.Envelope)
+	if l > 0 {
 		n += 1 + l + sovTransaction(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
@@ -605,24 +540,9 @@ func (m *ReceiptResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.TxReceipt != nil {
-		l = m.TxReceipt.Size()
+	l = len(m.Receipt)
+	if l > 0 {
 		n += 1 + l + sovTransaction(uint64(l))
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *UnconfirmedTxsRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.MaxTxs != 0 {
-		n += 1 + sovTransaction(uint64(m.MaxTxs))
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -639,9 +559,9 @@ func (m *UnconfirmTxsResponse) Size() (n int) {
 	if m.Count != 0 {
 		n += 1 + sovTransaction(uint64(m.Count))
 	}
-	if len(m.TxEnvelopes) > 0 {
-		for _, e := range m.TxEnvelopes {
-			l = e.Size()
+	if len(m.Envelopes) > 0 {
+		for _, s := range m.Envelopes {
+			l = len(s)
 			n += 1 + l + sovTransaction(uint64(l))
 		}
 	}
@@ -746,9 +666,9 @@ func (m *TransactRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TxEnvelope", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Envelope", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTransaction
@@ -758,24 +678,20 @@ func (m *TransactRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTransaction
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.TxEnvelope == nil {
-				m.TxEnvelope = &github_com_gallactic_gallactic_txs.Envelope{}
-			}
-			if err := m.TxEnvelope.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.Envelope = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -830,9 +746,9 @@ func (m *ReceiptResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TxReceipt", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Receipt", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTransaction
@@ -842,94 +758,21 @@ func (m *ReceiptResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
+				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTransaction
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			var v github_com_gallactic_gallactic_txs.Receipt
-			m.TxReceipt = &v
-			if err := m.TxReceipt.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.Receipt = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTransaction(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTransaction
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *UnconfirmedTxsRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTransaction
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: UnconfirmedTxsRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UnconfirmedTxsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxTxs", wireType)
-			}
-			m.MaxTxs = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTransaction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MaxTxs |= (int32(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTransaction(dAtA[iNdEx:])
@@ -1002,9 +845,9 @@ func (m *UnconfirmTxsResponse) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TxEnvelopes", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Envelopes", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTransaction
@@ -1014,22 +857,20 @@ func (m *UnconfirmTxsResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTransaction
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TxEnvelopes = append(m.TxEnvelopes, github_com_gallactic_gallactic_txs.Envelope{})
-			if err := m.TxEnvelopes[len(m.TxEnvelopes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.Envelopes = append(m.Envelopes, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1159,39 +1000,34 @@ var (
 )
 
 func init() {
-	proto.RegisterFile("rpc/grpc/proto3/transaction.proto", fileDescriptor_transaction_89a98477ac501b03)
+	proto.RegisterFile("rpc/grpc/proto3/transaction.proto", fileDescriptor_transaction_b63e4e4568db1797)
 }
 func init() {
-	golang_proto.RegisterFile("rpc/grpc/proto3/transaction.proto", fileDescriptor_transaction_89a98477ac501b03)
+	golang_proto.RegisterFile("rpc/grpc/proto3/transaction.proto", fileDescriptor_transaction_b63e4e4568db1797)
 }
 
-var fileDescriptor_transaction_89a98477ac501b03 = []byte{
-	// 428 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0xcd, 0x8e, 0xd3, 0x30,
-	0x10, 0x5e, 0x2f, 0xda, 0x0a, 0x26, 0x88, 0xb0, 0xd6, 0xc2, 0x56, 0xd1, 0x2a, 0x5d, 0x72, 0x5a,
-	0x81, 0x88, 0xa5, 0xf4, 0x09, 0xc8, 0xb2, 0xe2, 0xc2, 0x29, 0x84, 0x0b, 0x17, 0xe4, 0xba, 0x6e,
-	0x1a, 0x29, 0xb1, 0x43, 0xec, 0xa0, 0x54, 0xdc, 0x78, 0x05, 0x5e, 0x00, 0xde, 0x84, 0x63, 0x8f,
-	0x48, 0xdc, 0x7a, 0xa8, 0x50, 0xcb, 0x23, 0xf0, 0x00, 0xa8, 0xf9, 0x69, 0x43, 0x05, 0x08, 0xf6,
-	0x12, 0x79, 0x3c, 0x33, 0xdf, 0xf7, 0xcd, 0x97, 0x31, 0x3c, 0xc8, 0x33, 0x46, 0xa2, 0xcd, 0x27,
-	0xcb, 0xa5, 0x96, 0x43, 0xa2, 0x73, 0x2a, 0x14, 0x65, 0x3a, 0x96, 0xc2, 0xad, 0xae, 0x70, 0xaf,
-	0xce, 0x58, 0x8f, 0xa3, 0x58, 0x4f, 0x8b, 0x91, 0xcb, 0x64, 0x4a, 0x22, 0x19, 0xc9, 0xba, 0x63,
-	0x54, 0x4c, 0xaa, 0xa8, 0x0a, 0xaa, 0x53, 0xdd, 0x66, 0x9d, 0x45, 0x52, 0x46, 0x09, 0x27, 0x34,
-	0x8b, 0x09, 0x15, 0x42, 0x6a, 0xba, 0xc1, 0x54, 0x75, 0xd6, 0xb9, 0x09, 0xbd, 0xab, 0x34, 0xd3,
-	0x33, 0xcf, 0x79, 0x07, 0x66, 0xd8, 0x70, 0x06, 0xfc, 0x4d, 0xc1, 0x95, 0xc6, 0x53, 0x00, 0x5d,
-	0x5e, 0x89, 0xb7, 0x3c, 0x91, 0x19, 0xef, 0xa3, 0x73, 0x74, 0x61, 0x78, 0xa7, 0x75, 0xe3, 0xd0,
-	0xdd, 0x2b, 0xf6, 0xc9, 0x62, 0x39, 0x78, 0xd4, 0x95, 0x46, 0x93, 0x64, 0xa3, 0x9f, 0x75, 0x4e,
-	0xba, 0x54, 0x6e, 0x8b, 0x17, 0x74, 0xb0, 0x9d, 0xd7, 0x60, 0x06, 0x9c, 0xf1, 0x38, 0xd3, 0x01,
-	0x57, 0x99, 0x14, 0x8a, 0xe3, 0xe7, 0x70, 0x2b, 0x2c, 0x9b, 0xcb, 0x8a, 0xfb, 0xb6, 0xef, 0x2e,
-	0x96, 0x83, 0x87, 0xff, 0x40, 0xd1, 0x42, 0xed, 0x00, 0x1c, 0x02, 0xf7, 0x5e, 0x0a, 0x26, 0xc5,
-	0x24, 0xce, 0x53, 0x3e, 0x0e, 0x4b, 0xd5, 0xce, 0x78, 0x1f, 0x7a, 0x29, 0x2d, 0xc3, 0x52, 0x55,
-	0x1c, 0x47, 0x41, 0x13, 0x39, 0x9f, 0x10, 0x9c, 0x6c, 0x3b, 0xaa, 0xfa, 0x46, 0xd7, 0x09, 0x1c,
-	0x5d, 0xca, 0x42, 0xe8, 0xa6, 0xbe, 0x0e, 0xb0, 0x02, 0x63, 0x37, 0x8e, 0xea, 0x1f, 0x9e, 0xdf,
-	0xb8, 0x30, 0xbc, 0xb3, 0xd6, 0xab, 0xdf, 0x01, 0xf9, 0xc3, 0xf9, 0x72, 0x70, 0xf0, 0xbf, 0xa6,
-	0x75, 0x59, 0xbc, 0x1f, 0x08, 0x8c, 0x70, 0xb7, 0x27, 0xf8, 0x12, 0x4c, 0x3f, 0x97, 0x74, 0xcc,
-	0xa8, 0xd2, 0x61, 0xf9, 0x62, 0x26, 0x18, 0xfe, 0xd3, 0xef, 0xb2, 0xb6, 0x89, 0x7d, 0xdf, 0x5f,
-	0xc1, 0xf1, 0x33, 0xae, 0x7f, 0x35, 0x0b, 0xdf, 0x69, 0xab, 0xeb, 0x65, 0xb1, 0xfe, 0x3a, 0x99,
-	0x73, 0xfa, 0xfe, 0xeb, 0xf7, 0x0f, 0x87, 0xc7, 0xd8, 0x24, 0x7b, 0x30, 0x4f, 0xe1, 0x6e, 0x47,
-	0xe0, 0x13, 0x75, 0x2d, 0x85, 0x7e, 0x7f, 0xbe, 0xb2, 0xd1, 0x97, 0x95, 0x8d, 0xbe, 0xad, 0x6c,
-	0xf4, 0x71, 0x6d, 0x1f, 0x7c, 0x5e, 0xdb, 0x68, 0xbe, 0xb6, 0xd1, 0xa8, 0x79, 0x22, 0x3f, 0x03,
-	0x00, 0x00, 0xff, 0xff, 0x66, 0xbd, 0x90, 0x89, 0x4e, 0x03, 0x00, 0x00,
+var fileDescriptor_transaction_b63e4e4568db1797 = []byte{
+	// 351 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xcf, 0x4e, 0xea, 0x40,
+	0x14, 0xc6, 0xef, 0x70, 0x03, 0x17, 0xe6, 0x26, 0x56, 0x26, 0x24, 0x34, 0x0d, 0x69, 0xb0, 0x2b,
+	0x12, 0x03, 0x4d, 0xe0, 0x09, 0x04, 0x89, 0x89, 0xcb, 0x5a, 0x37, 0xee, 0xca, 0x30, 0xd4, 0x26,
+	0x30, 0x67, 0xec, 0x4c, 0x0d, 0x6c, 0x7d, 0x05, 0x5f, 0xc0, 0x47, 0x71, 0xc9, 0xd2, 0xc4, 0x17,
+	0x30, 0xe0, 0x23, 0xf8, 0x00, 0x86, 0x4e, 0x5b, 0x94, 0xb8, 0x72, 0x33, 0x99, 0xdf, 0xf9, 0xf3,
+	0x9d, 0x39, 0x5f, 0x06, 0x9f, 0xc4, 0x82, 0xba, 0xe1, 0xee, 0x10, 0x31, 0x28, 0x18, 0xb8, 0x2a,
+	0x0e, 0xb8, 0x0c, 0xa8, 0x8a, 0x80, 0xf7, 0xd2, 0x10, 0xa9, 0xe8, 0x8c, 0xd5, 0x0d, 0x23, 0x75,
+	0x9b, 0x4c, 0x7a, 0x14, 0x16, 0x6e, 0x08, 0x21, 0xe8, 0x8e, 0x49, 0x32, 0x4b, 0x29, 0x85, 0xf4,
+	0xa6, 0xdb, 0xac, 0x56, 0x08, 0x10, 0xce, 0x99, 0x1b, 0x88, 0xc8, 0x0d, 0x38, 0x07, 0x15, 0xec,
+	0x34, 0xa5, 0xce, 0x3a, 0x55, 0x5c, 0x19, 0x2f, 0x84, 0x5a, 0xf5, 0x9d, 0x2e, 0x36, 0xfc, 0x6c,
+	0xa6, 0xc7, 0xee, 0x12, 0x26, 0x15, 0xb1, 0x70, 0x75, 0xcc, 0xef, 0xd9, 0x1c, 0x04, 0x33, 0x51,
+	0x1b, 0x75, 0x6a, 0x5e, 0xc1, 0xce, 0x29, 0x36, 0x3c, 0x46, 0x59, 0x24, 0x94, 0xc7, 0xa4, 0x00,
+	0x2e, 0x19, 0x31, 0xf1, 0xbf, 0x2c, 0x94, 0x55, 0xe7, 0xe8, 0x5c, 0xe2, 0xc6, 0x35, 0xa7, 0xc0,
+	0x67, 0x51, 0xbc, 0xf0, 0x97, 0xb2, 0xe8, 0x68, 0xe0, 0xf2, 0x08, 0x12, 0xae, 0xeb, 0xcb, 0x9e,
+	0x06, 0xd2, 0xc2, 0xb5, 0x7c, 0x8c, 0x34, 0x4b, 0xed, 0xbf, 0x9d, 0x9a, 0xb7, 0x0f, 0xf4, 0x3f,
+	0x10, 0xfe, 0xef, 0xef, 0xcd, 0x21, 0x23, 0x6c, 0x0c, 0x63, 0x08, 0xa6, 0x34, 0x90, 0xca, 0x5f,
+	0x5e, 0xad, 0x38, 0x25, 0x4d, 0xbd, 0xdc, 0xa0, 0x77, 0xb0, 0x90, 0x55, 0x24, 0x0e, 0x9f, 0x7e,
+	0x8e, 0x8f, 0xbf, 0x88, 0x9c, 0xc9, 0xdf, 0xa9, 0xdc, 0xe0, 0xfa, 0x05, 0x53, 0xc5, 0xa6, 0x6c,
+	0xea, 0x2f, 0x25, 0x39, 0xca, 0xab, 0xb5, 0xcf, 0x56, 0x2b, 0xe7, 0x9f, 0x1c, 0x71, 0x9a, 0x0f,
+	0xaf, 0xef, 0x8f, 0xa5, 0x3a, 0x31, 0xdc, 0xef, 0x32, 0x43, 0x73, 0xbd, 0xb1, 0xd1, 0xcb, 0xc6,
+	0x46, 0x6f, 0x1b, 0x1b, 0x3d, 0x6d, 0xed, 0x3f, 0xcf, 0x5b, 0x1b, 0xad, 0xb7, 0x36, 0x9a, 0x64,
+	0xff, 0xe2, 0x33, 0x00, 0x00, 0xff, 0xff, 0x71, 0xee, 0x5e, 0xd9, 0x43, 0x02, 0x00, 0x00,
 }

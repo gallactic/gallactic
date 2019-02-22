@@ -70,10 +70,8 @@ docker:
 ########################################
 ### Protobuf
 %.pb.go: %.proto
-	protoc $(PROTO_INC) $< --js_out=import_style=commonjs=plugins=grpc:./gallactic_js
-	# protoc $(PROTO_INC) $< --gogo_out=plugins=grpc:.
-	# protoc $(PROTO_INC) $< --grpc-gateway_out=logtostderr=true:.
-	##protoc $(PROTO_INC) $< --swagger_out=logtostderr=true:.
+	protoc $(PROTO_INC) $< --gogo_out=plugins=grpc:.
+	protoc $(PROTO_INC) $< --grpc-gateway_out=logtostderr=true:.
 
 proto: ./rpc/grpc/proto3/blockchain.pb.go ./rpc/grpc/proto3/network.pb.go ./rpc/grpc/proto3/transaction.pb.go ./rpc/grpc/proto3/events.pb.go
 

@@ -4,16 +4,6 @@ import (
 	"encoding/json"
 )
 
-// JSON-RPC 2.0 error codes.
-const (
-	RPCErrorServerError    = -32000
-	RPCErrorInvalidRequest = -32600
-	RPCErrorMethodNotFound = -32601
-	RPCErrorInvalidParams  = -32602
-	RPCErrorInternalError  = -32603
-	RPCErrorParseError     = -32700
-)
-
 // NewRPCRequest to Create a new RPC request. This is the generic struct that is passed to RPC methods
 func NewRPCRequest(id string, method string, params json.RawMessage) *RPCRequest {
 	return &RPCRequest{
