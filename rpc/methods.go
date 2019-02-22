@@ -1,8 +1,12 @@
 package rpc
 
 import (
+	"context"
+
 	"github.com/gallactic/gallactic/core/account"
+	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/gallactic/gallactic/txs"
+	"google.golang.org/grpc"
 )
 
 // Used to handle requests. interface{} param is a wildcard used for example with socket events.
@@ -32,7 +36,16 @@ const (
 	GET_LastBlock_Info  = GALLACTIC + "getLastBlockInfo"
 )
 
+func grpcBlockchainClient() pb.BlockChainClient {
+	addr := "0.0.0.0:50051"
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	return pb.NewBlockChainClient(conn)
+}
 func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[string]RequestHandlerFunc) {
+	client := grpcBlockchainClient()
 
 	accountFilterFactory := NewAccountFilterFactory()
 
@@ -135,11 +148,12 @@ func loadGallacticMethods(codec Codec, service *Service, rpcServiceMap map[strin
 	}
 
 	rpcServiceMap[GET_LATEST_BLOCK] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		status, err := service.Status()
-		if err != nil {
-			return nil, RPCErrorInternalError, err
-		}
-		resultGetBlock, err := service.GetBlock(status.LatestBlockHeight)
+		// status, err := client.GetStatus()
+		// if err != nil {
+		// 	return nil, RPCErrorInternalError, err
+		// }
+		// resultGetBlock, err := service.GetBlock(status.LatestBlockHeight)
+		resultGetBlock, err := client.GetLatestBlock(context.Background(), &pb.Empty{})
 		if err != nil {
 			return nil, RPCErrorInternalError, err
 		}

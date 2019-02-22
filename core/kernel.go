@@ -24,6 +24,7 @@ import (
 	"github.com/gallactic/gallactic/rpc"
 	"github.com/gallactic/gallactic/rpc/grpc"
 	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	rpcc "github.com/gallactic/gallactic/rpc/rpc"
 	log "github.com/inconshreveable/log15"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )
@@ -72,9 +73,9 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 		return nil, err
 	}
 
-	transactor := execution.NewTransactor(tmNode.MempoolReactor().Mempool.CheckTx, eventBus)
-	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode))
-
+	transactor := execution.NewTransactor(tmNode.MempoolReactor().Mempool.CheckTx, eventBus, logger)
+	service := rpc.NewService(ctx, bc, transactor, query.NewNodeView(tmNode), logger)
+	fmt.Println(service)
 	launchers := []process.Launcher{
 		{
 			Name:    "Database",
@@ -118,23 +119,6 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 			},
 		},
 		{
-			Name:    "RPC",
-			Enabled: conf.RPC.Enabled,
-			Launch: func() (process.Process, error) {
-				codec := rpc.NewTCodec()
-				jsonServer := rpc.NewJSONServer(rpc.NewJSONService(codec, service))
-				serveProcess, err := rpc.NewServeProcess(conf.RPC.Server, jsonServer)
-				if err != nil {
-					return nil, err
-				}
-				err = serveProcess.Start()
-				if err != nil {
-					return nil, err
-				}
-				return serveProcess, nil
-			},
-		},
-		{
 			Name:    "GRPC",
 			Enabled: conf.GRPC.Enabled,
 			Launch: func() (process.Process, error) {
@@ -150,11 +134,40 @@ func NewKernel(ctx context.Context, gen *proposal.Genesis, conf *config.Config, 
 				if err := grpcServer.StartGateway(ctx, conf.GRPC.ListenAddress, conf.GRPC.HTTPAddress); err != nil {
 					return nil, fmt.Errorf("Unable to start grpc-gateway server: %v", err)
 				}
+
 				return process.ShutdownFunc(func(ctx context.Context) error {
 					grpcServer.Stop()
 					// listener is closed for us
 					return nil
 				}), nil
+			},
+		},
+		{
+			Name:    "RPC",
+			Enabled: conf.RPC.Enabled,
+			Launch: func() (process.Process, error) {
+				codec := rpcc.NewTmCodec()
+				jsonServer := rpcc.NewJSONServer(rpcc.NewJSONService(conf, codec, logger))
+				serveProcess, err := rpcc.NewServeProcess(conf.RPC.Server, logger, jsonServer)
+				if err != nil {
+					return nil, err
+				}
+				err = serveProcess.Start()
+				if err != nil {
+					return nil, err
+				}
+				return serveProcess, nil
+				// codec := rpc.NewTCodec()
+				// jsonServer := rpc.NewJSONServer(rpc.NewJSONService(codec, service, logger))
+				// serveProcess, err := rpc.NewServeProcess(conf.RPC.Server, logger, jsonServer)
+				// if err != nil {
+				// 	return nil, err
+				// }
+				// err = serveProcess.Start()
+				// if err != nil {
+				// 	return nil, err
+				// }
+				// return serveProcess, nil
 			},
 		},
 	}
