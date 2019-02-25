@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/gallactic/gallactic/core/blockchain"
-	"github.com/gallactic/gallactic/rpc/grpc/proto3"
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	"github.com/gallactic/gallactic/www/grpc/proto3"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 )
 
 type eventsServer struct {

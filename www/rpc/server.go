@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gallactic/gallactic/rpc/rpc/config"
-	rpcConf "github.com/gallactic/gallactic/rpc/rpc/config"
+	"github.com/gallactic/gallactic/www/rpc/config"
+	rpcConf "github.com/gallactic/gallactic/www/rpc/config"
 	"github.com/gin-gonic/gin"
 	log "github.com/inconshreveable/log15"
 	cors "github.com/tommy351/gin-cors"

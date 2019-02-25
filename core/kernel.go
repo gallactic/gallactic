@@ -21,9 +21,9 @@ import (
 	"github.com/gallactic/gallactic/core/proposal"
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/crypto"
-	"github.com/gallactic/gallactic/rpc/grpc"
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
-	"github.com/gallactic/gallactic/rpc/rpc"
+	"github.com/gallactic/gallactic/www/grpc"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
+	"github.com/gallactic/gallactic/www/rpc"
 	log "github.com/inconshreveable/log15"
 	dbm "github.com/tendermint/tendermint/libs/db"
 )

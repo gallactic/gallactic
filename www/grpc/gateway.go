@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"google.golang.org/grpc"

@@ -6,8 +6,8 @@ import (
 
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
 	"github.com/gallactic/gallactic/core/execution"
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/gallactic/gallactic/txs"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 )
 
 type transcatorService struct {

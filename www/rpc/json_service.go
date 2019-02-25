@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gallactic/gallactic/core/config"
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 	log "github.com/inconshreveable/log15"
 	"google.golang.org/grpc"
 )

@@ -3,7 +3,7 @@ package rpc
 import (
 	"context"
 
-	rpcConf "github.com/gallactic/gallactic/rpc/rpc/config"
+	rpcConf "github.com/gallactic/gallactic/www/rpc/config"
 	"github.com/gin-gonic/gin"
 )
 

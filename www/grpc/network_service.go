@@ -6,7 +6,7 @@ import (
 	"github.com/gallactic/gallactic/core/blockchain"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/p2p"
 	"github.com/gallactic/gallactic/core/consensus/tendermint/query"
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 	net "github.com/tendermint/tendermint/p2p"
 )
 

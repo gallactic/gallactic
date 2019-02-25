@@ -11,7 +11,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 )

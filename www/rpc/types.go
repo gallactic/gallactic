@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	rpcConf "github.com/gallactic/gallactic/rpc/rpc/config"
+	rpcConf "github.com/gallactic/gallactic/www/rpc/config"
 	"github.com/gin-gonic/gin"
 	graceful "gopkg.in/tylerb/graceful.v1"
 )

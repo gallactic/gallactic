@@ -12,7 +12,7 @@ import (
 	"github.com/gallactic/gallactic/common"
 	"github.com/gallactic/gallactic/core/config"
 	"github.com/gallactic/gallactic/core/proposal"
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 )
 
 var tChainName string
