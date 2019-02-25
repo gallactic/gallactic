@@ -58,9 +58,10 @@ func (env *Envelope) Hash() []byte {
 }
 
 func (env *Envelope) String() string {
-	//s, _ := json.Marshal(env.Tx)
-	//return fmt.Sprintf("Envelop{TxHash: %X; Tx: %s}", env.Hash(), s)
-	return fmt.Sprintf("Envelop{TxHash: %X; Tx: %v}", env.Hash(), env.Tx)
+	s, _ := json.Marshal(env)
+	return string(s)
+	//fmt.Sprintf("Envelop{TxHash: %X; Tx: %s}", env.Hash(), s)
+	//return fmt.Sprintf("Envelop{TxHash: %X; Tx: %v}", env.Hash(), env.Tx)
 }
 
 // Verify verifies the validity of the Signatories' Signatures in the Envelope. The Signatories must

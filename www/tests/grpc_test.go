@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"testing"
 	"time"
@@ -115,14 +116,15 @@ func TestTransactionMethods(t *testing.T) {
 	require.NoError(t, env.Sign(signer))
 
 	bcClient := grpcBlockchainClient()
-
-	ret1, err := client.BroadcastTxSync(context.Background(), &pb.TransactRequest{TxEnvelope: env})
+	ret1, err := client.BroadcastTxSync(context.Background(), &pb.TransactRequest{Envelope: env.String()})
 	require.NoError(t, err)
-	require.Equal(t, env.Hash(), ret1.TxReceipt.Hash.Bytes())
+	txHash, err := hex.DecodeString(ret1.Receipt.Hash)
+	require.NoError(t, err)
+	require.Equal(t, env.Hash(), txHash)
 
 	// wait for new block and check balance
 	for {
-		retTx, err := bcClient.GetTx(context.Background(), &pb.TxRequest{Hash: ret1.TxReceipt.Hash.String()})
+		retTx, err := bcClient.GetTx(context.Background(), &pb.TxRequest{Hash: ret1.Receipt.Hash})
 		if err == nil && retTx != nil {
 			break
 		}
