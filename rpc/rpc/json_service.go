@@ -275,13 +275,13 @@ func getMethods(codec Codec, bcSvc pb.BlockChainClient, ntwSvc pb.NetworkClient,
 		return storageItem, 0, nil
 	}
 
-	// rpm[GET_UNCONFIRMED_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-	// 	transactions, err := bcSvc.Get
-	// 	if err != nil {
-	// 		return nil, rpcErrorInternalError, err
-	// 	}
-	// 	return transactions, 0, nil
-	// }
+	rpm[GET_UNCONFIRMED_TXS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
+		transactions, err := txSvc.GetUnconfirmedTxs(context.Background(), &pb.Empty2{})
+		if err != nil {
+			return nil, rpcErrorInternalError, err
+		}
+		return transactions, 0, nil
+	}
 
 	rpm[GET_VALIDATOR] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
 		input := &pb.AddressRequest{}
@@ -297,7 +297,7 @@ func getMethods(codec Codec, bcSvc pb.BlockChainClient, ntwSvc pb.NetworkClient,
 	}
 
 	rpm[GET_VALIDATORS] = func(request *RPCRequest, requester interface{}) (interface{}, int, error) {
-		list, err := bcSvc.GetAccounts(context.Background(), &pb.Empty{})
+		list, err := bcSvc.GetValidators(context.Background(), &pb.Empty{})
 		if err != nil {
 			return nil, rpcErrorInternalError, err
 		}
