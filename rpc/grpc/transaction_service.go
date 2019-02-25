@@ -39,14 +39,9 @@ func (tx *transcatorService) BroadcastTxSync(ctx context.Context, txReq *pb.Tran
 		return nil, err
 	}
 
-	rb, err := json.Marshal(receipt)
-	if err != nil {
-		return nil, err
-	}
+	rb := tx.toReceipt(receipt)
 
-	return &pb.ReceiptResponse{
-		Receipt: string(rb),
-	}, nil
+	return &pb.ReceiptResponse{Receipt: rb}, nil
 }
 
 // Get the list of unconfirmed transaction
@@ -76,12 +71,38 @@ func (tx *transcatorService) BroadcastTxAsync(ctx context.Context, txReq *pb.Tra
 		return nil, err
 	}
 
-	rb, err := json.Marshal(receipt)
-	if err != nil {
-		return nil, err
+	rb := tx.toReceipt(receipt)
+
+	return &pb.ReceiptResponse{Receipt: rb}, nil
+}
+
+func (tx *transcatorService) toReceipt(r *txs.Receipt) *pb.Receipt {
+	var ca string
+	var rlogs []*pb.Log
+	if r.ContractAddress != nil {
+		ca = r.ContractAddress.String()
 	}
 
-	return &pb.ReceiptResponse{
-		Receipt: string(rb),
-	}, nil
+	for _, log := range r.Logs {
+		var t []string
+		for _, topic := range log.Topics {
+			t = append(t, topic.String())
+		}
+		rlogs = append(rlogs, &pb.Log{
+			Address: log.Address.String(),
+			Data:    log.Data.String(),
+			Topics:  t,
+		})
+	}
+	return &pb.Receipt{
+		Type:            r.Type.String(),
+		Hash:            r.Hash.String(),
+		Status:          int32(r.Status),
+		Height:          r.Height,
+		GasUsed:         r.GasUsed,
+		GasWanted:       r.GasWanted,
+		ContractAddress: ca,
+		Logs:            rlogs,
+		Output:          r.Output.String(),
+	}
 }

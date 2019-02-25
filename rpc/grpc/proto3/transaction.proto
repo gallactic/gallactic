@@ -28,7 +28,25 @@ message TransactRequest {
 }
 
 message ReceiptResponse {
-  string Receipt = 1;
+  Receipt Receipt = 1;
+}
+
+message Receipt {
+  string Type = 1;
+  string Hash = 2;
+  int32 Status = 3;
+  int64 Height = 4;
+  uint64 GasUsed = 5;
+  uint64 GasWanted = 6;
+  string ContractAddress = 7;
+  repeated Log Logs = 8 [(gogoproto.jsontag) = "Logs"];;
+  string Output = 9;
+}
+
+message Log {
+  string Address = 1;
+  repeated string Topics = 2;
+  string Data = 3;
 }
 
 message UnconfirmTxsResponse {
