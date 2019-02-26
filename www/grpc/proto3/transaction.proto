@@ -17,33 +17,39 @@ option (gogoproto.protosizer_all) =false;
 // Transaction Service definition
 service Transaction {
 	rpc BroadcastTxSync(TransactRequest)returns(ReceiptResponse);
-	rpc GetUnconfirmedTxs(Empty2)returns(UnconfirmTxsResponse)    {option (google.api.http) = {get: "/UnconfirmedTxs";};};
   rpc BroadcastTxAsync(TransactRequest)returns(ReceiptResponse);
-
-
+	rpc GetUnconfirmedTxs(Empty2)returns(UnconfirmTxsResponse)    {option (google.api.http) = {get: "/UnconfirmedTxs";};};
 }
 
-
-message Empty2{
-}
+message Empty2{}
 
 message TransactRequest {
-  TransactRequest txEnvelope = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope"];
+  string Envelope = 1;
 }
 
 message ReceiptResponse {
-  bytes  TxReceipt = 1 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Receipt"];
+  Receipt Receipt = 1;
 }
 
-message UnconfirmedTxsRequest {
-   int32 maxTxs = 1;
+message Receipt {
+  string Type = 1;
+  string Hash = 2;
+  int32 Status = 3;
+  int64 Height = 4;
+  uint64 GasUsed = 5;
+  uint64 GasWanted = 6;
+  string ContractAddress = 7;
+  repeated Log Logs = 8 [(gogoproto.jsontag) = "Logs"];;
+  string Output = 9;
+}
+
+message Log {
+  string Address = 1;
+  repeated string Topics = 2;
+  string Data = 3;
 }
 
 message UnconfirmTxsResponse {
   int32 Count = 1;
-	repeated UnconfirmTxsResponse txEnvelopes = 2 [(gogoproto.customtype) = "github.com/gallactic/gallactic/txs.Envelope", (gogoproto.nullable) = false];
+	repeated string Envelopes = 2;
 }
-
-
-
-

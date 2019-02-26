@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"testing"
 	"time"
@@ -11,7 +12,7 @@ import (
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/txs/tx"
 
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 )
@@ -115,14 +116,15 @@ func TestTransactionMethods(t *testing.T) {
 	require.NoError(t, env.Sign(signer))
 
 	bcClient := grpcBlockchainClient()
-
-	ret1, err := client.BroadcastTxSync(context.Background(), &pb.TransactRequest{TxEnvelope: env})
+	ret1, err := client.BroadcastTxSync(context.Background(), &pb.TransactRequest{Envelope: env.String()})
 	require.NoError(t, err)
-	require.Equal(t, env.Hash(), ret1.TxReceipt.Hash.Bytes())
+	txHash, err := hex.DecodeString(ret1.Receipt.Hash)
+	require.NoError(t, err)
+	require.Equal(t, env.Hash(), txHash)
 
 	// wait for new block and check balance
 	for {
-		retTx, err := bcClient.GetTx(context.Background(), &pb.TxRequest{Hash: ret1.TxReceipt.Hash.String()})
+		retTx, err := bcClient.GetTx(context.Background(), &pb.TxRequest{Hash: ret1.Receipt.Hash})
 		if err == nil && retTx != nil {
 			break
 		}

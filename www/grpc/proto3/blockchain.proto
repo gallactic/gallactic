@@ -209,6 +209,7 @@ message ValidatorInfo {
  string pub_key = 2;
  int64 power = 3;
  uint64 stake = 4 ;
+ uint64 sequence = 5 [(gogoproto.jsontag) = "sequence"];
 }
 
 message EvidenceInfo {

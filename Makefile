@@ -11,7 +11,7 @@ PACKAGES=$(shell go list ./... | grep -v '/vendor/')
 SVM_PATH = $(GOPATH)/src/github.com/gallactic/sputnikvm-ffi
 TAGS=-tags 'gallactic'
 LDFLAGS= -ldflags "-X github.com/gallactic/gallactic/version.GitCommit=`git rev-parse --short=8 HEAD`"
-PROTO_INC = -I=. -I=${GOPATH}/src -I=${GOPATH}/src/github.com/gallactic/gallactic/rpc/grpc/proto3 -I=${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
+PROTO_INC = -I=. -I=${GOPATH}/src -I=${GOPATH}/src/github.com/gallactic/gallactic/www/grpc/proto3 -I=${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
 
 ifeq ($(UNAME), Linux)
 CFLAGS=CGO_LDFLAGS="$(SVM_PATH)/c/libsputnikvm.a -ldl -lssl -lcrypto -lpthread -lm"
@@ -72,9 +72,8 @@ docker:
 %.pb.go: %.proto
 	protoc $(PROTO_INC) $< --gogo_out=plugins=grpc:.
 	protoc $(PROTO_INC) $< --grpc-gateway_out=logtostderr=true:.
-	##protoc $(PROTO_INC) $< --swagger_out=logtostderr=true:.
 
-proto: ./rpc/grpc/proto3/blockchain.pb.go ./rpc/grpc/proto3/network.pb.go ./rpc/grpc/proto3/transaction.pb.go ./rpc/grpc/proto3/events.pb.go
+proto: ./www/grpc/proto3/blockchain.pb.go ./www/grpc/proto3/network.pb.go ./www/grpc/proto3/transaction.pb.go ./www/grpc/proto3/events.pb.go
 
 ########################################
 ### Formatting, linting, and vetting

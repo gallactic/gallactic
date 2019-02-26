@@ -16,9 +16,9 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
-	pb "github.com/gallactic/gallactic/rpc/grpc/proto3"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
 	net "github.com/tendermint/tendermint/p2p"
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
@@ -293,10 +293,11 @@ func (s *blockchainService) GetTx(ctx context.Context, req *pb.TxRequest) (*pb.T
 //Get validator
 func (vs *blockchainService) toValidator(val *validator.Validator) *pb.ValidatorInfo {
 	return &pb.ValidatorInfo{
-		Address: val.Address().String(),
-		PubKey:  val.PublicKey().String(),
-		Power:   val.Power(),
-		Stake:   val.Stake(),
+		Address:  val.Address().String(),
+		PubKey:   val.PublicKey().String(),
+		Power:    val.Power(),
+		Stake:    val.Stake(),
+		Sequence: val.Sequence(),
 	}
 }
 
