@@ -29,6 +29,7 @@ func DefaultConfig() *Config {
 	tmDef.P2P.ListenAddress = "tcp://0.0.0.0:46656"
 	tmDef.RPC.ListenAddress = "tcp://localhost:46657"
 	tmDef.Consensus.TimeoutCommit = 5 * tmDef.Consensus.TimeoutCommit
+	tmDef.Consensus.CreateEmptyBlocks = false
 	tmDef.ProxyApp = "gallactic"
 	tmDef.PrivValidatorKey = ""
 	tmDef.Genesis = ""

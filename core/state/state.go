@@ -1,6 +1,7 @@
 package state
 
 import (
+	"bytes"
 	"fmt"
 	"sync"
 
@@ -68,6 +69,7 @@ type State struct {
 	sync.Mutex
 	db   dbm.DB
 	tree *iavl.MutableTree
+	hash []byte
 }
 
 // NewState creates a new instance of State object
@@ -76,6 +78,7 @@ func NewState(db dbm.DB) *State {
 	st := &State{
 		db:   db,
 		tree: tree,
+		hash: []byte{0},
 	}
 
 	return st
@@ -105,8 +108,8 @@ func LoadState(db dbm.DB, hash []byte) (*State, error) {
 	return st, nil
 }
 
-// UpdateGenesisState updates state at genesis time
-func (st *State) UpdateGenesisState(gen *proposal.Genesis) error {
+// StoreGenesisState stores the genesis state
+func (st *State) StoreGenesisState(gen *proposal.Genesis) error {
 	// Make accounts state tree
 	for _, acc := range gen.Accounts() {
 		if err := st.updateAccount(acc); err != nil {
@@ -120,12 +123,18 @@ func (st *State) UpdateGenesisState(gen *proposal.Genesis) error {
 		}
 	}
 
-	return nil
+	_, err := st.SaveState()
+
+	return err
 }
 
 func (st *State) SaveState() ([]byte, error) {
 	st.Lock()
 	defer st.Unlock()
+
+	if bytes.Compare(st.hash, st.tree.WorkingHash()) == 0 {
+		return st.hash, nil
+	}
 
 	hash, version, err := st.tree.SaveVersion()
 	if err != nil {
@@ -137,6 +146,7 @@ func (st *State) SaveState() ([]byte, error) {
 
 	// Provide a reference to load this version in the future from the state hash
 	st.setVersion(hash, version)
+	st.hash = hash
 
 	return hash, nil
 }
