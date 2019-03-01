@@ -16,9 +16,9 @@ import (
 	"github.com/gallactic/gallactic/core/state"
 	"github.com/gallactic/gallactic/core/validator"
 	"github.com/gallactic/gallactic/crypto"
+	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 	"github.com/gallactic/gallactic/txs"
 	"github.com/gallactic/gallactic/version"
-	pb "github.com/gallactic/gallactic/www/grpc/proto3"
 	consensusTypes "github.com/tendermint/tendermint/consensus/types"
 	net "github.com/tendermint/tendermint/p2p"
 	tmRPC "github.com/tendermint/tendermint/rpc/core"
@@ -114,7 +114,11 @@ func (s *blockchainService) GetStorage(ctx context.Context, storage *pb.StorageR
 	}
 
 	s.state.IterateStorage(storageaddr, func(key, value binary.Word256) (stop bool) {
-		storageItems = append(storageItems, pb.StorageItem{Key: key.UnpadLeft(), Value: value.UnpadLeft()})
+		Khash := key.UnpadLeft()
+		keyhash := hex.EncodeToString(Khash)
+		vhash := value.UnpadLeft()
+		valuehash := hex.EncodeToString(vhash)
+		storageItems = append(storageItems, pb.StorageItem{Key: keyhash, Value: valuehash})
 		return false
 	})
 	return &pb.StorageResponse{
@@ -128,14 +132,18 @@ func (s *blockchainService) GetStorageAt(ctx context.Context, storage *pb.Storag
 	if err != nil {
 		return nil, err
 	}
-	value, err := s.state.GetStorage(storageaddr, binary.LeftPadWord256(storage.Key))
+	key, err := hex.DecodeString(storage.Key)
+	value, err := s.state.GetStorage(storageaddr, binary.LeftPadWord256(key))
 	if err != nil {
 		return nil, err
 	}
 	if value == binary.Zero256 {
-		return &pb.StorageAtResponse{Key: storage.Key, Value: nil}, nil
+		return &pb.StorageAtResponse{Key: storage.Key, Value: ""}, nil
 	}
-	return &pb.StorageAtResponse{Key: storage.Key, Value: value.UnpadLeft()}, nil
+	vhash := value.UnpadLeft()
+	valuehash := hex.EncodeToString(vhash)
+
+	return &pb.StorageAtResponse{Key: storage.Key, Value: valuehash}, nil
 }
 
 func (s *blockchainService) GetStatus(ctx context.Context, in *pb.Empty) (*pb.StatusResponse, error) {
@@ -148,10 +156,12 @@ func (s *blockchainService) GetStatus(ctx context.Context, in *pb.Empty) (*pb.St
 		latestBlockHash = latestBlockMeta.Header.Hash()
 		latestBlockTime = latestBlockMeta.Header.Time.UnixNano()
 	}
+	latest_Blockhash := hex.EncodeToString(latestBlockHash)
 	publicKey, err := s.nodeview.PrivValidatorPublicKey()
 	if err != nil {
 		return nil, err
 	}
+	pub_key := publicKey.String()
 	ni := new(p2p.GNodeInfo)
 	tmni := s.nodeview.NodeInfo().(net.DefaultNodeInfo)
 	ni.ID_ = tmni.ID_
@@ -161,11 +171,15 @@ func (s *blockchainService) GetStatus(ctx context.Context, in *pb.Empty) (*pb.St
 	ni.Channels = tmni.Channels
 	ni.ListenAddr = tmni.ListenAddr
 	ni.Moniker = tmni.Moniker
+
+	hash := s.blockchain.GenesisHash()
+	genesisHash := hex.EncodeToString(hash)
+
 	return &pb.StatusResponse{
 		NodeInfo:          *ni,
-		GenesisHash:       s.blockchain.GenesisHash(),
-		PubKey:            publicKey,
-		LatestBlockHash:   latestBlockHash,
+		GenesisHash:       genesisHash,
+		PubKey:            pub_key,
+		LatestBlockHash:   latest_Blockhash,
 		LatestBlockHeight: latestHeight,
 		LatestBlockTime:   latestBlockTime,
 		NodeVersion:       version.Version,
@@ -216,10 +230,12 @@ func (s *blockchainService) GetGenesis(context.Context, *pb.Empty) (*pb.GenesisR
 }
 
 func (s *blockchainService) GetChainID(context.Context, *pb.Empty) (*pb.ChainResponse, error) {
+	hash := s.blockchain.GenesisHash()
+	genesisHash := hex.EncodeToString(hash)
 	return &pb.ChainResponse{
 		ChainName:   s.blockchain.Genesis().ChainName(),
 		ChainId:     s.blockchain.ChainID(),
-		GenesisHash: s.blockchain.GenesisHash(),
+		GenesisHash: genesisHash,
 	}, nil
 
 }
@@ -233,9 +249,11 @@ func (s *blockchainService) GetLatestBlock(context.Context, *pb.Empty) (*pb.Bloc
 }
 
 func (s *blockchainService) GetBlockchainInfo(ctx context.Context, blockinfo *pb.Empty) (*pb.BlockchainInfoResponse, error) {
+	hash := s.blockchain.LastBlockHash()
+	latesthash := hex.EncodeToString(hash)
 	res := &pb.BlockchainInfoResponse{
 		LastBlockHeight: s.blockchain.LastBlockHeight(),
-		LastBlockHash:   s.blockchain.LastBlockHash(),
+		LastBlockHash:   latesthash,
 		LastBlockTime:   s.blockchain.LastBlockTime(),
 	}
 	return res, nil
@@ -290,14 +308,17 @@ func (s *blockchainService) GetTx(ctx context.Context, req *pb.TxRequest) (*pb.T
 
 }
 
+func (s *blockchainService) GetListTx(ctx context.Context, req *pb.Empty) (*pb.TxInfo, error) {
+	return nil, nil
+}
+
 //Get validator
 func (vs *blockchainService) toValidator(val *validator.Validator) *pb.ValidatorInfo {
 	return &pb.ValidatorInfo{
-		Address:  val.Address().String(),
-		PubKey:   val.PublicKey().String(),
-		Power:    val.Power(),
-		Stake:    val.Stake(),
-		Sequence: val.Sequence(),
+		Address: val.Address().String(),
+		PubKey:  val.PublicKey().String(),
+		Power:   val.Power(),
+		Stake:   val.Stake(),
 	}
 }
 
@@ -309,8 +330,35 @@ func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, e
 	if blockmeta == nil || block == nil {
 		return nil, fmt.Errorf("Invalid blockheight")
 	}
+	bhash := blockmeta.BlockID.Hash.Bytes()
+	block_hash := hex.EncodeToString(bhash)
+
+	lchash := blockmeta.Header.LastCommitHash.Bytes()
+	lastCommitHash := hex.EncodeToString(lchash)
+
+	dhash := blockmeta.Header.DataHash.Bytes()
+	dataHash := hex.EncodeToString(dhash)
+
+	vhash := blockmeta.Header.ValidatorsHash.Bytes()
+	validateHash := hex.EncodeToString(vhash)
+
+	nvHash := blockmeta.Header.NextValidatorsHash.Bytes()
+	nextValidatorHash := hex.EncodeToString(nvHash)
+
+	chash := blockmeta.Header.ConsensusHash.Bytes()
+	consensusHash := hex.EncodeToString(chash)
+
+	aHash := blockmeta.Header.AppHash.Bytes()
+	appHash := hex.EncodeToString(aHash)
+
+	lrHash := blockmeta.Header.LastResultsHash.Bytes()
+	lastresultHash := hex.EncodeToString(lrHash)
+
+	eHash := blockmeta.Header.EvidenceHash.Bytes()
+	evidenceHash := hex.EncodeToString(eHash)
+
 	var pbBlock pb.BlockInfo
-	pbBlock.Header.BlockHash = blockmeta.BlockID.Hash.Bytes()
+	pbBlock.Header.BlockHash = block_hash
 	pbBlock.Header.Time = blockmeta.Header.Time
 	pbBlock.Header.TotalTxs = blockmeta.Header.TotalTxs
 	pbBlock.Header.Version.App = blockmeta.Header.Version.App.Uint64()
@@ -319,14 +367,14 @@ func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, e
 	pbBlock.Header.Height = blockmeta.Header.Height
 	pbBlock.Header.NumTxs = blockmeta.Header.NumTxs
 	pbBlock.Header.LastBlockId = blockmeta.Header.LastBlockID.Hash // ignoring PartSetHeader
-	pbBlock.Header.LastCommitHash = blockmeta.Header.LastCommitHash.Bytes()
-	pbBlock.Header.DataHash = blockmeta.Header.DataHash.Bytes()
-	pbBlock.Header.ValidatorsHash = blockmeta.Header.ValidatorsHash.Bytes()
-	pbBlock.Header.NextValidatorsHash = blockmeta.Header.NextValidatorsHash.Bytes()
-	pbBlock.Header.ConsensusHash = blockmeta.Header.ConsensusHash.Bytes()
-	pbBlock.Header.AppHash = blockmeta.Header.AppHash.Bytes()
-	pbBlock.Header.LastResultsHash = blockmeta.Header.LastResultsHash.Bytes()
-	pbBlock.Header.EvidenceHash = blockmeta.Header.EvidenceHash.Bytes()
+	pbBlock.Header.LastCommitHash = lastCommitHash
+	pbBlock.Header.DataHash = dataHash
+	pbBlock.Header.ValidatorsHash = validateHash
+	pbBlock.Header.NextValidatorsHash = nextValidatorHash
+	pbBlock.Header.ConsensusHash = consensusHash
+	pbBlock.Header.AppHash = appHash
+	pbBlock.Header.LastResultsHash = lastresultHash
+	pbBlock.Header.EvidenceHash = evidenceHash
 	valadrr, err := crypto.ValidatorAddress(blockmeta.Header.ProposerAddress)
 	if err != nil {
 		return nil, err
@@ -347,8 +395,9 @@ func (s *blockchainService) getBlockdetails(blockheight int64) (*pb.BlockInfo, e
 		tx.Envelope = string(js)
 		pbBlock.Txs = append(pbBlock.Txs, tx)
 	}
-	pbBlock.LastCommitInfo.BlockHash = block.LastCommit.BlockID.Hash.Bytes()
-
+	hash := block.LastCommit.BlockID.Hash.Bytes()
+	blockhash := hex.EncodeToString(hash)
+	pbBlock.LastCommitInfo.BlockHash = blockhash
 	for _, v := range block.LastCommit.Precommits {
 		if v == nil {
 			continue
