@@ -1,35 +1,35 @@
 package config
 
 type Bind struct {
-	Address string `toml:"address"`
-	Port    uint16 `toml:"port"`
+	Address string
+	Port    uint16
 }
 
 type TLS struct {
-	TLS      bool   `toml:"tls"`
-	CertPath string `toml:"cert_path"`
-	KeyPath  string `toml:"key_path"`
+	TLS      bool
+	CertPath string
+	KeyPath  string
 }
 
 type CORS struct {
-	Enabled          bool     `toml:"enable"`
-	AllowOrigins     []string `toml:"allow_origins"`
-	AllowCredentials bool     `toml:"allow_credentials"`
-	AllowMethods     []string `toml:"allow_methods"`
-	AllowHeaders     []string `toml:"allow_headers"`
-	ExposeHeaders    []string `toml:"expose_headers"`
-	MaxAge           uint64   `toml:"max_age"`
+	Enabled          bool
+	AllowOrigins     []string
+	AllowCredentials bool
+	AllowMethods     []string
+	AllowHeaders     []string
+	ExposeHeaders    []string
+	MaxAge           uint64
 }
 
 type HTTP struct {
-	JsonRpcEndpoint string `toml:"json_rpc_endpoint"`
+	JsonRpcEndpoint string
 }
 
 type ServerConfig struct {
-	Bind Bind `toml:"bind"`
-	TLS  TLS  `toml:"TLS"`
-	CORS CORS `toml:"CORS"`
-	HTTP HTTP `toml:"HTTP"`
+	Bind Bind
+	TLS  TLS
+	CORS CORS
+	HTTP HTTP
 }
 
 type RPCConfig struct {

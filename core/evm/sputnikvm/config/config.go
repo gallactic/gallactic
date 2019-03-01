@@ -7,7 +7,7 @@ import (
 )
 
 type SputnikvmConfig struct {
-	Web3Address string `toml:"Web3Address"`
+	Web3Address string
 }
 
 func DefaultSputnikvmConfig() *SputnikvmConfig {

@@ -26,8 +26,12 @@ type Config struct {
 func DefaultConfig() *Config {
 	tmDef := tmConfig.DefaultConfig()
 	tmDef.SetRoot("./data")
-	tmDef.P2P.ListenAddress = "tcp://0.0.0.0:46656"
-	tmDef.RPC.ListenAddress = "tcp://localhost:46657"
+	tmDef.P2P.ListenAddress = "tcp://0.0.0.0:50050"
+	tmDef.P2P.TestFuzzConfig = nil
+	tmDef.RPC.ListenAddress = "tcp://localhost:0"
+	tmDef.RPC.CORSAllowedOrigins = []string{}
+	tmDef.RPC.CORSAllowedMethods = []string{}
+	tmDef.RPC.CORSAllowedHeaders = []string{}
 	tmDef.Consensus.TimeoutCommit = 5 * tmDef.Consensus.TimeoutCommit
 	tmDef.Consensus.CreateEmptyBlocks = false
 	tmDef.ProxyApp = "gallactic"
