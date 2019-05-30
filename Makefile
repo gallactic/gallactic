@@ -45,6 +45,9 @@ deps:
 build:
 	$(CFLAGS) go build $(LDFLAGS) $(TAGS) -o build/gallactic ./cmd/gallactic/
 
+build-multisig:
+	$(CFLAGS) go build $(LDFLAGS) $(TAGS) -o build/gallactic/multisig ./cmd/gallactic/multisig
+
 install:
 	$(CFLAGS) go install $(LDFLAGS) $(TAGS) ./cmd/gallactic
 
